@@ -14,13 +14,13 @@
   client creates one for itself to play the game. When you set a
   variable, remember that it's only set in that instance.
 */
-var has_require = typeof require !== 'undefined'
+var has_require = typeof require !== 'undefined';
 
-if( typeof _ === 'undefined' ) {
-    if( has_require ) {
-        _ = require('underscore')
-    }
-    else throw new ('mymodule requires underscore, see http://underscorejs.org');
+if(typeof _ === 'undefined') {
+  if(has_require) {
+    _ = require('underscore');
+  }
+  else throw new ('this experiment requires underscore, see http://underscorejs.org');
 }
 
 var game_core = function(game_instance){
