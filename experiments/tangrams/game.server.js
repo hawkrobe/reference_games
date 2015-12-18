@@ -6,17 +6,14 @@
     modified for collective behavior experiments on Amazon Mechanical Turk
 
     MIT Licensed.
-*/
-var
-  game_server = module.exports = { games : {}, game_count:0, assignment:0},
-  fs          = require('fs'),
-  utils       = require('../../sharedUtils/sharedUtils.js');
+ */
 
-global.window = global.document = global;
-require('./game.core.js');
+var 
+  fs          = require('fs'),
+  utils       = require('../sharedUtils/sharedUtils.js');
 
 // The server parses and acts on messages sent from 'clients'
-game_server.server_onMessage = function(client,message) {
+var onMessage = function(client,message) {
   //Cut the message up into sub components
   var message_parts = message.split('.');
   
@@ -131,11 +128,7 @@ var writeData = function(client, type, message_parts) {
   gc.streams[type].write(line, function (err) {if(err) throw err;});
 };
 
-// /* 
-//    The following functions should not need to be modified for most purposes
-// */
-
-game_server.startGame = function(game, player) {
+var startGame = function(game, player) {
   console.log("starting game" + game.id);
   // Establish write streams
   var startTime = utils.getLongFormTime();
@@ -150,90 +143,8 @@ game_server.startGame = function(game, player) {
   game.server_send_update();
 };
 
-// This is the important function that pairs people up into 'rooms'
-// all independent of one another.
-game_server.findGame = function(player) {
-  this.log('looking for a game. We have : ' + this.game_count);
-  var joined_a_game = false;
-  for (var gameid in this.games) {
-    var game = this.games[gameid];
-    console.log(this.games);
-    if(game.player_count < game.players_threshold) {
-      // End search
-      joined_a_game = true;
-
-      // Add player to game
-      game.player_count++;
-      game.players.push({id: player.userid,
-			 instance: player,
-			 player: new game_player(game, player)});
-
-      // Add game to player
-      player.game = game;
-      player.role = 'matcher';
-      player.send('s.join.' + game.players.length + '.' + player.role);
-
-      // notify existing players that someone new is joining
-      _.map(game.get_others(player.userid), function(p){
-	p.player.instance.send( 's.add_player.' + player.userid);
-      });
-      
-      // Start game
-      this.startGame(game);
-    }
-  }
-
-  // If you couldn't find a game to join, create a new one
-  if(!joined_a_game) {
-    this.createGame(player);
-  }
+module.exports = {
+  writeData : writeData,
+  startGame : startGame,
+  onMessage : onMessage
 };
-
-// Will run when first player connects
-game_server.createGame = function(player) {
-  //Create a new game instance
-  var options = {
-    server: true,
-    id : utils.UUID(),
-    player_instances: [{id: player.userid, player: player}],
-    player_count: 1
-  };
-  
-  var game = new game_core(options);
-  
-  // assign role
-  player.game = game;
-  player.role = 'director';
-  player.send('s.join.' + game.players.length + '.' + player.role);
-  this.log('player ' + player.userid + ' created a game with id ' + player.game.id);
-
-  // add to game collection
-  this.games[game.id] = game;
-  this.game_count++;
-  
-  game.server_send_update();
-  return game;
-}; 
-
-// we are requesting to kill a game in progress.
-// This gets called if someone disconnects
-game_server.endGame = function(gameid, userid) {
-  var thegame = this.games[gameid];
-  if(thegame) {
-    _.map(thegame.get_others(userid),function(p) {
-      p.player.instance.send('s.end');
-    });
-    delete this.games[gameid];
-    this.game_count--;
-    this.log('game removed. there are now ' + this.game_count + ' games' );
-  } else {
-    this.log('that game was not found!');
-  }   
-}; 
-
-//A simple wrapper for logging so we can toggle it,
-//and augment it for clarity.
-game_server.log = function() {
-    console.log.apply(this,arguments);
-};
-

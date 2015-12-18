@@ -57,6 +57,7 @@ var game_core = function(options){
     // If we're initializing the server game copy, pre-create the list of trials
     // we'll use, make a player object, and tell the player who they are
     this.id = options.id;
+    this.expName = options.expName;
     this.player_count = options.player_count;
     this.trialList = this.makeTrialList();
     this.data = {
