@@ -5,7 +5,7 @@
 
 var drawScreen = function(game, player) {
   // draw background
-  game.ctx.fillStyle = "#FFFFFF";
+  game.ctx.fillStyle = "#000000";
   game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
   
   // Draw message in center (for countdown, e.g.)
@@ -17,12 +17,77 @@ var drawScreen = function(game, player) {
              game.world.width/2, game.world.height/4,
              game.world.width*4/5,
              25);
+  } else if (game.colorPicker) {
+    game.colorPicker.draw();
+  };
+};
+
+var colorPicker = function(game) {
+  this.game = game;
+  this.ctx = game.ctx;
+  this.padding = 50;
+  this.centerX = game.viewport.width / 4;
+  this.centerY = game.viewport.height / 2 - (this.padding/2);
+  this.radius = 100;
+  this.lightnessTop = 250;
+  this.draw = function() {
+    this.drawDisc();
+    this.drawDiscCursor(this.centerX, this.centerY);
+    this.drawLightnessRect();
+    this.drawLightnessCursor(50);
+  };
+};
+
+colorPicker.prototype.drawDiscCursor = function(x, y) {
+  this.ctx.beginPath();
+  this.ctx.arc(x, y, this.radius/20, 0, 2*Math.PI);
+  this.ctx.stroke();
+};
+
+colorPicker.prototype.drawLightnessCursor = function(b) {
+  var pixel = this.padding + b * 200 / 100;
+  console.log(pixel);
+  this.ctx.beginPath();
+  this.ctx.rect(pixel-5, this.lightnessTop - 5, 10, this.padding/2 + 10);
+  this.ctx.stroke();
+};
+
+colorPicker.prototype.drawDisc = function() {
+  var counterClockwise = false;
+
+  this.ctx.beginPath();
+  this.ctx.strokeStyle = "#FFFFFF";
+  this.ctx.lineWidth = 5;
+  this.ctx.arc(this.centerX, this.centerY, this.radius + 4, 0, Math.PI * 2);
+  this.ctx.stroke();
+  this.ctx.lineWidth = 1;
+  
+  for(var angle=0; angle<=360; angle+=0.5){
+    var startAngle = (angle-2)*Math.PI/180;
+    var endAngle = angle * Math.PI/180;
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.centerX, this.centerY);
+    this.ctx.arc(this.centerX, this.centerY, this.radius,
+		 startAngle, endAngle, counterClockwise);
+    this.ctx.closePath();
+    var gradient = this.ctx.createRadialGradient(this.centerX,this.centerY,0,
+						 this.centerX,this.centerY,this.radius);
+    gradient.addColorStop(0,'hsl('+angle+', 10%, 100%)');
+    gradient.addColorStop(1,'hsl('+angle+', 100%, 50%)');
+    this.ctx.fillStyle = gradient;
+    this.ctx.fill();
   }
 };
 
-var drawPicker = function(game, options) {
-  //  return Raphael.colorpicker(options.x, options.y, options.size, "#eee");
-  return Raphael.colorpicker(options.x,options.y, 200,"#eee", "colorInterface");
+colorPicker.prototype.drawLightnessRect = function() {
+  var rectGradient = this.ctx.createLinearGradient(this.padding, this.lightnessTop,
+						   300-this.padding, this.lightnessTop);
+  rectGradient.addColorStop(0,"black");
+  rectGradient.addColorStop(1,"white");
+
+  this.ctx.fillStyle=rectGradient;
+  this.ctx.fillRect(this.padding,300-this.padding,
+		    300 - (this.padding * 2), this.padding/2);
 };
 
 // This is a helper function to write a text string onto the HTML5 canvas.
