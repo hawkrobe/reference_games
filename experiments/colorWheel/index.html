@@ -20,7 +20,7 @@
 
     <!-- Load raphael for colorwheel -->
     <script type="text/javascript" src="lib/raphael.js"></script>
-    <script type="text/javascript" src="lib/colorwheel.js"></script>
+    <script type="text/javascript" src="lib/colorpicker.js"></script>
 
     <!-- Load mmturkey for submit HITs -->
     <script type="text/javascript" src="lib/mmturkey.js"></script>
@@ -62,8 +62,14 @@
                     </form>
                 </div>
             </div>
-            <canvas id="viewport"> </canvas>
-	    	    <div id="exit_survey" style="display:none">
+	    
+	    <!-- <div id='canvasHolder'> -->
+	    <!-- <span> -->
+	      <div id="colorInterface"></div>
+              <canvas id="viewport"> </canvas>
+	    <!-- </div> -->
+	    
+	    <div id="exit_survey" style="display:none">
 	      <br><br><br><br><br>
 	      <h3> Thanks for participating in our experiment! </h3>
 	      <h3> Before you submit your HIT, we'd like to ask you a few questions. </h3>

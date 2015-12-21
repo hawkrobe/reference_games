@@ -80,44 +80,44 @@ html , body {
     background: rgb(255,255,255);
     border: none;
     padding: 5px;
-
-/*trying to change around attributes of click button reduces the clickable area
-ALOT...don't understand how to adjust that.*/
 }
 
 #main {
-	height: auto;
-	width: auto;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: auto ;
-	left:0; right:0; top:10%; bottom: 0;
-	position: absolute;
+    height: auto;
+    width: auto;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto ;
+    left:0; right:0; top:10%; bottom: 0;
+    position: absolute;
 }
 
-/*height and width originally 80vh*/
-#viewport {
-    float: bottom;
+#colorInterface {
+    float : left;
+    margin-left: 23%;
     border:solid 1px #333;
     height: 50vh;
-    width: 150vh;
-    margin: center;    
-    /*margin-right: 2.5%;*/
+    width: 50vh;
     background: #383838;
-    /*opacity: .5;*/
+}
 
+#viewport {
+    float: right;
+    margin-right: 23%;
+    border:solid 1px #333;
+    height: 50vh;
+    width: 50vh;
+    background: #383838;
 }
 
 #message_panel {
 	height: 40vh;
 	width: 100vh;
- 
 	float: top;
 	/*centers message_panel*/
 	margin: auto;
 	list-style-type: none; 
-
 	border: solid 1px #999; 
 }
 
@@ -158,6 +158,7 @@ ALOT...don't understand how to adjust that.*/
 	margin-right: .5%;
 }
 
+svg { height: 100%; width: 100%; }
 
 ::-webkit-scrollbar {
     -webkit-appearance: none;
