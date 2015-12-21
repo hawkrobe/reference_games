@@ -74,38 +74,39 @@ var client_onserverupdate_received = function(data){
 
   // If your objects are out-of-date (i.e. if there's a new round), set up
   // machinery to draw them
-    if (game.roundNum != data.roundNum) {
+  if (game.roundNum != data.roundNum) {
     game.objects = _.map(data.objects, function(obj) {
       // Extract the coordinates matching your role
       var customCoords = my_role == "director" ? obj.directorCoords : obj.matcherCoords;
       // remove the directorCoords and matcherCoords properties
       var customObj = _.chain(obj)
-	.omit('directorCoords', 'matcherCoords')
-	.extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
-		      gridX : customCoords.gridX, gridY : customCoords.gridY,
-          box : customCoords.box})
-	.value();
+	    .omit('directorCoords', 'matcherCoords')
+	    .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
+			  gridX : customCoords.gridX, gridY : customCoords.gridY,
+			  box : customCoords.box})
+	    .value();
       var imgObj = new Image(); //initialize object as an image (from HTML5)
       imgObj.src = customObj.url; // tell client where to find it
       imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)
         game.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
 			   customObj.width, customObj.height);
-
-     };
-     return _.extend(customObj, {img: imgObj});
+	
+      };
+      return _.extend(customObj, {img: imgObj});
     });
   };
 
 
   // Get rid of "waiting" screen if there are multiple players
-  if(data.players.length > 1) 
+  if(data.players.length > 1) {
     game.get_player(my_id).message = "";
-    game.game_started = data.gs;
-    game.players_threshold = data.pt;
-    game.player_count = data.pc;
-    game.roundNum = data.roundNum
-    game.data = data.dataObj
-
+  }
+  game.game_started = data.gs;
+  game.players_threshold = data.pt;
+  game.player_count = data.pc;
+  game.roundNum = data.roundNum;
+  game.data = data.dataObj;
+  
   // Draw all this new stuff
   drawScreen(game, game.get_player(my_id));
 }; 
@@ -131,7 +132,7 @@ var client_onMessage = function(data) {
     case 'end' :
       // Redirect to exit survey
       submitInfoAndClose();
-      console.log("received end message...")
+      console.log("received end message...");
       break;
 
     case 'alert' : // Not in database, so you can't play...
@@ -151,7 +152,6 @@ var client_onMessage = function(data) {
 
     case 'begin_game' :
       client_newgame(); break;
-
     }
   } 
 }; 
@@ -160,7 +160,7 @@ var client_onMessage = function(data) {
 // drawing canvases, and initiate a game instance.
 window.onload = function(){
   //Create our game client instance.
-  game = new game_core();
+  game = new game_core({server: false});
   
   //Connect to the socket.io server!
   client_connect_to_server(game);
@@ -258,19 +258,17 @@ var client_connect_to_server = function(game) {
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
     $('#messages').empty();
-    if(game.roundNum+2 > game.numRounds) {
-      $('#roundnumber').empty()
+    console.log("first round = ", game.roundNum);
+    if(game.roundNum + 1 >= game.numRounds) {
+      $('#roundnumber').empty();
       $('#instructs').empty().append("Round " + (game.roundNum + 1) + 
 				     " score: " + data.score + " correct!");
-      //when game is over we want to store the totalScore of the game to send to mmturkey
-      // game.data.totalScore = _.extend(game.data.totalScore, 
-      //   {'totalScore' : totalScore}); 
     } else {
       $('#roundnumber').empty().append("Round ", game.roundNum + 2);
     }
     $('#score').empty().append("Round " + (game.roundNum + 1) + 
 			       " score: " + data.score + " correct!");
-    var player = game.get_player(my_id)
+    var player = game.get_player(my_id);
     player.currentHighlightX = null;
     player.currentHighlightY = null;
   });
@@ -291,43 +289,36 @@ var client_connect_to_server = function(game) {
   game.socket.on('message', client_onMessage.bind(game));
 }; 
 
-client_onconnected = function(data) {
+var client_onconnected = function(data) {
   //The server responded that we are now in a game. Remember who we are
   my_id = data.id;
   game.players[0].id = my_id;
-    drawScreen(game, game.get_player(my_id));
-
+  drawScreen(game, game.get_player(my_id));
 };
 
 var client_onjoingame = function(num_players, role) {
   // Need client to know how many players there are, so they can set up the appropriate data structure
   _.map(_.range(num_players - 1), function(i){
-    game.players.unshift({id: null, player: new game_player(game)})});
+    game.players.unshift({id: null, player: new game_player(game)});
+  });
 
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
-  if(role === "director") {
-    $('#instructs').append("Send messages to help the matcher move their images to match yours. Please do not refresh page!")
-    $("#submitbutton").remove();
-  } else {
-    $('#instructs').append("Move your images to match the director's board. Please do not refresh page!")
-    $("#submitbutton").show();
-  }
-
-  // Only give Submit board button to agent (matcher)
-  if(role === "director") {
-    $('#submitbutton').remove();
-  }
-
-  // set role locally
   my_role = role;
   game.get_player(my_id).role = my_role;
 
-  if(num_players == 1) {
+  if(role === "director") {
+    $('#instructs').append("Send messages to help the matcher move their images "
+			   + "to match yours. Please do not refresh page!");
+    $("#submitbutton").remove();
     game.get_player(my_id).message = 'Waiting for other player to connect...';
-  }
-  
-  if(role === "matcher") {
+  } else {
+    $('#instructs').append("Move your images to match the director's board. "
+			   + "Please do not refresh page!");
+    $("#submitbutton").show();
+    var bRect = document.getElementById('colorInterface').getBoundingClientRect();
+    game.colorPicker = drawPicker(game,{x: bRect.left,
+					y: bRect.top, size: bRect.height});
     game.viewport.addEventListener("mousedown", mouseDownListener, false);
   }
 };    
@@ -344,8 +335,8 @@ function mouseDownListener(evt) {
 
   //getting mouse position correctly, being mindful of resizing that may have occured in the browser:
   var bRect = game.viewport.getBoundingClientRect();
-  mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
-  mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
+  var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
+  var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
   
   //find which shape was clicked
   for (i=0; i < game.objects.length; i++) {
@@ -401,14 +392,12 @@ function mouseUpListener(evt) {
     // }
 
     // If you drag mouse outside of grid and release, tangram snaps back to its original cell 
-   mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
-   mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
+    var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
+    var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
     if (mouseX > 1825 || mouseX < 25 || mouseY > 625 || mouseY < 25) {
-      console.log("out of bounds");
-
       obj.trueX = game.getTrueCoords("xCoord", obj, obj);
       obj.trueY = game.getTrueCoords("yCoord", obj, obj);
-     }
+    }
     
     else {
       // move tangram in dropped cell (swapObj) to original cell of dragged tangram (obj)
@@ -453,7 +442,7 @@ function mouseUpListener(evt) {
 		       + game.dragIndex + "." + swapIndex + "."
 		       + Math.round(obj.trueX) + "." + Math.round(obj.trueY) + "."
 		       + Math.round(swapObj.trueX) + "." + Math.round(swapObj.trueY) + "."
-           + obj.box + "." + swapObj.box + "." + obj.name);
+		       + obj.box + "." + swapObj.box + "." + obj.name);
     }
 
     // Tell server where you dropped it
@@ -464,42 +453,42 @@ function mouseUpListener(evt) {
 }
 
 function mouseMoveListener(evt) {
-    // prevent from dragging offscreen
-    var minX = 25;
-    var maxX = game.viewport.width - game.objects[game.dragIndex].width - 25;
-    var minY = 25;
-    var maxY = game.viewport.height - game.objects[game.dragIndex].height - 25;
+  // prevent from dragging offscreen
+  var minX = 25;
+  var maxX = game.viewport.width - game.objects[game.dragIndex].width - 25;
+  var minY = 25;
+  var maxY = game.viewport.height - game.objects[game.dragIndex].height - 25;
 
-    //getting mouse position correctly 
-    var bRect = game.viewport.getBoundingClientRect();
-    mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
-    mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
+  //getting mouse position correctly 
+  var bRect = game.viewport.getBoundingClientRect();
+  var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
+  var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
 
-    //highlighting cell that is moused over
-    var cell = game.getCellFromPixel(mouseX, mouseY);
-    var player = game.get_player(my_id)
-    player.currentHighlightX = game.getPixelFromCell(cell[0], cell[1]).upperLeftX;
-    player.currentHighlightY = game.getPixelFromCell(cell[0], cell[1]).upperLeftY;
+  //highlighting cell that is moused over
+  var cell = game.getCellFromPixel(mouseX, mouseY);
+  var player = game.get_player(my_id);
+  player.currentHighlightX = game.getPixelFromCell(cell[0], cell[1]).upperLeftX;
+  player.currentHighlightY = game.getPixelFromCell(cell[0], cell[1]).upperLeftY;
 
-    //clamp x and y positions to prevent object from dragging outside of canvas
-    var posX = mouseX - dragHoldX;
-    posX = (posX < minX) ? minX : ((posX > maxX) ? maxX : posX);
-    var posY = mouseY - dragHoldY;
-    posY = (posY < minY) ? minY : ((posY > maxY) ? maxY : posY);
+  //clamp x and y positions to prevent object from dragging outside of canvas
+  var posX = mouseX - dragHoldX;
+  posX = (posX < minX) ? minX : ((posX > maxX) ? maxX : posX);
+  var posY = mouseY - dragHoldY;
+  posY = (posY < minY) ? minY : ((posY > maxY) ? maxY : posY);
 
-    // Update object locally
-    var obj = game.objects[game.dragIndex]
-    obj.trueX = Math.round(posX);
-    obj.trueY = Math.round(posY);
+  // Update object locally
+  var obj = game.objects[game.dragIndex];
+  obj.trueX = Math.round(posX);
+  obj.trueY = Math.round(posY);
 
-    // Draw it
-    drawScreen(game, game.get_player(my_id));
+  // Draw it
+  drawScreen(game, game.get_player(my_id));
 }
 
 function hitTest(shape,mx,my) {
-    var dx = mx - shape.trueX;
-    var dy = my - shape.trueY;
-    return (0 < dx) && (dx < shape.width) && (0 < dy) && (dy < shape.height)
+  var dx = mx - shape.trueX;
+  var dy = my - shape.trueY;
+  return (0 < dx) && (dx < shape.width) && (0 < dy) && (dy < shape.height);
 }
 
 // This gets called when someone selects something in the menu during the exit survey...
