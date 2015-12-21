@@ -19,33 +19,30 @@ var has_require = typeof require !== 'undefined';
 if(typeof _ === 'undefined') {
   if(has_require) {
     _ = require('underscore');
+  } else {
+    throw new ('this experiment requires underscore, see http://underscorejs.org');
   }
-  else throw new ('this experiment requires underscore, see http://underscorejs.org');
 }
 
-var game_core = function(game_instance){
+var game_core = function(options){
+  // Store a flag if we are the server instance
+  this.server = options.server ;
 
-  this.debug = false;
-
-  // Store the instance passed in from game.server.js
-  this.instance = game_instance;
+  // How many players in the game?
+  this.players_threshold = 2;
   
-  //Store a flag if we are the server instance
-  this.server = this.instance !== undefined;
-  
-  //Dimensions of world in pixels and numberof cells to be divided into;
+  // Dimensions of world in pixels and numberof cells to be divided into;
   this.numHorizontalCells = 6;
   this.numVerticalCells = 2;
   this.cellDimensions = {height : 300, width : 300}; // in pixels
   this.cellPadding = 50;
-  this.world = {height : (this.cellDimensions.height * this.numVerticalCells
-              + this.cellPadding),
-              width : (this.cellDimensions.width * this.numHorizontalCells
-              + this.cellPadding)}; 
+  this.world = {height: (this.cellDimensions.height * this.numVerticalCells
+			 + this.cellPadding),
+		width : (this.cellDimensions.width * this.numHorizontalCells
+			 + this.cellPadding)}; 
   
   // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
-  // $('#roundnumber').append(this.roundNum + 2);
 
   // How many rounds do we want people to complete?
   this.numRounds = 6;
@@ -59,32 +56,34 @@ var game_core = function(game_instance){
   if(this.server) {
     // If we're initializing the server game copy, pre-create the list of trials
     // we'll use, make a player object, and tell the player who they are
+    this.id = options.id;
+    this.expName = options.expName;
+    this.player_count = options.player_count;
     this.trialList = this.makeTrialList();
     this.data = {
-      id : this.instance.id.slice(0,6),
+      id : this.id.slice(0,6),
       trials : [],
       catch_trials : [],
       system : {}, 
       totalScore : {},
       subject_information : {
-	gameID: this.instance.id.slice(0,6), 
+	gameID: this.id.slice(0,6), 
 	DirectorBoards : this.nameAndBoxAll(this.trialList, 'director'),
 	initialMatcherBoards : this.nameAndBoxAll(this.trialList, 'matcher')
       }
     };
-
     this.players = [{
-      id: this.instance.player_instances[0].id, 
-      player: new game_player(this,this.instance.player_instances[0].player)
+      id: options.player_instances[0].id,
+      instance: options.player_instances[0].player,
+      player: new game_player(this,options.player_instances[0].player)
     }];
-
     this.streams = {};
-    
     this.server_send_update();
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.players = [{
-      id: null, 
+      id: null,
+      instance: null,
       player: new game_player(this)
     }];
   }
