@@ -74,27 +74,27 @@ var client_onserverupdate_received = function(data){
 
   // If your objects are out-of-date (i.e. if there's a new round), set up
   // machinery to draw them
-  if (game.roundNum != data.roundNum) {
-    game.objects = _.map(data.objects, function(obj) {
-      // Extract the coordinates matching your role
-      var customCoords = my_role == "director" ? obj.directorCoords : obj.matcherCoords;
-      // remove the directorCoords and matcherCoords properties
-      var customObj = _.chain(obj)
-	    .omit('directorCoords', 'matcherCoords')
-	    .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
-			  gridX : customCoords.gridX, gridY : customCoords.gridY,
-			  box : customCoords.box})
-	    .value();
-      var imgObj = new Image(); //initialize object as an image (from HTML5)
-      imgObj.src = customObj.url; // tell client where to find it
-      imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)
-        game.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
-			   customObj.width, customObj.height);
+  // if (game.roundNum != data.roundNum) {
+  //   game.objects = _.map(data.objects, function(obj) {
+  //     // Extract the coordinates matching your role
+  //     var customCoords = my_role == "director" ? obj.directorCoords : obj.matcherCoords;
+  //     // remove the directorCoords and matcherCoords properties
+  //     var customObj = _.chain(obj)
+  // 	    .omit('directorCoords', 'matcherCoords')
+  // 	    .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
+  // 			  gridX : customCoords.gridX, gridY : customCoords.gridY,
+  // 			  box : customCoords.box})
+  // 	    .value();
+  //     var imgObj = new Image(); //initialize object as an image (from HTML5)
+  //     imgObj.src = customObj.url; // tell client where to find it
+  //     imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)
+  //       game.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
+  // 			   customObj.width, customObj.height);
 	
-      };
-      return _.extend(customObj, {img: imgObj});
-    });
-  };
+  //     };
+  //     return _.extend(customObj, {img: imgObj});
+  //   });
+//};
 
 
   // Get rid of "waiting" screen if there are multiple players
@@ -316,9 +316,7 @@ var client_onjoingame = function(num_players, role) {
     $('#instructs').append("Move your images to match the director's board. "
 			   + "Please do not refresh page!");
     $("#submitbutton").show();
-    var bRect = document.getElementById('colorInterface').getBoundingClientRect();
-    game.colorPicker = drawPicker(game,{x: bRect.left,
-					y: bRect.top, size: bRect.height});
+    game.colorPicker = new colorPicker(game);
     game.viewport.addEventListener("mousedown", mouseDownListener, false);
   }
 };    
