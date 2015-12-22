@@ -337,17 +337,14 @@ function mouseDownListener(evt) {
   var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
   
   //find which shape was clicked
-  for (i=0; i < game.objects.length; i++) {
-    if (hitTest(game.objects[i], mouseX, mouseY)) {
-      dragging = true;
-      if (i > highestIndex) {
-        //We will pay attention to the point on the object where the mouse is "holding" the object:
-        dragHoldX = mouseX - game.objects[i].trueX;
-        dragHoldY = mouseY - game.objects[i].trueY;
-        highestIndex = i;
-        game.dragIndex = i;
-      }
-    }
+  if (game.colorPicker.discHitTest(mouseX, mouseY)) {
+    console.log("clicked in disc @ " + mouseX + ", " + mouseY);
+    game.colorPicker.setDiscCursor(mouseX, mouseY);
+    dragging = "disc";
+  } else if(game.colorPicker.lightnessHitTest(mouseX, mouseY)) {
+    game.colorPicker.setLightness(mouseX);
+    console.log("clicked on lightness bar @ " + mouseX + "," + mouseY);
+    dragging = "lightness";
   }
   if (dragging) {
     window.addEventListener("mousemove", mouseMoveListener, false);
@@ -355,7 +352,8 @@ function mouseDownListener(evt) {
 
   game.viewport.removeEventListener("mousedown", mouseDownListener, false);
   window.addEventListener("mouseup", mouseUpListener, false);
-
+  drawScreen(game, game.get_player(my_id));
+  
   //code below prevents the mouse down from having an effect on the main browser window:
   if (evt.preventDefault) {
     evt.preventDefault();
@@ -369,115 +367,41 @@ function mouseDownListener(evt) {
 function mouseUpListener(evt) {    
   game.viewport.addEventListener("mousedown", mouseDownListener, false);
   window.removeEventListener("mouseup", mouseUpListener, false);
-  if (dragging) {
-    // Set up the right variables
-    var bRect = game.viewport.getBoundingClientRect();
-    var dropX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
-    var dropY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
-    var obj = game.objects[game.dragIndex];
+  var bRect = game.viewport.getBoundingClientRect();
+  var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
+  var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
 
-    //find cell that the dragged tangram is moving to
-    var cell = game.getCellFromPixel(dropX, dropY);
-    
-    //find the tangram in the cell (the swapObj)
-    var swapIndex = game.getTangramFromCell(cell[0], cell[1]);
-    var swapObj =  game.objects[swapIndex];
-
-    // If you didn't drag it beyond cell bounds, snap it back w/o comment
-    // if (obj.gridX == cell[0] && obj.gridY == cell[1]) {
-    //   obj.trueX = game.getTrueCoords("xCoord", obj, obj);
-    //   obj.trueY = game.getTrueCoords("yCoord", obj, obj);
-    // }
-
-    // If you drag mouse outside of grid and release, tangram snaps back to its original cell 
-    var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
-    var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
-    if (mouseX > 1825 || mouseX < 25 || mouseY > 625 || mouseY < 25) {
-      obj.trueX = game.getTrueCoords("xCoord", obj, obj);
-      obj.trueY = game.getTrueCoords("yCoord", obj, obj);
-    }
-    
-    else {
-      // move tangram in dropped cell (swapObj) to original cell of dragged tangram (obj)
-      swapObj.gridX = obj.gridX;
-      swapObj.gridY = obj.gridY;
-      swapObj.trueX = game.getTrueCoords("xCoord", obj, swapObj);
-      swapObj.trueY = game.getTrueCoords("yCoord", obj, swapObj);
-      
-      //update box location
-      swapObj.box = obj.box;
-      
-      //fix location properties for the swapped object
-      game.objects[swapIndex].matcherCoords.gridX = swapObj.gridX;
-      game.objects[swapIndex].matcherCoords.gridY = swapObj.gridY;
-      game.objects[swapIndex].matcherCoords.trueX = swapObj.gridX;
-      game.objects[swapIndex].matcherCoords.trueY = swapObj.gridY;
-      
-      //update box location
-      game.objects[swapIndex].matcherCoords.box = swapObj.box;
-      
-      // center dragged tangram (obj) in its new cell
-      obj.gridX = cell[0];
-      obj.gridY = cell[1];
-      obj.trueX = game.getPixelFromCell(cell[0], cell[1]).centerX - obj.width/2;
-      obj.trueY = game.getPixelFromCell(cell[0], cell[1]).centerY - obj.height/2;
-      
-      //update box
-      obj.box = game.boxLoc(cell);
-
-      //fix location properties for the dropped object
-      game.objects[game.dragIndex].matcherCoords.gridX = obj.gridX;
-      game.objects[game.dragIndex].matcherCoords.gridY = obj.gridY;
-      game.objects[game.dragIndex].matcherCoords.trueX = obj.trueX;
-      game.objects[game.dragIndex].matcherCoords.trueY = obj.trueY; 
-      game.objects[game.dragIndex].matcherCoords.box = obj.box;
-
-      var tangramNames = game.getNames(game.objects);
-      var boxLocations = game.getBoxLocs(game.objects, 'matcher');
-
-      //send information so that server can update their copy of the tangram board
-      game.socket.send("dropObj."
-		       + game.dragIndex + "." + swapIndex + "."
-		       + Math.round(obj.trueX) + "." + Math.round(obj.trueY) + "."
-		       + Math.round(swapObj.trueX) + "." + Math.round(swapObj.trueY) + "."
-		       + obj.box + "." + swapObj.box + "." + obj.name);
-    }
-
-    // Tell server where you dropped it
-    drawScreen(game, game.get_player(my_id));
+  if (dragging == "disc") {
+    game.colorPicker.setDiscCursor(mouseX, mouseY);
+    dragging = false;
+    window.removeEventListener("mousemove", mouseMoveListener, false);
+  } else if (dragging == "lightness") {
+    game.colorPicker.drawLightnessRect(mouseX);
     dragging = false;
     window.removeEventListener("mousemove", mouseMoveListener, false);
   }
+  drawScreen(game, game.get_player(my_id));
 }
 
 function mouseMoveListener(evt) {
   // prevent from dragging offscreen
   var minX = 25;
-  var maxX = game.viewport.width - game.objects[game.dragIndex].width - 25;
+  var maxX = game.viewport.width;
   var minY = 25;
-  var maxY = game.viewport.height - game.objects[game.dragIndex].height - 25;
+  var maxY = game.viewport.height;
 
   //getting mouse position correctly 
   var bRect = game.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
 
-  //highlighting cell that is moused over
-  var cell = game.getCellFromPixel(mouseX, mouseY);
-  var player = game.get_player(my_id);
-  player.currentHighlightX = game.getPixelFromCell(cell[0], cell[1]).upperLeftX;
-  player.currentHighlightY = game.getPixelFromCell(cell[0], cell[1]).upperLeftY;
-
   //clamp x and y positions to prevent object from dragging outside of canvas
-  var posX = mouseX - dragHoldX;
-  posX = (posX < minX) ? minX : ((posX > maxX) ? maxX : posX);
-  var posY = mouseY - dragHoldY;
-  posY = (posY < minY) ? minY : ((posY > maxY) ? maxY : posY);
-
-  // Update object locally
-  var obj = game.objects[game.dragIndex];
-  obj.trueX = Math.round(posX);
-  obj.trueY = Math.round(posY);
+  if(dragging == "disc") {
+    console.log("dragging on disc");
+    game.colorPicker.setDiscCursor(mouseX, mouseY);
+  } else if(dragging == "lightness") {
+    game.colorPicker.drawLightnessRect(mouseX);
+  }
 
   // Draw it
   drawScreen(game, game.get_player(my_id));

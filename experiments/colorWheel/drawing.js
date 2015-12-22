@@ -1,8 +1,6 @@
 // drawing.js
 // This file contains functions to draw on the HTML5 canvas
 
-
-
 var drawScreen = function(game, player) {
   // draw background
   game.ctx.fillStyle = "#000000";
@@ -11,7 +9,6 @@ var drawScreen = function(game, player) {
   // Draw message in center (for countdown, e.g.)
   if (player.message) {
     game.ctx.font = "bold 23pt Helvetica";
-    game.ctx.fillStyle = 'blue';
     game.ctx.textAlign = 'center';
     wrapText(game, player.message, 
              game.world.width/2, game.world.height/4,
@@ -28,6 +25,9 @@ var colorPicker = function(game) {
   this.padding = 50;
   this.centerX = game.viewport.width / 4;
   this.centerY = game.viewport.height / 2 - (this.padding/2);
+  this.discCursorX = this.centerX;
+  this.discCursorY = this.centerY;
+  this.lightnessCursor = 50;
   this.radius = 100;
   this.lightnessTop = 250;
   this.draw = function() {
@@ -38,15 +38,36 @@ var colorPicker = function(game) {
   };
 };
 
-colorPicker.prototype.drawDiscCursor = function(x, y) {
+colorPicker.prototype.discHitTest = function(x, y) {
+  var dx = x - this.centerX;
+  var dy = y - this.centerY;
+  return dx * dx + dy * dy < this.radius * this.radius;
+};
+
+colorPicker.prototype.lightnessHitTest = function(x, y) {
+  var dx = x - this.centerX;
+  var dy = y - this.lightnessTop;
+  return (Math.abs(dx) < (300 - this.padding * 2) &&
+	  Math.abs(dy) < this.padding);
+};
+
+colorPicker.prototype.setDiscCursor = function(x,y) {
+  this.discCursorX = x;
+  this.discCursorY = y;
+};
+
+colorPicker.prototype.drawDiscCursor = function() {
   this.ctx.beginPath();
-  this.ctx.arc(x, y, this.radius/20, 0, 2*Math.PI);
+  this.ctx.arc(this.discCursorX, this.discCursorY, this.radius/20, 0, 2*Math.PI);
   this.ctx.stroke();
 };
 
-colorPicker.prototype.drawLightnessCursor = function(b) {
-  var pixel = this.padding + b * 200 / 100;
-  console.log(pixel);
+colorPicker.prototype.setLightness = function(l) {
+  this.lightnessCursor = l;
+};
+
+colorPicker.prototype.drawLightnessCursor = function() {
+  var pixel = this.padding + this.lightnessCursor * 200 / 100;
   this.ctx.beginPath();
   this.ctx.rect(pixel-5, this.lightnessTop - 5, 10, this.padding/2 + 10);
   this.ctx.stroke();
