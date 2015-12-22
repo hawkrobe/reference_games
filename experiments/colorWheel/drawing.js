@@ -17,7 +17,7 @@ var drawScreen = function(game, player) {
   } else if (game.colorPicker) {
     game.colorPicker.drawPicker();
     game.colorPicker.drawCurrColor();
-  } else {
+  } else if (game.currStim) {
     drawCurrStim(game);
   }
 };
@@ -26,7 +26,8 @@ var drawCurrStim = function(game) {
   var padding = 50;
   game.ctx.fillStyle = "white";
   game.ctx.fillText("Your color:", 150, 40);
-  game.ctx.fillStyle = game.currStim;
+  game.ctx.fillStyle = ('hsl(' + game.currStim[0] + ',' + game.currStim[1] +
+			'%, ' + game.currStim[2] + '%)');
   game.ctx.fillRect(padding, padding,
 		    300 - padding * 2, 300 - padding * 2);
 };
@@ -56,6 +57,10 @@ var colorPicker = function(game) {
     this.ctx.fillRect(300 + this.padding, this.padding,
 		      300 - this.padding * 2, 300 - this.padding * 2);
   };
+};
+
+colorPicker.prototype.getCurrColor = function() {
+  return [this.hue, this.sat, this.light];
 };
 
 colorPicker.prototype.discHitTest = function(x, y) {
@@ -183,96 +188,4 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
 
 function angle(x, y) {
   return (x < 0) * 180 + Math.atan(-y / -x) * 180 / Math.PI;
-}
-
-// from https://github.com/MoOx/color-convert
-
-function rgb2xyz(rgb) {
-  var r = rgb[0] / 255;
-  var g = rgb[1] / 255;
-  var b = rgb[2] / 255;
-
-  // assume sRGB
-  r = r > 0.04045 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
-  g = g > 0.04045 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
-  b = b > 0.04045 ? Math.pow(((b + 0.055) / 1.055), 2.4) : (b / 12.92);
-
-  var x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
-  var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
-  var z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
-
-  return [x * 100, y * 100, z * 100];
-}
-
-function hsl2rgb(hsl) {
-  var h = hsl[0] / 360;
-  var s = hsl[1] / 100;
-  var l = hsl[2] / 100;
-  var t1;
-  var t2;
-  var t3;
-  var rgb;
-  var val;
-
-  if (s === 0) {
-    val = l * 255;
-    return [val, val, val];
-  }
-
-  if (l < 0.5) {
-    t2 = l * (1 + s);
-  } else {
-    t2 = l + s - l * s;
-  }
-
-  t1 = 2 * l - t2;
-
-  rgb = [0, 0, 0];
-  for (var i = 0; i < 3; i++) {
-    t3 = h + 1 / 3 * -(i - 1);
-    if (t3 < 0) {
-      t3++;
-    }
-    if (t3 > 1) {
-      t3--;
-    }
-
-    if (6 * t3 < 1) {
-      val = t1 + (t2 - t1) * 6 * t3;
-    } else if (2 * t3 < 1) {
-      val = t2;
-    } else if (3 * t3 < 2) {
-      val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
-    } else {
-      val = t1;
-    }
-
-    rgb[i] = val * 255;
-  }
-
-  return rgb;
-}
-
-function rgb2lab(rgb) {
-  var xyz = rgb2xyz(rgb);
-  var x = xyz[0];
-  var y = xyz[1];
-  var z = xyz[2];
-  var l;
-  var a;
-  var b;
-
-  x /= 95.047;
-  y /= 100;
-  z /= 108.883;
-
-  x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (16 / 116);
-  y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (16 / 116);
-  z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (16 / 116);
-
-  l = (116 * y) - 16;
-  a = 500 * (x - y);
-  b = 200 * (y - z);
-
-  return [l, a, b];
 }

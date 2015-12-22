@@ -1,4 +1,5 @@
 var fs = require('fs');
+var converter = require("color-convert");
 
 var UUID = function() {
   var baseName = (Math.floor(Math.random() * 10) + '' +
@@ -28,8 +29,14 @@ var establishStream = function(game, streamName, outputFileName, header) {
   game.streams[streamName] = stream;
 };
 
+var hsl2lab = function(hsl) {
+  var rgb = converter.hsl2rgbRaw(hsl);
+  return converter.rgb2lab(rgb);
+};
+
 module.exports = {
   UUID : UUID,
   getLongFormTime : getLongFormTime,
-  establishStream: establishStream
+  establishStream: establishStream,
+  hsl2lab : hsl2lab
 };
