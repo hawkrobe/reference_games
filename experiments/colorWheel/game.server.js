@@ -29,45 +29,12 @@ var onMessage = function(client,message) {
 
 
   switch(message_type) {
-    
-  case 'dropObj' :
-    // parse the message
-    var objIndex = message_parts[1];
-    var swapIndex = message_parts[2];
-    var objTrueX = message_parts[3];
-    var objTrueY = message_parts[4];
-    var swapObjTrueX = message_parts[5];
-    var swapObjTrueY = message_parts[6];
-    var objBox = message_parts[7];
-    var swapObjBox = message_parts[8];
-
-
-    // Update the local copy to match the new positions of these items!
-    gc.objects[objIndex].matcherCoords.trueX = objTrueX;
-    gc.objects[objIndex].matcherCoords.trueY = objTrueY;
-    gc.objects[objIndex].matcherCoords.box = objBox;
-    gc.objects[swapIndex].matcherCoords.trueX = swapObjTrueY;
-    gc.objects[swapIndex].matcherCoords.trueY = swapObjTrueY;
-    gc.objects[swapIndex].matcherCoords.box = swapObjBox;
-
-    //get the gridX and gridY values
-    var objCell = gc.getCellFromPixel(objTrueX, objTrueY);
-    var swapObjCell = gc.getCellFromPixel(swapObjTrueX, swapObjTrueY);
-
-    //Update local copy with correct gridX and gridY values
-    gc.objects[objIndex].matcherCoords.gridX = objCell[0];
-    gc.objects[objIndex].matcherCoords.gridY = objCell[1];
-    gc.objects[swapIndex].matcherCoords.gridX = swapObjCell[0];
-    gc.objects[swapIndex].matcherCoords.gridY = swapObjCell[1];  
-
-    writeData(client, "dropObj", message_parts);
-    break;
-  
+      
   case 'advanceRound' :
-    var score = gc.game_score(gc.objects);
-    var boxLocations = message_parts[1];
-    console.log(boxLocations);
-    writeData(client, "finalBoard", message_parts);
+    var color = message_parts[1];
+    var score = gc.calcScore(color, gc.trialInfo.currStim);
+    writeData(client, "outcome", message_parts + score);
+    console.log(score);
     _.map(all, function(p){
       p.player.instance.emit( 'newRoundUpdate', {user: client.userid, score: score});});
     gc.newRound();
@@ -103,25 +70,17 @@ var writeData = function(client, type, message_parts) {
   var id = gc.id.slice(0,6);
   var line;
   switch(type) {
-    case "dropObj" :
-      var dropObjBox = message_parts[7];
-      var dropObjName = message_parts[9];
-      var score = gc.game_score(gc.objects);  
-      line = (id + ',' + Date.now() + ',' + roundNum + ',' + score + ',' +
-	      dropObjName + ',' + dropObjBox + '\n');
-      break;
-
+  case "outcome" :
+    console.log(gc.trialInfo.currStim);
+    var color = message_parts.slice(1, 4).join(',');
+    line = (id + ',' + Date.now() + ',' + roundNum + ',' +
+	    gc.trialInfo.currStim + ',' + color);
+    break;
+    
     case "message" :
       var msg = message_parts[1].replace('~~~','.');
       line = (id + ',' + Date.now() + ',' + roundNum + ',' +
 	      client.role + ',"' + msg + '"\n');
-      break;
-
-    case "finalBoard" :
-      var board = message_parts[1];
-      var score = gc.game_score(gc.objects);       //compute score with updated board
-      line = (id + ',' + Date.now() + ',' + roundNum + ',' +
-	      board + ',' + score + '\n');
       break;
   }
   console.log(type + ":" + line);
@@ -135,10 +94,8 @@ var startGame = function(game, player) {
   var dataFileName = startTime + "_" + game.id;
   utils.establishStream(game, "message", dataFileName,
 		       "gameid,time,roundNum,sender,contents\n");
-  utils.establishStream(game, "dropObj", dataFileName,
-		       "gameid,time,roundNum,score,name,draggedTo\n");
-  utils.establishStream(game, "finalBoard", dataFileName,
-		       "gameid,time,roundNum,A,B,C,D,E,F,G,H,I,J,K,L,score\n");
+  utils.establishStream(game, "outcome", dataFileName,
+		       "gameid,time,roundNum,targetCol,submittedCol,score\n");
   game.newRound();
   game.server_send_update();
 };
