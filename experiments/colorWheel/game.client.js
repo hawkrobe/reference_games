@@ -32,7 +32,7 @@ var client_ondisconnect = function(data) {
 
 var submitInfoAndClose = function() {
   // Redirect to exit survey
-  console.log("server booted")      
+  console.log("server booted");
   game.viewport.style.display="none";
   $('#message_panel').hide();
   $('#submitbutton').hide();
@@ -67,10 +67,10 @@ var client_onserverupdate_received = function(data){
   }
   
   //get names of objects sent from server and current objects 
-  var dataNames = _.map(data.objects, function(e)
-			{ return e.name;});
-  var localNames = _.map(game.objects,function(e)
-			 {return e.name;});
+  // var dataNames = _.map(data.objects, function(e)
+  // 			{ return e.name;});
+  // var localNames = _.map(game.objects,function(e)
+  // 			 {return e.name;});
 
   // If your objects are out-of-date (i.e. if there's a new round), set up
   // machinery to draw them
@@ -95,7 +95,7 @@ var client_onserverupdate_received = function(data){
   //     return _.extend(customObj, {img: imgObj});
   //   });
 //};
-
+  game.currStim = data.trialInfo.currStim;
 
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
@@ -334,7 +334,6 @@ function mouseDownListener(evt) {
   
   //find which shape was clicked
   if (game.colorPicker.discHitTest(mouseX, mouseY)) {
-    console.log("clicked in disc @ " + mouseX + ", " + mouseY);
     game.colorPicker.setDiscCursor(mouseX, mouseY);
     dragging = "disc";
   } else if(game.colorPicker.lightnessHitTest(mouseX, mouseY)) {
@@ -393,7 +392,6 @@ function mouseMoveListener(evt) {
 
   //clamp x and y positions to prevent object from dragging outside of canvas
   if(dragging == "disc") {
-    console.log("dragging on disc");
     game.colorPicker.setDiscCursor(mouseX, mouseY);
   } else if(dragging == "lightness") {
     game.colorPicker.setLightness(mouseX);

@@ -51,7 +51,7 @@ var game_core = function(options){
   this.attemptNum = 0;
 
   // This will be populated with the tangram set
-  this.objects = [];
+  this.trialInfo = {};
   
   if(this.server) {
     // If we're initializing the server game copy, pre-create the list of trials
@@ -67,9 +67,7 @@ var game_core = function(options){
       system : {}, 
       totalScore : {},
       subject_information : {
-	gameID: this.id.slice(0,6), 
-	DirectorBoards : this.nameAndBoxAll(this.trialList, 'director'),
-	initialMatcherBoards : this.nameAndBoxAll(this.trialList, 'matcher')
+	gameID: this.id.slice(0,6)
       }
     };
     this.players = [{
@@ -105,7 +103,7 @@ var game_player = function( game_instance, player_instance) {
 // server side we set some classes to global types, so that
 // we can use them in other files (specifically, game.server.js)
 if('undefined' != typeof global) {
-  var tangramList = require('./stimuli/objectSet'); // import stimuli
+  var stimList = require('./stimuli/objectSet'); // import stimuli
   module.exports = global.game_core = game_core;
   module.exports = global.game_player = game_player;
 }
@@ -114,8 +112,8 @@ if('undefined' != typeof global) {
 
 // Method to easily look up player 
 game_core.prototype.get_player = function(id) {
-    var result = _.find(this.players, function(e){ return e.id == id; });
-    return result.player
+  var result = _.find(this.players, function(e){ return e.id == id; });
+  return result.player;
 };
 
 // Method to get list of players that aren't the given id
@@ -140,9 +138,7 @@ game_core.prototype.newRound = function() {
   } else {
     // Otherwise, get the preset list of tangrams for the new round
     this.roundNum += 1;
-    this.objects = this.trialList[this.roundNum];
-    //when there is a new round, we want the server to send an update to the client
-    //with the new roundNum;
+    this.trialInfo = {currStim: this.trialList[this.roundNum]};
     this.server_send_update();
   }
 };
@@ -150,10 +146,15 @@ game_core.prototype.newRound = function() {
 // Randomly sets tangram locations for each round
 game_core.prototype.makeTrialList = function () {
   var local_this = this;
-  var trialList =_.map(_.range(this.numRounds), function(i) { //creating a list?
-    return 0;
+  var trialList =_.map(_.range(this.numRounds), function(i) { 
+    return local_this.randomColor();
   });
   return(trialList);
+};
+
+game_core.prototype.randomColor = function () {
+  var color = ~~(Math.random() * 360);
+  return 'hsl(' + color + ', 95%, 50%)';
 };
 
 //scores the number of incorrect tangram matches between matcher and director
@@ -211,14 +212,14 @@ game_core.prototype.server_send_update = function(){
     pc : this.player_count,
     dataObj  : this.data,
     roundNum : this.roundNum,
-    objects: this.objects
+    trialInfo: this.trialInfo
   };
 
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
-  if(player_packet.length == 2) {
-    _.extend(state, {objects: this.objects});
-  }
+  // if(player_packet.length == 2) {
+  //   _.extend(state, {trialInfo: this.trialInfo});
+  // }
 
   //Send the snapshot to the players
   this.state = state;

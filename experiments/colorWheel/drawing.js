@@ -17,7 +17,18 @@ var drawScreen = function(game, player) {
   } else if (game.colorPicker) {
     game.colorPicker.drawPicker();
     game.colorPicker.drawCurrColor();
-  };
+  } else {
+    drawCurrStim(game);
+  }
+};
+
+var drawCurrStim = function(game) {
+  var padding = 50;
+  game.ctx.fillStyle = "white";
+  game.ctx.fillText("Your color:", 150, 40);
+  game.ctx.fillStyle = game.currStim;
+  game.ctx.fillRect(padding, padding,
+		    300 - padding * 2, 300 - padding * 2);
 };
 
 var colorPicker = function(game) {
