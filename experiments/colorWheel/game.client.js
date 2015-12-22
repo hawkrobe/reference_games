@@ -238,20 +238,11 @@ var client_connect_to_server = function(game) {
     }, 800);
   });
   
-  var totalScore = 0;
-  // Tell server when matncher presses the submit round button in order to advance to the next round
   $(document).ready(function() {
     $("#submitbutton").click(function(){
-      var score = game.game_score(game.objects);
-      totalScore = totalScore + score;
-      if(game.roundNum+2 > game.numRounds) {
-        console.log("totalScore is: " + totalScore);
-        game.data.totalScore = _.extend(game.data.totalScore,    // prepare to send to mmturkey
-          {'totalScore' : totalScore}); 
-      };
-      var matcherBoxLocations = game.getBoxLocs(game.objects, 'matcher');
-      game.socket.send('advanceRound.' + matcherBoxLocations);
-    })
+      var color = game.colorPicker.getCurrColor();
+      game.socket.send('advanceRound.' + color.join('.'));
+    });
   });
   
   // Set up new round on client's browsers after submit round button is pressed. 
