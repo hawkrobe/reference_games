@@ -52,8 +52,10 @@ colorPicker.prototype.lightnessHitTest = function(x, y) {
 };
 
 colorPicker.prototype.setDiscCursor = function(x,y) {
-  this.discCursorX = x;
-  this.discCursorY = y;
+  if(this.discHitTest(x,y)) {
+    this.discCursorX = x;
+    this.discCursorY = y;
+  }
 };
 
 colorPicker.prototype.drawDiscCursor = function() {
