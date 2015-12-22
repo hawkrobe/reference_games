@@ -15,7 +15,8 @@ var drawScreen = function(game, player) {
              game.world.width*4/5,
              25);
   } else if (game.colorPicker) {
-    game.colorPicker.draw();
+    game.colorPicker.drawPicker();
+    game.colorPicker.drawCurrColor();
   };
 };
 
@@ -28,15 +29,21 @@ var colorPicker = function(game) {
   this.radius = 100;
   this.discCursorX = this.centerX;
   this.discCursorY = this.centerY;
-  this.lightnessCursor = 50;
+  this.lightnessCursor = 150;
   this.lightnessTop = 250;
   this.hue = 0;
   this.sat = 0;
-  this.draw = function() {
+  this.light = 50;
+  this.drawPicker = function() {
     this.drawDisc();
     this.drawDiscCursor();
     this.drawLightnessRect();
     this.drawLightnessCursor();
+  };
+  this.drawCurrColor = function() {
+    this.ctx.fillStyle = 'hsl('+this.hue+', ' + this.sat + '%, ' + this.light + '%)';
+    this.ctx.fillRect(300 + this.padding, this.padding,
+		      300 - this.padding * 2, 300 - this.padding * 2);
   };
 };
 
@@ -49,8 +56,9 @@ colorPicker.prototype.discHitTest = function(x, y) {
 colorPicker.prototype.lightnessHitTest = function(x, y) {
   var dx = x - this.centerX;
   var dy = y - this.lightnessTop;
+  console.log(dx, dy);
   return (Math.abs(dx) < (300 - this.padding * 2) &&
-	  dy < this.padding);
+	  0 < dy && dy < this.padding/2);
 };
 
 colorPicker.prototype.setDiscCursor = function(x,y) {
@@ -73,14 +81,15 @@ colorPicker.prototype.drawDiscCursor = function() {
   this.ctx.stroke();
 };
 
-colorPicker.prototype.setLightness = function(l) {
-  this.lightnessCursor = l;
+colorPicker.prototype.setLightness = function(x) {
+  this.lightnessCursor = x;
+  this.light = (x - this.padding) / 2;
 };
 
 colorPicker.prototype.drawLightnessCursor = function() {
-  var pixel = this.padding + this.lightnessCursor * 200 / 100;
   this.ctx.beginPath();
-  this.ctx.rect(pixel-5, this.lightnessTop - 5, 10, this.padding/2 + 10);
+  this.ctx.rect(this.lightnessCursor-5, this.lightnessTop - 5,
+		10, this.padding/2 + 10);
   this.ctx.stroke();
 };
 
@@ -163,4 +172,96 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
 
 function angle(x, y) {
   return (x < 0) * 180 + Math.atan(-y / -x) * 180 / Math.PI;
+}
+
+// from https://github.com/MoOx/color-convert
+
+function rgb2xyz(rgb) {
+  var r = rgb[0] / 255;
+  var g = rgb[1] / 255;
+  var b = rgb[2] / 255;
+
+  // assume sRGB
+  r = r > 0.04045 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
+  g = g > 0.04045 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
+  b = b > 0.04045 ? Math.pow(((b + 0.055) / 1.055), 2.4) : (b / 12.92);
+
+  var x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+  var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+  var z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+
+  return [x * 100, y * 100, z * 100];
+}
+
+function hsl2rgb(hsl) {
+  var h = hsl[0] / 360;
+  var s = hsl[1] / 100;
+  var l = hsl[2] / 100;
+  var t1;
+  var t2;
+  var t3;
+  var rgb;
+  var val;
+
+  if (s === 0) {
+    val = l * 255;
+    return [val, val, val];
+  }
+
+  if (l < 0.5) {
+    t2 = l * (1 + s);
+  } else {
+    t2 = l + s - l * s;
+  }
+
+  t1 = 2 * l - t2;
+
+  rgb = [0, 0, 0];
+  for (var i = 0; i < 3; i++) {
+    t3 = h + 1 / 3 * -(i - 1);
+    if (t3 < 0) {
+      t3++;
+    }
+    if (t3 > 1) {
+      t3--;
+    }
+
+    if (6 * t3 < 1) {
+      val = t1 + (t2 - t1) * 6 * t3;
+    } else if (2 * t3 < 1) {
+      val = t2;
+    } else if (3 * t3 < 2) {
+      val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
+    } else {
+      val = t1;
+    }
+
+    rgb[i] = val * 255;
+  }
+
+  return rgb;
+}
+
+function rgb2lab(rgb) {
+  var xyz = rgb2xyz(rgb);
+  var x = xyz[0];
+  var y = xyz[1];
+  var z = xyz[2];
+  var l;
+  var a;
+  var b;
+
+  x /= 95.047;
+  y /= 100;
+  z /= 108.883;
+
+  x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (16 / 116);
+  y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (16 / 116);
+  z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (16 / 116);
+
+  l = (116 * y) - 16;
+  a = 500 * (x - y);
+  b = 200 * (y - z);
+
+  return [l, a, b];
 }
