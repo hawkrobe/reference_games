@@ -25,16 +25,18 @@ var colorPicker = function(game) {
   this.padding = 50;
   this.centerX = game.viewport.width / 4;
   this.centerY = game.viewport.height / 2 - (this.padding/2);
+  this.radius = 100;
   this.discCursorX = this.centerX;
   this.discCursorY = this.centerY;
   this.lightnessCursor = 50;
-  this.radius = 100;
   this.lightnessTop = 250;
+  this.hue = 0;
+  this.sat = 0;
   this.draw = function() {
     this.drawDisc();
-    this.drawDiscCursor(this.centerX, this.centerY);
+    this.drawDiscCursor();
     this.drawLightnessRect();
-    this.drawLightnessCursor(50);
+    this.drawLightnessCursor();
   };
 };
 
@@ -48,13 +50,20 @@ colorPicker.prototype.lightnessHitTest = function(x, y) {
   var dx = x - this.centerX;
   var dy = y - this.lightnessTop;
   return (Math.abs(dx) < (300 - this.padding * 2) &&
-	  Math.abs(dy) < this.padding);
+	  dy < this.padding);
 };
 
 colorPicker.prototype.setDiscCursor = function(x,y) {
+  var dx = x - this.centerX;
+  var dy = y - this.centerY;
+  var R = this.radius - this.radius / 20;
   if(this.discHitTest(x,y)) {
     this.discCursorX = x;
     this.discCursorY = y;
+    this.hue = angle(dx,dy);
+    this.sat = (dx * dx + dy * dy) / this.radius / this.radius * 100;
+    console.log("changed hue to " + this.hue);
+    console.log("changed sat to " + this.sat);
   }
 };
 
@@ -105,9 +114,9 @@ colorPicker.prototype.drawDisc = function() {
 colorPicker.prototype.drawLightnessRect = function() {
   var rectGradient = this.ctx.createLinearGradient(this.padding, this.lightnessTop,
 						   300-this.padding, this.lightnessTop);
-  rectGradient.addColorStop(0,"black");
-  rectGradient.addColorStop(1,"white");
-
+  rectGradient.addColorStop(0,  "hsl(" + this.hue + "," + this.sat + "%,0%)");
+  rectGradient.addColorStop(0.5,"hsl(" + this.hue + "," + this.sat + "%,50%)");
+  rectGradient.addColorStop(1,  "hsl(" + this.hue + "," + this.sat + "%,100%)");
   this.ctx.fillStyle=rectGradient;
   this.ctx.fillRect(this.padding,300-this.padding,
 		    300 - (this.padding * 2), this.padding/2);
@@ -150,4 +159,8 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
     game.ctx.fillText(line, x, y);
     y += lineHeight;
   }
+}
+
+function angle(x, y) {
+  return (x < 0) * 180 + Math.atan(-y / -x) * 180 / Math.PI;
 }

@@ -326,12 +326,8 @@ var client_onjoingame = function(num_players, role) {
  */
 
 function mouseDownListener(evt) {
-  var i;
-  //We are going to pay attention to the layering order of the objects so that if a mouse down occurs over more than object,
-  //only the topmost one will be dragged.
-  var highestIndex = -1;
-
-  //getting mouse position correctly, being mindful of resizing that may have occured in the browser:
+  //getting mouse position correctly, being mindful of resizing that
+  //may have occured in the browser:
   var bRect = game.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
@@ -342,8 +338,8 @@ function mouseDownListener(evt) {
     game.colorPicker.setDiscCursor(mouseX, mouseY);
     dragging = "disc";
   } else if(game.colorPicker.lightnessHitTest(mouseX, mouseY)) {
-    game.colorPicker.setLightness(mouseX);
     console.log("clicked on lightness bar @ " + mouseX + "," + mouseY);
+    game.colorPicker.setLightness(mouseX);
     dragging = "lightness";
   }
   if (dragging) {
@@ -376,7 +372,7 @@ function mouseUpListener(evt) {
     dragging = false;
     window.removeEventListener("mousemove", mouseMoveListener, false);
   } else if (dragging == "lightness") {
-    game.colorPicker.drawLightnessRect(mouseX);
+    game.colorPicker.setLightness(mouseX);
     dragging = false;
     window.removeEventListener("mousemove", mouseMoveListener, false);
   }
@@ -400,7 +396,7 @@ function mouseMoveListener(evt) {
     console.log("dragging on disc");
     game.colorPicker.setDiscCursor(mouseX, mouseY);
   } else if(dragging == "lightness") {
-    game.colorPicker.drawLightnessRect(mouseX);
+    game.colorPicker.setLightness(mouseX);
   }
 
   // Draw it
