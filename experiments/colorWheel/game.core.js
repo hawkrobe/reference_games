@@ -32,10 +32,10 @@ var game_core = function(options){
   this.players_threshold = 2;
   
   // Dimensions of world in pixels and numberof cells to be divided into;
-  this.numHorizontalCells = 6;
-  this.numVerticalCells = 2;
+  this.numHorizontalCells = 2;
+  this.numVerticalCells = 1;
   this.cellDimensions = {height : 300, width : 300}; // in pixels
-  this.cellPadding = 50;
+  this.cellPadding = 0;
   this.world = {height: (this.cellDimensions.height * this.numVerticalCells
 			 + this.cellPadding),
 		width : (this.cellDimensions.width * this.numHorizontalCells
@@ -140,8 +140,6 @@ game_core.prototype.newRound = function() {
   } else {
     // Otherwise, get the preset list of tangrams for the new round
     this.roundNum += 1;
-    roundNow = this.roundNum + 1;
-    console.log("now on round " + roundNow);
     this.objects = this.trialList[this.roundNum];
     //when there is a new round, we want the server to send an update to the client
     //with the new roundNum;
@@ -149,157 +147,11 @@ game_core.prototype.newRound = function() {
   }
 };
 
-var cartesianProductOf = function(listOfLists) {
-    return _.reduce(listOfLists, function(a, b) {
-        return _.flatten(_.map(a, function(x) {
-            return _.map(b, function(y) {
-                return x.concat([y]);
-            });
-        }), true);
-    }, [ [] ]);
-};
-
-// Returns random set of unique grid locations
-game_core.prototype.randomizeLocations = function() {
-  var possibilities = cartesianProductOf([_.range(1, this.numHorizontalCells + 1),
-            _.range(1, this.numVerticalCells + 1)]);
-
-  // Makes sure we select locations WITHOUT replacement
-  function getRandomFromBucket() {
-    var randomIndex = Math.floor(Math.random()*possibilities.length);
-    return possibilities.splice(randomIndex, 1)[0];
-  }
-  return _.map(_.range(this.numHorizontalCells * this.numVerticalCells), function(v) {
-    return getRandomFromBucket();
-  });
-
-};
-
-//returns names of tangrams from single round tangramlist
-game_core.prototype.getNames = function(trialList) {
-  return _.pluck(trialList, 'name');
-}
-
-//returns list of director [x,y] coords for each tangram (only for 1 round)
-game_core.prototype.getGridLocs = function(trialList, role) {
-  if (role == 'director') {
-    var directorCoords = _.pluck(trialList, 'directorCoords');
-    var gridX = _.pluck(directorCoords, 'gridX');
-    var gridY = _.pluck(directorCoords, 'gridY');
-    return _.zip(gridX, gridY);
-}
-  else {
-    var matcherCoords = _.pluck(trialList, 'matcherCoords');
-    var gridX = _.pluck(matcherCoords, 'gridX');
-    var gridY = _.pluck(matcherCoords, 'gridY');
-    return _.zip(gridX, gridY);
-  }
-};
-
-// returns box location range(1,12) of tangram, given [x,y] loc pair
-game_core.prototype.boxLoc = function(loc) {
-  var box = 0;
-  var x = loc[0];
-  var y = loc[1];
-  if (y == 1) { 
-    box = x; 
-    return box;
-  }
-  else {
-    box = x + 6;
-    return box;
-  }
-};
-
-// returns list of boxes for each tangram (1 round only)
-game_core.prototype.getBoxLocs = function(trialList, role) {
-  var tangramGridLocs = this.getGridLocs(trialList, role);
-  var self = this;
-  return _.map(tangramGridLocs, function(pair) {
-    return self.boxLoc(pair);
-  });
-};
-
-//returns list of name and box for all tangrams (1 round only)
-game_core.prototype.nameAndBox = function(trialList, role) {
-    var boxLocs = this.getBoxLocs(trialList, role);
-    var names = this.getNames(trialList);
-    return _.zip(names, boxLocs);
-};
-
-// returns list of name and box for all tangrams in all rounds
-game_core.prototype.nameAndBoxAll = function(totalTrialList, role) {
-  var self = this;
-  return _.map(totalTrialList, function(x) {
-    return self.nameAndBox(x, role);
-  });
-};
-
-// get a set of non matching director and matcher locations
-game_core.prototype.notMatchingLocs = function() {
-  var local_this = this;
-  var directorLocs = local_this.randomizeLocations();
-  var matcherLocs = local_this.randomizeLocations();
-  if (this.arraysDifferent (directorLocs, matcherLocs)==true) {
-    return [directorLocs, matcherLocs];
-  }
-  return this.notMatchingLocs();
-};
-
-
-//helper function to check if two arrays are completely different from each other
-game_core.prototype.arraysDifferent = function(arr1, arr2) {
-  for(var i = arr1.length; i--;) {
-      if(_.isEqual(arr1[i], arr2[i])) {
-          return false;
-    };
-  }
-  return true;
-};
-
-game_core.prototype.direcBoxes = function(directorLocs) {
- var self = this;
-_.map(directorLocs, function(x) {
-  return this.boxLoc;
-  })
-};
-
 // Randomly sets tangram locations for each round
 game_core.prototype.makeTrialList = function () {
   var local_this = this;
   var trialList =_.map(_.range(this.numRounds), function(i) { //creating a list?
-    var locs = local_this.notMatchingLocs();
-    var matcherLocs = locs[0];
-    var directorLocs = locs[1];
-    var directorBoxes = _.map(directorLocs, function(x) {
-      return local_this.boxLoc(x);
-    });
-    var matcherBoxes = _.map(matcherLocs, function(x) {
-      return local_this.boxLoc(x);
-    });
-
-    // debugger;
-    var localTangramList = _.map(tangramList, _.clone);
-    return _.map(_.zip(localTangramList, directorLocs, matcherLocs, directorBoxes, matcherBoxes), function(pair) {
-      var tangram = pair[0]   // [[tangramA,[4,1]*director, [3,2]*matcher], [tangramB, [3,2]...]]
-      var directorGridCell = local_this.getPixelFromCell(pair[1][0], pair[1][1]); 
-      var matcherGridCell = local_this.getPixelFromCell(pair[2][0], pair[2][1]);
-      tangram.directorCoords = {
-        gridX : pair[1][0],
-        gridY : pair[1][1],
-        trueX : directorGridCell.centerX - tangram.width/2,
-        trueY : directorGridCell.centerY - tangram.height/2,
-        box : pair[3]
-      };
-      tangram.matcherCoords = {
-        gridX : pair[2][0],
-        gridY : pair[2][1],
-        trueX : matcherGridCell.centerX - tangram.width/2,
-        trueY : matcherGridCell.centerY - tangram.height/2,
-        box :pair[4]
-      };
-      return tangram;
-    });
+    return 0;
   });
   return(trialList);
 };
@@ -342,30 +194,6 @@ game_core.prototype.getCellFromPixel = function (mx, my) {
   var cellY = Math.floor((my - this.cellPadding / 2) / this.cellDimensions.height) + 1;
   return [cellX, cellY];
 };
-
-game_core.prototype.getTangramFromCell = function (gridX, gridY) {
-    for (i=0; i < this.objects.length; i++) {
-      if (this.objects[i].gridX == gridX && this.objects[i].gridY == gridY) {
-        var tangram = this.objects[i];
-        var tangramIndex = i;
-        // return tangram;
-        return i;
-        }
-    }
-    console.log("Did not find tangram from cell!")
-  }
-
-// readjusts trueX and trueY values based on the objLocation and width and height of image (objImage)
-game_core.prototype.getTrueCoords = function (coord, objLocation, objImage) {
-  var trueX = this.getPixelFromCell(objLocation.gridX, objLocation.gridY).centerX - objImage.width/2;
-  var trueY = this.getPixelFromCell(objLocation.gridX, objLocation.gridY).centerY - objImage.height/2;
-  if (coord == "xCoord") {
-    return trueX;
-  }
-  if (coord == "yCoord") {
-    return trueY;
-  }
-}
 
 game_core.prototype.server_send_update = function(){
   //Make a snapshot of the current state, for updating the clients
