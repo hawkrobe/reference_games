@@ -18,7 +18,9 @@ var has_require = typeof require !== 'undefined';
 
 if(typeof _ === 'undefined') {
   if(has_require) {
-    _ = require('underscore');
+    _      = require('underscore');
+    utils  = require('../sharedUtils/sharedUtils.js');
+    DeltaE = require('../node_modules/delta-e');
   } else {
     throw new ('this experiment requires underscore, see http://underscorejs.org');
   }
@@ -45,7 +47,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 6;
+  this.numRounds = 100;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
@@ -154,24 +156,16 @@ game_core.prototype.makeTrialList = function () {
 
 game_core.prototype.randomColor = function () {
   var color = ~~(Math.random() * 360);
-  return 'hsl(' + color + ', 95%, 50%)';
+  return [color, 95, 50];
 };
 
 //scores the number of incorrect tangram matches between matcher and director
 //returns the correct score out of total tangrams
-game_core.prototype.game_score = function(game_objects) {
-   var correct = 0;
-   var incorrect = 0;
-   for(var i = game_objects.length; i--; i>=0) {
-      if(game_objects[i].matcherCoords.gridX == game_objects[i].directorCoords.gridX) {
-        if(game_objects[i].matcherCoords.gridY == game_objects[i].directorCoords.gridY) {
-          correct = correct + 1;
-        }
-      }
-      incorrect = incorrect + 1;
-  }
-  return correct;
-}
+game_core.prototype.calcScore = function(submitted, target) {
+  var subLAB = _.object(['L', 'A', 'B'], utils.hsl2lab(submitted));
+  var tarLAB = _.object(['L', 'A', 'B'], utils.hsl2lab(target));
+  return DeltaE.getDeltaE00(subLAB, tarLAB);
+};
 
 // maps a grid location to the exact pixel coordinates
 // for x = 1,2,3,4; y = 1,2,3,4
