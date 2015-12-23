@@ -240,7 +240,8 @@ var client_connect_to_server = function(game) {
   
   $(document).ready(function() {
     $("#submitbutton").click(function(){
-      var color = game.colorPicker.getCurrColor();
+      var color = _.map(game.colorPicker.getCurrColor(),
+			function(v) {return Math.round(v);});
       game.socket.send('advanceRound.' + color.join('.'));
     });
   });
