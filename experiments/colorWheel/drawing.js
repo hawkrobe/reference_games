@@ -84,7 +84,7 @@ colorPicker.prototype.setDiscCursor = function(x,y) {
   if(this.discHitTest(x,y)) {
     this.discCursorX = x;
     this.discCursorY = y;
-    this.hue = angle(dx,dy);
+    this.hue = (angle(dx,dy) + 360) % 360;
     this.sat = (dx * dx + dy * dy) / this.radius / this.radius * 100;
     console.log("changed hue to " + this.hue);
     console.log("changed sat to " + this.sat);
