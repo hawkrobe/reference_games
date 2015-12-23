@@ -31,10 +31,9 @@ var onMessage = function(client,message) {
   switch(message_type) {
       
   case 'advanceRound' :
-    var color = message_parts[1];
+    var color = message_parts.slice(1,4);
     var score = gc.calcScore(color, gc.trialInfo.currStim);
-    writeData(client, "outcome", message_parts + score);
-    console.log(score);
+    writeData(client, "outcome", message_parts.concat(score));
     _.map(all, function(p){
       p.player.instance.emit( 'newRoundUpdate', {user: client.userid, score: score});});
     gc.newRound();
@@ -71,10 +70,10 @@ var writeData = function(client, type, message_parts) {
   var line;
   switch(type) {
   case "outcome" :
-    console.log(gc.trialInfo.currStim);
-    var color = message_parts.slice(1, 4).join(',');
+    var color = message_parts.slice(1, 4);
+    var score = message_parts[4];
     line = (id + ',' + Date.now() + ',' + roundNum + ',' +
-	    gc.trialInfo.currStim + ',' + color);
+	    gc.trialInfo.currStim.join(',') + ',' + color.join(','));
     break;
     
     case "message" :
