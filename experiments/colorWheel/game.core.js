@@ -156,7 +156,8 @@ game_core.prototype.makeTrialList = function () {
 
 game_core.prototype.randomColor = function () {
   var color = ~~(Math.random() * 360);
-  return [color, 95, 50];
+  var sat = ~~(Math.random() * 100);
+  return [color, sat, 50];
 };
 
 //scores the number of incorrect tangram matches between matcher and director
@@ -164,7 +165,7 @@ game_core.prototype.randomColor = function () {
 game_core.prototype.calcScore = function(submitted, target) {
   var subLAB = _.object(['L', 'A', 'B'], utils.hsl2lab(submitted));
   var tarLAB = _.object(['L', 'A', 'B'], utils.hsl2lab(target));
-  return DeltaE.getDeltaE00(subLAB, tarLAB);
+  return Math.round(DeltaE.getDeltaE00(subLAB, tarLAB));
 };
 
 // maps a grid location to the exact pixel coordinates
