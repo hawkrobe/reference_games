@@ -129,7 +129,7 @@ colorPicker.prototype.drawDisc = function() {
     this.ctx.closePath();
     var gradient = this.ctx.createRadialGradient(this.centerX,this.centerY,0,
 						 this.centerX,this.centerY,this.radius);
-    gradient.addColorStop(0,'hsl('+angle+', 10%, 100%)');
+    gradient.addColorStop(0,'hsl('+angle+', 0%, 50%)');
     gradient.addColorStop(1,'hsl('+angle+', 100%, 50%)');
     this.ctx.fillStyle = gradient;
     this.ctx.fill();
