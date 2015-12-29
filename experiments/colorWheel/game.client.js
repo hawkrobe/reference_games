@@ -254,12 +254,12 @@ var client_connect_to_server = function(game) {
     if(game.roundNum + 1 >= game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty().append("Round " + (game.roundNum + 1) + 
-				     " score: " + data.score + " correct!");
+				     " score: " + data.score);
     } else {
       $('#roundnumber').empty().append("Round ", game.roundNum + 2);
     }
     $('#score').empty().append("Round " + (game.roundNum + 1) + 
-			       " score: " + data.score + " correct!");
+			       " score: " + data.score);
     var player = game.get_player(my_id);
     player.currentHighlightX = null;
     player.currentHighlightY = null;
