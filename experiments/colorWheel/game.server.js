@@ -27,15 +27,12 @@ var onMessage = function(client,message) {
   var target = gc.get_player(client.userid);
   var others = gc.get_others(client.userid);
 
-
   switch(message_type) {
       
   case 'advanceRound' :
     var color = message_parts.slice(1,4);
     var score = gc.calcScore(color, gc.trialInfo.currStim);
     writeData(client, "outcome", message_parts.concat(score));
-    _.map(all, function(p){
-      p.player.instance.emit( 'newRoundUpdate', {user: client.userid, score: score});});
     gc.newRound();
     break;
   
@@ -94,9 +91,8 @@ var startGame = function(game, player) {
   utils.establishStream(game, "message", dataFileName,
 		       "gameid,time,roundNum,sender,contents\n");
   utils.establishStream(game, "outcome", dataFileName,
-		       "gameid,time,roundNum,targetCol,submittedCol,score\n");
+			"gameid,time,roundNum,targetCol,submittedCol,score\n");
   game.newRound();
-  game.server_send_update();
 };
 
 module.exports = {

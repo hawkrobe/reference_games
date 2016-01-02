@@ -22,9 +22,7 @@ var my_id = null;
 var my_role = null;
 // Keeps track of whether player is paying attention...
 var visible;
-var incorrect;
 var dragging;
-var waiting;
 
 var client_ondisconnect = function(data) {
   submitInfoAndClose();
@@ -66,41 +64,13 @@ var client_onserverupdate_received = function(data){
     });
   }
   
-  //get names of objects sent from server and current objects 
-  // var dataNames = _.map(data.objects, function(e)
-  // 			{ return e.name;});
-  // var localNames = _.map(game.objects,function(e)
-  // 			 {return e.name;});
-
-  // If your objects are out-of-date (i.e. if there's a new round), set up
-  // machinery to draw them
-  // if (game.roundNum != data.roundNum) {
-  //   game.objects = _.map(data.objects, function(obj) {
-  //     // Extract the coordinates matching your role
-  //     var customCoords = my_role == "director" ? obj.directorCoords : obj.matcherCoords;
-  //     // remove the directorCoords and matcherCoords properties
-  //     var customObj = _.chain(obj)
-  // 	    .omit('directorCoords', 'matcherCoords')
-  // 	    .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
-  // 			  gridX : customCoords.gridX, gridY : customCoords.gridY,
-  // 			  box : customCoords.box})
-  // 	    .value();
-  //     var imgObj = new Image(); //initialize object as an image (from HTML5)
-  //     imgObj.src = customObj.url; // tell client where to find it
-  //     imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)
-  //       game.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
-  // 			   customObj.width, customObj.height);
-	
-  //     };
-  //     return _.extend(customObj, {img: imgObj});
-  //   });
-//};
   game.currStim = data.trialInfo.currStim;
 
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
     game.get_player(my_id).message = "";
   }
+
   game.game_started = data.gs;
   game.players_threshold = data.pt;
   game.player_count = data.pc;
@@ -182,10 +152,6 @@ window.onload = function(){
 
 };
 
-var client_addnewround = function(game) {
-  $('#roundnumber').append(game.roundNum);
-};
-
 // Associates callback functions corresponding to different socket messages
 var client_connect_to_server = function(game) {
   //Store a local reference to our connection to the server
@@ -207,7 +173,7 @@ var client_connect_to_server = function(game) {
   
   // Tell server when client types something in the chatbox
   $('form').submit(function(){
-    var origMsg = $('#chatbox').val()
+    var origMsg = $('#chatbox').val();
     // console.log("submitting message to server");
     var msg = 'chatMessage.' + origMsg.replace(/\./g, '~~~');
     if($('#chatbox').val() != '') {
@@ -246,25 +212,6 @@ var client_connect_to_server = function(game) {
     });
   });
   
-  // Set up new round on client's browsers after submit round button is pressed. 
-  // This means clear the chatboxes, update round number, and update score on screen
-  game.socket.on('newRoundUpdate', function(data){
-    $('#messages').empty();
-    console.log("first round = ", game.roundNum);
-    if(game.roundNum + 1 >= game.numRounds) {
-      $('#roundnumber').empty();
-      $('#instructs').empty().append("Round " + (game.roundNum + 1) + 
-				     " score: " + data.score);
-    } else {
-      $('#roundnumber').empty().append("Round ", game.roundNum + 2);
-    }
-    $('#score').empty().append("Round " + (game.roundNum + 1) + 
-			       " score: " + data.score);
-    var player = game.get_player(my_id);
-    player.currentHighlightX = null;
-    player.currentHighlightY = null;
-  });
-
   //so that we can measure the duration of the game
   game.startTime = Date.now();
   
@@ -299,6 +246,7 @@ var client_onjoingame = function(num_players, role) {
   my_role = role;
   game.get_player(my_id).role = my_role;
 
+  // Initialize interface elements
   if(role === "director") {
     $('#instructs').append("Send messages to help the matcher move their images "
 			   + "to match yours. Please do not refresh page!");
