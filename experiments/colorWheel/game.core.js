@@ -132,13 +132,11 @@ game_core.prototype.get_active_players = function() {
 
 // Advance to the next round
 game_core.prototype.newRound = function() {
+  // If you've reached the planned number of rounds, end the game
   if(this.roundNum == this.numRounds - 1) {
-    // If you've reached the planned number of rounds, end the game
-    var local_game = this;
-    _.map(local_game.get_active_players(), function(p){
+    _.map(this.get_active_players(), function(p){
       p.player.instance.disconnect();});
   } else {
-    // Otherwise, get the preset list of tangrams for the new round
     this.roundNum += 1;
     this.trialInfo = {currStim: this.trialList[this.roundNum]};
     this.server_send_update();
@@ -212,9 +210,6 @@ game_core.prototype.server_send_update = function(){
 
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
-  // if(player_packet.length == 2) {
-  //   _.extend(state, {trialInfo: this.trialInfo});
-  // }
 
   //Send the snapshot to the players
   this.state = state;
