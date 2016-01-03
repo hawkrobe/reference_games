@@ -45,9 +45,10 @@ var game_core = function(options){
   
   // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
-
+  this.maxScore = 50;
+  
   // How many rounds do we want people to complete?
-  this.numRounds = 100;
+  this.numRounds = 25;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
@@ -163,7 +164,8 @@ game_core.prototype.randomColor = function () {
 game_core.prototype.calcScore = function(submitted, target) {
   var subLAB = _.object(['L', 'A', 'B'], utils.hsl2lab(submitted));
   var tarLAB = _.object(['L', 'A', 'B'], utils.hsl2lab(target));
-  return Math.round(DeltaE.getDeltaE00(subLAB, tarLAB));
+  var diff = Math.round(DeltaE.getDeltaE00(subLAB, tarLAB));
+  return this.maxScore - diff > 0 ? this.maxScore - diff : 0;
 };
 
 // maps a grid location to the exact pixel coordinates
@@ -204,6 +206,7 @@ game_core.prototype.server_send_update = function(){
     pt : this.players_threshold,
     pc : this.player_count,
     dataObj  : this.data,
+    score    : this.previousRoundScore,
     roundNum : this.roundNum,
     trialInfo: this.trialInfo
   };

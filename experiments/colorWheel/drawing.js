@@ -14,11 +14,32 @@ var drawScreen = function(game, player) {
              game.world.width/2, game.world.height/4,
              game.world.width*4/5,
              25);
-  } else if (game.colorPicker) {
+  }
+  else if (game.roundNum >= 0) {
+    updateInterface(game);
+  }
+  if (game.colorPicker) {
     game.colorPicker.drawPicker();
     game.colorPicker.drawCurrColor();
-  } else if (game.currStim) {
+  }
+  else if (game.currStim) {
     drawCurrStim(game);
+  }
+};
+
+var updateInterface = function(game) {
+  $('#messages').empty();
+  if(game.roundNum + 1 >= game.numRounds) {
+    $('#roundnumber').empty();
+    $('#instructs').empty().append("Round " + (game.roundNum) + 
+				   " score: " + game.score);
+  } else {
+    $('#roundnumber').empty().append("Round ", game.roundNum + 1,
+				     "/", game.numRounds);
+  }
+  if(game.score) {
+    $('#score').empty().append("Round ", game.roundNum,  
+			       " score: ", game.score, "/", game.maxScore);
   }
 };
 
