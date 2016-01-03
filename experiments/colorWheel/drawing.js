@@ -28,7 +28,6 @@ var drawScreen = function(game, player) {
 };
 
 var updateInterface = function(game) {
-  $('#messages').empty();
   if(game.roundNum + 1 >= game.numRounds) {
     $('#roundnumber').empty();
     $('#instructs').empty().append("Round " + (game.roundNum) + 
@@ -41,6 +40,16 @@ var updateInterface = function(game) {
     $('#score').empty().append("Round ", game.roundNum,  
 			       " score: ", game.score, "/", game.maxScore);
   }
+};
+
+var drawSelectedColor = function(game, selected) {
+  var padding = 50;
+  game.ctx.fillStyle = "white";
+  game.ctx.fillText("They chose...", 450, 40);
+  game.ctx.fillStyle = ('hsl(' + selected[0] + ',' + selected[1] +
+			'%, ' + selected[2] + '%)');
+  game.ctx.fillRect(300 + padding, padding,
+		    300 - padding * 2, 300 - padding * 2);  
 };
 
 var drawCurrStim = function(game) {
@@ -60,13 +69,8 @@ var colorPicker = function(game) {
   this.centerX = game.viewport.width / 4;
   this.centerY = game.viewport.height / 2 - (this.padding/2);
   this.radius = 100;
-  this.discCursorX = this.centerX;
-  this.discCursorY = this.centerY;
   this.lightnessCursor = 150;
   this.lightnessTop = 250;
-  this.hue = 0;
-  this.sat = 0;
-  this.light = 50;
   this.drawPicker = function() {
     this.drawDisc();
     this.drawDiscCursor();
@@ -77,6 +81,13 @@ var colorPicker = function(game) {
     this.ctx.fillStyle = 'hsl('+this.hue+', ' + this.sat + '%, ' + this.light + '%)';
     this.ctx.fillRect(300 + this.padding, this.padding,
 		      300 - this.padding * 2, 300 - this.padding * 2);
+  };
+  this.reset = function() {
+    this.discCursorX = this.centerX;
+    this.discCursorY = this.centerY;
+    this.hue = 0;
+    this.sat = 0;
+    this.light = 50;
   };
 };
 

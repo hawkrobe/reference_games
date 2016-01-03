@@ -69,6 +69,11 @@ var client_onserverupdate_received = function(data){
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
     game.get_player(my_id).message = "";
+    // 'new round' stuff -- assumes server only sends message at beginning of round
+    $('#messages').empty();
+    if(game.colorPicker) {
+      game.colorPicker.reset();
+    }
   }
 
   game.game_started = data.gs;
@@ -76,7 +81,8 @@ var client_onserverupdate_received = function(data){
   game.player_count = data.pc;
   game.roundNum = data.roundNum;
   game.data = data.dataObj;
-  
+  game.score = data.score;
+    
   // Draw all this new stuff
   drawScreen(game, game.get_player(my_id));
 }; 
@@ -163,11 +169,9 @@ var client_connect_to_server = function(game) {
     if($('#chatbox').val() != "" && !sentTyping) {
       game.socket.send('playerTyping.true');
       sentTyping = true;
-      console.log("typing");
     } else if($("#chatbox").val() == "") {
       game.socket.send('playerTyping.false');
       sentTyping = false;
-      console.log("not typing");
     }
   });
   
@@ -184,7 +188,6 @@ var client_connect_to_server = function(game) {
   });
 
   game.socket.on('playerTyping', function(data){
-    console.log(data);
     if(data.typing == "true") {
       $('#messages').append('<span class="typing-msg">Other player is typing...</span>');
     } else {
@@ -192,6 +195,14 @@ var client_connect_to_server = function(game) {
     }
   });
 
+  game.socket.on('feedback', function(data){
+    if(my_role === "director") {
+      drawSelectedColor(game, data.selected);
+    } else if (my_role === "matcher") {
+      drawTargetColor(game, data.target);
+    }
+  });
+  
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
     var otherRole = my_role === "director" ? "Matcher" : "Director";

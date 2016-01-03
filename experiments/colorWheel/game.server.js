@@ -30,10 +30,15 @@ var onMessage = function(client,message) {
   switch(message_type) {
       
   case 'advanceRound' :
-    var color = message_parts.slice(1,4);
-    var score = gc.calcScore(color, gc.trialInfo.currStim);
+    var selectedColor = message_parts.slice(1,4);
+    var targetColor = gc.trialInfo.currStim;
+    var score = gc.calcScore(selectedColor, targetColor);
     writeData(client, "outcome", message_parts.concat(score));
-    gc.newRound();
+    gc.previousRoundScore = score;
+    gc.giveFeedback(selectedColor, targetColor);
+    setTimeout(function(){
+      gc.newRound();
+    }, 5000);
     break;
   
   case 'playerTyping' :
