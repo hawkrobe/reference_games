@@ -5,11 +5,11 @@ var drawScreen = function(game, player) {
   // draw background
   game.ctx.fillStyle = "#000000";
   game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
+  game.ctx.font = "bold 23pt Helvetica";
+  game.ctx.textAlign = 'center';
   
   // Draw message in center (for countdown, e.g.)
   if (player.message) {
-    game.ctx.font = "bold 23pt Helvetica";
-    game.ctx.textAlign = 'center';
     wrapText(game, player.message, 
              game.world.width/2, game.world.height/4,
              game.world.width*4/5,
@@ -20,10 +20,10 @@ var drawScreen = function(game, player) {
   }
   if (game.colorPicker) {
     game.colorPicker.drawPicker();
-    game.colorPicker.drawCurrColor();
+    drawSwatchWithText(game, game.colorPicker.getCurrColor(), "Your choice", "right");
   }
   else if (game.currStim) {
-    drawCurrStim(game);
+    drawSwatchWithText(game, game.currStim, "Target color", "left");
   }
 };
 
@@ -42,24 +42,21 @@ var updateInterface = function(game) {
   }
 };
 
-var drawSelectedColor = function(game, selected) {
+var drawSwatchWithText = function(game, colorArr, text, location) {
   var padding = 50;
+  var xLoc = location === "left" ? 0 : 300;
+  // Erase background
+  game.ctx.fillStyle = "#000000";
+  game.ctx.fillRect(xLoc, 0, 300, game.viewport.height);
+  // Draw text
   game.ctx.fillStyle = "white";
-  game.ctx.fillText("They chose...", 450, 40);
-  game.ctx.fillStyle = ('hsl(' + selected[0] + ',' + selected[1] +
-			'%, ' + selected[2] + '%)');
-  game.ctx.fillRect(300 + padding, padding,
+  game.ctx.fillText(text, xLoc + 150, 40);
+  // Draw Swatch
+  game.ctx.fillStyle = ('hsl(' + colorArr[0] + ',' + colorArr[1] +
+			'%, ' + colorArr[2] + '%)');
+  game.ctx.fillRect(xLoc + padding, padding,
 		    300 - padding * 2, 300 - padding * 2);  
-};
-
-var drawCurrStim = function(game) {
-  var padding = 50;
-  game.ctx.fillStyle = "white";
-  game.ctx.fillText("Your color:", 150, 40);
-  game.ctx.fillStyle = ('hsl(' + game.currStim[0] + ',' + game.currStim[1] +
-			'%, ' + game.currStim[2] + '%)');
-  game.ctx.fillRect(padding, padding,
-		    300 - padding * 2, 300 - padding * 2);
+  
 };
 
 var colorPicker = function(game) {
@@ -76,11 +73,6 @@ var colorPicker = function(game) {
     this.drawDiscCursor();
     this.drawLightnessRect();
     this.drawLightnessCursor();
-  };
-  this.drawCurrColor = function() {
-    this.ctx.fillStyle = 'hsl('+this.hue+', ' + this.sat + '%, ' + this.light + '%)';
-    this.ctx.fillRect(300 + this.padding, this.padding,
-		      300 - this.padding * 2, 300 - this.padding * 2);
   };
   this.reset = function() {
     this.discCursorX = this.centerX;
