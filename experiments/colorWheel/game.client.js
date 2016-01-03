@@ -197,9 +197,9 @@ var client_connect_to_server = function(game) {
 
   game.socket.on('feedback', function(data){
     if(my_role === "director") {
-      drawSelectedColor(game, data.selected);
+      drawSwatchWithText(game, data.selected, "They chose...", "right");
     } else if (my_role === "matcher") {
-      drawTargetColor(game, data.target);
+      drawSwatchWithText(game, data.target, "True color", "left");
     }
   });
   

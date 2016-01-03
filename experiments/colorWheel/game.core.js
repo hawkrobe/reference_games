@@ -131,6 +131,12 @@ game_core.prototype.get_active_players = function() {
     return p.player ? p : null;}), null);
 };
 
+game_core.prototype.giveFeedback = function(selectedColor, targetColor) {
+  _.map(this.get_active_players(), function(p){
+    p.player.instance.emit('feedback', {selected: selectedColor, target: targetColor});
+  });  
+};
+
 // Advance to the next round
 game_core.prototype.newRound = function() {
   // If you've reached the planned number of rounds, end the game
