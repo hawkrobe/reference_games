@@ -106,7 +106,6 @@ var game_player = function( game_instance, player_instance) {
 // server side we set some classes to global types, so that
 // we can use them in other files (specifically, game.server.js)
 if('undefined' != typeof global) {
-  var stimList = require('./stimuli/objectSet'); // import stimuli
   module.exports = global.game_core = game_core;
   module.exports = global.game_player = game_player;
 }
