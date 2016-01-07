@@ -37,7 +37,7 @@ module.exports = function(expName) {
 
 	// Add game to player
 	player.game = game;
-	player.role = 'matcher';
+	player.role = game.playerRoleNames.role2;
 	player.send('s.join.' + game.players.length + '.' + player.role);
 
 	// notify existing players that someone new is joining
@@ -71,7 +71,7 @@ module.exports = function(expName) {
     
     // assign role
     player.game = game;
-    player.role = 'director';
+    player.role = game.playerRoleNames.role1;
     player.send('s.join.' + game.players.length + '.' + player.role);
     this.log('player ' + player.userid + ' created a game with id ' + player.game.id);
 

@@ -14,7 +14,7 @@
   client creates one for itself to play the game. When you set a
   variable, remember that it's only set in that instance.
 */
-var has_require = typeof require !== 'undefined'
+var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
     if( has_require ) {
@@ -29,6 +29,10 @@ var game_core = function(options){
 
   // How many players in the game?
   this.players_threshold = 2;
+  this.playerRoleNames = {
+    role1 : 'speaker',
+    role2 : 'listener'
+  };
   
   //Dimensions of world in pixels and numberof cells to be divided into;
   this.numHorizontalCells = 5;

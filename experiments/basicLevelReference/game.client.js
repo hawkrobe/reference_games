@@ -337,40 +337,25 @@ var client_connect_to_server = function(game) {
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
     called = true; // A message was sent! thus, set called to true
-    var otherRole = my_role === "speaker" ? "listener" : "speaker";
+    var otherRole = (my_role === game.playerRoleNames.role1 ?
+		     game.playerRoleNames.role2 :
+		     game.playerRoleNames.role1);
     var source = data.user === my_id ? "You" : otherRole;
     var col = source === "You" ? "#363636" : "#707070";
     $('.typing-msg').remove();
-    $('#messages').append($('<li style="padding: 5px 10px; background: ' + col + '">').text(source + ": " + data.msg));
-    //var messageExists = false;
-    //if (data.msg != ''){messageExists = true};
+    $('#messages').append($('<li style="padding: 5px 10px; background: ' + col + '">')
+			  .text(source + ": " + data.msg));
     $('#messages').stop().animate({
       scrollTop: $("#messages")[0].scrollHeight
     }, 800);
   });
-  
-  // //var totalScore = 0;
-  // // Tell server when matncher presses the submit round button in order to advance to the next round
-  // $(document).ready(function() {
-  //   $("#submitbutton").click(function(){
-  //     //var score = game.game_score(game.objects);
-  //     //totalScore = totalScore + score;
-  //     //if(game.roundNum+2 > game.numRounds) {
-  //       //console.log("totalScore is: " + totalScore);
-  //       //game.data.totalScore = _.extend(game.data.totalScore,    // prepare to send to mmturkey
-  //       //  {'totalScore' : totalScore}); 
-  //     //};
-  //     var listenerBoxLocations = game.getBoxLocs(game.objects, 'listener');
-  //     game.socket.send('advanceRound.' + listenerBoxLocations);
-  //   })
-  // });
-  
+    
   // Set up new round on client's browsers after submit round button is pressed. 
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
     $('#messages').empty();
     if(game.roundNum+2 > game.numRounds) {
-      $('#roundnumber').empty()
+      $('#roundnumber').empty();
       $('#instructs').empty().append("Round " + (game.roundNum + 1) + " of 72");
     } else {
       $('#roundnumber').empty().append("Round ", game.roundNum + 2, " of 72");
@@ -398,38 +383,35 @@ var client_onconnected = function(data) {
   my_id = data.id;
   game.players[0].id = my_id;
     drawScreen(game, game.get_player(my_id));
-
 };
 
 var client_onjoingame = function(num_players, role) {
-  // Need client to know how many players there are, so they can set up the appropriate data structure
-  _.map(_.range(num_players - 1), function(i){
-    game.players.unshift({id: null, player: new game_player(game)})});
-  
-  // Update w/ role (can only move stuff if agent)
-  $('#roleLabel').append(role + '.');
-  if(role === "speaker") {
-    $('#instructs').append("Send messages to tell the listener which object is the target. Please do not refresh the page!")
-    $("#submitbutton").remove();
-  } else {
-    $('#instructs').append("Click on the target object which the speaker is telling you about. Please do not refresh the page!")
-    $("#submitbutton").remove();
-  }
-
-  // // Only give Submit board button to agent (listener)
-  // if(role === "speaker") {
-  // $('#submitbutton').remove();
-  // }
-
   // set role locally
   my_role = role;
   game.get_player(my_id).role = my_role;
 
-  if(num_players == 1)
-    game.get_player(my_id).message = 'Waiting for another player to connect... Please do not refresh the page now or at any other point in the game!'; //why does this need to be on?
+  _.map(_.range(num_players - 1), function(i){
+    game.players.unshift({id: null, player: new game_player(game)});
+  });
+  
+  // Update w/ role (can only move stuff if agent)
+  $('#roleLabel').append(role + '.');
+  if(role === game.playerRoleNames.player1) {
+    $('#instructs').append("Send messages to tell the listener which object " + 
+			   "is the target.");
+  } else if(role === game.playerRoleNames.player2) {
+    $('#instructs').append("Click on the target object which the speaker " +
+			   "is telling you about.");
+  }
 
-  //     set mouse-tracking event handler
-  if(role === "listener") {
+  if(num_players == 1) {
+    game.get_player(my_id).message = ('Waiting for another player to connect... '
+				      + 'Please do not refresh the page!'); 
+  }
+
+  // set mouse-tracking event handler
+  if(role === game.playerRoleNames.role2) {
+    console.log("setting listener");
     game.viewport.addEventListener("click", mouseClickListener, false);
   }
 };    
@@ -440,15 +422,11 @@ var client_onjoingame = function(num_players, role) {
 
 function mouseClickListener(evt) {
   var bRect = game.viewport.getBoundingClientRect();
-  mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
-  mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
+  var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
+  var mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
   //alert('called: ' + called);
-  if (called == false){ // if message was not sent, don't do anything
-
-  }
-  else{ // if message was sent, procede to normal click procedure
-    
-    for (i=0; i < game.objects.length; i++) {
+  if (called){ // if message was not sent, don't do anything
+    for (var i=0; i < game.objects.length; i++) {
       var obj = game.objects[i];
       //var condition = game.trialList[0];
       if (hitTest(obj, mouseX, mouseY)) {
@@ -472,9 +450,7 @@ function mouseClickListener(evt) {
 
         //highlight the object that was clicked:
         var upperLeftXListener = obj.listenerCoords.gridPixelX;
-        //alert("reached highlight: X " + upperLeftXListener);
         var upperLeftYListener = obj.listenerCoords.gridPixelY;
-        //alert("reached highlight" + upperLeftY);
         if (upperLeftXListener != null && upperLeftYListener != null) {
           game.ctx.beginPath();
           game.ctx.lineWidth="30";
@@ -483,10 +459,7 @@ function mouseClickListener(evt) {
           game.ctx.stroke();
         }
       }
-  }
-    // else {
-    //   game.socket.send("nonClickedObj." + obj.fullName + "." + obj.targetStatus + "." + obj.speakerCoords.gridX + "." + obj.listenerCoords.gridX + "." + obj.condition);
-    // }
+    }
   }
 };
 // function mouseDownListener(evt) {
