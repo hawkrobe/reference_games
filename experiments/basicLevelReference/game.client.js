@@ -145,11 +145,11 @@ var client_onMessage = function(data) {
       // look through game.objects, find the one with objectName, highlight it
       //alert("gameobjs[0].name: " + game.objects[0].name);
       var cliObjSpe;
-      if (game.objects[0].fullName == highlightClickObjNameSpe) {
+      if (game.objects[0].name == highlightClickObjNameSpe) {
         cliObjSpe = game.objects[0];
-      } else if (game.objects[1].fullName == highlightClickObjNameSpe) {
+      } else if (game.objects[1].name == highlightClickObjNameSpe) {
         cliObjSpe = game.objects[1];
-      } else if (game.objects[2].fullName == highlightClickObjNameSpe) {
+      } else if (game.objects[2].name == highlightClickObjNameSpe) {
         cliObjSpe = game.objects[2];
       } else {};
       var upperLeftX = cliObjSpe.speakerCoords.gridPixelX;
@@ -433,20 +433,14 @@ function mouseClickListener(evt) {
         called = false;
         alternative1 = _.sample(_.without(game.objects, obj));
         alternative2 = _.sample(_.without(game.objects, obj, alternative1));
-        alternative3 = _.sample(_.without(game.objects, obj, alternative1, alternative2));
-        alternative4 = _.sample(_.without(game.objects, obj, alternative1, alternative2, alternative3));
-        console.log("alt1Name: " + alternative1.fullName);
-        console.log("alt2Name: " + alternative2.fullName);
-        game.socket.send("clickedObj." + obj.type + "." + obj.condition + "." + obj.fullName + "." + obj.targetStatus 
+        console.log("alt1Name: " + alternative1.name);
+        console.log("alt2Name: " + alternative2.name);
+        game.socket.send("clickedObj." + obj.type + "." + obj.condition + "." + obj.name + "." + obj.targetStatus 
           + "." + obj.speakerCoords.gridX + "." + obj.listenerCoords.gridX  + "." + obj.basiclevel + "." + obj.superdomain
-          + "." + alternative1.fullName + "." + alternative1.targetStatus + "." + alternative1.speakerCoords.gridX 
+          + "." + alternative1.name + "." + alternative1.targetStatus + "." + alternative1.speakerCoords.gridX 
           + "." + alternative1.listenerCoords.gridX + "." + alternative1.basiclevel + "." + alternative1.superdomain 
-          + "." + alternative2.fullName + "." + alternative2.targetStatus + "." + alternative2.speakerCoords.gridX 
-          + "." + alternative2.listenerCoords.gridX + "." + alternative2.basiclevel + "." + alternative2.superdomain 
-          + "." + alternative3.fullName + "." + alternative3.targetStatus + "." + alternative3.speakerCoords.gridX 
-          + "." + alternative3.listenerCoords.gridX + "." + alternative3.basiclevel + "." + alternative3.superdomain 
-          + "." + alternative4.fullName + "." + alternative4.targetStatus + "." + alternative4.speakerCoords.gridX 
-          + "." + alternative4.listenerCoords.gridX + "." + alternative4.basiclevel + "." + alternative4.superdomain );
+          + "." + alternative2.name + "." + alternative2.targetStatus + "." + alternative2.speakerCoords.gridX 
+          + "." + alternative2.listenerCoords.gridX + "." + alternative2.basiclevel + "." + alternative2.superdomain);
 
         //highlight the object that was clicked:
         var upperLeftXListener = obj.listenerCoords.gridPixelX;
