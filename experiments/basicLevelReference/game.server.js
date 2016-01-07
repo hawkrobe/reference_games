@@ -105,20 +105,6 @@ var writeData = function(client, type, message_parts) {
       var alternative2ListenerLocs = message_parts[18];
       var alternative2Basiclevel = message_parts[19];
       var alternative2Superdomain = message_parts[20];
-
-      var alternative3Name = message_parts[21]; 
-      var alternative3TargetStatus = message_parts[22];
-      var alternative3SpeakerLocs = message_parts[23];
-      var alternative3ListenerLocs = message_parts[24];
-      var alternative3Basiclevel = message_parts[25];
-      var alternative3Superdomain = message_parts[26];
-
-      var alternative4Name = message_parts[27]; 
-      var alternative4TargetStatus = message_parts[28];
-      var alternative4SpeakerLocs = message_parts[29];
-      var alternative4ListenerLocs = message_parts[30];
-      var alternative4Basiclevel = message_parts[31];
-      var alternative4Superdomain = message_parts[32];
       
       var line = (id + ',' + Date.now() + ',' + roundNum + ',' + trialType + ',' + clickedObjCondition 
         + "," + clickedObjName + "," + clickedObjTargetStatus + "," + clickedObjSpeakerLocs 
@@ -126,11 +112,7 @@ var writeData = function(client, type, message_parts) {
         + "," + alternative1Name + "," + alternative1TargetStatus + "," + alternative1SpeakerLocs 
         + "," + alternative1ListenerLocs + ',' + alternative1Basiclevel + ',' + alternative1Superdomain 
         + "," + alternative2Name + "," + alternative2TargetStatus + "," + alternative2SpeakerLocs 
-        + "," + alternative2ListenerLocs + ',' + alternative2Basiclevel + ',' + alternative2Superdomain 
-        + "," + alternative3Name + "," + alternative3TargetStatus + "," + alternative3SpeakerLocs 
-        + "," + alternative3ListenerLocs + ',' + alternative3Basiclevel + ',' + alternative3Superdomain  
-        + "," + alternative4Name + "," + alternative4TargetStatus + "," + alternative4SpeakerLocs 
-        + "," + alternative4ListenerLocs + ',' + alternative4Basiclevel + ',' + alternative4Superdomain  + '\n');
+        + "," + alternative2ListenerLocs + ',' + alternative2Basiclevel + ',' + alternative2Superdomain  + '\n');
     console.log("clickedObj: " + line);
 
     break;
