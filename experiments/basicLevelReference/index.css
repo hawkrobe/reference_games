@@ -100,7 +100,7 @@ ALOT...don't understand how to adjust that.*/
 #viewport {
     float: bottom;
     border:solid 1px #333;
-    height: 30vh;
+    height: 50vh;
     width: 150vh;
     margin: center;    
     /*margin-right: 2.5%;*/
