@@ -34,9 +34,18 @@ var hsl2lab = function(hsl) {
   return converter.rgb2lab(rgb);
 };
 
+function fillArray(value, len) {
+  var arr = [];
+  for (var i = 0; i < len; i++) {
+    arr.push(value);
+  }
+  return arr;
+}
+
 module.exports = {
   UUID : UUID,
   getLongFormTime : getLongFormTime,
   establishStream: establishStream,
-  hsl2lab : hsl2lab
+  hsl2lab : hsl2lab,
+  fillArray: fillArray
 };
