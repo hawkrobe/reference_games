@@ -90,15 +90,10 @@ var game_core = function(options){
 };
 
 var game_player = function( game_instance, player_instance) {
-  //Store the instance, if any (only the server copy will have one)
   this.instance = player_instance;
-  // Store the game instance, so players can access it
   this.game = game_instance;
-  // The player will be assigned to speaker or listener
   this.role = '';
-  // This will be displayed in big letters on a plain white screen
   this.message = '';
-  // This will be set to the player's id, once it is known
   this.id = '';
 }; 
 
