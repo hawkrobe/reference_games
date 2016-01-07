@@ -163,10 +163,10 @@ var writeData = function(client, type, message_parts) {
 var startGame = function(game, player) {
   // Establish write streams
   var startTime = utils.getLongFormTime();
-  var dataFileName = startTime + "_" + game.id;
+  var dataFileName = startTime + "_" + game.id + ".csv";
   utils.establishStream(game, "message", dataFileName,
 			"gameid,time,roundNum,sender,contents\n");
-  utils.establishStream(game, "clickObj", dataFileName,
+  utils.establishStream(game, "clickedObj", dataFileName,
 			"gameid, time, roundNum, trialType, condition," +
 			"nameClickedObj, targetStatusClickedObj, spLocsClickedObj, " +
 			"lisLocsClickedObj, basiclevelClickedObj, " +
