@@ -29,16 +29,7 @@ var onMessage = function(client,message) {
   var id = gc.id.slice(0,6);
   var all = gc.get_active_players();
   var target = gc.get_player(client.userid);
-  var others = gc.get_others(client.userid);
-  function printObject(o) {
-    var out = '';
-    for (var p in o) {
-      out += p + ': ' + o[p] + '\n';
-    }
-    console.log("others: " + out);
-  }
-  printObject(others[0]);
-  
+  var others = gc.get_others(client.userid);  
   switch(message_type) {
     
   case 'clickedObj' :
@@ -63,12 +54,13 @@ var onMessage = function(client,message) {
     break;
   
   case 'chatMessage' :
-    if(client.game.player_count == 2 && !gc.paused) 
-    writeData(client, "message", message_parts)
-    // Update others
-    var msg = message_parts[1].replace(/~~~/g,'.');
-    _.map(all, function(p){
-      p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
+    if(client.game.player_count == 2 && !gc.paused) {
+      writeData(client, "message", message_parts);
+      // Update others
+      var msg = message_parts[1].replace(/~~~/g,'.');
+      _.map(all, function(p){
+	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
+    }
     break;
 
   case 'h' : // Receive message when browser focus shifts
@@ -82,31 +74,30 @@ var writeData = function(client, type, message_parts) {
   var roundNum = gc.state.roundNum + 1;
   var id = gc.id.slice(0,6);
   switch(type) {
-    case "clickedObj" :
-      var trialType = message_parts[1];
-      var clickedObjCondition = message_parts[2];
-      var clickedObjName = message_parts[3];
-      var clickedObjTargetStatus = message_parts[4];
-      var clickedObjSpeakerLocs = message_parts[5];
-      var clickedObjListenerLocs = message_parts[6];
-      var clickedObjBasiclevel = message_parts[7];
-      var clickedObjSuperdomain = message_parts[8];
+  case "clickedObj" :
+    var clickedObjCondition = message_parts[1];
+    var clickedObjName = message_parts[2];
+    var clickedObjTargetStatus = message_parts[3];
+    var clickedObjSpeakerLocs = message_parts[4];
+    var clickedObjListenerLocs = message_parts[5];
+    var clickedObjBasiclevel = message_parts[6];
+    var clickedObjSuperdomain = message_parts[7];
 
-      var alternative1Name = message_parts[9]; 
-      var alternative1TargetStatus = message_parts[10];
-      var alternative1SpeakerLocs = message_parts[11];
-      var alternative1ListenerLocs = message_parts[12];
-      var alternative1Basiclevel = message_parts[13];
-      var alternative1Superdomain = message_parts[14];
+      var alternative1Name = message_parts[8]; 
+      var alternative1TargetStatus = message_parts[9];
+      var alternative1SpeakerLocs = message_parts[10];
+      var alternative1ListenerLocs = message_parts[11];
+      var alternative1Basiclevel = message_parts[12];
+      var alternative1Superdomain = message_parts[13];
 
-      var alternative2Name = message_parts[15]; 
-      var alternative2TargetStatus = message_parts[16];
-      var alternative2SpeakerLocs = message_parts[17];
-      var alternative2ListenerLocs = message_parts[18];
-      var alternative2Basiclevel = message_parts[19];
-      var alternative2Superdomain = message_parts[20];
+      var alternative2Name = message_parts[14]; 
+      var alternative2TargetStatus = message_parts[15];
+      var alternative2SpeakerLocs = message_parts[16];
+      var alternative2ListenerLocs = message_parts[17];
+      var alternative2Basiclevel = message_parts[18];
+      var alternative2Superdomain = message_parts[19];
       
-      var line = (id + ',' + Date.now() + ',' + roundNum + ',' + trialType + ',' + clickedObjCondition 
+      var line = (id + ',' + Date.now() + ',' + roundNum  + ',' + clickedObjCondition 
         + "," + clickedObjName + "," + clickedObjTargetStatus + "," + clickedObjSpeakerLocs 
         + "," + clickedObjListenerLocs + ',' + clickedObjBasiclevel + ',' + clickedObjSuperdomain 
         + "," + alternative1Name + "," + alternative1TargetStatus + "," + alternative1SpeakerLocs 
