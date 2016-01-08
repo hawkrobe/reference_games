@@ -431,11 +431,11 @@ function mouseClickListener(evt) {
       //var condition = game.trialList[0];
       if (hitTest(obj, mouseX, mouseY)) {
         called = false;
-        alternative1 = _.sample(_.without(game.objects, obj));
-        alternative2 = _.sample(_.without(game.objects, obj, alternative1));
+        var alternative1 = _.sample(_.without(game.objects, obj));
+        var alternative2 = _.sample(_.without(game.objects, obj, alternative1));
         console.log("alt1Name: " + alternative1.name);
         console.log("alt2Name: " + alternative2.name);
-        game.socket.send("clickedObj." + obj.type + "." + obj.condition + "." + obj.name + "." + obj.targetStatus 
+        game.socket.send("clickedObj." + obj.condition + "." + obj.name + "." + obj.targetStatus 
           + "." + obj.speakerCoords.gridX + "." + obj.listenerCoords.gridX  + "." + obj.basiclevel + "." + obj.superdomain
           + "." + alternative1.name + "." + alternative1.targetStatus + "." + alternative1.speakerCoords.gridX 
           + "." + alternative1.listenerCoords.gridX + "." + alternative1.basiclevel + "." + alternative1.superdomain 
