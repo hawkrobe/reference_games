@@ -396,10 +396,11 @@ var client_onjoingame = function(num_players, role) {
   
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
-  if(role === game.playerRoleNames.player1) {
+  if(role === game.playerRoleNames.role1) {
+    console.log("first statistifed");
     $('#instructs').append("Send messages to tell the listener which object " + 
 			   "is the target.");
-  } else if(role === game.playerRoleNames.player2) {
+  } else if(role === game.playerRoleNames.role2) {
     $('#instructs').append("Click on the target object which the speaker " +
 			   "is telling you about.");
   }
@@ -619,11 +620,10 @@ function hitTest(shape,mx,my) {
 // This gets called when someone selects something in the menu during the exit survey...
 // collects data from drop-down menus and submits using mmturkey
 function dropdownTip(data){
-  console.log(game);
-  var commands = data.split('::')
+  var commands = data.split('::');
   switch(commands[0]) {
   case 'human' :
-    $('#humanResult').show()
+    $('#humanResult').show();
     game.data.subject_information = _.extend(game.data.subject_information, 
 					     {'thinksHuman' : commands[1]}); break;
   case 'language' :
@@ -639,20 +639,19 @@ function dropdownTip(data){
 				    'totalLength' : Date.now() - game.startTime});
     var urlParams;
     var match,
-    pl     = /\+/g,  // Regex for replacing addition symbol with a space
-    search = /([^&=]+)=?([^&]*)/g,
-    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-    query  = location.search.substring(1);
+	pl     = /\+/g,  // Regex for replacing addition symbol with a space
+	search = /([^&=]+)=?([^&]*)/g,
+	decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+	query  = location.search.substring(1);
 
     urlParams = {};
-    while (match = search.exec(query))
+    while ((match = search.exec(query)))
       urlParams[decode(match[1])] = decode(match[2]);
     
     if(_.size(urlParams) == 4) {
-      window.opener.turk.submit(game.data, true)
+      window.opener.turk.submit(game.data, true);
       window.close(); 
     } else {
-      console.log("would have submitted the following :")
       console.log(game.data);
       // var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
       // window.location.replace(URL);
