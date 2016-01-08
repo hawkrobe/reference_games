@@ -49,7 +49,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 32;
+  this.numRounds = 36;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
@@ -143,14 +143,17 @@ game_core.prototype.newRound = function() {
   }
 };
 
-// Randomly sets tangram locations for each round
 game_core.prototype.makeTrialList = function () {
   var local_this = this;
   var conditionList = getRandomizedConditions();
-  var trialList = _.map(conditionList, function(condition) { 
-    var objectList = sampleObjects(condition);
-    var locs = sampleStimulusLocs();
-    return _.map(_.zip(objectList, locs.speaker, locs.listener), function(tuple) {
+  var trialList = [];
+  var previousTargets = [];
+  for (var i = 0; i < conditionList.length; i++) {
+    var condition = conditionList[i];
+    var objList = sampleObjects(condition, previousTargets); // Sample three objects 
+    previousTargets.push(objList[0].name); // Keep track of targets seen
+    var locs = sampleStimulusLocs(); // Sample locations for those objects
+    trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
       var object = _.clone(tuple[0]);  
       var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
       var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);
@@ -171,8 +174,8 @@ game_core.prototype.makeTrialList = function () {
 	gridPixelY: listenerGridCell.centerY - 150
       };
       return object;
-    });
-  });
+    }));
+  };
   return(trialList);
 };
 
@@ -224,8 +227,7 @@ game_core.prototype.server_send_update = function(){
     p.player.instance.emit( 'onserverupdate', state);});
 };
 
-var sampleObjects = function(condition) {
-  var criticalObjs = getObjectSubset("target");
+var sampleObjects = function(condition, earlierTargets) {
   var samplingInfo = {
     1 : {class: getObjectSubset("distrClass1"),
 	 selector: firstClassSelector},
@@ -234,14 +236,44 @@ var sampleObjects = function(condition) {
     3 : {class: getObjectSubset("distrClass2"),
 	 selector: thirdClassSelector}
   };
-
-  var conditionParams = condition.slice(-2).split("");
-  var target = _.sample(criticalObjs);
+  
+  var conditionParams = condition.slice(-2).split("");    
   var firstDistrInfo = samplingInfo[conditionParams[0]];
   var secondDistrInfo = samplingInfo[conditionParams[1]];
+  var remainingTargets = getRemainingTargets(earlierTargets);
+  
+  var target = _.sample(remainingTargets);
   var firstDistractor = firstDistrInfo.selector(target, firstDistrInfo.class);
   var secondDistractor = secondDistrInfo.selector(target, secondDistrInfo.class);
-  return [target, firstDistractor, secondDistractor];
+  if(checkItem(condition,target,firstDistractor,secondDistractor)) {
+    // attach "condition" to each stimulus object
+    return _.map([target, firstDistractor, secondDistractor], function(x) {
+      return _.extend(x, {condition: condition});
+    });
+  } else { // Try again if something is wrong
+    return sampleObjects(condition, earlierTargets);
+  }
+};
+
+var checkItem = function(condition, target, firstDistractor, secondDistractor) {
+  var diffName = firstDistractor.name != secondDistractor.name;
+  if(condition === "distr23") {
+    var diffSuper = firstDistractor.superdomain != secondDistractor.superdomain;
+    return diffName && diffSuper;
+  } else if (condition === "distr33") {
+    var diffTarget = (firstDistractor.superdomain != target.superdomain
+		      && secondDistractor.superdomain != target.superdomain);
+    return diffName && diffTarget;
+  } else {
+    return diffName;
+  }
+};
+
+var getRemainingTargets = function(earlierTargets) {
+  var criticalObjs = getObjectSubset("target");
+  return _.filter(criticalObjs, function(x) {
+    return !_.contains(earlierTargets, x.name );
+  });
 };
 
 var getRandomizedConditions = function() {
