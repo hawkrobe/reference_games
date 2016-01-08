@@ -356,9 +356,9 @@ var client_connect_to_server = function(game) {
     $('#messages').empty();
     if(game.roundNum+2 > game.numRounds) {
       $('#roundnumber').empty();
-      $('#instructs').empty().append("Round " + (game.roundNum + 1) + " of 72");
+      $('#instructs').empty().append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
     } else {
-      $('#roundnumber').empty().append("Round ", game.roundNum + 2, " of 72");
+      $('#roundnumber').empty().append("Round\n", game.roundNum + 2, "/" + game.numRounds);
     }
   });
 
