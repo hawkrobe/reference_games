@@ -1,6 +1,27 @@
 // drawing.js
 // This file contains functions to draw on the HTML5 canvas
 
+var drawScreen = function(game, player) {
+  // draw background
+  game.ctx.fillStyle = "#FFFFFF";
+  game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
+  
+  // Draw message in center (for countdown, e.g.)
+  if (player.message) {
+    game.ctx.font = "bold 23pt Helvetica";
+    game.ctx.textAlign = 'center';
+    wrapText(game, player.message, 
+             game.world.width/2, game.world.height/4,
+             game.world.width*4/5,
+             25);
+  }
+  else {
+    highlightCell(game, player);
+    drawGrid(game);
+    drawObjects(game, player);  
+  }
+};
+
 // Draws a grid of cells on the canvas (evenly divided 
 var drawGrid = function(game){
     //size of canvas
@@ -54,11 +75,10 @@ var highlightCell = function(game, player) {
   // find the one with targetStatus = "target"
   // set upperLeftX, upperLeftY to its X and Y
   //console.log("game.objects according to drawing" + game.objects);
-  if (player.role == "speaker"){
+  if (player.role == game.playerRoleNames.role1){
     var targetObjects = _.filter(game.objects, function(x){
       return x.targetStatus == "target";
     });
-    // alert("targetobjs to be highlighted: ", JSON.stringify(targetObjects));
     for (var n = 0; n < targetObjects.length; n++){
       var upperLeftX = targetObjects[n].speakerCoords.gridPixelX;
       var upperLeftY = targetObjects[n].speakerCoords.gridPixelY;
@@ -71,80 +91,6 @@ var highlightCell = function(game, player) {
       }
     }
   }
-};
-
-
-// var drawGridNums = function(game, player) {
-
-//   // for (var gridNumber=1; gridNumber++; gridNumber<=2) {
-//   //   for (var x=25; x++; x < 1800) {
-//   //     game.ctx.font = '40pt Calibri';
-//   //     game.ctx.fillStyle = 'blue';
-//   //     game.ctx.fillText(gridNumber, x, 70);
-//   //   }
-//   // }
-
-// // var numberCells = 6
-// // var topGridNums = 1;
-// // var bottomGridNums = 7;
-
-// var numberCells = 3
-// var topGridNums = 1;
-// var bottomGridNums = 4;
-
-// var topX = 40;
-// // var bottomX = 40;
-// var topY = 70;
-// // var bottomY = 370;
-
-//     // ensure text is left-aligned
-//     game.ctx.textAlign = 'left';
-//      //top cells
-//      _.map(_.range(numberCells), function(v) {
-//       game.ctx.font = '40pt Calibri';
-//       game.ctx.fillStyle = 'blue'; 
-//       game.ctx.fillText(topGridNums, topX, topY);
-//       topGridNums++;
-//       topX= topX + 300;
-//     });    
-//     //  //bottom cells
-//     // _.map(_.range(numberCells), function(v) {
-//     //   game.ctx.font = '40pt Calibri';
-//     //   game.ctx.fillStyle = 'blue'; 
-//     //   game.ctx.fillText(bottomGridNums, bottomX, bottomY);
-//     //   bottomGridNums++;
-//     //   bottomX = bottomX + 300;
-//     // });   
-//   };
-
-
-
-
-
-var drawScreen = function(game, player) {
-  // draw background
-  game.ctx.fillStyle = "#FFFFFF";
-  game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
-  
-  // Draw message in center (for countdown, e.g.)
-  if (player.message) {
-    game.ctx.font = "bold 23pt Helvetica";
-    game.ctx.fillStyle = 'blue';
-    game.ctx.textAlign = 'center';
-    wrapText(game, player.message, 
-             game.world.width/2, game.world.height/4,
-             game.world.width*4/5,
-             25);
-  }
-  else {
-    highlightCell(game, player);
-    // eraseHighlight(game, player, upperLeftY, upperLeftY);
-    drawGrid(game);
-    drawObjects(game, player);  
-    // //draw grid numbers
-    // drawGridNums(game, player);
-  }
-
 };
 
 // This is a helper function to write a text string onto the HTML5 canvas.
