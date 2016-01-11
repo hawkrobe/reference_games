@@ -50,7 +50,6 @@ var randomColor = function () {
 };
 
 var colorDiff = function(color1, color2) {
-  console.log(color1, color2);
   var subLAB = _.object(['L', 'A', 'B'], hsl2lab(color1));
   var tarLAB = _.object(['L', 'A', 'B'], hsl2lab(color2));
   var diff = Math.round(DeltaE.getDeltaE00(subLAB, tarLAB));
