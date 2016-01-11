@@ -151,25 +151,16 @@ game_core.prototype.newRound = function() {
 
 // Randomly sets tangram locations for each round
 game_core.prototype.makeTrialList = function () {
-  var local_this = this;
   var trialList =_.map(_.range(this.numRounds), function(i) { 
-    return local_this.randomColor();
+    return utils.randomColor();
   });
   return(trialList);
-};
-
-game_core.prototype.randomColor = function () {
-  var color = ~~(Math.random() * 360);
-  var sat = ~~(Math.random() * 100);
-  return [color, sat, 50];
 };
 
 //scores the number of incorrect tangram matches between matcher and director
 //returns the correct score out of total tangrams
 game_core.prototype.calcScore = function(submitted, target) {
-  var subLAB = _.object(['L', 'A', 'B'], utils.hsl2lab(submitted));
-  var tarLAB = _.object(['L', 'A', 'B'], utils.hsl2lab(target));
-  var diff = Math.round(DeltaE.getDeltaE00(subLAB, tarLAB));
+  var diff = utils.colorDiff(submitted, target);
   return this.maxScore - diff > 0 ? this.maxScore - diff : 0;
 };
 

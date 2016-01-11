@@ -1,5 +1,6 @@
 var fs = require('fs');
 var converter = require("color-convert");
+var DeltaE = require('../node_modules/delta-e');
 
 var UUID = function() {
   var baseName = (Math.floor(Math.random() * 10) + '' +
@@ -42,10 +43,26 @@ function fillArray(value, len) {
   return arr;
 }
 
+var randomColor = function () {
+  var color = ~~(Math.random() * 360);
+  var sat = ~~(Math.random() * 100);
+  return [color, sat, 50];
+};
+
+var colorDiff = function(color1, color2) {
+  console.log(color1, color2);
+  var subLAB = _.object(['L', 'A', 'B'], hsl2lab(color1));
+  var tarLAB = _.object(['L', 'A', 'B'], hsl2lab(color2));
+  var diff = Math.round(DeltaE.getDeltaE00(subLAB, tarLAB));
+  return diff;
+};
+
 module.exports = {
   UUID : UUID,
   getLongFormTime : getLongFormTime,
   establishStream: establishStream,
   hsl2lab : hsl2lab,
-  fillArray: fillArray
+  fillArray: fillArray,
+  randomColor: randomColor,
+  colorDiff : colorDiff
 };
