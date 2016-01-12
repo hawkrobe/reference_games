@@ -38,7 +38,7 @@ var onMessage = function(client,message) {
     gc.giveFeedback(selectedColor, targetColor);
     setTimeout(function(){
       gc.newRound();
-    }, 5000);
+    }, 3000);
     break;
   
   case 'playerTyping' :
