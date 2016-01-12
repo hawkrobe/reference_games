@@ -196,16 +196,17 @@ var client_connect_to_server = function(game) {
   });
 
   game.socket.on('feedback', function(data){
-    if(my_role === "director") {
+    if(my_role === game.playerRoleNames.role1) {
       drawSwatchWithText(game, data.selected, "They chose...", "right");
-    } else if (my_role === "matcher") {
+    } else if (my_role === game.playerRoleNames.role2) {
       drawSwatchWithText(game, data.target, "True color", "left");
     }
   });
   
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
-    var otherRole = my_role === "director" ? "Matcher" : "Director";
+    var otherRole = (my_role === game.playerRoleNames.role1 ?
+		     game.playerRoleNames.role2 : game.playerRoleNames.role1);
     var source = data.user === my_id ? "You" : otherRole;
     var col = source === "You" ? "#363636" : "#707070";
     $('.typing-msg').remove();
@@ -258,13 +259,13 @@ var client_onjoingame = function(num_players, role) {
   game.get_player(my_id).role = my_role;
 
   // Initialize interface elements
-  if(role === "director") {
-    $('#instructs').append("Send messages to help the matcher move their images "
-			   + "to match yours. Please do not refresh page!");
+  if(role === game.playerRoleNames.role1) {
+    $('#instructs').append("Send messages to help your partner select your color. "
+			   + "Please do not refresh page!");
     $("#submitbutton").remove();
     game.get_player(my_id).message = 'Waiting for other player to connect...';
   } else {
-    $('#instructs').append("Move your images to match the director's board. "
+    $('#instructs').append("Use the color wheel and slider to select your partner's color. "
 			   + "Please do not refresh page!");
     $("#submitbutton").show();
     game.colorPicker = new colorPicker(game);

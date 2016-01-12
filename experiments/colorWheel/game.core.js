@@ -20,9 +20,8 @@ if(typeof _ === 'undefined') {
   if(has_require) {
     _      = require('underscore');
     utils  = require('../sharedUtils/sharedUtils.js');
-    DeltaE = require('../node_modules/delta-e');
   } else {
-    throw new ('this experiment requires underscore, see http://underscorejs.org');
+    throw 'this experiment requires underscore, see http://underscorejs.org';
   }
 }
 
@@ -32,6 +31,10 @@ var game_core = function(options){
 
   // How many players in the game?
   this.players_threshold = 2;
+  this.playerRoleNames = {
+    role1 : 'speaker',
+    role2 : 'listener'
+  };
   
   // Dimensions of world in pixels and numberof cells to be divided into;
   this.numHorizontalCells = 2;
