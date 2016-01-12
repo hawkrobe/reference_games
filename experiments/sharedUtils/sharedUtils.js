@@ -44,9 +44,10 @@ function fillArray(value, len) {
 }
 
 var randomColor = function () {
-  var color = ~~(Math.random() * 360);
-  var sat = ~~(Math.random() * 100);
-  return [color, sat, 50];
+  var hue = ~~(Math.random() * 360);
+  var sat = ~~(Math.random() * 101);
+  var lightness = ~~(Math.random() * 101);
+  return [hue, sat, lightness];
 };
 
 var colorDiff = function(color1, color2) {
