@@ -386,9 +386,9 @@ function dropdownTip(data){
     urlParams = {};
     while (match = search.exec(query))
       urlParams[decode(match[1])] = decode(match[2]);
-    
+    console.log(turk);
     if(_.size(urlParams) == 4) {
-      window.opener.turk.submit(game.data, true)
+      turk.submit(game.data, true)
       window.close(); 
     } else {
       console.log("would have submitted the following :")
