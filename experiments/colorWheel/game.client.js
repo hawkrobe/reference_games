@@ -23,6 +23,7 @@ var my_role = null;
 // Keeps track of whether player is paying attention...
 var visible;
 var dragging;
+var submitted = false;
 
 var client_ondisconnect = function(data) {
   submitInfoAndClose();
@@ -331,12 +332,6 @@ function mouseUpListener(evt) {
 }
 
 function mouseMoveListener(evt) {
-  // prevent from dragging offscreen
-  var minX = 25;
-  var maxX = game.viewport.width;
-  var minY = 25;
-  var maxY = game.viewport.height;
-
   //getting mouse position correctly 
   var bRect = game.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
@@ -346,7 +341,7 @@ function mouseMoveListener(evt) {
   if(dragging == "disc") {
     game.colorPicker.setDiscCursor(mouseX, mouseY);
   } else if(dragging == "lightness") {
-    game.colorPicker.setLightness(mouseX);
+    game.colorPicker.setLightness(mouseX, mouseY);
   }
 
   // Draw it
@@ -380,6 +375,7 @@ function dropdownTip(data){
 				   {'comments' : $('#comments').val(), 
 				    'role' : my_role,
 				    'totalLength' : Date.now() - game.startTime});
+    submitted = true;
     var urlParams;
     var match,
     pl     = /\+/g,  // Regex for replacing addition symbol with a space
@@ -397,12 +393,26 @@ function dropdownTip(data){
     } else {
       console.log("would have submitted the following :")
       console.log(game.data);
-      // var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
-      // window.location.replace(URL);
+      var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
+      window.location.replace(URL);
     }
     break;
   }
 }
+
+window.onbeforeunload = function(e) {
+  e = e || window.event;
+  var msg = ("If you leave before completing the task, "
+	     + "you will not be able to submit the HIT.");
+  if (!submitted) {
+    // For IE & Firefox
+    if (e) {
+      e.returnValue = msg;
+    }
+    // For Safari
+    return msg;
+  }
+};
 
 // // Automatically registers whether user has switched tabs...
 (function() {
