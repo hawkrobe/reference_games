@@ -28,7 +28,7 @@ var drawScreen = function(game, player) {
 };
 
 var updateInterface = function(game) {
-  if(game.roundNum + 1 >= game.numRounds) {
+  if(game.roundNum  >= game.numRounds) {
     $('#roundnumber').empty();
     $('#instructs').empty().append("Round " + (game.roundNum) + 
 				   " score: " + game.score);
@@ -66,7 +66,6 @@ var colorPicker = function(game) {
   this.centerX = game.viewport.width / 4;
   this.centerY = game.viewport.height / 2 - (this.padding/2);
   this.radius = 100;
-  this.lightnessCursor = 150;
   this.lightnessTop = 250;
   this.drawPicker = function() {
     this.drawDisc();
@@ -77,6 +76,7 @@ var colorPicker = function(game) {
   this.reset = function() {
     this.discCursorX = this.centerX;
     this.discCursorY = this.centerY;
+    this.lightnessCursor = 150;
     this.hue = 0;
     this.sat = 0;
     this.light = 50;
@@ -97,7 +97,7 @@ colorPicker.prototype.lightnessHitTest = function(x, y) {
   var dx = x - this.centerX;
   var dy = y - this.lightnessTop;
   console.log(dx, dy);
-  return (Math.abs(dx) < (300 - this.padding * 2) &&
+  return (Math.abs(dx) < (300 - this.padding * 2)/2 &&
 	  0 < dy && dy < this.padding/2);
 };
 
@@ -110,8 +110,6 @@ colorPicker.prototype.setDiscCursor = function(x,y) {
     this.discCursorY = y;
     this.hue = (angle(dx,dy) + 360) % 360;
     this.sat = (dx * dx + dy * dy) / this.radius / this.radius * 100;
-    console.log("changed hue to " + this.hue);
-    console.log("changed sat to " + this.sat);
   }
 };
 
@@ -121,9 +119,11 @@ colorPicker.prototype.drawDiscCursor = function() {
   this.ctx.stroke();
 };
 
-colorPicker.prototype.setLightness = function(x) {
-  this.lightnessCursor = x;
-  this.light = (x - this.padding) / 2;
+colorPicker.prototype.setLightness = function(x, y) {
+  if(this.lightnessHitTest(x, y)) {
+    this.lightnessCursor = x;
+    this.light = (x - this.padding) / 2;
+  }
 };
 
 colorPicker.prototype.drawLightnessCursor = function() {
@@ -210,6 +210,6 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
   }
 }
 
-function angle(x, y) {
+var angle = function(x, y) {
   return (x < 0) * 180 + Math.atan(-y / -x) * 180 / Math.PI;
-}
+};
