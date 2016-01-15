@@ -31,8 +31,7 @@ var establishStream = function(game, streamName, outputFileName, header) {
 };
 
 var hsl2lab = function(hsl) {
-  var rgb = converter.hsl2rgbRaw(hsl);
-  return converter.rgb2lab(rgb);
+  return converter.hsl.lab(hsl);
 };
 
 function fillArray(value, len) {
@@ -44,10 +43,10 @@ function fillArray(value, len) {
 }
 
 var randomColor = function () {
-  var hue = ~~(Math.random() * 360);
-  var sat = ~~(Math.random() * 101);
-  var lightness = ~~(Math.random() * 101);
-  return [hue, sat, lightness];
+  var r = ~~(Math.random() * 256);
+  var g = ~~(Math.random() * 256);
+  var b = ~~(Math.random() * 256);
+  return converter.rgb.hsl(r, g, b);
 };
 
 var colorDiff = function(color1, color2) {

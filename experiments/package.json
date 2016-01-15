@@ -9,7 +9,7 @@
     "node-uuid": "1.4.1",
     "csv-parse": "~0.0.6",
     "delta-e" : "~0.0.7",
-    "color-convert": "~0.7.0"
+    "color-convert": "~1.0.0"
   }
 }
 
