@@ -48,7 +48,7 @@ var game_core = function(options){
   
   // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
-  this.maxScore = 50;
+  this.maxScore = 30;
   
   // How many rounds do we want people to complete?
   this.numRounds = 25;
@@ -164,7 +164,11 @@ game_core.prototype.makeTrialList = function () {
 //returns the correct score out of total tangrams
 game_core.prototype.calcScore = function(submitted, target) {
   var diff = utils.colorDiff(submitted, target);
-  return this.maxScore - diff > 0 ? this.maxScore - diff : 0;
+  console.log("diff is " + diff);
+  console.log(this.maxScore - diff > 0 ? this.maxScore - diff : 0);
+  return (diff < 10 ? this.maxScore :
+	  this.maxScore - diff + 10 > 0 ? this.maxScore - diff + 10 : 
+	  0);
 };
 
 // maps a grid location to the exact pixel coordinates
