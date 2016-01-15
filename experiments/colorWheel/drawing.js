@@ -36,7 +36,8 @@ var updateInterface = function(game) {
     $('#roundnumber').empty().append("Round ", game.roundNum + 1,
 				     "/", game.numRounds);
   }
-  if(game.score) {
+    console.log(game.score);
+  if(game.score !== undefined) {
     $('#score').empty().append("Round ", game.roundNum,  
 			       " score: ", game.score, "/", game.maxScore);
   }
@@ -51,6 +52,13 @@ var drawSwatchWithText = function(game, colorArr, text, location) {
   // Draw text
   game.ctx.fillStyle = "white";
   game.ctx.fillText(text, xLoc + 150, 40);
+  // Draw outline
+  game.ctx.beginPath();
+  game.ctx.strokeStyle = "white";
+  game.ctx.lineWidth = "2";
+  game.ctx.rect(xLoc + padding - 2, padding - 2,
+		    300 - padding * 2 + 4, 300 - padding * 2 + 4);  
+  game.ctx.stroke();
   // Draw Swatch
   game.ctx.fillStyle = ('hsl(' + colorArr[0] + ',' + colorArr[1] +
 			'%, ' + colorArr[2] + '%)');
