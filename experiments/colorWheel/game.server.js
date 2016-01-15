@@ -75,13 +75,13 @@ var writeData = function(client, type, message_parts) {
     var color = message_parts.slice(1, 4);
     var score = message_parts[4];
     line = (id + ',' + Date.now() + ',' + roundNum + ',' +
-	    gc.trialInfo.currStim.join(',') + ',' + color.join(','));
+	    gc.trialInfo.currStim.join(',') + ',' + color.join(',') + ',' + score);
     break;
     
     case "message" :
       var msg = message_parts[1].replace('~~~','.');
       line = (id + ',' + Date.now() + ',' + roundNum + ',' +
-	      client.role + ',"' + msg + '"\n');
+	      gc.trialInfo.currStim.join(',') + client.role + ',"' + msg + '"\n');
       break;
   }
   console.log(type + ":" + line);
@@ -92,11 +92,14 @@ var startGame = function(game, player) {
   console.log("starting game" + game.id);
   // Establish write streams
   var startTime = utils.getLongFormTime();
-  var dataFileName = startTime + "_" + game.id;
+  var dataFileName = startTime + "_" + game.id + ".csv";
   utils.establishStream(game, "message", dataFileName,
-		       "gameid,time,roundNum,sender,contents\n");
+		       "gameid,time,roundNum,targetColH, targetColS,"
+			+ "targetColL, sender,contents\n");
   utils.establishStream(game, "outcome", dataFileName,
-			"gameid,time,roundNum,targetCol,submittedCol,score\n");
+			"gameid,time,roundNum,targetColH, targetColS,"
+			+ "targetColL, submittedColH, submittedColS,"
+			+ "submittedColL,score\n");
   game.newRound();
 };
 
