@@ -43,10 +43,10 @@ function fillArray(value, len) {
 }
 
 var randomColor = function () {
-  var r = ~~(Math.random() * 256);
-  var g = ~~(Math.random() * 256);
-  var b = ~~(Math.random() * 256);
-  return converter.rgb.hsl(r, g, b);
+  var h = ~~(Math.random() * 360);
+  var s = ~~(Math.random() * 100);
+  var l = 50;
+  return [h, s, l];
 };
 
 var colorDiff = function(color1, color2) {
