@@ -75,7 +75,7 @@ var writeData = function(client, type, message_parts) {
     var color = message_parts.slice(1, 4);
     var score = message_parts[4];
     line = (id + ',' + Date.now() + ',' + roundNum + ',' +
-	    gc.trialInfo.currStim.join(',') + ',' + color.join(',') + ',' + score);
+	    gc.trialInfo.currStim.join(',') + ',' + color.join(',') + ',' + score + '\n');
     break;
     
   case "message" :

@@ -32,8 +32,8 @@ var game_core = function(options){
   // How many players in the game?
   this.players_threshold = 2;
   this.playerRoleNames = {
-    role1 : 'speaker',
-    role2 : 'listener'
+    role1 : 'director',
+    role2 : 'matcher'
   };
   
   // Dimensions of world in pixels and numberof cells to be divided into;
