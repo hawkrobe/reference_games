@@ -261,12 +261,12 @@ var client_onjoingame = function(num_players, role) {
 
   // Initialize interface elements
   if(role === game.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to help your partner select your color. "
+    $('#instructs').append("Send messages to help your partner guess your color. "
 			   + "Please do not refresh page!");
     $("#submitbutton").remove();
     game.get_player(my_id).message = 'Waiting for other player to connect...';
   } else {
-    $('#instructs').append("Use the color wheel and slider to select your partner's color. "
+    $('#instructs').append("Use the color wheel to guess your partner's color. "
 			   + "Please do not refresh page!");
     $("#submitbutton").show();
     game.colorPicker = new colorPicker(game);
@@ -289,11 +289,12 @@ function mouseDownListener(evt) {
   if (game.colorPicker.discHitTest(mouseX, mouseY)) {
     game.colorPicker.setDiscCursor(mouseX, mouseY);
     dragging = "disc";
-  } else if(game.colorPicker.lightnessHitTest(mouseX, mouseY)) {
-    console.log("clicked on lightness bar @ " + mouseX + "," + mouseY);
-    game.colorPicker.setLightness(mouseX);
-    dragging = "lightness";
   }
+  // } else if(game.colorPicker.lightnessHitTest(mouseX, mouseY)) {
+  //   console.log("clicked on lightness bar @ " + mouseX + "," + mouseY);
+  //   game.colorPicker.setLightness(mouseX);
+  //   dragging = "lightness";
+  // }
   if (dragging) {
     window.addEventListener("mousemove", mouseMoveListener, false);
   }
@@ -323,11 +324,12 @@ function mouseUpListener(evt) {
     game.colorPicker.setDiscCursor(mouseX, mouseY);
     dragging = false;
     window.removeEventListener("mousemove", mouseMoveListener, false);
-  } else if (dragging == "lightness") {
-    game.colorPicker.setLightness(mouseX);
-    dragging = false;
-    window.removeEventListener("mousemove", mouseMoveListener, false);
   }
+  // } else if (dragging == "lightness") {
+  //   game.colorPicker.setLightness(mouseX);
+  //   dragging = false;
+  //   window.removeEventListener("mousemove", mouseMoveListener, false);
+  // }
   drawScreen(game, game.get_player(my_id));
 }
 
@@ -340,8 +342,8 @@ function mouseMoveListener(evt) {
   //clamp x and y positions to prevent object from dragging outside of canvas
   if(dragging == "disc") {
     game.colorPicker.setDiscCursor(mouseX, mouseY);
-  } else if(dragging == "lightness") {
-    game.colorPicker.setLightness(mouseX, mouseY);
+  // } else if(dragging == "lightness") {
+  //   game.colorPicker.setLightness(mouseX, mouseY);
   }
 
   // Draw it

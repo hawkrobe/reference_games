@@ -72,19 +72,19 @@ var colorPicker = function(game) {
   this.ctx = game.ctx;
   this.padding = 50;
   this.centerX = game.viewport.width / 4;
-  this.centerY = game.viewport.height / 2 - (this.padding/2);
-  this.radius = 100;
-  this.lightnessTop = 250;
+  this.centerY = game.viewport.height / 2;// - (this.padding/2);
+  this.radius = 110;
+//  this.lightnessTop = 250;
   this.drawPicker = function() {
     this.drawDisc();
     this.drawDiscCursor();
-    this.drawLightnessRect();
-    this.drawLightnessCursor();
+    // this.drawLightnessRect();
+    // this.drawLightnessCursor();
   };
   this.reset = function() {
     this.discCursorX = this.centerX;
     this.discCursorY = this.centerY;
-    this.lightnessCursor = 150;
+//    this.lightnessCursor = 150;
     this.hue = 0;
     this.sat = 0;
     this.light = 50;
@@ -101,13 +101,13 @@ colorPicker.prototype.discHitTest = function(x, y) {
   return dx * dx + dy * dy < this.radius * this.radius;
 };
 
-colorPicker.prototype.lightnessHitTest = function(x, y) {
-  var dx = x - this.centerX;
-  var dy = y - this.lightnessTop;
-  console.log(dx, dy);
-  return (Math.abs(dx) < (300 - this.padding * 2)/2 &&
-	  0 < dy && dy < this.padding/2);
-};
+// colorPicker.prototype.lightnessHitTest = function(x, y) {
+//   var dx = x - this.centerX;
+//   var dy = y - this.lightnessTop;
+//   console.log(dx, dy);
+//   return (Math.abs(dx) < (300 - this.padding * 2)/2 &&
+// 	  0 < dy && dy < this.padding/2);
+// };
 
 colorPicker.prototype.setDiscCursor = function(x,y) {
   var dx = x - this.centerX;
@@ -127,19 +127,19 @@ colorPicker.prototype.drawDiscCursor = function() {
   this.ctx.stroke();
 };
 
-colorPicker.prototype.setLightness = function(x, y) {
-  if(this.lightnessHitTest(x, y)) {
-    this.lightnessCursor = x;
-    this.light = (x - this.padding) / 2;
-  }
-};
+// colorPicker.prototype.setLightness = function(x, y) {
+//   if(this.lightnessHitTest(x, y)) {
+//     this.lightnessCursor = x;
+//     this.light = (x - this.padding) / 2;
+//   }
+// };
 
-colorPicker.prototype.drawLightnessCursor = function() {
-  this.ctx.beginPath();
-  this.ctx.rect(this.lightnessCursor-5, this.lightnessTop - 5,
-		10, this.padding/2 + 10);
-  this.ctx.stroke();
-};
+// colorPicker.prototype.drawLightnessCursor = function() {
+//   this.ctx.beginPath();
+//   this.ctx.rect(this.lightnessCursor-5, this.lightnessTop - 5,
+// 		10, this.padding/2 + 10);
+//   this.ctx.stroke();
+// };
 
 colorPicker.prototype.drawDisc = function() {
   var counterClockwise = false;
@@ -168,16 +168,16 @@ colorPicker.prototype.drawDisc = function() {
   }
 };
 
-colorPicker.prototype.drawLightnessRect = function() {
-  var rectGradient = this.ctx.createLinearGradient(this.padding, this.lightnessTop,
-						   300-this.padding, this.lightnessTop);
-  rectGradient.addColorStop(0,  "hsl(" + this.hue + "," + this.sat + "%,0%)");
-  rectGradient.addColorStop(0.5,"hsl(" + this.hue + "," + this.sat + "%,50%)");
-  rectGradient.addColorStop(1,  "hsl(" + this.hue + "," + this.sat + "%,100%)");
-  this.ctx.fillStyle=rectGradient;
-  this.ctx.fillRect(this.padding,300-this.padding,
-		    300 - (this.padding * 2), this.padding/2);
-};
+// colorPicker.prototype.drawLightnessRect = function() {
+//   var rectGradient = this.ctx.createLinearGradient(this.padding, this.lightnessTop,
+// 						   300-this.padding, this.lightnessTop);
+//   rectGradient.addColorStop(0,  "hsl(" + this.hue + "," + this.sat + "%,0%)");
+//   rectGradient.addColorStop(0.5,"hsl(" + this.hue + "," + this.sat + "%,50%)");
+//   rectGradient.addColorStop(1,  "hsl(" + this.hue + "," + this.sat + "%,100%)");
+//   this.ctx.fillStyle=rectGradient;
+//   this.ctx.fillRect(this.padding,300-this.padding,
+// 		    300 - (this.padding * 2), this.padding/2);
+// };
 
 // This is a helper function to write a text string onto the HTML5 canvas.
 // It automatically figures out how to break the text into lines that will fit
