@@ -78,11 +78,11 @@ var writeData = function(client, type, message_parts) {
 	    gc.trialInfo.currStim.join(',') + ',' + color.join(',') + ',' + score);
     break;
     
-    case "message" :
-      var msg = message_parts[1].replace('~~~','.');
-      line = (id + ',' + Date.now() + ',' + roundNum + ',' +
-	      gc.trialInfo.currStim.join(',') + client.role + ',"' + msg + '"\n');
-      break;
+  case "message" :
+    var msg = message_parts[1].replace('~~~','.');
+    line = (id + ',' + Date.now() + ',' + roundNum + ',' +
+	    gc.trialInfo.currStim.join(',') + ',' + client.role + ',"' + msg + '"\n');
+    break;
   }
   console.log(type + ":" + line);
   gc.streams[type].write(line, function (err) {if(err) throw err;});
