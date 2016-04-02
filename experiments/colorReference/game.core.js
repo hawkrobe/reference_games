@@ -232,11 +232,16 @@ var sampleTrial = function(condition) {
 };
 
 var checkItem = function(condition, target, firstDistractor, secondDistractor) {
-  var t = 25; // tolerance
+  var f = 5; // floor difference
+  var t = 20; // threshold
   var targetVsDistr1 = utils.colorDiff(target.color, firstDistractor.color);
   var targetVsDistr2 = utils.colorDiff(target.color, secondDistractor.color);
-  var distr1VsDistr2 = utils.colorDiff(firstDistractor.color, secondDistractor.color);  
-  if(condition === "equal") {
+  var distr1VsDistr2 = utils.colorDiff(firstDistractor.color, secondDistractor.color);
+  console.log([targetVsDistr1, targetVsDistr2, distr1VsDistr2]);
+  if(targetVsDistr1 < f || targetVsDistr2 < f || distr1VsDistr2 < f) {
+    console.log("too small");
+    return false;
+  } else if(condition === "equal") {
     return targetVsDistr1 > t && targetVsDistr2 > t && distr1VsDistr2 > t;
   } else if (condition === "closer") {
     return targetVsDistr1 < t && targetVsDistr2 < t && distr1VsDistr2 < t;
@@ -279,8 +284,8 @@ game_core.prototype.getTangramFromCell = function (gridX, gridY) {
       return i;
     }
   }
-  console.log("Did not find tangram from cell!")
-}
+  console.log("Did not find tangram from cell!");
+};
 
 // readjusts trueX and trueY values based on the objLocation and width and height of image (objImage)
 game_core.prototype.getTrueCoords = function (coord, objLocation, objImage) {
