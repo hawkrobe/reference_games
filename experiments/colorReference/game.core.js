@@ -237,9 +237,7 @@ var checkItem = function(condition, target, firstDistractor, secondDistractor) {
   var targetVsDistr1 = utils.colorDiff(target.color, firstDistractor.color);
   var targetVsDistr2 = utils.colorDiff(target.color, secondDistractor.color);
   var distr1VsDistr2 = utils.colorDiff(firstDistractor.color, secondDistractor.color);
-  console.log([targetVsDistr1, targetVsDistr2, distr1VsDistr2]);
   if(targetVsDistr1 < f || targetVsDistr2 < f || distr1VsDistr2 < f) {
-    console.log("too small");
     return false;
   } else if(condition === "equal") {
     return targetVsDistr1 > t && targetVsDistr2 > t && distr1VsDistr2 > t;
