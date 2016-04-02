@@ -1,3 +1,5 @@
+var visible;
+
 var ondisconnect = function(data) {
   // Redirect to exit survey
   console.log("server booted");
@@ -22,24 +24,24 @@ var sharedSetup = function(game) {
   game.socket = io.connect();
 
   // Tell other player if someone is typing...
-  $('#chatbox').change(function() {
-    var sentTyping = false;
-    if($('#chatbox').val() != "" && !sentTyping) {
+  $('#chatbox').on('input', function() {
+    console.log("inputting...");
+    if($('#chatbox').val() != "" && !globalGame.sentTyping) {
       game.socket.send('playerTyping.true');
-      sentTyping = true;
+      globalGame.sentTyping = true;
     } else if($("#chatbox").val() == "") {
       game.socket.send('playerTyping.false');
-      sentTyping = false;
+      globalGame.sentTyping = false;
     }
   });
   
   // Tell server when client types something in the chatbox
   $('form').submit(function(){
     var origMsg = $('#chatbox').val();
-    // console.log("submitting message to server");
     var msg = 'chatMessage.' + origMsg.replace(/\./g, '~~~');
     if($('#chatbox').val() != '') {
       game.socket.send(msg);
+      globalGame.sentTyping = false;
       $('#chatbox').val('');
     }
     return false;   
@@ -57,16 +59,14 @@ var sharedSetup = function(game) {
   game.socket.on('chatMessage', function(data){
     // Just in case we want to bar responses until after some message received
     globalGame.messageSent = true;
-    var otherRole = (my_role === game.playerRoleNames.role1 ?
+    var otherRole = (globalGame.my_role === game.playerRoleNames.role1 ?
 		     game.playerRoleNames.role2 : game.playerRoleNames.role1);
     var source = data.user === globalGame.my_id ? "You" : otherRole;
     var col = source === "You" ? "#363636" : "#707070";
     $('.typing-msg').remove();
     $('#messages').append($('<li style="padding: 5px 10px; background: ' + col + '">')
-			  .text(source + ": " + data.msg));
-    $('#messages').stop().animate({
-      scrollTop: $("#messages")[0].scrollHeight
-    }, 800);
+    			  .text(source + ": " + data.msg));
+    
   });
 
   //so that we can measure the duration of the game
@@ -132,7 +132,7 @@ function dropdownTip(data){
   case 'submit' :
     globalGame.data.subject_information = _.extend(globalGame.data.subject_information, 
 				   {'comments' : $('#comments').val(), 
-				    'role' : my_role,
+				    'role' : globalGame.my_role,
 				    'totalLength' : Date.now() - globalGame.startTime});
     globalGame.submitted = true;
     var urlParams;

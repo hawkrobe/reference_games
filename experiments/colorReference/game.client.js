@@ -17,9 +17,7 @@
 
 // A window global for our game root variable.
 var globalGame = {};
-var my_role = null;
 // Keeps track of whether player is paying attention...
-var visible;
 var incorrect;
 var dragging;
 var waiting;
@@ -43,7 +41,7 @@ var client_onserverupdate_received = function(data){
     globalGame.currStim = _.map(data.trialInfo.currStim, function(obj) {
       console.log(obj);
       // Extract the coordinates matching your role
-      var customCoords = (my_role == globalGame.playerRoleNames.role1 ?
+      var customCoords = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
 			  obj.speakerCoords : obj.listenerCoords);
       console.log(customCoords);
       // remove the speakerCoords and listenerCoords properties
@@ -71,6 +69,7 @@ var client_onserverupdate_received = function(data){
   globalGame.data = data.dataObj;
   
   // Draw all this new stuff
+  console.log("update");
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 }; 
 
@@ -87,7 +86,7 @@ var client_onMessage = function(data) {
     case 'end' :
       // Redirect to exit survey
       ondisconnect();
-      console.log("received end message...")
+      console.log("received end message...");
       break;
 
     case 'feedback' :
@@ -95,29 +94,28 @@ var client_onMessage = function(data) {
       var upperLeftX;
       var upperLeftY;
       var strokeColor;
-      if (my_role === globalGame.playerRoleNames.role1) {
+      console.log("drawing feedback");
+      if (globalGame.my_role === globalGame.playerRoleNames.role1) {
 	var clickedObjStatus = commanddata;
-	console.log("name: " + commanddata);
 	objToHighlight = _.filter(globalGame.currStim, function(x){
 	  return x.targetStatus == clickedObjStatus;
 	})[0];
-	console.log(objToHighlight);
 	upperLeftX = objToHighlight.speakerCoords.gridPixelX;
 	upperLeftY = objToHighlight.speakerCoords.gridPixelY;
-	strokeColor = "green";      
       } else {
 	objToHighlight = _.filter(globalGame.currStim, function(x){
 	  return x.targetStatus == "target";
 	})[0];
 	upperLeftX = objToHighlight.listenerCoords.gridPixelX;
 	upperLeftY = objToHighlight.listenerCoords.gridPixelY;
-	strokeColor = "green";	
       }
+      console.log('obj to highlight is...');
       console.log(objToHighlight);
       if (upperLeftX != null && upperLeftY != null) {
+	console.log("actually stroking");
         globalGame.ctx.beginPath();
         globalGame.ctx.lineWidth="10";
-        globalGame.ctx.strokeStyle=strokeColor;
+        globalGame.ctx.strokeStyle="green";
         globalGame.ctx.rect(upperLeftX+5, upperLeftY+5,290,290); 
         globalGame.ctx.stroke();
       }
@@ -167,8 +165,8 @@ var customSetup = function(game) {
 
 var client_onjoingame = function(num_players, role) {
   // set role locally
-  my_role = role;
-  globalGame.get_player(globalGame.my_id).role = my_role;
+  globalGame.my_role = role;
+  globalGame.get_player(globalGame.my_id).role = globalGame.my_role;
 
   _.map(_.range(num_players - 1), function(i){
     globalGame.players.unshift({id: null, player: new game_player(globalGame)});
