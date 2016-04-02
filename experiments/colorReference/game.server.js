@@ -46,7 +46,6 @@ var onMessage = function(client,message) {
     break; 
   
   case 'playerTyping' :
-    console.log("player is typing?", message_parts[1]);
     _.map(others, function(p) {
       p.player.instance.emit( 'playerTyping',
 			      {typing: message_parts[1]});
@@ -75,50 +74,17 @@ var writeData = function(client, type, message_parts) {
   var id = gc.id.slice(0,6);
   switch(type) {
   case "clickedObj" :
-    var clickedObjCondition = message_parts[1];
-    var clickedObjName = message_parts[2];
-    var clickedObjTargetStatus = message_parts[3];
-    var clickedObjSpeakerLocs = message_parts[4];
-    var clickedObjListenerLocs = message_parts[5];
-    var clickedObjBasiclevel = message_parts[6];
-    var clickedObjSuperdomain = message_parts[7];
-
-      var alternative1Name = message_parts[8]; 
-      var alternative1TargetStatus = message_parts[9];
-      var alternative1SpeakerLocs = message_parts[10];
-      var alternative1ListenerLocs = message_parts[11];
-      var alternative1Basiclevel = message_parts[12];
-      var alternative1Superdomain = message_parts[13];
-
-      var alternative2Name = message_parts[14]; 
-      var alternative2TargetStatus = message_parts[15];
-      var alternative2SpeakerLocs = message_parts[16];
-      var alternative2ListenerLocs = message_parts[17];
-      var alternative2Basiclevel = message_parts[18];
-      var alternative2Superdomain = message_parts[19];
-      
-      var line = (id + ',' + Date.now() + ',' + roundNum  + ',' + clickedObjCondition 
-        + "," + clickedObjName + "," + clickedObjTargetStatus + "," + clickedObjSpeakerLocs 
-        + "," + clickedObjListenerLocs + ',' + clickedObjBasiclevel + ',' + clickedObjSuperdomain 
-        + "," + alternative1Name + "," + alternative1TargetStatus + "," + alternative1SpeakerLocs 
-        + "," + alternative1ListenerLocs + ',' + alternative1Basiclevel + ',' + alternative1Superdomain 
-        + "," + alternative2Name + "," + alternative2TargetStatus + "," + alternative2SpeakerLocs 
-        + "," + alternative2ListenerLocs + ',' + alternative2Basiclevel + ',' + alternative2Superdomain  + '\n');
-    console.log("clickedObj: " + line);
-
+    var outcome = message_parts[2] === "target";
+    var targetVsD1 = utils.colorDiff(getStim(gc, "target"), getStim(gc, "distr1"));
+    var targetVsD2 = utils.colorDiff(getStim(gc, "target"), getStim(gc, "distr2"));
+    var D1VsD2 = utils.colorDiff(getStim(gc, "distr1"), getStim(gc, "distr2"));
+    var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
+		message_parts.slice(1).join(',') +
+		targetVsD1 + "," + targetVsD2 + "," + D1VsD2 + "," + outcome +
+		'\n');
+    console.log("clickedObj:" + line);
     break;
 
-    // case "nonClickedObj" :
-    //   var nonClickedObjName = message_parts[1];
-    //   var nonCickedObjTargetStatus = message_parts[2];
-    //   var nonClickedObjSpeakerLocs = message_parts[3];
-    //   var nonClickedObjListenerLocs = message_parts[4];
-    //   var nonClickedObjCondition = message_parts[5];
-    //   var line = (id + ',' + Date.now() + ',' + roundNum + ',' + nonClickedObjName + "," + 
-    //     nonClickedObjTargetStatus + "," + nonClickedObjSpeakerLocs + "," + nonClickedObjListenerLocs + "," + nonClickedObjCondition + '\n');
-    //   console.log("nonClickedObj: " + line);
-    //   gc.nonClickObjStream.write(line, function (err) {if(err) throw err;});
-    //   break;
 
   case "message" :
     var msg = message_parts[1].replace('~~~','.');
@@ -127,6 +93,12 @@ var writeData = function(client, type, message_parts) {
     break;
   }
   gc.streams[type].write(line, function (err) {if(err) throw err;});
+};
+
+var getStim = function(game, targetStatus) {
+  return _.filter(game.trialInfo.currStim, function(x){
+    return x.targetStatus == targetStatus;
+  })[0]['color'];
 };
 
 // /* 
@@ -140,16 +112,11 @@ var startGame = function(game, player) {
   utils.establishStream(game, "message", dataFileName,
 			"gameid,time,roundNum,sender,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
-			"gameid, time, roundNum, trialType, condition," +
-			"nameClickedObj, targetStatusClickedObj, spLocsClickedObj, " +
-			"lisLocsClickedObj, basiclevelClickedObj, " +
-			"superdomainClickedObj, alt1Name, alt1TargetStatus, " +
-			"alt1SpLocs, alt1LisLocs, alt1Basiclevel, alt1superdomain, " +
-			"alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, " +
-			"alt2Basiclevel, alt2superdomain, alt3Name, alt3TargetStatus, "+
-			"alt3SpLocs, alt3LisLocs, alt3Basiclevel, alt3superdomain, "+
-			"alt4Name, alt4TargetStatus, alt4SpLocs, " +
-			"alt4LisLocs, alt4Basiclevel, alt4superdomain\n");
+			"gameid,time,roundNum,condition," +
+			"clickStatus,clickColH,clickColS,clickColL,clickLocS,clickLocL"+
+			"alt1Status,alt1ColH,alt1ColS,alt1ColL,alt1LocS,alt1LocL" +
+			"alt2Status,alt2ColH,alt2ColS,alt2ColL,alt2LocS,alt2LocL" +
+			"targetD1Diff,targetD2Diff,D1D2Diff,outcome\n");
   game.newRound();
 };
 
