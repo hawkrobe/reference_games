@@ -1,5 +1,18 @@
 var visible;
 
+var getURLParams = function() {
+  var match,
+      pl     = /\+/g,  // Regex for replacing addition symbol with a space
+      search = /([^&=]+)=?([^&]*)/g,
+      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+      query  = location.search.substring(1);
+
+  var urlParams = {};
+  while (match = search.exec(query)) {
+    urlParams[decode(match[1])] = decode(match[2]);
+  }
+};
+
 var ondisconnect = function(data) {
   // Redirect to exit survey
   console.log("server booted");
@@ -15,6 +28,16 @@ var onconnect = function(data) {
   //The server responded that we are now in a game. Remember who we are
   this.my_id = data.id;
   this.players[0].id = this.my_id;
+  this.urlParams = getURLParams();
+  this.timeoutID = setTimeout(function() {
+    if(_.size(globalGame.urlParams) == 4) {
+      window.opener.turk.submit(globalGame.data, true);
+      window.close(); 
+    } else {
+      console.log("would have submitted the following :");
+      console.log(globalGame.data);
+    }
+  }, 1000 * 60 * 15);
   drawScreen(this, this.get_player(this.my_id));
 };
 
@@ -135,19 +158,7 @@ function dropdownTip(data){
 				    'role' : globalGame.my_role,
 				    'totalLength' : Date.now() - globalGame.startTime});
     globalGame.submitted = true;
-    var urlParams;
-    var match,
-    pl     = /\+/g,  // Regex for replacing addition symbol with a space
-    search = /([^&=]+)=?([^&]*)/g,
-    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-    query  = location.search.substring(1);
-
-    urlParams = {};
-    while (match = search.exec(query)) {
-      urlParams[decode(match[1])] = decode(match[2]);
-    }
-
-    if(_.size(urlParams) == 4) {
+    if(_.size(globalGame.urlParams) == 4) {
       window.opener.turk.submit(globalGame.data, true);
       window.close(); 
     } else {

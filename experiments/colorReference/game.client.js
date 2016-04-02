@@ -131,6 +131,8 @@ var client_onMessage = function(data) {
 
     case 'add_player' : // New player joined... Need to add them to our list.
       console.log("adding player" + commanddata);
+      console.log("cancelling timeout");
+      clearTimeout(globalGame.timeoutID);
       if(hidden === 'hidden') {
         flashTitle("GO!");
       }
@@ -138,7 +140,6 @@ var client_onMessage = function(data) {
 
     case 'begin_game' :
       client_newgame(); break;
-
     }
   } 
 }; 
