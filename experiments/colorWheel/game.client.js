@@ -222,4 +222,3 @@ function hitTest(shape,mx,my) {
   var dy = my - shape.trueY;
   return (0 < dx) && (dx < shape.width) && (0 < dy) && (dy < shape.height);
 }
-
