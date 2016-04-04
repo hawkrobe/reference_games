@@ -369,12 +369,15 @@ function dropdownTip(data){
 					     {'nativeEnglish' : commands[1]}); break;
   case 'partner' :
     game.data.subject_information = _.extend(game.data.subject_information,
-                {'ratePartner' : commands[1]}); break;
+					     {'ratePartner' : commands[1]}); break;
+  case 'confused' :
+    game.data.subject_information = _.extend(game.data.subject_information,
+					     {'confused' : commands[1]}); break;
   case 'submit' :
     game.data.subject_information = _.extend(game.data.subject_information, 
-				   {'comments' : $('#comments').val(), 
-				    'role' : my_role,
-				    'totalLength' : Date.now() - game.startTime});
+					     {'comments' : $('#comments').val(), 
+					      'role' : my_role,
+					      'totalLength':Date.now() - game.startTime});
     submitted = true;
     var urlParams;
     var match,
@@ -389,10 +392,10 @@ function dropdownTip(data){
     }
 
     if(_.size(urlParams) == 4) {
-      window.opener.turk.submit(game.data, true)
+      window.opener.turk.submit(game.data, true);
       window.close(); 
     } else {
-      console.log("would have submitted the following :")
+      console.log("would have submitted the following :");
       console.log(game.data);
       var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
       window.location.replace(URL);
