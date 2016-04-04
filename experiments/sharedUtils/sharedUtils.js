@@ -49,6 +49,11 @@ var randomColor = function () {
   return [h, s, l];
 };
 
+var randomSpline = function () {
+  var numPoints = 4;
+  return _.sample(_.range(50, 250), 2 * numPoints);
+};
+
 var colorDiff = function(color1, color2) {
   var subLAB = _.object(['L', 'A', 'B'], hsl2lab(color1));
   var tarLAB = _.object(['L', 'A', 'B'], hsl2lab(color2));
@@ -63,5 +68,6 @@ module.exports = {
   hsl2lab : hsl2lab,
   fillArray: fillArray,
   randomColor: randomColor,
+  randomSpline: randomSpline,  
   colorDiff : colorDiff
 };
