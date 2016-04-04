@@ -131,8 +131,6 @@ var client_onMessage = function(data) {
 
     case 'add_player' : // New player joined... Need to add them to our list.
       console.log("adding player" + commanddata);
-      console.log("cancelling timeout");
-      clearTimeout(globalGame.timeoutID);
       if(hidden === 'hidden') {
         flashTitle("GO!");
       }
@@ -140,6 +138,7 @@ var client_onMessage = function(data) {
 
     case 'begin_game' :
       client_newgame(); break;
+
     }
   } 
 }; 
@@ -204,7 +203,6 @@ function mouseClickListener(evt) {
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
-  console.log(evt);
   if (globalGame.messageSent){ // if message was not sent, don't do anything
     for (var i=0; i < globalGame.currStim.length; i++) {
       var obj = globalGame.currStim[i];
@@ -223,12 +221,12 @@ function mouseClickListener(evt) {
 	// Tell the server about it
         var alt1 = _.sample(_.without(globalGame.currStim, obj));
         var alt2 = _.sample(_.without(globalGame.currStim, obj, alt1));
-        globalGame.socket.send("clickedObj." + obj.condition + "." +
-			 obj.targetStatus + "." + obj.color.join('.') + "." +
+        globalGame.socket.send("clickedObj." + 
+			 obj.targetStatus + "." + obj.points.join('.') + "." +
 			 obj.speakerCoords.gridX + "." + obj.listenerCoords.gridX +"." +
-			 alt1.targetStatus + "." + alt1.color.join('.') + "." +
+			 alt1.targetStatus + "." + alt1.points.join('.') + "." +
 			 alt1.speakerCoords.gridX+"."+alt1.listenerCoords.gridX+"." +
-			 alt2.targetStatus + "." + alt2.color.join('.') + "." +
+			 alt2.targetStatus + "." + alt2.points.join('.') + "." +
 			 alt2.speakerCoords.gridX+"."+alt2.listenerCoords.gridX + ".");
 	
       }

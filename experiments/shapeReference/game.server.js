@@ -75,13 +75,8 @@ var writeData = function(client, type, message_parts) {
   switch(type) {
   case "clickedObj" :
     var outcome = message_parts[2] === "target";
-    var targetVsD1 = utils.colorDiff(getStim(gc, "target"), getStim(gc, "distr1"));
-    var targetVsD2 = utils.colorDiff(getStim(gc, "target"), getStim(gc, "distr2"));
-    var D1VsD2 = utils.colorDiff(getStim(gc, "distr1"), getStim(gc, "distr2"));
     var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
-		message_parts.slice(1).join(',') +
-		targetVsD1 + "," + targetVsD2 + "," + D1VsD2 + "," + outcome +
-		'\n');
+		message_parts.slice(1).join(', ') + outcome + '\n');
     console.log("clickedObj:" + line);
     break;
 
@@ -112,11 +107,13 @@ var startGame = function(game, player) {
   utils.establishStream(game, "message", dataFileName,
 			"gameid,time,roundNum,sender,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
-			"gameid,time,roundNum,condition," +
-			"clickStatus,clickColH,clickColS,clickColL,clickLocS,clickLocL"+
-			"alt1Status,alt1ColH,alt1ColS,alt1ColL,alt1LocS,alt1LocL" +
-			"alt2Status,alt2ColH,alt2ColS,alt2ColL,alt2LocS,alt2LocL" +
-			"targetD1Diff,targetD2Diff,D1D2Diff,outcome\n");
+			"gameid,time,roundNum," +
+			"clickStatus,clickP1,clickP2,clickP3,clickP4,clickP5,clickP6," +
+			"clickP7,clickP8,clickLocS,clickLocL," +
+			"alt1Status,alt1P1,alt1P2,alt1P3,alt1P4,alt1P5,alt1P6," +
+			"alt1P7,alt1P8,alt1LocS,alt1LocL," +			
+			"alt2Status,alt2P1,alt2P2,alt2P3,alt2P4,alt2P5,alt2P6," +
+			"alt2P7,alt2P8,alt2LocS,alt2LocL,outcome\n");
   game.newRound();
 };
 

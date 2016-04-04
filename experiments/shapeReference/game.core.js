@@ -139,14 +139,6 @@ game_core.prototype.newRound = function() {
   }
 };
 
-game_core.prototype.getRandomizedConditions = function() {
-  var numEach = this.numRounds / 3;
-  var conditions = [].concat(utils.fillArray("equal", numEach),
-			     utils.fillArray("closer", numEach),
-			     utils.fillArray("further", numEach));
-  return _.shuffle(conditions);
-};
-
 game_core.prototype.sampleStimulusLocs = function() {
   var listenerLocs = _.shuffle([[1,1], [2,1], [3,1]]);
   var speakerLocs = _.shuffle([[1,1], [2,1], [3,1]]);
@@ -155,11 +147,9 @@ game_core.prototype.sampleStimulusLocs = function() {
 
 game_core.prototype.makeTrialList = function () {
   var local_this = this;
-  var conditionList = this.getRandomizedConditions();
   var trialList = [];
-  for (var i = 0; i < conditionList.length; i++) {
-    var condition = conditionList[i];
-    var objList = sampleTrial(condition); // Sample three objects 
+  for (var i = 0; i < this.numRounds; i++) {
+    var objList = this.sampleTrial(); // Sample three objects 
     var locs = this.sampleStimulusLocs(); // Sample locations for those objects
     trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
       var object = _.clone(tuple[0]);
@@ -217,37 +207,19 @@ game_core.prototype.server_send_update = function(){
     p.player.instance.emit( 'onserverupdate', state);});
 };
 
-var sampleTrial = function(condition) {
-  var target = {color: utils.randomColor(), targetStatus : "target"};
-  var firstDistractor = {color: utils.randomColor(), targetStatus: "distr1"};
-  var secondDistractor = {color: utils.randomColor(), targetStatus: "distr2"};
-  if(checkItem(condition,target,firstDistractor,secondDistractor)) {
-    // attach "condition" to each stimulus object
-    return _.map([target, firstDistractor, secondDistractor], function(x) {
-      return _.extend(x, {condition: condition});
-    });
+game_core.prototype.sampleTrial = function() {
+  var target = {points: utils.randomSpline(), targetStatus : "target"};
+  var firstDistractor = {points: utils.randomSpline(), targetStatus: "distr1"};
+  var secondDistractor = {points: utils.randomSpline(), targetStatus: "distr2"};
+  if(checkItem(target,firstDistractor,secondDistractor)) {
+    return [target, firstDistractor, secondDistractor];
   } else { // Try again if something is wrong
-    return sampleTrial(condition);
+    return this.sampleTrial();
   }
 };
 
-var checkItem = function(condition, target, firstDistractor, secondDistractor) {
-  var f = 5; // floor difference
-  var t = 20; // threshold
-  var targetVsDistr1 = utils.colorDiff(target.color, firstDistractor.color);
-  var targetVsDistr2 = utils.colorDiff(target.color, secondDistractor.color);
-  var distr1VsDistr2 = utils.colorDiff(firstDistractor.color, secondDistractor.color);
-  if(targetVsDistr1 < f || targetVsDistr2 < f || distr1VsDistr2 < f) {
-    return false;
-  } else if(condition === "equal") {
-    return targetVsDistr1 > t && targetVsDistr2 > t && distr1VsDistr2 > t;
-  } else if (condition === "closer") {
-    return targetVsDistr1 < t && targetVsDistr2 < t && distr1VsDistr2 < t;
-  } else if (condition === "further") {
-    return targetVsDistr1 < t && targetVsDistr2 > t && distr1VsDistr2 > t;
-  } else {
-    throw "condition name (" + condition + ") not known";
-  }
+var checkItem = function(target, firstDistractor, secondDistractor) {
+  return true;
 };
 
 // maps a grid location to the exact pixel coordinates

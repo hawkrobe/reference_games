@@ -7,8 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../favicon.ico">
-
     <title>Experiment</title>
 
     <!-- Bootstrap core CSS -->
@@ -16,8 +14,6 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
-    <!-- Custom styles for this template -->
-    <link href="theme.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -45,70 +41,56 @@
 
 	<p> 
 
-	  In this experiment you will play a fun communication game with
-	  another turker! In each round both of you are going to be given a set of
-	  colors which will look like this:
+    In this experiment you will play a fun matching game with another turker! Both of you are going to be given a set of tangram pictures which will look like this. 
 </p>
     <p>
-      <center><img src="images/colorSet.png" alt="Example objects" style="width:600px;height:200px"></center>
+      <center><img src="images/tangramBoard.png" alt="Example gameplay" style="width:600px;height:200px"></center>
     </p>
 <p>
-    You'll each see the same 3 colors <b> but the order they are in
-	will be different. </b>
+    You'll each have the same 12 images but the order they are in will be different. As a team, your goal is make your boards match. 
 
 </p>
 
 <p>
 
-    One of you will be assigned the <b> Speaker </b> role and the other will be
-    the <b> Listener </b>. For each round, one of the three objects is the target, which
-    can be identified by a <b> black box</b> around it. Only the speaker can see which object is the target. The task of the speaker
-    is to tell the listener which one of the objects is the target and the listener in turn needs to select the right
-    object based on this information provided by the speaker. Remember that it doesn't make sense to describe the location of the target object, since the order of the images is different for the listener and the speaker.
+    One of you will be assigned the Director role and the other will be the Matcher. The goal here is for the matcher to move their images to the positions they are in on the director's board. The challenge is that neither of you can see eachother's boards. So for the matcher to move their images to match the director's board, you'll both need to communicate. This is why you're given a cool chatbox where you can send messages back and forth to eachother about where to move the images. 
+
 </p>
 
-<p>
-      <center><img src="images/speakerView.png" alt="Example gameplay" style="width:600px;height:360px"></center>
+    <p>
+      <center><img src="images/chatBox.png" alt="Example gameplay" style="width:700px;height:400px"></center>
     </p>
+
 <p>
-    <i> <center> <small> Only the speaker can see that the purple square is the target. </small> </center> </i>
+    When you and your teammate think you have matched all the images you can, the matcher should click on the Submit Round button in the upper left hand corner. PLEASE DO NOT PRESS THIS BEFORE YOU ARE DONE WITH THE ROUND. 
 
 </p>
-<p>
-    Thus, the goal is for the listener to identify the correct object
-    based on what the speaker has said. In order to communicate,
-    you're given a chatbox where you can send messages back and forth
-    to each other. The speaker can say which object is the target and
-    the listener can ask for clarifications if what the speaker said
-    is not clear. Some rounds will be easier and some will be harder. </p>
+    <p>
+      <center><img src="images/button_example.png" alt="initial matcher's board" style="width:600px;height:75px"></center>
+    </p>
 
-    <p> Once the speaker sends a message and the listener clicks on
-    the object they believe is the target, both players will be given
-    feedback (the speaker will see what the listener clicked, and the
-    listener will see the true target), and you will both be
-    automatically forwarded to the next round of objects. There are a
-    total of <b>100 rounds</b>. After the final round you will fill out a quick
-    15 second survey and be on your way.
-</p>
+<p>
     
-<p> A few final notes: First, since you are playing with another
-  turker, you may see this screen before the game begins:
-  <p>
-    <center><img src="images/waitScreen.png" alt="initial matcher's board" style="width:700px;height:150px"></center>
-  </p>
-  Just hold tight. Another turker should join the game within the next
-  few minutes. If you're in the waiting room 15 minutes without
-  another player joining, your HIT will automatically be submitted and
-  accepted, out of gratitude for the time you spent waiting.
+  You won't get feedback on how many images you have correct while you are playing the round, but after each round ends you will be told your score from the previous round. 
 </p>
 
-<p> Second, please be respectful of the turker you're playing with: do
-not send inappropriate material through the chat box (including
-screenshots of the color you're trying to refer to), and try to be as
-responsive as possible. Finally, please DO NOT refresh the page at any
-point once you start the game (including the waiting page). If you
-refresh, you will not be able to rejoin the game you were in and you
-may not be able to submit the HIT. <br> Thank you!
+<p>
+  If this task isn't fun enough already (which we think it is) you and your teammate will individually be rewarded 1 cent for every correctly matching images you finish a round with. This means you and your partner each have the chance to earn up to 12 BONUS CENTS per round for each of the 6 rounds. 
+</p>
+
+<p>
+    As mentioned above, there are a total of 6 rounds. At the start of each round, you and your teammates images  will be shuffled again. After the sixth round you will fill out a quick 15 second survey and be on your way. 
+</p>
+
+<p> Two final notes: Since you are playing with another turker, you may see this screen before the game begins. 
+      <p>
+      <center><img src="images/waitScreen.png" alt="initial matcher's board" style="width:700px;height:150px"></center>
+    </p>
+
+Just hold tight. Another turker should join the game within the next few minutes. 
+</p>
+
+<p> Finally, please DO NOT refresh the page at any point once you start the game (including the waiting page). If you refresh, you will not be able to rejoin the game you were in and you and your partner may not be able to submit the HIT. Thank you! 
 </p>
 
 <h4>
@@ -129,7 +111,7 @@ may not be able to submit the HIT. <br> Thank you!
      <div class="well" style="width:800px; margin: 0 auto">
  
   </br>
-  The speaker can click on a color to end the round.
+  The director can move their images
     </br>
     <input type="radio" name="dgoal" value="yes"> False
     </br>
@@ -138,25 +120,24 @@ may not be able to submit the HIT. <br> Thank you!
 
 
   </br>
-  The listener wants to click on the color that the speaker is
-  telling them about.
-      </br>
-      <input type="radio" name="mgoal" value="no"> False
+  The matcher wants their board to match the director's board
       </br>
       <input type="radio" name="mgoal" value="yes"> True
+      </br>
+      <input type="radio" name="mgoal" value="no"> False
       </br>
     
 
   </br> 
-  The target is the color which has the black box around it.
+  There are a total of 3 rounds
       </br>
-      <input type="radio" name="round" value="yes"> True
+      <input type="radio" name="round" value="yes"> False
       </br>
-      <input type="radio" name="round" value="no"> False
+      <input type="radio" name="round" value="no"> True
       </br>
 
   </br> 
-  Only the speaker can send messages.
+  Only the director can send messages 
       </br>
       <input type="radio" name="message" value="yes"> False
       </br>
@@ -164,20 +145,12 @@ may not be able to submit the HIT. <br> Thank you!
       </br>
 
   </br> 
-  There are a total of 200 rounds.
-      </br>
-      <input type="radio" name="comp" value="no"> True
-      </br>
-      <input type="radio" name="comp" value="yes"> False
-      </br>
-
-  </br> 
-  The locations of the three objects are the same for the speaker and the listener.
-      </br>
-      <input type="radio" name="location" value="no"> True
-      </br>
-      <input type="radio" name="location" value="yes"> False
-      </br>
+  At the end of a round
+       </br>
+       <input type="radio" name="comp" value="no"> All tangrams stay the same
+       </br>
+       <input type="radio" name="comp" value="yes"> The tangrams are shuffled
+       </br>
     
   </br>
   Have you participated in this study before? 
@@ -216,11 +189,10 @@ may not be able to submit the HIT. <br> Thank you!
         var ans3 = $('input[name="round"]:checked').val();
         var ans4 = $('input[name="message"]:checked').val();
         var ans5 = $('input[name="comp"]:checked').val();
-        var ans6 = $('input[name="location"]:checked').val();
-        var ans7 = $('input[name="completed"]:checked').val();
+        var ans6 = $('input[name="completed"]:checked').val();
 
         if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" && 
-           ans4 == "yes" && ans5 == "yes" && ans6 == "yes" && ans7 == "yes") { 
+           ans4 == "yes" && ans5 == "yes" && ans6 == "yes") {
            var workerId = urlParams.workerId;
            var assignmentId = urlParams.assignmentId;
            var hitId = urlParams.hitId;
