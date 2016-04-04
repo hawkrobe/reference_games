@@ -8,9 +8,10 @@ var getURLParams = function() {
       query  = location.search.substring(1);
 
   var urlParams = {};
-  while (match = search.exec(query)) {
+  while ((match = search.exec(query))) {
     urlParams[decode(match[1])] = decode(match[2]);
   }
+  return urlParams;
 };
 
 var ondisconnect = function(data) {
@@ -29,8 +30,10 @@ var onconnect = function(data) {
   this.my_id = data.id;
   this.players[0].id = this.my_id;
   this.urlParams = getURLParams();
+  console.log(this.urlParams);
   this.timeoutID = setTimeout(function() {
     if(_.size(globalGame.urlParams) == 4) {
+      globalGame.submitted = true;
       window.opener.turk.submit(globalGame.data, true);
       window.close(); 
     } else {
@@ -161,6 +164,8 @@ function dropdownTip(data){
 				    'role' : globalGame.my_role,
 				    'totalLength' : Date.now() - globalGame.startTime});
     globalGame.submitted = true;
+    console.log(globalGame.urlParams);
+    console.log(window.opener.turk);
     if(_.size(globalGame.urlParams) == 4) {
       window.opener.turk.submit(globalGame.data, true);
       window.close(); 
