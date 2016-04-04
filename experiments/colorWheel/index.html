@@ -71,7 +71,7 @@
 		<option value="yes">Yes, I thought they were a human</option>
 		<option value="no">No, I thought it was a computer program</option>
 	      </select>
-	      <p id='humanResult' style="display:none;color:red"> Thank you for your response -- in fact, all players were paired with other human turkers! <p>
+	      <p id='humanResult' style="display:none;color:red"> Thank you for your response -- all players were paired with other human turkers! <p>
 
 		<br> <br>
 	      <p> Are you a native English speaker? </p>
@@ -80,17 +80,26 @@
 		<option value="yes">Yes</option>
 		<option value="no">No</option>
 	      </select>
-	   <br><br>
-          <p> How much did you like working with your partner? </p>
-            <select onChange="dropdownTip('partner::' + this.value)">
-        <option value = ""></option>
-        <option value="not much">Not that much</option>
-        <option value="okay">My partner was fine</option>
-        <option value="liked">I liked working with my partner</option>
-        <option value="loved">I really enjoyed working with my partner</option>
-          </select>
-        <br><br>
-
+	      <p> Did you read the instructions and do you think you did the 
+		HIT correctly? </p>
+	      <select onChange="dropdownTip('confused::' + this.value)">
+		<option value = ""></option>
+		<option value="yes">Yes</option>
+		<option value="no">No</option>
+		<option value="confused">I was confused</option>
+	      </select>
+	      
+	      <br><br>
+              <p> How much did you like working with your partner? </p>
+              <select onChange="dropdownTip('partner::' + this.value)">
+		<option value = ""></option>
+		<option value="not much">Not that much</option>
+		<option value="okay">My partner was fine</option>
+		<option value="liked">I liked working with my partner</option>
+		<option value="loved">I really enjoyed working with my partner</option>
+              </select>
+              <br><br>
+	      
 	      <p> Do you have any comments on the experiment? </p>
 	      <textarea id='comments' rows="4" cols="50"></textarea>
 	      <br>
