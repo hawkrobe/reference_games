@@ -30,12 +30,12 @@ var onconnect = function(data) {
   this.players[0].id = this.my_id;
   this.urlParams = getURLParams();
   this.timeoutID = setTimeout(function() {
-    if(_.size(globalGame.urlParams) == 4) {
-      window.opener.turk.submit(globalGame.data, true);
+    if(_.size(this.urlParams) == 4) {
+      window.opener.turk.submit(this.data, true);
       window.close(); 
     } else {
       console.log("would have submitted the following :");
-      console.log(globalGame.data);
+      console.log(this.data);
     }
   }, 1000 * 60 * 15);
   drawScreen(this, this.get_player(this.my_id));
