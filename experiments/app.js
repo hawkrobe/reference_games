@@ -50,10 +50,10 @@ app.get( '/*' , function( req, res ) {
   console.log('\t :: Express :: file requested: ' + file);    
   
   if(req.query.id && !valid_id(req.query.id)) {
-    res.redirect('http://rxdhawkins.net:8888/forms/invalid.html');
+    res.redirect('http://rxdhawkins.me:8888/sharedUtils/invalid.html');
   } else {
     if(req.query.id && req.query.id in global_player_set) {
-      res.redirect('http://rxdhawkins.net:8888/forms/duplicate.html');
+      res.redirect('http://rxdhawkins.me:8888/sharedUtils/duplicate.html');
     } else {
       res.sendfile("./" + file); // give them what they want
     }
