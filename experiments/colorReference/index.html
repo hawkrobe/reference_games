@@ -77,6 +77,16 @@
 		<option value="yes">Yes</option>
 		<option value="no">No</option>
 	      </select>
+	      <br><br>
+	      <p> Did you read the instructions and do you think you did the 
+		HIT correctly? </p>
+	      <select onChange="dropdownTip('confused::' + this.value)">
+		<option value = ""></option>
+		<option value="yes">Yes</option>
+		<option value="no">No</option>
+		<option value="confused">I was confused</option>
+	      </select>
+
 	   <br><br>
           <p> How much did you like working with your partner? </p>
             <select onChange="dropdownTip('partner::' + this.value)">
