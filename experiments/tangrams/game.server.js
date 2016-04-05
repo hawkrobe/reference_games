@@ -43,28 +43,28 @@ var onMessage = function(client,message) {
 
 
     // Update the local copy to match the new positions of these items!
-    gc.objects[objIndex].matcherCoords.trueX = objTrueX;
-    gc.objects[objIndex].matcherCoords.trueY = objTrueY;
-    gc.objects[objIndex].matcherCoords.box = objBox;
-    gc.objects[swapIndex].matcherCoords.trueX = swapObjTrueY;
-    gc.objects[swapIndex].matcherCoords.trueY = swapObjTrueY;
-    gc.objects[swapIndex].matcherCoords.box = swapObjBox;
+    gc.trialInfo.currStim[objIndex].matcherCoords.trueX = objTrueX;
+    gc.trialInfo.currStim[objIndex].matcherCoords.trueY = objTrueY;
+    gc.trialInfo.currStim[objIndex].matcherCoords.box = objBox;
+    gc.trialInfo.currStim[swapIndex].matcherCoords.trueX = swapObjTrueY;
+    gc.trialInfo.currStim[swapIndex].matcherCoords.trueY = swapObjTrueY;
+    gc.trialInfo.currStim[swapIndex].matcherCoords.box = swapObjBox;
 
     //get the gridX and gridY values
     var objCell = gc.getCellFromPixel(objTrueX, objTrueY);
     var swapObjCell = gc.getCellFromPixel(swapObjTrueX, swapObjTrueY);
 
     //Update local copy with correct gridX and gridY values
-    gc.objects[objIndex].matcherCoords.gridX = objCell[0];
-    gc.objects[objIndex].matcherCoords.gridY = objCell[1];
-    gc.objects[swapIndex].matcherCoords.gridX = swapObjCell[0];
-    gc.objects[swapIndex].matcherCoords.gridY = swapObjCell[1];  
+    gc.trialInfo.currStim[objIndex].matcherCoords.gridX = objCell[0];
+    gc.trialInfo.currStim[objIndex].matcherCoords.gridY = objCell[1];
+    gc.trialInfo.currStim[swapIndex].matcherCoords.gridX = swapObjCell[0];
+    gc.trialInfo.currStim[swapIndex].matcherCoords.gridY = swapObjCell[1];  
 
     writeData(client, "dropObj", message_parts);
     break;
   
   case 'advanceRound' :
-    var score = gc.game_score(gc.objects);
+    var score = gc.game_score(gc.trialInfo.currStim);
     var boxLocations = message_parts[1];
     console.log(boxLocations);
     writeData(client, "finalBoard", message_parts);
@@ -106,7 +106,7 @@ var writeData = function(client, type, message_parts) {
     case "dropObj" :
       var dropObjBox = message_parts[7];
       var dropObjName = message_parts[9];
-      var score = gc.game_score(gc.objects);  
+    var score = gc.game_score(gc.trialInfo.currStim);  
       line = (id + ',' + Date.now() + ',' + roundNum + ',' + score + ',' +
 	      dropObjName + ',' + dropObjBox + '\n');
       break;
@@ -119,7 +119,7 @@ var writeData = function(client, type, message_parts) {
 
     case "finalBoard" :
       var board = message_parts[1];
-      var score = gc.game_score(gc.objects);       //compute score with updated board
+    var score = gc.game_score(gc.trialInfo.currStim);       //compute score with updated board
       line = (id + ',' + Date.now() + ',' + roundNum + ',' +
 	      board + ',' + score + '\n');
       break;

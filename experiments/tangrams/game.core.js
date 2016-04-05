@@ -19,6 +19,7 @@ var has_require = typeof require !== 'undefined';
 if(typeof _ === 'undefined') {
   if(has_require) {
     _ = require('underscore');
+    utils  = require('../sharedUtils/sharedUtils.js');    
   } else {
     throw new ('this experiment requires underscore, see http://underscorejs.org');
   }
@@ -30,6 +31,10 @@ var game_core = function(options){
 
   // How many players in the game?
   this.players_threshold = 2;
+  this.playerRoleNames = {
+    role1 : 'director',
+    role2 : 'matcher'
+  };
   
   // Dimensions of world in pixels and numberof cells to be divided into;
   this.numHorizontalCells = 6;
@@ -134,17 +139,13 @@ game_core.prototype.get_active_players = function() {
 game_core.prototype.newRound = function() {
   if(this.roundNum == this.numRounds - 1) {
     // If you've reached the planned number of rounds, end the game
-    var local_game = this;
-    _.map(local_game.get_active_players(), function(p){
+    _.map(this.get_active_players(), function(p){
       p.player.instance.disconnect();});
   } else {
     // Otherwise, get the preset list of tangrams for the new round
     this.roundNum += 1;
-    roundNow = this.roundNum + 1;
-    console.log("now on round " + roundNow);
-    this.objects = this.trialList[this.roundNum];
-    //when there is a new round, we want the server to send an update to the client
-    //with the new roundNum;
+    console.log("now on round " + (this.roundNum + 1));
+    this.trialInfo = {currStim: this.trialList[this.roundNum]};
     this.server_send_update();
   }
 };
@@ -301,21 +302,22 @@ game_core.prototype.makeTrialList = function () {
       return tangram;
     });
   });
+  console.log(trialList);
   return(trialList);
 };
 
 //scores the number of incorrect tangram matches between matcher and director
 //returns the correct score out of total tangrams
 game_core.prototype.game_score = function(game_objects) {
-   var correct = 0;
-   var incorrect = 0;
-   for(var i = game_objects.length; i--; i>=0) {
-      if(game_objects[i].matcherCoords.gridX == game_objects[i].directorCoords.gridX) {
-        if(game_objects[i].matcherCoords.gridY == game_objects[i].directorCoords.gridY) {
-          correct = correct + 1;
-        }
+  var correct = 0;
+  var incorrect = 0;
+  for(var i = game_objects.length; i--; i>=0) {
+    if(game_objects[i].matcherCoords.gridX == game_objects[i].directorCoords.gridX) {
+      if(game_objects[i].matcherCoords.gridY == game_objects[i].directorCoords.gridY) {
+        correct = correct + 1;
       }
-      incorrect = incorrect + 1;
+    }
+    incorrect = incorrect + 1;
   }
   return correct;
 }
@@ -383,14 +385,11 @@ game_core.prototype.server_send_update = function(){
     pc : this.player_count,
     dataObj  : this.data,
     roundNum : this.roundNum,
-    objects: this.objects
+    trialInfo: this.trialInfo
   };
 
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
-  if(player_packet.length == 2) {
-    _.extend(state, {objects: this.objects});
-  }
 
   //Send the snapshot to the players
   this.state = state;
