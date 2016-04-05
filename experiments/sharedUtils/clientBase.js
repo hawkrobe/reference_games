@@ -31,16 +31,6 @@ var onconnect = function(data) {
   this.players[0].id = this.my_id;
   this.urlParams = getURLParams();
   console.log(this.urlParams);
-  this.timeoutID = setTimeout(function() {
-    if(_.size(this.urlParams) == 4) {
-      this.submitted = true;
-      window.opener.turk.submit(this.data, true);
-      window.close(); 
-    } else {
-      console.log("would have submitted the following :");
-      console.log(this.data);
-    }
-  }, 1000 * 60 * 15);
   drawScreen(this, this.get_player(this.my_id));
 };
 
