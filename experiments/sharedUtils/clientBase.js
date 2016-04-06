@@ -80,9 +80,12 @@ var sharedSetup = function(game) {
     var source = data.user === globalGame.my_id ? "You" : otherRole;
     var col = source === "You" ? "#363636" : "#707070";
     $('.typing-msg').remove();
-    $('#messages').append($('<li style="padding: 5px 10px; background: ' + col + '">')
-    			  .text(source + ": " + data.msg));
-    
+    $('#messages')
+      .append($('<li style="padding: 5px 10px; background: ' + col + '">')
+    	      .text(source + ": " + data.msg))
+      .animate({
+	scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
   });
 
   //so that we can measure the duration of the game
