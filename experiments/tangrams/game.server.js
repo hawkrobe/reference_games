@@ -66,7 +66,6 @@ var onMessage = function(client,message) {
   case 'advanceRound' :
     var score = gc.game_score(gc.trialInfo.currStim);
     var boxLocations = message_parts[1];
-    console.log(boxLocations);
     writeData(client, "finalBoard", message_parts);
     _.map(all, function(p){
       p.player.instance.emit( 'newRoundUpdate', {user: client.userid, score: score});});
@@ -74,7 +73,6 @@ var onMessage = function(client,message) {
     break;
   
   case 'playerTyping' :
-    console.log("player is typing?", message_parts[1]);
     _.map(others, function(p) {
       p.player.instance.emit( 'playerTyping',
 			      {typing: message_parts[1]});
@@ -101,12 +99,12 @@ var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var roundNum = gc.state.roundNum + 1;
   var id = gc.id.slice(0,6);
+  var score = gc.game_score(gc.trialInfo.currStim);  
   var line;
   switch(type) {
     case "dropObj" :
       var dropObjBox = message_parts[7];
       var dropObjName = message_parts[9];
-    var score = gc.game_score(gc.trialInfo.currStim);  
       line = (id + ',' + Date.now() + ',' + roundNum + ',' + score + ',' +
 	      dropObjName + ',' + dropObjBox + '\n');
       break;
@@ -118,10 +116,10 @@ var writeData = function(client, type, message_parts) {
       break;
 
     case "finalBoard" :
-      var board = message_parts[1];
-    var score = gc.game_score(gc.trialInfo.currStim);       //compute score with updated board
+      var submittedBoard = message_parts[1];
+      var trueBoard = gc.getBoxLocs(gc.trialInfo.currStim, "director");
       line = (id + ',' + Date.now() + ',' + roundNum + ',' +
-	      board + ',' + score + '\n');
+	      submittedBoard + ',' + trueBoard + ',' + score + '\n');
       break;
   }
   console.log(type + ":" + line);
@@ -138,7 +136,9 @@ var startGame = function(game, player) {
   utils.establishStream(game, "dropObj", dataFileName,
 		       "gameid,time,roundNum,score,name,draggedTo\n");
   utils.establishStream(game, "finalBoard", dataFileName,
-		       "gameid,time,roundNum,A,B,C,D,E,F,G,H,I,J,K,L,score\n");
+		       "gameid,time,roundNum,subA,subB,subC,subD,subE,subF,subG," +
+                       "subH,subI,subJ,subK,subL,trueA,trueB,trueC,trueD,trueE," + 
+                       "trueF,trueG,trueH,trueI,trueJ,trueK,trueL,score\n");
   game.newRound();
   game.server_send_update();
 };
