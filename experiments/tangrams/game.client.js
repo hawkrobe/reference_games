@@ -79,7 +79,7 @@ var client_onserverupdate_received = function(data){
 }; 
 
 var client_onMessage = function(data) {
-
+  console.log(data);
   var commands = data.split('.');
   var command = commands[0];
   var subcommand = commands[1] || null;
@@ -88,11 +88,9 @@ var client_onMessage = function(data) {
   switch(command) {
   case 's': //server message
     switch(subcommand) {    
+      
     case 'end' :
-      // Redirect to exit survey
-      submitInfoAndClose();
-      console.log("received end message...");
-      break;
+      ondisconnect(); break;
 
     case 'alert' : // Not in database, so you can't play...
       alert('You did not enter an ID'); 
@@ -124,19 +122,11 @@ var customSetup = function(game) {
   //Store a local reference to our connection to the server
   game.socket = io.connect();
 
-  var totalScore = 0;
   // Tell server when matncher presses the submit round button in order to advance to the next round
   $(document).ready(function() {
     $("#submitbutton").click(function(){
-      var score = game.game_score(game.objects);
-      totalScore = totalScore + score;
-      if(game.roundNum+2 > game.numRounds) {
-        console.log("totalScore is: " + totalScore);
-        game.data.totalScore = _.extend(game.data.totalScore,    
-					{'totalScore' : totalScore}); 
-      };
-      var matcherBoxLocations = game.getBoxLocs(game.objects, 'matcher');
-      game.socket.send('advanceRound.' + matcherBoxLocations);
+      var matcherBoxLocations = game.getBoxLocs(globalGame.objects, 'matcher');
+      globalGame.socket.send('advanceRound.' + matcherBoxLocations);
     });
   });
   
@@ -153,7 +143,8 @@ var customSetup = function(game) {
     }
     $('#score').empty().append("Round " + (game.roundNum + 1) + 
 			       " score: " + data.score + " correct!");
-    var player = game.get_player(globalGame.my_id)
+    globalGame.data.totalScore += data.score;
+    var player = game.get_player(globalGame.my_id);
     player.currentHighlightX = null;
     player.currentHighlightY = null;
   });

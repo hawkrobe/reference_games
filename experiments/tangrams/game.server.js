@@ -65,6 +65,8 @@ var onMessage = function(client,message) {
   
   case 'advanceRound' :
     var score = gc.game_score(gc.trialInfo.currStim);
+    gc.data.totalScore += score;
+
     var boxLocations = message_parts[1];
     writeData(client, "finalBoard", message_parts);
     _.map(all, function(p){

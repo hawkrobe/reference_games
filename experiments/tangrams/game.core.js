@@ -70,7 +70,7 @@ var game_core = function(options){
       trials : [],
       catch_trials : [],
       system : {}, 
-      totalScore : {},
+      totalScore : 0,
       subject_information : {
 	gameID: this.id.slice(0,6), 
 	DirectorBoards : this.nameAndBoxAll(this.trialList, 'director'),
