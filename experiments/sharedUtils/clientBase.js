@@ -65,7 +65,11 @@ var sharedSetup = function(game) {
 
   game.socket.on('playerTyping', function(data){
     if(data.typing == "true") {
-      $('#messages').append('<span class="typing-msg">Other player is typing...</span>');
+      $('#messages')
+	.append('<span class="typing-msg">Other player is typing...</span>')
+	.animate({
+	  scrollTop: $("#messages").prop("scrollHeight")
+	}, 800);
     } else {
       $('.typing-msg').remove();
     }
@@ -80,9 +84,12 @@ var sharedSetup = function(game) {
     var source = data.user === globalGame.my_id ? "You" : otherRole;
     var col = source === "You" ? "#363636" : "#707070";
     $('.typing-msg').remove();
-    $('#messages').append($('<li style="padding: 5px 10px; background: ' + col + '">')
-    			  .text(source + ": " + data.msg));
-    
+    $('#messages')
+      .append($('<li style="padding: 5px 10px; background: ' + col + '">')
+    	      .text(source + ": " + data.msg))
+      .animate({
+	scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
   });
 
   //so that we can measure the duration of the game
@@ -154,8 +161,8 @@ function dropdownTip(data){
 				    'role' : globalGame.my_role,
 				    'totalLength' : Date.now() - globalGame.startTime});
     globalGame.submitted = true;
-    console.log(globalGame.urlParams);
-    console.log(window.opener.turk);
+    console.log("data is...");
+    console.log(globalGame.data);
     if(_.size(globalGame.urlParams) == 4) {
       window.opener.turk.submit(globalGame.data, true);
       window.close(); 

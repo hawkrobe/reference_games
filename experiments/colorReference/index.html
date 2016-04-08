@@ -38,7 +38,7 @@
 	<h1 id='roleLabel'> You are the </h1> 
 	<p id='instructs'> </p>
       </div>
-      <p style="color:red" id='roundnumber'>Round 1/100</p>
+      <p style="color:red" id='roundnumber'>Round 1/50</p>
       <p style="color:green" id='score'> </p>
     </div>
 
@@ -77,6 +77,16 @@
 		<option value="yes">Yes</option>
 		<option value="no">No</option>
 	      </select>
+	      <br><br>
+	      <p> Did you read the instructions and do you think you did the 
+		HIT correctly? </p>
+	      <select onChange="dropdownTip('confused::' + this.value)">
+		<option value = ""></option>
+		<option value="yes">Yes</option>
+		<option value="no">No</option>
+		<option value="confused">I was confused</option>
+	      </select>
+
 	   <br><br>
           <p> How much did you like working with your partner? </p>
             <select onChange="dropdownTip('partner::' + this.value)">
