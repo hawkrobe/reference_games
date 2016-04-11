@@ -48,11 +48,11 @@ app.get( '/*' , function( req, res ) {
   // this is the current file they have requested
   var file = req.params[0]; 
   console.log('\t :: Express :: file requested: ' + file);    
-  
-  if(req.query.id && !valid_id(req.query.id)) {
+  console.log(req.query.workerId && !valid_id(req.query.workerId));
+  if(req.query.workerId && !valid_id(req.query.workerId)) {
     res.redirect('http://rxdhawkins.me:8888/sharedUtils/invalid.html');
   } else {
-    if(req.query.id && req.query.id in global_player_set) {
+    if(req.query.workerId && req.query.workerId in global_player_set) {
       res.redirect('http://rxdhawkins.me:8888/sharedUtils/duplicate.html');
     } else {
       res.sendfile("./" + file); // give them what they want
@@ -68,24 +68,23 @@ io.on('connection', function (client) {
   var hs = client.handshake;    
   var query = require('url').parse(client.handshake.headers.referer, true).query;
   var id;
-  if( !(query.id && query.id in global_player_set) ) {
-    if(query.id) {
-      global_player_set[query.id] = true;
-      // use id from query string if exists
-      id = query.id; 
+  if( !(query.workerId && query.workerId in global_player_set) ) {
+    if(query.workerId) {
+      global_player_set[query.workerId] = true;
+      // useid from query string if exists
+      var id = query.workerId; 
     } else {
-      // otherwise, create new one
-      id = utils.UUID();
+      var id = utils.UUID();
     }
+    console.log("id is " + id);
     if(valid_id(id)) {
-      console.log("user connecting...");
       initialize(query, client, id);
     }
   }
 });
 
 var valid_id = function(id) {
-  return id.length == 41;
+  return (id.length <= 15 && id.length >= 12) || id.length == 41;
 };
 
 var initialize = function(query, client, id) {                        
