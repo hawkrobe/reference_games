@@ -49,10 +49,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 100;
-
-  // How many mistakes have the pair made on the current trial?
-  this.attemptNum = 0;
+  this.numRounds = 50;
 
   // This will be populated with the tangram set
   this.trialInfo = {};
@@ -125,18 +122,26 @@ game_core.prototype.get_active_players = function() {
   return _.without(noEmptiesList, null);
 };
 
-// Advance to the next round
-game_core.prototype.newRound = function() {
-  // If you've reached the planned number of rounds, end the game  
-  if(this.roundNum == this.numRounds - 1) {
-    _.map(this.get_active_players(), function(p){
-      p.player.instance.disconnect();});
-  } else {
-    // Otherwise, get the preset list of tangrams for the new round
-    this.roundNum += 1;
-    this.trialInfo = {currStim: this.trialList[this.roundNum]};
-    this.server_send_update();
-  }
+game_core.prototype.advanceRound = function(delay) {
+  var players = this.get_active_players();
+  var localThis = this;
+  setTimeout(function() {
+    // If you've reached the planned number of rounds, end the game  
+    if(localThis.roundNum == localThis.numRounds - 1) {
+      _.forEach(players, function(p){
+	p.player.instance.disconnect();
+      });
+    } else {
+      // Tell players
+      _.forEach(players, function(p){
+	p.player.instance.emit( 'newRoundUpdate' );
+      });
+      // Otherwise, get the preset list of tangrams for the new round
+      localThis.roundNum += 1;
+      localThis.trialInfo = {currStim: localThis.trialList[localThis.roundNum]};
+      localThis.server_send_update();
+    }
+  }, delay);
 };
 
 game_core.prototype.sampleStimulusLocs = function() {

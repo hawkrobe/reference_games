@@ -150,7 +150,7 @@ var client_addnewround = function(game) {
 var customSetup = function(game) {
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
-  game.socket.on('newRoundUpdate', function(data){
+  game.socket.on('newRoundUpdate', function(){
     $('#messages').empty();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
