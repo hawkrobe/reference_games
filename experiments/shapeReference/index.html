@@ -17,7 +17,7 @@
     <!-- Load the common game code. -->
     <script type="text/javascript" src="game.core.js"></script>
 
-    <script type="text/javascript" src="cardinal-spline-js/curve.min.js"></script>    
+    <script type="text/javascript" src="../lib/js/curve.min.js"></script>    
 
     <!-- Finally, Load the game client code. -->
     <script type="text/javascript" src="../sharedUtils/clientBase.js"></script>    
@@ -40,7 +40,7 @@
 	<h1 id='roleLabel'> You are the </h1> 
 	<p id='instructs'> </p>
       </div>
-      <p style="color:red" id='roundnumber'>Round 1/36</p>
+      <p style="color:red" id='roundnumber'>Waiting room</p>
       <p style="color:green" id='score'> </p>
     </div>
 
@@ -89,6 +89,16 @@
         <option value="loved">I really enjoyed working with my partner</option>
           </select>
         <br><br>
+	      <p> Did you read the instructions and do you think you did the 
+		HIT correctly? </p>
+	      <select onChange="dropdownTip('confused::' + this.value)">
+		<option value = ""></option>
+		<option value="yes">Yes</option>
+		<option value="no">No</option>
+		<option value="confused">I was confused</option>
+	      </select>
+
+	   <br><br>
 
 	      <p> Do you have any comments on the experiment? </p>
 	      <textarea id='comments' rows="4" cols="50"></textarea>
