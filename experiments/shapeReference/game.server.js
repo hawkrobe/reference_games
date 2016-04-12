@@ -36,13 +36,7 @@ var onMessage = function(client,message) {
     writeData(client, "clickedObj", message_parts);
     others[0].player.instance.send("s.feedback." + message_parts[2]);
     target.instance.send("s.feedback." + message_parts[2]);
-    setTimeout(function() {
-      _.map(all, function(p){
-        p.player.instance.emit( 'newRoundUpdate', {user: client.userid} );
-      });
-      gc.newRound();
-    }, 3000);
-    
+    gc.advanceRound(3000);
     break; 
   
   case 'playerTyping' :
@@ -74,7 +68,8 @@ var writeData = function(client, type, message_parts) {
   var id = gc.id.slice(0,6);
   switch(type) {
   case "clickedObj" :
-    var outcome = message_parts[2] === "target";
+    console.log(message_parts[1]);
+    var outcome = message_parts[1] === "target";
     var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
 		message_parts.slice(1).join(', ') + outcome + '\n');
     console.log("clickedObj:" + line);
@@ -114,7 +109,7 @@ var startGame = function(game, player) {
 			"alt1P7,alt1P8,alt1LocS,alt1LocL," +			
 			"alt2Status,alt2P1,alt2P2,alt2P3,alt2P4,alt2P5,alt2P6," +
 			"alt2P7,alt2P8,alt2LocS,alt2LocL,outcome\n");
-  game.newRound();
+  game.advanceRound(0);
 };
 
 module.exports = {

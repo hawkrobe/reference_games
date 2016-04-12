@@ -67,6 +67,7 @@ var sharedSetup = function(game) {
     if(data.typing == "true") {
       $('#messages')
 	.append('<span class="typing-msg">Other player is typing...</span>')
+	.stop(true,true)
 	.animate({
 	  scrollTop: $("#messages").prop("scrollHeight")
 	}, 800);
@@ -87,6 +88,7 @@ var sharedSetup = function(game) {
     $('#messages')
       .append($('<li style="padding: 5px 10px; background: ' + col + '">')
     	      .text(source + ": " + data.msg))
+      .stop(true,true)
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);

@@ -47,16 +47,18 @@ console.log('\t :: Express :: Listening on port ' + gameport );
 app.get( '/*' , function( req, res ) {
   // this is the current file they have requested
   var file = req.params[0]; 
-  console.log('\t :: Express :: file requested: ' + file);    
-  console.log(req.query.workerId && !valid_id(req.query.workerId));
   if(req.query.workerId && !valid_id(req.query.workerId)) {
-    res.redirect('http://rxdhawkins.me:8888/sharedUtils/invalid.html');
+    console.log("invalid id");
+    res.redirect('https://rxdhawkins.me:8888/sharedUtils/invalid.html');
+  } else if(req.query.workerId && req.query.workerId in global_player_set) {
+    console.log("duplicate ID");
+    res.redirect('https://rxdhawkins.me:8888/sharedUtils/duplicate.html');
   } else {
-    if(req.query.workerId && req.query.workerId in global_player_set) {
-      res.redirect('http://rxdhawkins.me:8888/sharedUtils/duplicate.html');
-    } else {
-      res.sendfile("./" + file); // give them what they want
+    console.log('\t :: Express :: file requested: ' + file);
+    if(req.query.workerId) {
+      console.log(" by workerID " + req.query.workerId);
     }
+    res.sendfile("./" + file); // give them what they want
   }
 }); 
 
@@ -72,11 +74,10 @@ io.on('connection', function (client) {
     if(query.workerId) {
       global_player_set[query.workerId] = true;
       // useid from query string if exists
-      var id = query.workerId; 
+      id = query.workerId; 
     } else {
-      var id = utils.UUID();
+      id = utils.UUID();
     }
-    console.log("id is " + id);
     if(valid_id(id)) {
       initialize(query, client, id);
     }
