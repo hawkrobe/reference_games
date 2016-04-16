@@ -39,11 +39,9 @@ var client_onserverupdate_received = function(data){
 
   if (globalGame.roundNum != data.roundNum) {
     globalGame.currStim = _.map(data.trialInfo.currStim, function(obj) {
-      console.log(obj);
       // Extract the coordinates matching your role
       var customCoords = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
 			  obj.speakerCoords : obj.listenerCoords);
-      console.log(customCoords);
       // remove the speakerCoords and listenerCoords properties
       var customObj = _.chain(obj)
 	    .omit('speakerCoords', 'listenerCoords')
@@ -69,7 +67,6 @@ var client_onserverupdate_received = function(data){
   globalGame.data = data.dataObj;
   
   // Draw all this new stuff
-  console.log("update");
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 }; 
 
@@ -94,9 +91,13 @@ var client_onMessage = function(data) {
       var upperLeftX;
       var upperLeftY;
       var strokeColor;
-      console.log("drawing feedback");
+      var clickedObjStatus = commands[2];
+      var outcome = commands[3];    
+      // Update local score... 
+      globalGame.data.totalScore += outcome === "target" ? 1 : 0;
+      console.log("total score is " + globalGame.data.totalScore);
+
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-	var clickedObjStatus = commanddata;
 	objToHighlight = _.filter(globalGame.currStim, function(x){
 	  return x.targetStatus == clickedObjStatus;
 	})[0];
@@ -109,10 +110,7 @@ var client_onMessage = function(data) {
 	upperLeftX = objToHighlight.listenerCoords.gridPixelX;
 	upperLeftY = objToHighlight.listenerCoords.gridPixelY;
       }
-      console.log('obj to highlight is...');
-      console.log(objToHighlight);
       if (upperLeftX != null && upperLeftY != null) {
-	console.log("actually stroking");
         globalGame.ctx.beginPath();
         globalGame.ctx.lineWidth="10";
         globalGame.ctx.strokeStyle="green";
@@ -150,7 +148,7 @@ var client_addnewround = function(game) {
 var customSetup = function(game) {
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
-  game.socket.on('newRoundUpdate', function(){
+  game.socket.on('newRoundUpdate', function(data){
     $('#messages').empty();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
@@ -175,7 +173,6 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    console.log("first statistifed");
     $('#instructs').append("Send messages to tell the listener which object " + 
 			   "is the target.");
   } else if(role === globalGame.playerRoleNames.role2) {
@@ -190,7 +187,6 @@ var client_onjoingame = function(num_players, role) {
 
   // set mouse-tracking event handler
   if(role === globalGame.playerRoleNames.role2) {
-    console.log("setting listener");
     globalGame.viewport.addEventListener("click", mouseClickListener, false);
   }
 };    

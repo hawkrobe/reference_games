@@ -33,16 +33,21 @@ var onMessage = function(client,message) {
   switch(message_type) {
     
   case 'clickedObj' :
+    // Write event to file
     writeData(client, "clickedObj", message_parts);
-    others[0].player.instance.send("s.feedback." + message_parts[2]);
-    target.instance.send("s.feedback." + message_parts[2]);
+    // Update score
+    gc.data.totalScore += message_parts[1] === "target" ? 1 : 0;
+    // Give feedback to players
+    var feedbackMsg = "s.feedback." + message_parts[2] + "." + message_parts[1];
+    others[0].player.instance.send(feedbackMsg);
+    target.instance.send(feedbackMsg);
+    // Continue
     gc.advanceRound(3000);
     break; 
   
   case 'playerTyping' :
     _.map(others, function(p) {
-      p.player.instance.emit( 'playerTyping',
-			      {typing: message_parts[1]});
+      p.player.instance.emit( 'playerTyping', {typing: message_parts[1]});
     });
     break;
   
