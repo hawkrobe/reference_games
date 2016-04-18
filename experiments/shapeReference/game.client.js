@@ -57,6 +57,8 @@ var client_onserverupdate_received = function(data){
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
     $('#messages').empty();    
+    $("#chatbox").removeAttr("disabled");
+    $('#chatbox').focus();
     globalGame.get_player(globalGame.my_id).message = "";
   }
   
@@ -91,6 +93,7 @@ var client_onMessage = function(data) {
       var upperLeftX;
       var upperLeftY;
       var strokeColor;
+      $("#chatbox").attr("disabled", "disabled"); 
       var clickedObjStatus = commands[2];
       var outcome = commands[3];    
       // Update local score... 
@@ -192,7 +195,7 @@ var client_onjoingame = function(num_players, role) {
 	console.log(this.data);
       }
     }, 1000 * 60 * 15);
-
+    $("#chatbox").attr("disabled", "disabled"); 
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
 				      + 'Please do not refresh the page!'); 
   }
