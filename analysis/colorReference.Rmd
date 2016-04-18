@@ -29,6 +29,7 @@ subjInfo = read.csv("../data/colorReference/turk/colorReference-subject_informat
   rename(gameid = gameID) %>%
   select(-workerid)
 
+mean(subjInfo$totalLength / 1000 / 60)
 ```
 
 # Pre-processing
@@ -44,6 +45,7 @@ combined <- clks %>%
   left_join(subjInfo, by = c("gameid", "role")) %>%
   filter(nativeEnglish != "no") %>%
   filter(confused != "confused") %>%
+  mutate(numOutcome = ifelse(outcome == "true", 1, 0)) %>%
   mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
   mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
   do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
@@ -89,7 +91,7 @@ ggplot(combined %>%
 
 Yep! Speakers actually use questions, too, to mark uncertainty (e.g. "purple?"), and it actually looks like the number of questions falls off with the difficulty of the trial. Note that a lot of these are meta-questions like "are you there?" or "Are you a robot?" Might want to scrub these later.
 
-# Analysis: Most common color words?
+# Analysis: Most common words?
 
 ```{r}
 speakerWords <- combined %>%
@@ -130,8 +132,8 @@ Instead of grouping them into these big bins, why not use the continuous similar
 ```{r}
 summary(lmer(numWords ~ totalSimilarity + (1 | gameid), data = similarityD))
 
-ggplot(similarityD %>% filter(totalSimilarity < 190), 
-       aes(x = totalSimilarity, y = numWords)) +
+ggplot(similarityD %>% filter(minSimilarity < 190), 
+       aes(x = minSimilarity, y = numWords)) +
   geom_smooth(method = loess, size = 2) + 
   geom_point(alpha = 0.1, position = position_jitter(w = 0.5, h = 0.5)) +
   ylim(0,6) +
@@ -150,9 +152,49 @@ ggplot(similarityD %>%
   ylab("# words used (mean)") +
   theme_bw()
 ```
+
+# Analysis: Do people make more mistakes on harder trials:
+
+```{r}
+conditionMod = glmer(numOutcome ~ condition + (1 | gameid), family = "binomial", 
+      data = combined %>% 
+        group_by(gameid, roundNum) %>% 
+        filter(row_number()==1) %>%
+        filter(role == "speaker"))
+summary(conditionMod)
+
+ggplot(combined %>% group_by(gameid, roundNum) %>% filter(row_number()==1) %>%
+         filter(role == "speaker") %>% group_by(condition) %>%
+         summarize(percentCorrect = mean(numOutcome), 
+                   se = sqrt(percentCorrect*(1 - percentCorrect)
+                             /length(numOutcome))),
+  aes(x = condition, y = percentCorrect)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymax = percentCorrect + se, ymin = percentCorrect - se), 
+                position=dodge, width=0.25)
+
+```
+
 # Analysis: Does using more words predict correct responses?
 
-# Analysis: What words appear by themselves vs. with other words?
+```{r}
+numWordsMod = glmer(numOutcome ~ numCleanWords + condition + (1 | gameid), 
+                  family = "binomial",
+                  data = combined %>% group_by(gameid, roundNum) %>%
+                    filter(row_number() == 1) %>% filter(role == "speaker"))
+summary(numWordsMod)
+anova(conditionMod, numWordsMod)
+
+ggplot(combined %>% group_by(gameid, roundNum) %>% filter(row_number()==1) %>%
+         filter(role == "speaker") %>%
+         mutate(numOutcome = ifelse(outcome == "true", 1, 0)) %>% ungroup() %>%
+         do(mutate(., predicted = predict(fittedProbs, ., type = "response"))),
+       aes(x = numCleanWords, y = numOutcome, color = condition)) +
+  geom_point(alpha = 0.1, position = position_jitter(w = 0.5, h = 0)) +
+  geom_line(aes(y = predicted))
+```
+
+Not after controlling for difficulty... 
 
 # Analysis: Exclusionary words like "not"
 
@@ -171,3 +213,32 @@ ggplot(combined %>%
   geom_errorbar(aes(ymax = numNotsUsed + se, ymin = numNotsUsed - se), 
                   position=dodge, width=0.25)
 ```
+
+# Analysis: How does behavior change over time?
+
+```{r}
+ggplot(combined %>% 
+    group_by(roundNum, gameid) %>% 
+    filter(row_number()==1) %>%
+    filter(role == "speaker") %>%
+  summarize(meanNumWords = mean(numRawWords)),
+  aes(x = roundNum, y = meanNumWords)) +
+  geom_line() +
+  facet_wrap(~ gameid)
+```
+
+Doesn't look like very many people have a trend over time
+
+```{r}
+ggplot(combined %>% 
+  group_by(gameid, roundNum) %>%
+  filter(row_number()==1) %>%
+  filter(role == "speaker") %>%
+  group_by(roundNum, condition) %>% 
+  summarize(meanNumWords = mean(numRawWords)),
+  aes(x = roundNum, y = meanNumWords, color = condition)) +
+  geom_point() +
+  geom_smooth()
+```
+
+If there is an effect, averaging across people, it looks like it might be limited to the equal condition (i.e. people start to recognize that on easy trials they only need a word or two)
