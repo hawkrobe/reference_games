@@ -1,4 +1,4 @@
-gameid,time,roundNum,condition,clickStatus,clickColH,clickColS,clickColL,clickLocS,clickLocLalt1Status,alt1ColH,alt1ColS,alt1ColL,alt1LocS,alt1LocLalt2Status,alt2ColH,alt2ColS,alt2ColL,alt2LocS,alt2LocLtargetD1Diff,targetD2Diff,D1D2Diff,outcome
+gameid,time,roundNum,condition,clickStatus,clickColH,clickColS,clickColL,clickLocS,clickLocL,alt1Status,alt1ColH,alt1ColS,alt1ColL,alt1LocS,alt1LocL,alt2Status,alt2ColH,alt2ColS,alt2ColL,alt2LocS,alt2LocL,targetD1Diff,targetD2Diff,D1D2Diff,outcome
 1124-1,1459877206546,1,closer,distr2,248,92,50,3,1,target,226,81,50,1,2,distr1,283,87,50,2,3,19,10,17,false
 1124-1,1459877215560,2,equal,target,249,25,50,1,2,distr2,54,53,50,3,3,distr1,129,66,50,2,1,58,61,25,true
 1124-1,1459877234848,3,closer,distr2,291,59,50,3,3,target,301,57,50,2,2,distr1,302,86,50,1,1,6,5,10,false
