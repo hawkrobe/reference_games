@@ -15,5 +15,27 @@ library(qdap)
 library(stringr)
 library(knitr)
 
+setwd("~/Repos/reference_games/analysis")
 
+msgs = read.csv("../data/tangrams/message/tangramsMessage.csv") %>%
+  rename(msgTime = time, 
+         role = sender)
+
+subjInfo = read.csv("../data/colorReference/turk/colorReference-subject_information.csv") %>%
+  rename(gameid = gameID) %>%
+  select(-workerid)
+
+mean(subjInfo$totalLength / 1000 / 60)
+```
+
+```{r}
+counts = read.csv("../../tangrams_replication/tangramWordCounts.csv",skipNul = TRUE)
+
+counts %>% filter(roundNum == "1" | roundNum == "A") %>% group_by(tangram) 
+
+ggplot(counts %>% filter(tangram == "A") %>% filter(count > 0),
+       aes(x = reorder(word, -count), y = count)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  facet_grid( ~ roundNum) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
