@@ -22,7 +22,7 @@ msgs = read.csv("../data/colorReference/message/colorReferenceMessage.csv") %>%
          role = sender)
 
 clks = read.csv("../data/colorReference/clickedObj/colorReferenceClicks.csv") %>%
-  mutate(condition = factor(condition, levels = c("closer", "further", "equal"))) %>%
+  mutate(condition = factor(condition, levels = c("closer", "further", "equal"), labels = c("hard", "medium", "easy"))) %>%
   rename(clkTime = time)
 
 subjInfo = read.csv("../data/colorReference/turk/colorReference-subject_information.csv") %>%
@@ -68,7 +68,8 @@ ggplot(combined %>%
        aes(x = condition, y = numMessagesSent, fill = role)) +
   geom_bar(stat = "identity", position = dodge) +
   geom_errorbar(aes(ymax = numMessagesSent + se, ymin = numMessagesSent - se), 
-                    position=dodge, width=0.25)
+                    position=dodge, width=0.25) +
+  ggtitle("How often do listeners talk back?")
 ```
 
 So listeners talk more on harder trials, but always *much* less than speakers (an average of 4 messages per game combined to 50 messages by speakers)
@@ -86,7 +87,8 @@ ggplot(combined %>%
        aes(x = condition, y = numQuestionsAsked, fill = role)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_errorbar(aes(ymax = numQuestionsAsked + se, ymin = numQuestionsAsked - se), 
-                  position=dodge, width=0.25)
+                  position=dodge, width=0.25) +
+  ggtitle("how many questions did each player ask?")
 ```
 
 Yep! Speakers actually use questions, too, to mark uncertainty (e.g. "purple?"), and it actually looks like the number of questions falls off with the difficulty of the trial. Note that a lot of these are meta-questions like "are you there?" or "Are you a robot?" Might want to scrub these later.
@@ -117,14 +119,15 @@ similarityD = combined %>%
 
 ggplot(combined %>% 
          group_by(gameid, condition) %>%
-         summarise(n = sum(numCleanWords)) %>%
+         summarise(n = sum(numCleanWords)/length(numCleanWords)) %>%
          group_by(condition) %>% 
          summarize(numWordsUsed = mean(n), se = sd(n)/sqrt(length(n))), 
        aes(x = condition, y = numWordsUsed)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_errorbar(aes(ymax = numWordsUsed + se, ymin = numWordsUsed - se), 
                   position=dodge, width=0.25) +
-  theme_bw()
+  theme_bw() +
+  ggtitle("Do speakers use more words on harder trials?")
 ```
 
 Instead of grouping them into these big bins, why not use the continuous similarity metric?
@@ -132,13 +135,14 @@ Instead of grouping them into these big bins, why not use the continuous similar
 ```{r}
 summary(lmer(numWords ~ totalSimilarity + (1 | gameid), data = similarityD))
 
-ggplot(similarityD %>% filter(minSimilarity < 190), 
-       aes(x = minSimilarity, y = numWords)) +
+ggplot(similarityD %>% filter(totalSimilarity < 190), 
+       aes(x = totalSimilarity, y = numWords)) +
   geom_smooth(method = loess, size = 2) + 
   geom_point(alpha = 0.1, position = position_jitter(w = 0.5, h = 0.5)) +
   ylim(0,6) +
   ylab("# words used") +
-  theme_bw()
+  theme_bw() +
+  ggtitle("Do speakers use more words on harder trials?")
 
 ggplot(similarityD %>% 
          group_by(totalSimilarity) %>% 
@@ -238,7 +242,8 @@ ggplot(combined %>%
   summarize(meanNumWords = mean(numRawWords)),
   aes(x = roundNum, y = meanNumWords, color = condition)) +
   geom_point() +
-  geom_smooth()
+  geom_smooth() +
+  ggtitle("Do people conventionalize?")
 ```
 
 If there is an effect, averaging across people, it looks like it might be limited to the equal condition (i.e. people start to recognize that on easy trials they only need a word or two)
