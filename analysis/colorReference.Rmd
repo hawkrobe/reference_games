@@ -7,7 +7,7 @@ output: html_document
 
 ```{r, message=F, warning=F}
 library(ggplot2)
-library(lmer)
+library(lme4)
 library(lmerTest)
 library(tidyr)
 library(dplyr)
@@ -50,7 +50,9 @@ combined <- clks %>%
   mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
   do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
                                        separate = F))) %>%
-  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) 
+  mutate(numCleanChars = nchar(as.character(cleanMsg))) %>%
+  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
+  filter(numCleanWords < mean(numCleanWords) + 3*sd(numCleanWords))
 ```
 
 # Analysis: How often to listeners talk back?
@@ -175,7 +177,8 @@ ggplot(combined %>% group_by(gameid, roundNum) %>% filter(row_number()==1) %>%
   aes(x = condition, y = percentCorrect)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_errorbar(aes(ymax = percentCorrect + se, ymin = percentCorrect - se), 
-                position=dodge, width=0.25)
+                position=dodge, width=0.25) + 
+  theme_bw()
 
 ```
 
@@ -234,16 +237,26 @@ ggplot(combined %>%
 Doesn't look like very many people have a trend over time
 
 ```{r}
+colorConvMod = lmer(numCleanChars ~ condition + roundNum + (1 + condition| gameid), 
+     data = combined %>% 
+  group_by(gameid, roundNum) %>%
+  filter(row_number()==1) %>%
+  filter(role == "speaker"))
+
+summary(colorConvMod)
+pdf("colorReferenceFigs/colorConv.pdf")
 ggplot(combined %>% 
   group_by(gameid, roundNum) %>%
   filter(row_number()==1) %>%
   filter(role == "speaker") %>%
   group_by(roundNum, condition) %>% 
-  summarize(meanNumWords = mean(numRawWords)),
+  summarize(meanNumWords = mean(numCleanWords)),
   aes(x = roundNum, y = meanNumWords, color = condition)) +
   geom_point() +
   geom_smooth() +
-  ggtitle("Do people conventionalize?")
+  ggtitle("Do people conventionalize?") +
+  theme_bw()
+dev.off()
 ```
 
 If there is an effect, averaging across people, it looks like it might be limited to the equal condition (i.e. people start to recognize that on easy trials they only need a word or two)
