@@ -8,13 +8,41 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r}
-summary(cars)
+setwd("~/Repos/reference_games/analysis")
+
+basicLevData = read.csv("../data/basicLevelReference/basiclev_manModified.csv")
+basicCombined <- basicLevData %>%
+  mutate(numRawWords = 1 + str_count(speakerMessages, fixed(" "))) %>%
+  mutate(strippedContents = str_replace_all(speakerMessages, "[^[:alnum:][:space:]']",' ')) %>%
+  do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
+                                       separate = F))) %>%
+  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
+  mutate(numCleanChars = nchar(as.character(cleanMsg))) %>%
+  filter(numRawWords < mean(numRawWords) + 2*sd(numRawWords)) %>% # Get rid of outliers
+  select(gameid, time, roundNum, condition, numCleanWords, numCleanChars, cleanMsg)
+
 ```
 
 You can also embed plots, for example:
 
 ```{r, echo=FALSE}
-plot(cars)
+convMod = lmer(numCleanWords ~ roundNum * condition + (1 + condition | gameid),
+     data = basicCombined %>% 
+    group_by(gameid, roundNum) %>%
+    filter(row_number()==1))
+summary(convMod)
+
+ggplot(basicCombined %>% 
+    group_by(gameid, roundNum) %>%
+    filter(row_number()==1) %>%
+    group_by(roundNum, condition) %>% 
+    summarize(meanNumWords = mean(numCleanWords),
+              meanNumChars = mean(numCleanChars)),
+  aes(x = roundNum, y = meanNumChars, color = condition)) +
+  geom_point() +
+  geom_smooth(span = 2) +
+  theme_bw() +
+  ggtitle("Do people use fewer chars?")
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
