@@ -40,9 +40,12 @@ tangramCombined <- tangramMsgs %>%
                                        separate = F))) %>%
   mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
   filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
+
+length(unique(tangramCombined$gameid))
 ```
 
 ```{r}
+pdf("tangramsFigs/wordOverTime.pdf")
 ggplot(tangramCombined %>% 
          filter(role == "director") %>%
          group_by(gameid, roundNum) %>% 
@@ -55,8 +58,10 @@ ggplot(tangramCombined %>%
   geom_errorbar(aes(ymax = m + se, ymin = m - se), width = .1) +
   ylab("mean number words (by director) per figure") +
   xlab("trials") +
+  ylim(0,20) +
   xlim(0, 7) +
   theme_bw() 
+dev.off()
 ```
 
 # Make wordclouds for round 6
@@ -157,6 +162,61 @@ ggplot(acrossPair,
            color = tangram, linetype = type, group = interaction(tangram, type))) +
   geom_line()
 ```
+
+# Make POS plots... 
+
+```{r}
+d = read.csv('~/Repos/tangrams_replication/ipython_notebooks/posTagged.csv', header =T) %>%
+  filter(sender == "director") %>%
+  group_by(roundNum) %>%
+  summarize(numWords = sum(numWords),
+            nouns = sum(NNnum)/sum(numWords),
+            verbs = sum(VBnum)/sum(numWords),
+            dets= sum(DTnum)/sum(numWords),
+            pronouns = sum(PRPnum)/sum(numWords),
+            preps = sum(INnum)/sum(numWords),
+            tos = sum(TOnum)/sum(numWords),
+            adverbs = sum(RBnum)/sum(numWords)) %>%
+  mutate(OTHER = (1 - nouns - verbs - dets - pronouns -
+                      preps - tos - adverbs)) %>%
+  gather(POS, prop, nouns:OTHER) %>%
+  select(roundNum, POS, prop) 
+  
+head(d)
+
+ggplot(d, aes(x = roundNum, y = prop, fill = POS)) +
+  geom_bar(stat = "identity") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_bw()
+```
+
+Same thing but make them add up to number of words... 
+
+```{r}
+d = read.csv('~/Repos/tangrams_replication/ipython_notebooks/posTagged.csv', header =T) %>%
+  filter(sender == "director") %>%
+  group_by(roundNum) %>%
+  summarize(numWords = sum(numWords),
+            nouns = sum(NNnum),
+            verbs = sum(VBnum),
+            dets= sum(DTnum),
+            pronouns = sum(PRPnum),
+            preps = sum(INnum),
+            tos = sum(TOnum),
+            adverbs = sum(RBnum)) %>%
+  mutate(OTHER = (numWords - nouns - verbs - dets - pronouns -
+                      preps - tos - adverbs)) %>%
+  gather(POS, total, nouns:OTHER) %>%
+  select(roundNum, POS, total) 
+head(d)
+ggplot(d, aes(x = roundNum, y = total, fill = POS)) +
+  geom_bar(stat = "identity") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_bw()
+
+```
+
+# Copied from nicki's ipython notebook... Need to recreate this myself
 
 ```{r}
 nullDistributionNums = c(0.2013888888888889,
@@ -360,10 +420,11 @@ nullDistributionNums = c(0.2013888888888889,
  0.16666666666666666,
  0.16319444444444445)
 
+pdf("tangramsFigs/nullDistribution.pdf")
 qplot(nullDistributionNums,binwidth = .01) +
   geom_vline(x = 0.2112, color = 'red', size = 4) +
-  xlab("p_matching") +
-  ggtitle("Bootstrapped null for p(match)") +
+  xlab("probability of match b/w Rounds 1 & 6") +
+  ggtitle("Are high PMI words more likely to \n conventionalize than expected by chance?") +
   theme_bw()
-
+dev.off()
 ```
