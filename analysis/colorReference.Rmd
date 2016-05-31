@@ -21,7 +21,7 @@ msgs = read.csv("../data/colorReference/message/colorReferenceMessage.csv") %>%
   rename(msgTime = time, 
          role = sender)
 
-clks = read.csv("../data/colorReference/clickedObj/colorReferenceClicks.csv") %>%
+clks = read.csv("../data/colorReference/clickedObj/extendedColorReferenceClicks.csv") %>%
   mutate(condition = factor(condition, levels = c("closer", "further", "equal"), labels = c("hard", "medium", "easy"))) %>%
   rename(clkTime = time)
 
@@ -40,11 +40,18 @@ There's a bunch of pre-processing we'd like to do. For instance, it would be nic
 # For later bar plots
 dodge <- position_dodge(width=0.9)
 
-combined <- clks %>% 
+rawAggregated <- clks %>% 
   left_join(msgs, by = c("gameid", "roundNum")) %>%
-  left_join(subjInfo, by = c("gameid", "role")) %>%
-  filter(nativeEnglish != "no") %>%
-  filter(confused != "confused") %>%
+  left_join(subjInfo, by = c("gameid", "role")) 
+
+goodGames <- unique((rawAggregated %>% 
+  filter(nativeEnglish == "yes") %>%
+  filter(confused == "yes") %>%
+  group_by(gameid) %>%
+  filter(length(unique(roundNum)) == 50))$gameid)
+
+combined <- rawAggregated %>%
+  filter(gameid %in% goodGames) %>%
   mutate(numOutcome = ifelse(outcome == "true", 1, 0)) %>%
   mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
   mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
@@ -101,7 +108,7 @@ Yep! Speakers actually use questions, too, to mark uncertainty (e.g. "purple?"),
 speakerWords <- combined %>%
   filter(role == "speaker") %>%
   summarize(wordList = paste(cleanMsg, collapse = " "))
-sort(table(strsplit(speakerWords$wordList, ' ')), decreasing=T)[1:50]
+sort(table(strsplit(speakerWords$wordList, ' ')), decreasing=T)[1:75]
 ```
 
 # Analysis: Do people use more *words* on harder trials?
@@ -147,13 +154,14 @@ ggplot(similarityD %>% filter(totalSimilarity < 190),
   ggtitle("Do speakers use more words on harder trials?")
 
 ggplot(similarityD %>% 
-         group_by(totalSimilarity) %>% 
-         summarize(numWordsUsed = mean(numWords), se = sd(numWords)/length(numWords)) %>%
-         filter(totalSimilarity < 190), 
-       aes(x = totalSimilarity, y = numWordsUsed)) +
+         mutate(similarityBin = cut(totalSimilarity, seq(5, 150, 1), labels = FALSE)) %>%
+         group_by(similarityBin) %>% 
+         summarize(numWordsUsed = mean(numWords), se = sd(numWords)/sqrt(length(numWords))) %>%
+         filter(similarityBin < 150), 
+       aes(x = similarityBin, y = numWordsUsed)) +
   geom_smooth(method = loess, size = 2) + 
   geom_point() +
-  geom_errorbar(aes(ymax = numWordsUsed + se, ymin = numWordsUsed - se)) +
+  geom_errorbar(aes(ymax = numWordsUsed + 2*se, ymin = numWordsUsed - 2*se)) +
   ylim(0,4) +
   ylab("# words used (mean)") +
   theme_bw()
@@ -260,3 +268,21 @@ dev.off()
 ```
 
 If there is an effect, averaging across people, it looks like it might be limited to the equal condition (i.e. people start to recognize that on easy trials they only need a word or two)
+
+# Colors: Do different participants carve up the space differently?
+
+```{r}
+ggplot(combined %>% filter(gameid == "9960-e"), 
+       aes(x = clickX, y = clickY, colour = clickHex,label = cleanMsg)) +
+  geom_text()+
+  scale_colour_identity() +
+  theme_bw() 
+  #facet_wrap(~ gameid)
+
+ggplot(combined %>% filter(gameid == "9353-3"), 
+       aes(x = clickX, y = clickY, colour = clickHex,label = cleanMsg)) +
+  geom_text()+
+  scale_colour_identity() +
+  theme_bw() 
+  #facet_wrap(~ gameid)
+```
