@@ -89,9 +89,6 @@ var client_onMessage = function(data) {
       }
       globalGame.players.push({id: commanddata,
 			       player: new game_player(globalGame)}); break;
-
-    case 'begin_game' :
-      client_newgame(); break;
     }
   } 
 }; 
