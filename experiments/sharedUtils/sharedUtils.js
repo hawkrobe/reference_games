@@ -42,10 +42,10 @@ function fillArray(value, len) {
   return arr;
 }
 
-var randomColor = function () {
+var randomColor = function (options) {
   var h = ~~(Math.random() * 360);
   var s = ~~(Math.random() * 100);
-  var l = 50;
+  var l = options.fixedL ? 50 : ~~(Math.random() * 100) ;
   return [h, s, l];
 };
 
