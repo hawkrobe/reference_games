@@ -105,10 +105,9 @@ var client_onMessage = function(data) {
       if(hidden === 'hidden') {
         flashTitle("GO!");
       }
-      globalGame.players.push({id: commanddata, player: new game_player(globalGame)}); break;
+      globalGame.players.push({id: commanddata,
+			       player: new game_player(globalGame)}); break;
 
-    case 'begin_game' :
-      client_newgame(); break;
     }
   } 
 }; 

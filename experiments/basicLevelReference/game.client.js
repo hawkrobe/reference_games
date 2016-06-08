@@ -252,10 +252,6 @@ var client_onMessage = function(data) {
         flashTitle("GO!");
       }
       game.players.push({id: commanddata, player: new game_player(game)}); break;
-
-    case 'begin_game' :
-      client_newgame(); break;
-
     }
   } 
 }; 
