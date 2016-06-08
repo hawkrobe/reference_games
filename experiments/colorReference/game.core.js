@@ -218,9 +218,10 @@ game_core.prototype.server_send_update = function(){
 };
 
 var sampleTrial = function(condition) {
-  var target = {color: utils.randomColor(), targetStatus : "target"};
-  var firstDistractor = {color: utils.randomColor(), targetStatus: "distr1"};
-  var secondDistractor = {color: utils.randomColor(), targetStatus: "distr2"};
+  var opts = {fixedL : true};
+  var target = {color: utils.randomColor(opts), targetStatus : "target"};
+  var firstDistractor = {color: utils.randomColor(opts), targetStatus: "distr1"};
+  var secondDistractor = {color: utils.randomColor(opts), targetStatus: "distr2"};
   if(checkItem(condition,target,firstDistractor,secondDistractor)) {
     // attach "condition" to each stimulus object
     return _.map([target, firstDistractor, secondDistractor], function(x) {
