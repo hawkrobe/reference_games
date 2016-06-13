@@ -21,13 +21,21 @@ var csv = readCSV("./colorReferenceClicks.csv");
 var newCSV = _.map(csv, function(row) {
   var rowVals = _.values(row);
   var targetCol = _.indexOf(rowVals, "target");
-  var targetH = rowVals[targetCol + 1];  
-  var targetS = rowVals[targetCol + 2];
-  var targetL = rowVals[targetCol + 3];  
+  var alt1Col = _.indexOf(rowVals, "distr1");
+  var alt2Col = _.indexOf(rowVals, "distr2");  
+  var targetHSL = _.map([1,2,3], function(i) {return rowVals[targetCol + i]; });
+  var alt1HSL = _.map([1,2,3], function(i) {return rowVals[alt1Col + i]; });
+  var alt2HSL = _.map([1,2,3], function(i) {return rowVals[alt2Col + i]; });
   return _.extend(row, {
-    targetX :  targetS * Math.cos(toRadians(targetH)),
-    targetY :  targetS * Math.sin(toRadians(targetH)),
-    targetHex:"#" + converter.hsl.hex(targetH, targetS, targetL),
+    targetX :  targetHSL[1] * Math.cos(toRadians(targetHSL[0])),
+    targetY :  targetHSL[1] * Math.sin(toRadians(targetHSL[0])),
+    targetHex:"#" + converter.hsl.hex(targetHSL),
+    alt1X :  alt1HSL[1] * Math.cos(toRadians(alt1HSL[0])),
+    alt1Y :  alt1HSL[1] * Math.sin(toRadians(alt1HSL[0])),
+    alt1Hex:"#" + converter.hsl.hex(alt1HSL),
+    alt2X :  alt2HSL[1] * Math.cos(toRadians(alt2HSL[0])),
+    alt2Y :  alt2HSL[1] * Math.sin(toRadians(alt2HSL[0])),
+    alt2Hex:"#" + converter.hsl.hex(alt2HSL),
     clickX : row.clickColS * Math.cos(toRadians(row.clickColH)),
     clickY : row.clickColS * Math.sin(toRadians(row.clickColH)),
     clickHex : "#" + converter.hsl.hex(row.clickColH, row.clickColS, row.clickColL)
