@@ -1,0 +1,11 @@
+var meaning = function(utterance, color) {
+  return net.getScore({utterance : utterance, color : color});
+};
+
+var literalListener = function(utterance, colorContext) {
+  Infer({method: "enumerate"}, function(){
+    var color = uniformDraw(colorContext);
+    factor(meaning(utterance, color));
+    return color;
+  });
+};
