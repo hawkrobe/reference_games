@@ -1,5 +1,5 @@
 var meaning = function(utterance, color) {
-  return net.getScore({utterance : utterance, color : color});
+  return getScore({utterance : utterance, color : color});
 };
 
 var literalListener = function(utterance, colorContext) {
@@ -9,3 +9,5 @@ var literalListener = function(utterance, colorContext) {
     return color;
   });
 };
+
+literalListener("green", ["#14EB95","#D1C92E","#1114EE"]);
