@@ -14,6 +14,7 @@ library(dplyr)
 library(qdap)
 library(stringr)
 library(knitr)
+library(tm)
 
 setwd("~/Repos/reference_games/analysis")
 
@@ -42,8 +43,11 @@ dodge <- position_dodge(width=0.9)
 combined <- clks %>% 
   left_join(msgs, by = c("gameid", "roundNum")) %>%
   left_join(subjInfo, by = c("gameid", "role")) %>%
-  filter(nativeEnglish != "no") %>%
+  filter(nativeEnglish != "no" | is.na(nativeEnglish)) %>% 
   filter(confused != "confused") %>%
+  group_by(gameid) %>%
+  filter(length(unique(roundNum)) == 50) %>%
+  ungroup() %>%
   mutate(numOutcome = ifelse(outcome == "true", 1, 0)) %>%
   mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
   mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
@@ -105,6 +109,12 @@ speakerWords <- combined %>%
 sort(table(strsplit(speakerWords$wordList, ' ')), decreasing=T)[1:50]
 ```
 
+# Are players sticky?
+
+```{r}
+
+```
+
 # Analysis: How good at this are they?
 
 ```{r}
@@ -115,7 +125,6 @@ sort(table(strsplit(speakerWords$wordList, ' ')), decreasing=T)[1:50]
   summarize(acc = mean(numOutcome)) %>%
   ungroup() %>%
   summarize(overallAcc = mean(acc), se = sd(acc)/sqrt(length(acc))))
-sort(table(strsplit(speakerWords$wordList, ' ')), decreasing=T)[1:50]
 ```
 
 # Analysis: How does behavior change over time?
@@ -175,25 +184,29 @@ dev.off()
 ```{r}
 library(entropy)
 
+makeDTMatrix <- function(cleanMsg) {
+  print(cleanMsg)
+  corpus <- Corpus(VectorSource(paste(cleanMsg, collapse = " ")))
+  print(as.matrix(DocumentTermMatrix(corpus)))
+  return (as.matrix(DocumentTermMatrix(corpus)))
+}
+
 withinPair <- combined %>% 
+  filter(gameid == "3732-3") %>%
   group_by(gameid) %>%
-  summarize(entropy = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(cleanMsg, collapse = " ")))))))) %>%
+  summarize(entropy = entropy(colSums(makeDTMatrix(cleanMsg)))) %>%
   mutate(type = "within") %>%
-  select(entropy, type)
+  select(entropy, type, gameid)
 
 acrossPair <- combined %>% 
   group_by(roundNum) %>% 
-  summarize(entropy = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(cleanMsg, collapse = " ")))))))) %>%
+  summarize(entropy = entropy(colSums(makeDTMatrix(cleanMsg)))) %>%
   mutate(type = "across") %>%
   select(entropy, type)
 
-pdf("shapeReferenceFigs/entropies.pdf")
+#pdf("shapeReferenceFigs/entropies.pdf")
 ggplot(rbind(withinPair, acrossPair), aes(x = entropy, fill = type)) +
   geom_bar()
-dev.off()
+#dev.off()
 ```
-
-# Count nike?
-
-
 
