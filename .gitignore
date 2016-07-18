@@ -2,4 +2,12 @@
 *~
 *RData
 *Rhistory
-*/node_modules/
+data/colorReference/clickedObj/node_modules/
+experiments/node_modules/
+models/node_modules/
+models/wppl-color/node_modules/
+models/.ipynb_checkpoints/
+models/stanza/
+models/coop-nets/
+reference_games.Rproj
+.Rproj.user
