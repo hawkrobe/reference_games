@@ -6,6 +6,7 @@ output: html_document
 # Import data
 
 ```{r, message=F, warning=F}
+library(reshape2)
 library(ggplot2)
 library(lme4)
 library(lmerTest)
@@ -15,15 +16,13 @@ library(qdap)
 library(stringr)
 library(knitr)
 library(tm)
-
 setwd("~/Repos/reference_games/analysis")
 
 msgs = read.csv("../data/shapeReference/message/shapeReferenceMessage.csv") %>%
   rename(msgTime = time, 
          role = sender)
 
-clks = read.csv("../data/shapeReference/clickedObj/shapeReferenceClickedObj.csv") %>%
-  rename(clkTime = time)
+clks = read.csv("../data/shapeReference/clickedObj/clksWithPhylo.csv") 
 
 subjInfo = read.csv("../data/shapeReference/turk/shapeReference-subject_information.csv") %>%
   rename(gameid = gameID) %>%
@@ -210,3 +209,37 @@ ggplot(rbind(withinPair, acrossPair), aes(x = entropy, fill = type)) +
 #dev.off()
 ```
 
+# Use shape clusters for something
+
+```{r}
+head(combined)
+
+speakerWords <- combined %>%
+  group_by(clustL20) %>% 
+  summarize(wordList = paste(cleanMsg, collapse = " "))
+
+docs <- lexicalize(speakerWords$wordList)
+
+K <- 10 # num topics
+
+result <- lda.collapsed.gibbs.sampler(docs$documents, K, docs$vocab, 5000, 
+                                      0.1, 0.1, compute.log.likelihood=TRUE)
+
+N <- 5 # num docs to display
+top.words <- top.topic.words(result$topics, 5, by.score=TRUE)
+top.words
+topic.proportions <- t(result$document_sums) / colSums(result$document_sums)
+topic.proportions <- topic.proportions[sample(1:dim(topic.proportions)[1], N),]
+topic.proportions[is.na(topic.proportions)] <-  1 / K
+colnames(topic.proportions) <- apply(top.words, 2, paste, collapse=" ")
+topic.proportions.df <- melt(cbind(data.frame(topic.proportions),
+                                   document=factor(1:N)),
+                                   variable.name="topic",
+                                   id.vars = "document")
+(ggplot(topic.proportions.df, aes(x = topic, y = value, fill=document))
+  + ylab("proportion")
+  + geom_bar(stat="identity", position = "dodge") 
+  + theme(axis.text.x = element_text(angle=90, hjust=1)) 
+  + facet_wrap(~ document, ncol=5))
+
+```
