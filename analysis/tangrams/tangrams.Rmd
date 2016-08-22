@@ -15,7 +15,10 @@ library(qdap)
 library(stringr)
 library(knitr)
 library(tm)
+library(NLP)
+```
 
+```{r}
 setwd("~/Repos/reference_games/analysis")
 
 tangramMsgs = read.csv("../data/tangrams/message/tangramsMessages.csv") %>%
@@ -166,19 +169,19 @@ ggplot(acrossPair,
 # Make POS plots... 
 
 ```{r}
-d = read.csv('~/Repos/tangrams_replication/ipython_notebooks/posTagged.csv', header =T) %>%
+d = read.csv('posTagged.csv', header =T) %>%
   filter(sender == "director") %>%
   group_by(roundNum) %>%
   summarize(numWords = sum(numWords),
-            nouns = sum(NNnum)/sum(numWords),
-            verbs = sum(VBnum)/sum(numWords),
-            dets= sum(DTnum)/sum(numWords),
-            pronouns = sum(PRPnum)/sum(numWords),
-            preps = sum(INnum)/sum(numWords),
-            tos = sum(TOnum)/sum(numWords),
-            adverbs = sum(RBnum)/sum(numWords)) %>%
+            nouns = sum(NOUNnum)/sum(numWords),
+            verbs = sum(VERBnum)/sum(numWords),
+            dets= sum(DETnum)/sum(numWords),
+            pronouns = sum(PRONnum)/sum(numWords),
+            preps = sum(ADPnum)/sum(numWords),
+            adjectives = sum(ADJnum)/sum(numWords),
+            adverbs = sum(ADVnum)/sum(numWords)) %>%
   mutate(OTHER = (1 - nouns - verbs - dets - pronouns -
-                      preps - tos - adverbs)) %>%
+                      preps - adjectives - adverbs)) %>%
   gather(POS, prop, nouns:OTHER) %>%
   select(roundNum, POS, prop) 
   
@@ -193,21 +196,22 @@ ggplot(d, aes(x = roundNum, y = prop, fill = POS)) +
 Same thing but make them add up to number of words... 
 
 ```{r}
-d = read.csv('~/Repos/tangrams_replication/ipython_notebooks/posTagged.csv', header =T) %>%
+d = read.csv('posTagged.csv', header =T) %>%
   filter(sender == "director") %>%
   group_by(roundNum) %>%
   summarize(numWords = sum(numWords),
-            nouns = sum(NNnum),
-            verbs = sum(VBnum),
-            dets= sum(DTnum),
-            pronouns = sum(PRPnum),
-            preps = sum(INnum),
-            tos = sum(TOnum),
-            adverbs = sum(RBnum)) %>%
+            nouns = sum(NOUNnum),
+            verbs = sum(VERBnum),
+            dets= sum(DETnum),
+            pronouns = sum(PRONnum),
+            preps = sum(ADPnum),
+            adjectives = sum(ADJnum),
+            adverbs = sum(ADVnum)) %>%
   mutate(OTHER = (numWords - nouns - verbs - dets - pronouns -
-                      preps - tos - adverbs)) %>%
+                      preps - adjectives - adverbs)) %>%
   gather(POS, total, nouns:OTHER) %>%
   select(roundNum, POS, total) 
+
 head(d)
 ggplot(d, aes(x = roundNum, y = total, fill = POS)) +
   geom_bar(stat = "identity") +
