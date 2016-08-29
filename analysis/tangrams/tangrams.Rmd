@@ -18,6 +18,83 @@ library(tm)
 library(NLP)
 ```
 
+We've already done most of the work using nltk in the ipython notebook, so here we just read in the csv files we created there, do a bit of post-processing, and make plots.
+
+# Result 1: Parts of speech 
+
+```{r}
+d = read.csv('posTagged.csv', header =T) %>%
+  filter(sender == "director") %>%
+  group_by(roundNum) %>%
+  summarize(numWords = sum(numWords),
+            nouns = sum(NOUNnum)/sum(numWords),
+            verbs = sum(VERBnum)/sum(numWords),
+            dets= sum(DETnum)/sum(numWords),
+            pronouns = sum(PRONnum)/sum(numWords),
+            preps = sum(ADPnum)/sum(numWords),
+            adjectives = sum(ADJnum)/sum(numWords),
+            adverbs = sum(ADVnum)/sum(numWords)) %>%
+  mutate(OTHER = (1 - nouns - verbs - dets - pronouns -
+                      preps - adjectives - adverbs)) %>%
+  gather(POS, prop, nouns:OTHER) %>%
+  select(roundNum, POS, prop) 
+  
+head(d)
+
+ggplot(d, aes(x = roundNum, y = prop, fill = POS)) +
+  geom_bar(stat = "identity") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_bw()
+```
+
+Same thing but make them add up to number of words so we can also see that decrease over time:
+
+```{r}
+d = read.csv('posTagged.csv', header =T) %>%
+  filter(sender == "director") %>%
+  group_by(roundNum) %>%
+  summarize(numWords = sum(numWords),
+            nouns = sum(NOUNnum),
+            verbs = sum(VERBnum),
+            dets= sum(DETnum),
+            pronouns = sum(PRONnum),
+            preps = sum(ADPnum),
+            adjectives = sum(ADJnum),
+            adverbs = sum(ADVnum)) %>%
+  mutate(OTHER = (numWords - nouns - verbs - dets - pronouns -
+                      preps - adjectives - adverbs)) %>%
+  gather(POS, total, nouns:OTHER) %>%
+  select(roundNum, POS, total) 
+
+head(d)
+ggplot(d, aes(x = roundNum, y = total, fill = POS)) +
+  geom_bar(stat = "identity") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_bw()
+
+```
+
+# Result 2: PMI
+
+```{r}
+distinctiveness_d <- read.csv("matchAndPMI.csv", header = TRUE) %>%
+  filter(pmi > 0) %>%
+  rename(num_occurrences = total) %>%
+  filter(num_occurrences >= 7) %>%
+  mutate(bunny = word == "bunny") %>%
+  mutate(a_match = word == "a")
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+ggplot(distinctiveness_d, aes(x = pmi, y = match)) +
+  geom_point(aes(size = num_occurrences, color = a_match)) +
+  geom_smooth(method = 'lm') +
+  theme_bw() +
+  scale_colour_manual(values=cbbPalette)+
+  guides(color=FALSE)
+```
+
+# Result 3: Entropy
+
 ```{r}
 setwd("~/Repos/reference_games/analysis")
 
@@ -164,60 +241,6 @@ ggplot(acrossPair,
        aes(x = half, y = entropy, 
            color = tangram, linetype = type, group = interaction(tangram, type))) +
   geom_line()
-```
-
-# Make POS plots... 
-
-```{r}
-d = read.csv('posTagged.csv', header =T) %>%
-  filter(sender == "director") %>%
-  group_by(roundNum) %>%
-  summarize(numWords = sum(numWords),
-            nouns = sum(NOUNnum)/sum(numWords),
-            verbs = sum(VERBnum)/sum(numWords),
-            dets= sum(DETnum)/sum(numWords),
-            pronouns = sum(PRONnum)/sum(numWords),
-            preps = sum(ADPnum)/sum(numWords),
-            adjectives = sum(ADJnum)/sum(numWords),
-            adverbs = sum(ADVnum)/sum(numWords)) %>%
-  mutate(OTHER = (1 - nouns - verbs - dets - pronouns -
-                      preps - adjectives - adverbs)) %>%
-  gather(POS, prop, nouns:OTHER) %>%
-  select(roundNum, POS, prop) 
-  
-head(d)
-
-ggplot(d, aes(x = roundNum, y = prop, fill = POS)) +
-  geom_bar(stat = "identity") +
-  scale_fill_brewer(palette = "Set1") +
-  theme_bw()
-```
-
-Same thing but make them add up to number of words... 
-
-```{r}
-d = read.csv('posTagged.csv', header =T) %>%
-  filter(sender == "director") %>%
-  group_by(roundNum) %>%
-  summarize(numWords = sum(numWords),
-            nouns = sum(NOUNnum),
-            verbs = sum(VERBnum),
-            dets= sum(DETnum),
-            pronouns = sum(PRONnum),
-            preps = sum(ADPnum),
-            adjectives = sum(ADJnum),
-            adverbs = sum(ADVnum)) %>%
-  mutate(OTHER = (numWords - nouns - verbs - dets - pronouns -
-                      preps - adjectives - adverbs)) %>%
-  gather(POS, total, nouns:OTHER) %>%
-  select(roundNum, POS, total) 
-
-head(d)
-ggplot(d, aes(x = roundNum, y = total, fill = POS)) +
-  geom_bar(stat = "identity") +
-  scale_fill_brewer(palette = "Set1") +
-  theme_bw()
-
 ```
 
 # Copied from nicki's ipython notebook... Need to recreate this myself
