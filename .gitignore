@@ -11,3 +11,4 @@ models/stanza/
 models/coop-nets/
 reference_games.Rproj
 .Rproj.user
+analysis/tangrams/.ipynb_checkpoints/
