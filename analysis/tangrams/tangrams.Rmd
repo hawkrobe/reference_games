@@ -16,6 +16,7 @@ library(stringr)
 library(knitr)
 library(tm)
 library(NLP)
+setwd("~/Repos/reference_games/analysis/tangrams/")
 ```
 
 We've already done most of the work using nltk in the ipython notebook, so here we just read in the csv files we created there, do a bit of post-processing, and make plots.
@@ -76,6 +77,8 @@ ggplot(d, aes(x = roundNum, y = total, fill = POS)) +
 
 # Result 2: PMI
 
+Scatter plot:
+
 ```{r}
 distinctiveness_d <- read.csv("matchAndPMI.csv", header = TRUE) %>%
   filter(pmi > 0) %>%
@@ -90,6 +93,26 @@ ggplot(distinctiveness_d, aes(x = pmi, y = match)) +
   geom_smooth(method = 'lm') +
   theme_bw() +
   scale_colour_manual(values=cbbPalette)+
+  guides(color=FALSE)
+```
+
+Alternatively, can do a nonparametric analysis: draw a random word from each tangram/gameid pair and look at the percentage that match with round 6... This gives a null distribution. Then we can take the highest PMI word (or words) for each tangram/gameid pair and look at the percentage of *those* that match. We see that it's much higher than expected under the null.
+
+```{r}
+nonparametric_d = read.csv("PMIbootstrap.csv", header = TRUE) %>%
+  mutate(PMI = factor(highest, levels = c('null', 'highest'), labels = c('random', 'top')))
+
+highestValAvg = nonparametric_d %>% filter(highest == 'highest') %>% summarize(avg = mean(match))
+
+nonparametric_d %>%
+  group_by(sampleNum, PMI) %>%
+  summarize(avgMatchRate = mean(match)) %>%
+  ungroup() %>%
+  ggplot(aes(x = avgMatchRate, fill = PMI)) +
+  geom_histogram(binwidth = .0075) +
+  geom_vline(aes(xintercept = highestValAvg), color = 'red', linetype = "dashed", size = 2) +
+  scale_fill_manual(values = c("black","red")) +
+  theme_bw() +
   guides(color=FALSE)
 ```
 
