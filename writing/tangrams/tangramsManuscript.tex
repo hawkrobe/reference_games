@@ -1,0 +1,88 @@
+\documentclass[12pt, floatsintext, jou]{apa6}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[outdir=./]{epstopdf}
+%\DeclareGraphicsExtensions{.eps}
+
+\usepackage{mathtools}
+\usepackage{enumerate}
+\usepackage{apacite}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{todonotes}
+\usepackage{svg}
+
+\newcommand{\den}[2][]{
+\(
+\left\llbracket\;\text{#2}\;\right\rrbracket^{#1}
+\)
+}
+
+\newenvironment{figurehere}
+	{\def\@captype{figure}}
+	{}
+
+\usepackage{lipsum}
+%\pagenumbering{gobble}
+%\usepackage{apacite}
+
+\linespread{1}
+\usepackage{textcomp}
+\usepackage{lingmacros}
+
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\graphicspath{{./figures/}}
+ 
+ \definecolor{Green}{RGB}{10,200,100}
+\newcommand{\ndg}[1]{\textcolor{Green}{[ndg: #1]}}  
+
+
+\makeatother
+
+\title{Arbitrariness and path dependence in a communication game}
+\shorttitle{Tangrams}
+\author{Robert X.D. Hawkins, Noah D. Goodman}
+\affiliation{Stanford University} 
+
+
+\abstract{}
+
+\keywords{pragmatics, language, computational modeling}
+
+\authornote{This report is based in part on work presented at the 37th Conference of the Cognitive Science Society. The first author is supported by a NSF Graduate Research Fellowship and a Stanford Graduate Fellowship. Correspondence concerning this article should be addressed to Robert X.D. Hawkins, e-mail: rxdh@stanford.edu}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+
+Successful communication depends on a set of shared linguistic conventions (de Saussure, XX; Lewis, XX). These conventions allow a community of speakers to coordinate on meanings: when someone at the dinner table asks for ``the salt,'' her friends can be confident that she is referring to a shaker containing a condiment and not, say, a furry animal under the table. 
+
+In addition to the \emph{global} conventions adopted and sustained throughout a large population of speakers, we also coordinate on \emph{ad hoc} or \emph{local} conventions within the span of a single dialogue. Some things we want to talk about, like a complex proposal for a new experiment, do not have convenient names \emph{a priori}, so we must implicitly negotiate some expression 
+
+A critical aspect of social conventions, and linguistic conventions in particular, is their arbitrariness: just as 
+
+
+
+\section{Methods}
+
+\subsection{Participants} 
+
+X participants were recruited from Amazon's Mechanical Turk and dynamically paired into dyads. 
+
+\section{Results}
+
+\subsection{Pointwise mutual information}
+
+\subsection{Parts of speech}
+
+\subsection{Entropy}
+
+\section{Discussion}
+
+
+
+\bibliography{qa}
+\bibliographystyle{apacite}
+
+
+\end{document}  
