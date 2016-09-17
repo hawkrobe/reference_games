@@ -1,6 +1,6 @@
 library(dplyr)
 library(Momocs)
-
+library(readr)
 setwd("~/Repos/reference_games/analysis/")
 
 # Import data from shape experiment
@@ -11,6 +11,7 @@ clks = read.csv("../data/shapeReference/clickedObj/shapeReferenceClickedObj.csv"
 # thin outlines can still be detected... 
 multiplier <- 5
 edgeLength <- multiplier * 300
+
 for(rowNum in 1:dim(clks)[1]) {
   row <- clks[rowNum,]
   xpoints = multiplier * row[c(5,7,9,11)]
@@ -55,18 +56,18 @@ exPCA <- exF %>% PCA()
 
 # Plot PCA with different axes... 
 plot(exPCA, xax = 1, yax = 2, amp.shp = 3, points = T)
-plot(exPCA, xax = 1, yax = 3, amp.shp = 3, points = T)
-plot(exPCA, xax = 2, yax = 3, amp.shp = 3, points = T)
+plot(exPCA, xax = 1, yax = 3, amp.shp = 5, points = F)
+plot(exPCA, xax = 2, yax = 3, amp.shp = 5, points = T)
 
 # Make cluster plot to see coarse structure... 
 CLUST(exPCA, method = "phylogram")
 
 # Get clusters
-retain <- scree_min(exPCA, .99)
+retain <- scree_min(exPCA, prop = .99)
 
-phylo <- exPCA$x[, retain] %>%
-  dist(method = "euclidean") %>%
-  hclust(method = "complete")
+phylo <- exPCA$x[, 2:7] %>%
+  dist(method = "manhattan") %>%
+  hclust(method = "ward.D2")
   
 # Add cluster cols
 newClks = clks %>% 
@@ -77,7 +78,14 @@ newClks = clks %>%
   cbind(clustL30 = cutree(phylo, k = 30)) %>%
   cbind(clustL40 = cutree(phylo, k = 40)) %>%
   cbind(clustL50 = cutree(phylo, k = 50)) %>%
-  cbind(clustL100 = cutree(phylo, k = 100))
+  cbind(clustL100 = cutree(phylo, k = 100)) %>%
+  cbind(clustL200 = cutree(phylo, k = 200))
   
+table(newClks$clustL100)
+
 write_csv(newClks, "../data/shapeReference/clickedObj/clksWithPhylo.csv")
 
+# Plot avg shape in some clusters... 1
+subGroup <- Out(ex_aligned$coo[newClks$clustL100 == 1])
+panel(subGroup)
+  
