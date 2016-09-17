@@ -34,7 +34,7 @@ mean(subjInfo$totalLength / 1000 / 60)
 
 # Pre-processing
 
-There's a bunch of pre-processing we'd like to do. For instance, it would be nice to strip all the meta-commentary (e.g. "oops" after missing, complaining about task, etc.), exclude confused people & non-native english speakers.
+There's a bunch of additional pre-processing that it's still be nice to do. For instance, it would be nice to strip all the meta-commentary (e.g. "oops" after missing, complaining about task, etc.), exclude confused people & non-native english speakers.
 
 ```{r}
 # For later bar plots
@@ -117,6 +117,24 @@ sort(table(strsplit(speakerWords$wordList, ' ')), decreasing=T)[1:75]
 summary(lmer(n ~ condition + (1 | gameid),
      data = combined %>% group_by(gameid, condition) %>% summarise(n = sum(numCleanWords))))
 
+ggplot(combined %>% 
+         filter(role == "speaker") %>%
+         group_by(gameid, condition) %>%
+         summarise(n = sum(numCleanWords)/length(numCleanWords)) %>%
+         group_by(condition) %>% 
+         summarize(numWordsUsed = mean(n), se = sd(n)/sqrt(length(n))), 
+       aes(x = condition, y = numWordsUsed)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymax = numWordsUsed + se, ymin = numWordsUsed - se), 
+                  position=dodge, width=0.25) +
+  ylab("Average # words per message")+
+  theme_bw() +
+  ggtitle("Average words by context")
+```
+
+Instead of grouping them into these big bins, why not use the continuous similarity metric?
+
+```{r}
 similarityD = combined %>% 
    group_by(gameid, roundNum) %>% 
    filter(role == "speaker") %>%
@@ -126,22 +144,6 @@ similarityD = combined %>%
          meanSimilarity = mean(targetD1Diff, targetD2Diff),
          minSimilarity = min(targetD1Diff, targetD2Diff))
 
-ggplot(combined %>% 
-         group_by(gameid, condition) %>%
-         summarise(n = sum(numCleanWords)/length(numCleanWords)) %>%
-         group_by(condition) %>% 
-         summarize(numWordsUsed = mean(n), se = sd(n)/sqrt(length(n))), 
-       aes(x = condition, y = numWordsUsed)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  geom_errorbar(aes(ymax = numWordsUsed + se, ymin = numWordsUsed - se), 
-                  position=dodge, width=0.25) +
-  theme_bw() +
-  ggtitle("Do speakers use more words on harder trials?")
-```
-
-Instead of grouping them into these big bins, why not use the continuous similarity metric?
-
-```{r}
 summary(lmer(numWords ~ totalSimilarity + (1 | gameid), data = similarityD))
 
 ggplot(similarityD %>% filter(totalSimilarity < 190), 
@@ -272,17 +274,58 @@ If there is an effect, averaging across people, it looks like it might be limite
 # Colors: Do different participants carve up the space differently?
 
 ```{r}
-ggplot(combined %>% filter(gameid == "9960-e"), 
-       aes(x = clickX, y = clickY, colour = clickHex,label = cleanMsg)) +
-  geom_text()+
-  scale_colour_identity() +
-  theme_bw() 
-  #facet_wrap(~ gameid)
+# ggplot(combined %>% filter(gameid == "9960-e"), 
+#        aes(x = targetX, y = targetY, colour = targetHex,label = cleanMsg)) +
+#   geom_text()+
+#   scale_colour_identity() +
+#   theme_bw() 
 
-ggplot(combined %>% filter(gameid == "9353-3"), 
-       aes(x = clickX, y = clickY, colour = clickHex,label = cleanMsg)) +
-  geom_text()+
+colors <- read.csv("../data/colorReference/clickedObj/colorMap.csv")
+ggplot(combined %>% filter(gameid == "9960-e"), 
+       aes(x = targetX, y = targetY)) +
+  geom_point(data = colors, aes(x = x, y = y, colour = hex, size = 20), 
+             show_guide = FALSE) +
+  geom_text(aes(label = cleanMsg, color = "white")) +
   scale_colour_identity() +
-  theme_bw() 
-  #facet_wrap(~ gameid)
+  theme_bw()
+
+```
+
+# Generate latex table for TACL paper:
+
+Want to make a table with the different conditions as columns and different metrics as rows... 
+
+```{r}
+# TODO: use stanford pos tagger
+taggedDF = read.csv("color/taggedColorMsgs.csv")
+
+# TODO: present se in table (e.g. in parens after mean)
+resultTable = combined %>% 
+  left_join(taggedDF, by = c("gameid", "roundNum", "contents")) %>%
+   filter(role == "speaker") %>%
+   group_by(gameid, condition) %>%
+   summarise(numWordsPerMessage = sum(numCleanWords)/length(numCleanWords),
+             numCharsPerMessage = sum(numCleanChars)/length(numCleanChars),
+             numComparatives = sum(numComp)/length(numComp),
+             numSuperlatives = sum(numSuper)/length(numSuper),
+             numNegatives = str_count(paste(contents, collapse=" "),
+                                      fixed("not"))/length(numCleanWords),
+             levelOfRef = NA) %>%
+  mutate(condition = ordered(condition, levels = c("easy", "medium", "hard"),
+                               labels = c("far", "split", "close"))) %>%
+   group_by(condition) %>% 
+   summarize("# WordsM" = mean(numWordsPerMessage), 
+             "# CharsM" = mean(numCharsPerMessage),
+             numWordsPerMessageSE = sd(numWordsPerMessage)/sqrt(length(numWordsPerMessage)),
+             "# NegativesM" = mean(numNegatives),
+             numNegativesSE = sd(numNegatives)/sqrt(length(numNegatives)),
+             "# ComparativesM" = mean(numComparatives),
+             "# SuperlativesM" = mean(numSuperlatives)) %>%
+  gather(metric, mu, ends_with("M")) %>%
+  #gather(garbage, se, ends_with("SE")) %>%
+  mutate("metric (per message)" = gsub(".$", "", metric)) %>%
+  select(-ends_with("SE"), -metric) %>%
+  spread(condition, mu)
+
+print(xtable(resultTable, label = "table:metrics"), include.rownames = FALSE)
 ```
