@@ -16,3 +16,10 @@ PMIbootstrap.csv
 matchAndPMI.csv
 posTagged.csv
 analysis/shapeReferenceOutlines/jpgs/*
+*.aux
+*.log
+*.bbl
+*.blg
+tangramsManuscript.pdf
+*.synctex.gz
+				
