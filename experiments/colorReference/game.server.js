@@ -87,7 +87,7 @@ var writeData = function(client, type, message_parts) {
 
 
   case "message" :
-    var msg = message_parts[1].replace('~~~','.');
+    var msg = message_parts[1].replace(/~~~/g,'.');
     var line = (id + ',' + Date.now() + ',' + roundNum + ',' + client.role + ',"' + msg + '"\n');
     console.log("message:" + line);
     break;
