@@ -39,11 +39,9 @@ var client_onserverupdate_received = function(data){
 
   if (globalGame.roundNum != data.roundNum) {
     globalGame.currStim = _.map(data.trialInfo.currStim, function(obj) {
-      console.log(obj);
       // Extract the coordinates matching your role
       var customCoords = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
 			  obj.speakerCoords : obj.listenerCoords);
-      console.log(customCoords);
       // remove the speakerCoords and listenerCoords properties
       var customObj = _.chain(obj)
 	    .omit('speakerCoords', 'listenerCoords')
@@ -69,7 +67,6 @@ var client_onserverupdate_received = function(data){
   globalGame.data = data.dataObj;
   
   // Draw all this new stuff
-  console.log("update");
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 }; 
 
@@ -94,9 +91,11 @@ var client_onMessage = function(data) {
       var upperLeftX;
       var upperLeftY;
       var strokeColor;
-      console.log("drawing feedback");
+      var clickedObjStatus = commanddata;
+      
+      globalGame.data.subject_information.score += clickedObjStatus === "target";
+      // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-	var clickedObjStatus = commanddata;
 	objToHighlight = _.filter(globalGame.currStim, function(x){
 	  return x.targetStatus == clickedObjStatus;
 	})[0];
@@ -109,10 +108,7 @@ var client_onMessage = function(data) {
 	upperLeftX = objToHighlight.listenerCoords.gridPixelX;
 	upperLeftY = objToHighlight.listenerCoords.gridPixelY;
       }
-      console.log('obj to highlight is...');
-      console.log(objToHighlight);
       if (upperLeftX != null && upperLeftY != null) {
-	console.log("actually stroking");
         globalGame.ctx.beginPath();
         globalGame.ctx.lineWidth="10";
         globalGame.ctx.strokeStyle="green";
@@ -174,7 +170,6 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    console.log("first statistifed");
     $('#instructs').append("Send messages to tell the listener which object " + 
 			   "is the target.");
   } else if(role === globalGame.playerRoleNames.role2) {
@@ -201,7 +196,6 @@ var client_onjoingame = function(num_players, role) {
 
   // set mouse-tracking event handler
   if(role === globalGame.playerRoleNames.role2) {
-    console.log("setting listener");
     globalGame.viewport.addEventListener("click", mouseClickListener, false);
   }
 };    
@@ -214,7 +208,6 @@ function mouseClickListener(evt) {
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
-  console.log(evt);
   if (globalGame.messageSent){ // if message was not sent, don't do anything
     for (var i=0; i < globalGame.currStim.length; i++) {
       var obj = globalGame.currStim[i];
