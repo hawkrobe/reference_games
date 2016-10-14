@@ -64,7 +64,10 @@ var client_onserverupdate_received = function(data){
   globalGame.players_threshold = data.pt;
   globalGame.player_count = data.pc;
   globalGame.roundNum = data.roundNum;
-  globalGame.data = data.dataObj;
+  // update data object on first round, don't overwrite (FIXME)
+  if(!_.has(globalGame, 'data')) {
+    globalGame.data = data.dataObj;
+  }
   
   // Draw all this new stuff
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
@@ -87,13 +90,17 @@ var client_onMessage = function(data) {
       break;
 
     case 'feedback' :
+      // Prevent them from sending messages b/w trials
+      $('#chatbox').attr("disabled", "disabled");
       var objToHighlight;
       var upperLeftX;
       var upperLeftY;
       var strokeColor;
       var clickedObjStatus = commanddata;
-      
+
+      // update local score
       globalGame.data.subject_information.score += clickedObjStatus === "target";
+      
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
 	objToHighlight = _.filter(globalGame.currStim, function(x){
@@ -146,6 +153,8 @@ var customSetup = function(game) {
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
+    $('#chatbox').removeAttr("disabled");
+    $('#chatbox').focus();
     $('#messages').empty();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
