@@ -31,7 +31,7 @@ if (process.argv[2]) {
   var exp = process.argv[2];
   var gameServer = require('./sharedUtils/serverBase.js')(exp);  
 } else {
-  throw new("no experiment supplied");
+  throw "no experiment supplied";
 }
 
 var utils = require('./sharedUtils/sharedUtils.js');
@@ -48,10 +48,10 @@ app.get( '/*' , function( req, res ) {
   // this is the current file they have requested
   var file = req.params[0]; 
   if(req.query.workerId && !valid_id(req.query.workerId)) {
-    console.log("invalid id");
+    console.log("invalid id: blocking request");
     res.redirect('https://rxdhawkins.me:8888/sharedUtils/invalid.html');
   } else if(req.query.workerId && req.query.workerId in global_player_set) {
-    console.log("duplicate ID");
+    console.log("duplicate id: blocking request");
     res.redirect('https://rxdhawkins.me:8888/sharedUtils/duplicate.html');
   } else {
     console.log('\t :: Express :: file requested: ' + file);
@@ -110,7 +110,12 @@ var initialize = function(query, client, id) {
   client.on('disconnect', function () {            
     console.log('\t socket.io:: client id ' + client.userid 
                 + ' disconnected from game id ' + client.game.id);
-    
+
+    // in colorReference, we don't mind duplicates across games 
+    if(exp == "colorReference" || exp == "colorReference/") {
+      delete global_player_set[client.userid];
+    }
+
     //If the client was in a game set by gameServer.findGame,
     //we can tell the game server to update that game state.
     if(client.userid && client.game && client.game.id) 
