@@ -21,7 +21,6 @@ gameid,time,roundNum,condition,clickStatus,clickColH,clickColS,clickColL,clickLo
 4631-4,1476992631950,20,further,target,180,26,50,3,1,distr2,0,24,50,2,3,distr1,163,47,50,1,2,14,43,52,true
 4631-4,1476992651625,21,further,target,37,90,50,1,1,distr1,49,93,50,3,2,distr2,124,60,50,2,3,17,46,33,true
 4631-4,1476992666183,22,equal,distr1,315,91,50,1,3,target,241,46,50,2,2,distr2,136,22,50,3,1,31,50,72,false
-4631-4,1476992668558,22,equal,target,241,46,50,2,2,distr2,136,22,50,3,1,distr1,315,91,50,1,3,31,50,72,true
 4631-4,1476992682147,24,closer,target,105,82,50,2,1,distr2,92,33,50,1,2,distr1,63,51,50,3,3,19,18,15,true
 4631-4,1476992710525,25,closer,target,68,50,50,3,2,distr1,81,45,50,2,1,distr2,66,81,50,1,3,6,11,15,true
 4631-4,1476992719618,26,equal,target,61,81,50,1,1,distr1,149,22,50,3,3,distr2,243,1,50,2,2,35,42,24,true
