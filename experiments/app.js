@@ -16,9 +16,10 @@ var
     _               = require('underscore');
 
 try {
-  var privateKey  = fs.readFileSync('/etc/apache2/ssl/private.key'),
-      certificate = fs.readFileSync('/etc/apache2/ssl/ssl.crt'),
-      options     = {key: privateKey, cert: certificate},
+  var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
+      certificate = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.crt'),
+      intermed    = fs.readFileSync('/etc/apache2/ssl/intermediate.crt'),
+      options     = {key: privateKey, cert: certificate, ca: intermed},
       server      = require('https').createServer(options,app).listen(gameport),
       io          = require('socket.io')(server);
 } catch (err) {
