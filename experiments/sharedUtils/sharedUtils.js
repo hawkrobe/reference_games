@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var fs = require('fs');
 var converter = require("color-convert");
 var DeltaE = require('../node_modules/delta-e');
@@ -45,7 +46,7 @@ function fillArray(value, len) {
 var randomColor = function (options) {
   var h = ~~(Math.random() * 360);
   var s = ~~(Math.random() * 100);
-  var l = options.fixedL ? 50 : ~~(Math.random() * 100) ;
+  var l = _.has(options, 'fixedL') ? 50 : ~~(Math.random() * 100) ;
   return [h, s, l];
 };
 
@@ -68,6 +69,6 @@ module.exports = {
   hsl2lab : hsl2lab,
   fillArray: fillArray,
   randomColor: randomColor,
-  randomSpline: randomSpline,  
+  randomSpline: randomSpline,
   colorDiff : colorDiff
 };
