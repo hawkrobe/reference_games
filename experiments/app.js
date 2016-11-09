@@ -67,8 +67,9 @@ app.get( '/*' , function( req, res ) {
 // that, otherwise we assign them one at random
 io.on('connection', function (client) {
   // Recover query string information and set condition
-  var hs = client.handshake;    
-  var query = require('url').parse(client.handshake.headers.referer, true).query;
+  var hs = client.request;
+  console.log(hs.headers);
+  var query = require('url').parse(hs.headers.referer, true).query;
   var id;
   if( !(query.workerId && query.workerId in global_player_set) ) {
     if(query.workerId) {
