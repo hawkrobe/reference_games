@@ -43,6 +43,11 @@ function fillArray(value, len) {
   return arr;
 }
 
+var checkInBounds = function(object, options) {
+  return (object.x + (object.w || object.d) < options.wMax) &&
+         (object.y + (object.h || object.d) < options.hMax);
+};
+
 var randomColor = function (options) {
   var h = ~~(Math.random() * 360);
   var s = ~~(Math.random() * 100);
@@ -68,6 +73,10 @@ var randomRect = function(options) {
   rect.h = _.sample(wRange),
   rect.w = _.sample(hRange)
 
+  if (!checkInBounds(rect, options)) {
+    return this.randomRect(options);
+  }
+
   return rect;
 }
 
@@ -82,6 +91,10 @@ var randomCircle = function(options) {
 
   var circle = randomPoint(options);
   circle.d = _.sample(dRange);
+
+  if (!checkInBounds(circle, options)) {
+    return this.randomCircle(options);
+  }
 
   return circle;
 }
