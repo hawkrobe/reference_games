@@ -85,13 +85,21 @@ var drawSectors = function(game) {
 };
 
 var drawLily = function(game) {
-  if (game.currStim.lily) {
+  if (game.my_role === game.playerRoleNames.role1) {
     var img = new Image;
     img.onload = function() {
       game.ctx.drawImage(img, game.currStim.lily.x, game.currStim.lily.y);
     }
     img.src = "lotus.png"
   }
+}
+
+var drawPoint = function(game, x, y) {
+  game.ctx.beginPath();
+  game.ctx.rect(x, y, 10, 10);
+  game.ctx.fillStyle = 'yellow';
+  game.ctx.fill();
+  game.ctx.stroke();
 }
 
 // var highlightCell = function(game, player) {
