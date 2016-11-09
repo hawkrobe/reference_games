@@ -1,17 +1,17 @@
 
 
-//   Copyright (c) 2012 Sven "FuzzYspo0N" Bergström, 
+//   Copyright (c) 2012 Sven "FuzzYspo0N" Bergström,
 //                   2013 Robert XD Hawkins
-    
+
 //     written by : http://underscorediscovery.com
 //     written for : http://buildnewgames.com/real-time-multiplayer/
-    
+
 //     modified for collective behavior experiments on Amazon Mechanical Turk
 
 //     MIT Licensed.
 
 
-// /* 
+// /*
 //    THE FOLLOWING FUNCTIONS MAY NEED TO BE CHANGED
 // */
 
@@ -26,51 +26,42 @@ var waiting;
 // we don't need the dragging.
 var selecting;
 
-var client_onserverupdate_received = function(data){  
-  
+var client_onserverupdate_received = function(data){
+
   // Update client versions of variables with data received from
   // server_send_update function in game.core.js
   //data refers to server information
   if(data.players) {
     _.map(_.zip(data.players, globalGame.players),function(z){
-      z[1].id = z[0].id;  
+      z[1].id = z[0].id;
     });
   }
 
   if (globalGame.roundNum != data.roundNum) {
-    globalGame.currStim = _.map(data.trialInfo.currStim, function(obj) {
-      // Extract the coordinates matching your role
-      var customCoords = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
-			  obj.speakerCoords : obj.listenerCoords);
-      // remove the speakerCoords and listenerCoords properties
-      var customObj = _.chain(obj)
-	    .omit('speakerCoords', 'listenerCoords')
-	    .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
-			  gridX : customCoords.gridX, gridY : customCoords.gridY,
-			  box : customCoords.box})
-	    .value();
-      
-      return customObj;
-    });
+    globalGame.currStim = (function() {
+      //if role is listener, we need to omit the lily!
+      var filtered = globalGame.my_role !== globalGame.playerRoleNames.role1;
+      return filtered ? _.omit(data.trialInfo.currStim, 'lily') : data.trialInfo.currStim;
+    })();
   };
-    
+
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
-    $('#messages').empty();    
+    $('#messages').empty();
     $("#chatbox").removeAttr("disabled");
     $('#chatbox').focus();
     globalGame.get_player(globalGame.my_id).message = "";
   }
-  
+
   globalGame.game_started = data.gs;
   globalGame.players_threshold = data.pt;
   globalGame.player_count = data.pc;
   globalGame.roundNum = data.roundNum;
   globalGame.data = data.dataObj;
-  
+
   // Draw all this new stuff
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
-}; 
+};
 
 var client_onMessage = function(data) {
 
@@ -81,7 +72,7 @@ var client_onMessage = function(data) {
 
   switch(command) {
   case 's': //server message
-    switch(subcommand) {    
+    switch(subcommand) {
     case 'end' :
       // Redirect to exit survey
       ondisconnect();
@@ -93,10 +84,10 @@ var client_onMessage = function(data) {
       var upperLeftX;
       var upperLeftY;
       var strokeColor;
-      $("#chatbox").attr("disabled", "disabled"); 
+      $("#chatbox").attr("disabled", "disabled");
       var clickedObjStatus = commands[2];
-      var outcome = commands[3];    
-      // Update local score... 
+      var outcome = commands[3];
+      // Update local score...
       globalGame.data.totalScore += outcome === "target" ? 1 : 0;
       console.log("total score is " + globalGame.data.totalScore);
 
@@ -117,13 +108,13 @@ var client_onMessage = function(data) {
         globalGame.ctx.beginPath();
         globalGame.ctx.lineWidth="10";
         globalGame.ctx.strokeStyle="green";
-        globalGame.ctx.rect(upperLeftX+5, upperLeftY+5,290,290); 
+        globalGame.ctx.rect(upperLeftX+5, upperLeftY+5,290,290);
         globalGame.ctx.stroke();
       }
       break;
 
     case 'alert' : // Not in database, so you can't play...
-      alert('You did not enter an ID'); 
+      alert('You did not enter an ID');
       window.location.replace('http://nodejs.org'); break;
 
     case 'join' : //join a game requested
@@ -139,8 +130,8 @@ var client_onMessage = function(data) {
       globalGame.players.push({id: commanddata,
 			       player: new game_player(globalGame)}); break;
     }
-  } 
-}; 
+  }
+};
 
 var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
@@ -160,7 +151,7 @@ var customSetup = function(game) {
 	.append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
     }
   });
-}; 
+};
 
 var client_onjoingame = function(num_players, role) {
   // set role locally
@@ -170,11 +161,11 @@ var client_onjoingame = function(num_players, role) {
   _.map(_.range(num_players - 1), function(i){
     globalGame.players.unshift({id: null, player: new game_player(globalGame)});
   });
-  
+
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to tell the listener which object " + 
+    $('#instructs').append("Send messages to tell the listener which object " +
 			   "is the target.");
   } else if(role === globalGame.playerRoleNames.role2) {
     $('#instructs').append("Click on the target object which the speaker " +
@@ -186,22 +177,22 @@ var client_onjoingame = function(num_players, role) {
       if(_.size(this.urlParams) == 4) {
 	this.submitted = true;
 	window.opener.turk.submit(this.data, true);
-	window.close(); 
+	window.close();
       } else {
 	console.log("would have submitted the following :");
 	console.log(this.data);
       }
     }, 1000 * 60 * 15);
-    $("#chatbox").attr("disabled", "disabled"); 
+    $("#chatbox").attr("disabled", "disabled");
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
-				      + 'Please do not refresh the page!'); 
+				      + 'Please do not refresh the page!');
   }
 
   // set mouse-tracking event handler
   if(role === globalGame.playerRoleNames.role2) {
     globalGame.viewport.addEventListener("click", mouseClickListener, false);
   }
-};    
+};
 
 /*
  MOUSE EVENT LISTENERS
@@ -223,20 +214,20 @@ function mouseClickListener(evt) {
           globalGame.ctx.beginPath();
           globalGame.ctx.lineWidth="10";
           globalGame.ctx.strokeStyle="black";
-          globalGame.ctx.rect(upperLeftXListener+5, upperLeftYListener+5,290,290); 
+          globalGame.ctx.rect(upperLeftXListener+5, upperLeftYListener+5,290,290);
           globalGame.ctx.stroke();
         }
 	// Tell the server about it
         var alt1 = _.sample(_.without(globalGame.currStim, obj));
         var alt2 = _.sample(_.without(globalGame.currStim, obj, alt1));
-        globalGame.socket.send("clickedObj." + 
+        globalGame.socket.send("clickedObj." +
 			 obj.targetStatus + "." + obj.points.join('.') + "." +
 			 obj.speakerCoords.gridX + "." + obj.listenerCoords.gridX +"." +
 			 alt1.targetStatus + "." + alt1.points.join('.') + "." +
 			 alt1.speakerCoords.gridX+"."+alt1.listenerCoords.gridX+"." +
 			 alt2.targetStatus + "." + alt2.points.join('.') + "." +
 			 alt2.speakerCoords.gridX+"."+alt2.listenerCoords.gridX + ".");
-	
+
       }
     }
   }
