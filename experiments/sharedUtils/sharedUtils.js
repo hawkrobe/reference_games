@@ -44,8 +44,8 @@ function fillArray(value, len) {
 }
 
 var checkInBounds = function(object, options) {
-  return (object.x + (object.w || object.d) < options.wMax) &&
-         (object.y + (object.h || object.d) < options.hMax);
+  return (object.x + (object.w || object.d) < options.width) &&
+         (object.y + (object.h || object.d) < options.height);
 };
 
 var randomColor = function (options) {
