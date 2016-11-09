@@ -1,8 +1,8 @@
 /*  Copyright (c) 2012 Sven "FuzzYspo0N" Bergström, 2013 Robert XD Hawkins
-    
+
     written by : http://underscorediscovery.com
     written for : http://buildnewgames.com/real-time-multiplayer/
-    
+
     modified for collective behavior experiments on Amazon Mechanical Turk
 
     MIT Licensed.
@@ -23,15 +23,15 @@ var onMessage = function(client,message) {
 
   //The first is always the type of message
   var message_type = message_parts[0];
-  
+
   //Extract important variables
   var gc = client.game;
   var id = gc.id.slice(0,6);
   var all = gc.get_active_players();
   var target = gc.get_player(client.userid);
-  var others = gc.get_others(client.userid);  
+  var others = gc.get_others(client.userid);
   switch(message_type) {
-    
+
   case 'clickedObj' :
     // Write event to file
     writeData(client, "clickedObj", message_parts);
@@ -43,14 +43,14 @@ var onMessage = function(client,message) {
     target.instance.send(feedbackMsg);
     // Continue
     gc.advanceRound(3000);
-    break; 
-  
+    break;
+
   case 'playerTyping' :
     _.map(others, function(p) {
       p.player.instance.emit( 'playerTyping', {typing: message_parts[1]});
     });
     break;
-  
+
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
       writeData(client, "message", message_parts);
@@ -73,10 +73,8 @@ var writeData = function(client, type, message_parts) {
   var id = gc.id.slice(0,6);
   switch(type) {
   case "clickedObj" :
-    console.log(message_parts[1]);
-    var outcome = message_parts[1] === "target";
     var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
-		message_parts.slice(1).join(', ') + outcome + '\n');
+		message_parts.slice(1).join(', ') + '\n');
     console.log("clickedObj:" + line);
     break;
 
@@ -96,7 +94,7 @@ var getStim = function(game, targetStatus) {
   })[0]['color'];
 };
 
-// /* 
+// /*
 //    The following functions should not need to be modified for most purposes
 // */
 
@@ -108,12 +106,12 @@ var startGame = function(game, player) {
 			"gameid,time,roundNum,sender,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
 			"gameid,time,roundNum," +
-			"clickStatus,clickP1,clickP2,clickP3,clickP4,clickP5,clickP6," +
-			"clickP7,clickP8,clickLocS,clickLocL," +
-			"alt1Status,alt1P1,alt1P2,alt1P3,alt1P4,alt1P5,alt1P6," +
-			"alt1P7,alt1P8,alt1LocS,alt1LocL," +			
-			"alt2Status,alt2P1,alt2P2,alt2P3,alt2P4,alt2P5,alt2P6," +
-			"alt2P7,alt2P8,alt2LocS,alt2LocL,outcome\n");
+			"redX,redY,redW,redH," +
+      "blueX,blueY,blueW,blueH," +
+      "plazaX,plazaY,plazaD," +
+      "lilyX,lilyY" +
+      "mouseX, mouseY" +
+      "\n");
   game.advanceRound(0);
 };
 

@@ -38,11 +38,7 @@ var client_onserverupdate_received = function(data){
   }
 
   if (globalGame.roundNum != data.roundNum) {
-    globalGame.currStim = (function() {
-      //if role is listener, we need to omit the lily!
-      var filtered = globalGame.my_role !== globalGame.playerRoleNames.role1;
-      return filtered ? _.omit(data.trialInfo.currStim, 'lily') : data.trialInfo.currStim;
-    })();
+    globalGame.currStim =  data.trialInfo.currStim;
   };
 
   // Get rid of "waiting" screen if there are multiple players
@@ -80,37 +76,37 @@ var client_onMessage = function(data) {
       break;
 
     case 'feedback' :
-      var objToHighlight;
-      var upperLeftX;
-      var upperLeftY;
-      var strokeColor;
-      $("#chatbox").attr("disabled", "disabled");
-      var clickedObjStatus = commands[2];
-      var outcome = commands[3];
-      // Update local score...
-      globalGame.data.totalScore += outcome === "target" ? 1 : 0;
-      console.log("total score is " + globalGame.data.totalScore);
+ //      var objToHighlight;
+ //      var upperLeftX;
+ //      var upperLeftY;
+ //      var strokeColor;
+ //      $("#chatbox").attr("disabled", "disabled");
+ //      var clickedObjStatus = commands[2];
+ //      var outcome = commands[3];
+ //      // Update local score...
+ //      globalGame.data.totalScore += outcome === "target" ? 1 : 0;
+ //      console.log("total score is " + globalGame.data.totalScore);
 
-      if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-	objToHighlight = _.filter(globalGame.currStim, function(x){
-	  return x.targetStatus == clickedObjStatus;
-	})[0];
-	upperLeftX = objToHighlight.speakerCoords.gridPixelX;
-	upperLeftY = objToHighlight.speakerCoords.gridPixelY;
-      } else {
-	objToHighlight = _.filter(globalGame.currStim, function(x){
-	  return x.targetStatus == "target";
-	})[0];
-	upperLeftX = objToHighlight.listenerCoords.gridPixelX;
-	upperLeftY = objToHighlight.listenerCoords.gridPixelY;
-      }
-      if (upperLeftX != null && upperLeftY != null) {
-        globalGame.ctx.beginPath();
-        globalGame.ctx.lineWidth="10";
-        globalGame.ctx.strokeStyle="green";
-        globalGame.ctx.rect(upperLeftX+5, upperLeftY+5,290,290);
-        globalGame.ctx.stroke();
-      }
+ //      if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+	// objToHighlight = _.filter(globalGame.currStim, function(x){
+	//   return x.targetStatus == clickedObjStatus;
+	// })[0];
+	// upperLeftX = objToHighlight.speakerCoords.gridPixelX;
+	// upperLeftY = objToHighlight.speakerCoords.gridPixelY;
+ //      } else {
+	// objToHighlight = _.filter(globalGame.currStim, function(x){
+	//   return x.targetStatus == "target";
+	// })[0];
+	// upperLeftX = objToHighlight.listenerCoords.gridPixelX;
+	// upperLeftY = objToHighlight.listenerCoords.gridPixelY;
+ //      }
+ //      if (upperLeftX != null && upperLeftY != null) {
+ //        globalGame.ctx.beginPath();
+ //        globalGame.ctx.lineWidth="10";
+ //        globalGame.ctx.strokeStyle="green";
+ //        globalGame.ctx.rect(upperLeftX+5, upperLeftY+5,290,290);
+ //        globalGame.ctx.stroke();
+ //      }
       break;
 
     case 'alert' : // Not in database, so you can't play...
@@ -200,36 +196,27 @@ var client_onjoingame = function(num_players, role) {
 
 function mouseClickListener(evt) {
   var bRect = globalGame.viewport.getBoundingClientRect();
-  var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
-  var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
-  if (globalGame.messageSent){ // if message was not sent, don't do anything
-    for (var i=0; i < globalGame.currStim.length; i++) {
-      var obj = globalGame.currStim[i];
-      if (hitTest(obj, mouseX, mouseY)) {
-        globalGame.messageSent = false;
-        //highlight the object that was clicked:
-        var upperLeftXListener = obj.listenerCoords.gridPixelX;
-        var upperLeftYListener = obj.listenerCoords.gridPixelY;
-        if (upperLeftXListener != null && upperLeftYListener != null) {
-          globalGame.ctx.beginPath();
-          globalGame.ctx.lineWidth="10";
-          globalGame.ctx.strokeStyle="black";
-          globalGame.ctx.rect(upperLeftXListener+5, upperLeftYListener+5,290,290);
-          globalGame.ctx.stroke();
-        }
-	// Tell the server about it
-        var alt1 = _.sample(_.without(globalGame.currStim, obj));
-        var alt2 = _.sample(_.without(globalGame.currStim, obj, alt1));
-        globalGame.socket.send("clickedObj." +
-			 obj.targetStatus + "." + obj.points.join('.') + "." +
-			 obj.speakerCoords.gridX + "." + obj.listenerCoords.gridX +"." +
-			 alt1.targetStatus + "." + alt1.points.join('.') + "." +
-			 alt1.speakerCoords.gridX+"."+alt1.listenerCoords.gridX+"." +
-			 alt2.targetStatus + "." + alt2.points.join('.') + "." +
-			 alt2.speakerCoords.gridX+"."+alt2.listenerCoords.gridX + ".");
+  var mouseX = Math.floor((evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width));
+  var mouseY = Math.floor((evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height));
 
-      }
+  if (globalGame.messageSent) { // if message was not sent, don't do anything
+    globalGame.messageSent = false;
+    var world = globalGame.currStim;
+
+    drawPoint(globalGame, mouseX, mouseY);
+
+    var serialize = function (obj) {
+      return _.values(obj).join('.')
     }
+
+    globalGame.socket.send("clickedObj." +
+      [serialize(world.red),
+       serialize(world.blue),
+       serialize(world.plaza),
+       serialize(world.lily),
+       mouseX,
+       mouseY
+      ].join('.'));
   }
 };
 
