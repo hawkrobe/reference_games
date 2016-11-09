@@ -14,6 +14,10 @@
   client creates one for itself to play the game. When you set a
   variable, remember that it's only set in that instance.
 */
+
+var WORLD_HEIGHT = 400;
+var WORLD_WIDTH = 600;
+
 var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
@@ -40,11 +44,10 @@ var game_core = function(options){
   this.numVerticalCells = 1;
   this.cellDimensions = {height : 300, width : 300}; // in pixels
   this.cellPadding = 0;
-  this.world = {height : (this.cellDimensions.height * this.numVerticalCells
-              + this.cellPadding),
-              width : (this.cellDimensions.width * this.numHorizontalCells
-              + this.cellPadding)};
-
+  this.world = {
+    height: WORLD_HEIGHT,
+    width: WORLD_WIDTH
+  };
   // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
 
@@ -157,6 +160,8 @@ game_core.prototype.makeTrialList = function () {
     trialList.push(world);
   };
 
+  console.log(trialList);
+
   return(trialList);
 };
 
@@ -191,18 +196,21 @@ game_core.prototype.server_send_update = function(){
 game_core.prototype.sampleTrial = function() {
   var options = {
     //for rect (and point)
-    xMin: 0,
-    xMax: 500,
-    yMin: 0,
-    yMax: 500,
+    xMin: 50,
+    xMax: 600,
+    yMin: 50,
+    yMax: 400,
     wMin: 50,
-    wMax: 250,
+    wMax: 300,
     hMin: 50,
     hMax: 250,
 
     //circle
-    dMin: 25,
-    dMax: 25
+    dMin: 50,
+    dMax: 50,
+
+    width: WORLD_WIDTH,
+    height: WORLD_HEIGHT
   };
 
   //the random functions handle bounds checking for us
@@ -248,17 +256,11 @@ var checkWorld = function(world, options) {
       }
     }
 
-    var between = function(min, max, value) { //TODO: is there a more canonical way to do this? a la underscore?
-      return value <= max && value >= min;
-    }
+    var o1 = convertToBounds(object1);
+    var o2 = convertToBounds(object2);
 
-    var object1Bounds = convertToBounds(object1);
-    var object2Bounds = convertToBounds(object2);
-
-    return between(object1Bounds.x1, object1Bounds.x2, object2Bounds.x1) ||
-           between(object1Bounds.x1, object1Bounds.x2, object2Bounds.x2) ||
-           between(object1Bounds.y1, object1Bounds.y2, object2Bounds.y1) ||
-           between(object1Bounds.y1, object1Bounds.y2, object2Bounds.y2);
+    return ((o1.x1 >= o2.x1 && o1.x1 < o2.x2) || (o2.x1 >= o1.x1) && (o2.x1 < o1.x2)) &&
+           ((o1.y1 < o2.y2 && o1.y1 >= o2.y1) || (o2.y1 < o1.y2 && o2.y1 >= o1.y1))
   }
 
   return !existsIntersection(world.red, world.blue);

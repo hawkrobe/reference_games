@@ -1,70 +1,108 @@
 // drawing.js
 // This file contains functions to draw on the HTML5 canvas
 
-// Draws a grid of cells on the canvas (evenly divided
-var drawGrid = function(game){
-  //size of canvas
-  var cw = game.viewport.width;
-  var ch = game.viewport.height;
+// // Draws a grid of cells on the canvas (evenly divided
+// var drawGrid = function(game){
+//   //size of canvas
+//   var cw = game.viewport.width;
+//   var ch = game.viewport.height;
 
-  //padding around grid
-  var p = game.cellPadding / 2;
+//   //padding around grid
+//   var p = game.cellPadding / 2;
 
-  //grid width and height
-  var bw = cw - (p*2) ;
-  var bh = ch - (p*2) ;
+//   //grid width and height
+//   var bw = cw - (p*2) ;
+//   var bh = ch - (p*2) ;
 
-  game.ctx.beginPath();
+//   game.ctx.beginPath();
 
-  // vertical lines
-  for (var x = 0; x <= bw; x += Math.floor((cw - 2*p) / game.numHorizontalCells)) {
-    game.ctx.moveTo(0.5 + x + p, p);
-    game.ctx.lineTo(0.5 + x + p, bh + p);
-  }
+//   // vertical lines
+//   for (var x = 0; x <= bw; x += Math.floor((cw - 2*p) / game.numHorizontalCells)) {
+//     game.ctx.moveTo(0.5 + x + p, p);
+//     game.ctx.lineTo(0.5 + x + p, bh + p);
+//   }
 
-  // horizontal lines
-  for (var x = 0; x <= bh; x += Math.floor((ch - 2*p) / game.numVerticalCells)) {
-    game.ctx.moveTo(p, 0.5 + x + p);
-    game.ctx.lineTo(bw + p, 0.5 + x + p);
-  }
+//   // horizontal lines
+//   for (var x = 0; x <= bh; x += Math.floor((ch - 2*p) / game.numVerticalCells)) {
+//     game.ctx.moveTo(p, 0.5 + x + p);
+//     game.ctx.lineTo(bw + p, 0.5 + x + p);
+//   }
 
-  game.ctx.lineWidth = 1;
-  game.ctx.strokeStyle = "#000000";
-  game.ctx.stroke();
-};
+//   game.ctx.lineWidth = 1;
+//   game.ctx.strokeStyle = "#000000";
+//   game.ctx.stroke();
+// };
+var drawPlaza = function(game) {
 
-// Loop through the object list and draw each one in its specified location
-var drawObjects = function(game, player) {
-  console.log(game.currStim);
-  _.forEach(game.currStim, function(obj) {
-    // var points = _.map(obj.points, function(p, i) {
-    //   return i % 2 === 0 ? p + obj.trueX : p + obj.trueY;
-    // });
-    // game.ctx.moveTo(points[0], points[1]);
-    // console.log(points);
-    // game.ctx.curve(points, 0.5, 25, true);
-    // game.ctx.stroke();
-  });
-};
+  //http://stackoverflow.com/questions/6295564/html-canvas-dotted-stroke-around-circle
+  var calcPointsCirc = function calcPointsCirc(cx,cy, rad, dashLength)
+  {
+      var n = rad/dashLength,
+          alpha = Math.PI * 2 / n,
+          pointObj = {},
+          points = [],
+          i = -1;
 
-var highlightCell = function(game, player) {
-  if (player.role == game.playerRoleNames.role1){
-    var targetObjects = _.filter(game.currStim, function(x){
-      return x.targetStatus == "target";
-    });
-    for (var n = 0; n < targetObjects.length; n++){
-      var upperLeftX = targetObjects[n].speakerCoords.gridPixelX;
-      var upperLeftY = targetObjects[n].speakerCoords.gridPixelY;
-      if (upperLeftX != null && upperLeftY != null) {
-        game.ctx.beginPath();
-        game.ctx.lineWidth="10";
-        game.ctx.strokeStyle="black";
-        game.ctx.rect(upperLeftX + 5, upperLeftY + 5,290,290);
-        game.ctx.stroke();
+      while( i < n )
+      {
+          var theta = alpha * i,
+              theta2 = alpha * (i+1);
+
+          points.push({x : (Math.cos(theta) * rad) + cx, y : (Math.sin(theta) * rad) + cy, ex : (Math.cos(theta2) * rad) + cx, ey : (Math.sin(theta2) * rad) + cy});
+          i+=2;
       }
-    }
+      return points;
   }
+
+  var drawCircle = function(circle) {
+    var pointArray = calcPointsCirc(circle.x, circle.y, circle.d / 2.0, 0.5);
+    game.ctx.strokeStyle = 'black'
+    game.ctx.beginPath();
+
+    for(p = 0; p < pointArray.length; p++){
+        game.ctx.moveTo(pointArray[p].x, pointArray[p].y);
+        game.ctx.lineTo(pointArray[p].ex, pointArray[p].ey);
+        game.ctx.stroke();
+    }
+
+    game.ctx.closePath();
+  }
+
+  drawCircle(game.currStim.plaza);
 };
+
+var drawSectors = function(game) {
+  var drawRect = function drawRect(rect, color) {
+    game.ctx.beginPath();
+    game.ctx.rect(rect.x, rect.y, rect.w, rect.h);
+    game.ctx.fillStyle = color;
+    game.ctx.fill();
+    game.ctx.stroke();
+  }
+
+  drawRect(game.currStim.red, 'red');
+  drawRect(game.currStim.blue, 'blue');
+
+};
+
+// var highlightCell = function(game, player) {
+//   if (player.role == game.playerRoleNames.role1){
+//     var targetObjects = _.filter(game.currStim, function(x){
+//       return x.targetStatus == "target";
+//     });
+//     for (var n = 0; n < targetObjects.length; n++){
+//       var upperLeftX = targetObjects[n].speakerCoords.gridPixelX;
+//       var upperLeftY = targetObjects[n].speakerCoords.gridPixelY;
+//       if (upperLeftX != null && upperLeftY != null) {
+//         game.ctx.beginPath();
+//         game.ctx.lineWidth="10";
+//         game.ctx.strokeStyle="black";
+//         game.ctx.rect(upperLeftX + 5, upperLeftY + 5,290,290);
+//         game.ctx.stroke();
+//       }
+//     }
+//   }
+// };
 
 var drawScreen = function(game, player) {
   // draw background
@@ -82,12 +120,11 @@ var drawScreen = function(game, player) {
              25);
   }
   else {
-    // eraseHighlight(game, player, upperLeftY, upperLeftY);
     console.log(game);
-    drawGrid(game);
-    drawObjects(game, player);
-    highlightCell(game, player);
-    // //draw grid numbers
+    if (!_.isEmpty(game.currStim)) {
+      drawSectors(game, player);
+      drawPlaza(game);
+    }
   }
 
 };
