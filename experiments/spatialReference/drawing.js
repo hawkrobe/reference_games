@@ -1,7 +1,7 @@
 // drawing.js
 // This file contains functions to draw on the HTML5 canvas
 
-// Draws a grid of cells on the canvas (evenly divided 
+// Draws a grid of cells on the canvas (evenly divided
 var drawGrid = function(game){
   //size of canvas
   var cw = game.viewport.width;
@@ -13,7 +13,7 @@ var drawGrid = function(game){
   //grid width and height
   var bw = cw - (p*2) ;
   var bh = ch - (p*2) ;
-  
+
   game.ctx.beginPath();
 
   // vertical lines
@@ -37,13 +37,13 @@ var drawGrid = function(game){
 var drawObjects = function(game, player) {
   console.log(game.currStim);
   _.forEach(game.currStim, function(obj) {
-    var points = _.map(obj.points, function(p, i) {
-      return i % 2 === 0 ? p + obj.trueX : p + obj.trueY;
-    });
-    game.ctx.moveTo(points[0], points[1]);
-    console.log(points);
-    game.ctx.curve(points, 0.5, 25, true);
-    game.ctx.stroke();
+    // var points = _.map(obj.points, function(p, i) {
+    //   return i % 2 === 0 ? p + obj.trueX : p + obj.trueY;
+    // });
+    // game.ctx.moveTo(points[0], points[1]);
+    // console.log(points);
+    // game.ctx.curve(points, 0.5, 25, true);
+    // game.ctx.stroke();
   });
 };
 
@@ -59,7 +59,7 @@ var highlightCell = function(game, player) {
         game.ctx.beginPath();
         game.ctx.lineWidth="10";
         game.ctx.strokeStyle="black";
-        game.ctx.rect(upperLeftX + 5, upperLeftY + 5,290,290); 
+        game.ctx.rect(upperLeftX + 5, upperLeftY + 5,290,290);
         game.ctx.stroke();
       }
     }
@@ -70,22 +70,23 @@ var drawScreen = function(game, player) {
   // draw background
   game.ctx.fillStyle = "#FFFFFF";
   game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
-  
+
   // Draw message in center (for countdown, e.g.)
   if (player.message) {
     game.ctx.font = "bold 23pt Helvetica";
     game.ctx.fillStyle = 'blue';
     game.ctx.textAlign = 'center';
-    wrapText(game, player.message, 
+    wrapText(game, player.message,
              game.world.width/2, game.world.height/4,
              game.world.width*4/5,
              25);
   }
   else {
     // eraseHighlight(game, player, upperLeftY, upperLeftY);
+    console.log(game);
     drawGrid(game);
-    drawObjects(game, player);  
-    highlightCell(game, player);    
+    drawObjects(game, player);
+    highlightCell(game, player);
     // //draw grid numbers
   }
 

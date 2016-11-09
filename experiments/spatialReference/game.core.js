@@ -61,6 +61,7 @@ var game_core = function(options){
     this.expName = options.expName;
     this.player_count = options.player_count;
     this.trialList = this.makeTrialList();
+    console.log(this.trialList);
     this.data = {
       id : this.id.slice(0,6),
       trials : [],
@@ -141,6 +142,7 @@ game_core.prototype.advanceRound = function(delay) {
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
       localThis.trialInfo = {currStim: localThis.trialList[localThis.roundNum]};
+      console.log(localThis.trialInfo);
       localThis.server_send_update();
     }
   }, delay);
@@ -228,8 +230,6 @@ game_core.prototype.sampleTrial = function() {
 
     return this.sampleTrial();
   }
-
-  console.log(world);
 
   return world;
 };
