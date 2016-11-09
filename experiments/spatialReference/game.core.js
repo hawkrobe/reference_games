@@ -206,8 +206,8 @@ game_core.prototype.sampleTrial = function() {
     hMax: 250,
 
     //circle
-    dMin: 50,
-    dMax: 50,
+    dMin: 100,
+    dMax: 100,
 
     width: WORLD_WIDTH,
     height: WORLD_HEIGHT

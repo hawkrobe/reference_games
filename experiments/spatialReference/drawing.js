@@ -82,8 +82,17 @@ var drawSectors = function(game) {
 
   drawRect(game.currStim.red, 'red');
   drawRect(game.currStim.blue, 'blue');
-
 };
+
+var drawLily = function(game) {
+  if (game.currStim.lily) {
+    var img = new Image;
+    img.onload = function() {
+      game.ctx.drawImage(img, game.currStim.lily.x, game.currStim.lily.y);
+    }
+    img.src = "lotus.png"
+  }
+}
 
 // var highlightCell = function(game, player) {
 //   if (player.role == game.playerRoleNames.role1){
@@ -124,6 +133,7 @@ var drawScreen = function(game, player) {
     if (!_.isEmpty(game.currStim)) {
       drawSectors(game, player);
       drawPlaza(game);
+      drawLily(game);
     }
   }
 
