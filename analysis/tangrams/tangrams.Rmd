@@ -16,12 +16,62 @@ library(stringr)
 library(knitr)
 library(tm)
 library(NLP)
-setwd("~/Repos/reference_games/analysis/tangrams/")
+setwd("~/Repos/reference_games/analysis")
 ```
 
 We've already done most of the work using nltk in the ipython notebook, so here we just read in the csv files we created there, do a bit of post-processing, and make plots.
 
-# Result 1: Parts of speech 
+# Replication: words over time
+
+```{r}
+tangramMsgs = read.csv("../data/tangrams/message/tangramsMessages.csv") %>%
+  rename(msgTime = time, 
+         role = sender)
+
+tangramSubjInfo = read.csv("../data/tangrams/turk/tangrams-subject_information.csv") %>%
+  rename(gameid = gameID) %>%
+  filter(!is.na(nativeEnglish)) %>%
+  select(-workerid, -DirectorBoards, -initialMatcherBoards)
+
+mean(tangramSubjInfo$totalLength / 1000 / 60)
+```
+
+```{r}
+tangramCombined <- tangramMsgs %>%
+  left_join(tangramSubjInfo, by = c("gameid", "role")) %>%
+  filter(nativeEnglish != "no") %>%
+  mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
+  mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
+  do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
+                                       separate = F))) %>%
+  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
+  filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
+
+length(unique(tangramCombined$gameid))
+```
+
+```{r}
+# TODO: bootstrap CIs
+pdf("tangramsFigs/wordOverTime.pdf")
+ggplot(tangramCombined %>% 
+         filter(role == "director") %>%
+         group_by(gameid, roundNum) %>% 
+         summarize(individualM = sum(numRawWords)/12) %>% 
+         group_by(roundNum) %>% 
+         summarize(m = mean(individualM), 
+                   se = sd(individualM)/sqrt(length(individualM))), 
+       aes(x = roundNum, y = m)) +
+  geom_line() +
+  geom_errorbar(aes(ymax = m + se, ymin = m - se), width = .1) +
+  ylab("mean number words (by director) per figure") +
+  xlab("trials") +
+  ylim(0,20) +
+  xlim(0, 7) +
+  theme_bw() 
+dev.off()
+```
+
+# Additional Result 1: Parts of speech 
 
 ```{r}
 d = read.csv('posTagged.csv', header =T) %>%
@@ -75,7 +125,7 @@ ggplot(d, aes(x = roundNum, y = total, fill = POS)) +
 
 ```
 
-# Result 2: PMI
+# Additional Result 2: PMI
 
 Scatter plot:
 
@@ -99,6 +149,7 @@ ggplot(distinctiveness_d, aes(x = pmi, y = match)) +
 Alternatively, can do a nonparametric analysis: draw a random word from each tangram/gameid pair and look at the percentage that match with round 6... This gives a null distribution. Then we can take the highest PMI word (or words) for each tangram/gameid pair and look at the percentage of *those* that match. We see that it's much higher than expected under the null.
 
 ```{r}
+# TODO: get red to show up in legend
 nonparametric_d = read.csv("PMIbootstrap.csv", header = TRUE) %>%
   mutate(PMI = factor(highest, levels = c('null', 'highest'), labels = c('random', 'top')))
 
@@ -106,68 +157,22 @@ highestValAvg = nonparametric_d %>% filter(highest == 'highest') %>% summarize(a
 
 nonparametric_d %>%
   group_by(sampleNum, PMI) %>%
+  filter(PMI == 'random') %>%
   summarize(avgMatchRate = mean(match)) %>%
   ungroup() %>%
   ggplot(aes(x = avgMatchRate, fill = PMI)) +
   geom_histogram(binwidth = .0075) +
-  geom_vline(aes(xintercept = highestValAvg), color = 'red', linetype = "dashed", size = 2) +
-  scale_fill_manual(values = c("black","red")) +
-  theme_bw() +
-  guides(color=FALSE)
-```
-
-# Result 3: Entropy
-
-```{r}
-setwd("~/Repos/reference_games/analysis")
-
-tangramMsgs = read.csv("../data/tangrams/message/tangramsMessages.csv") %>%
-  rename(msgTime = time, 
-         role = sender)
-
-tangramSubjInfo = read.csv("../data/tangrams/turk/tangrams-subject_information.csv") %>%
-  rename(gameid = gameID) %>%
-  filter(!is.na(nativeEnglish)) %>%
-  select(-workerid, -DirectorBoards, -initialMatcherBoards)
-
-mean(tangramSubjInfo$totalLength / 1000 / 60)
-```
-
-```{r}
-tangramCombined <- tangramMsgs %>%
-  left_join(tangramSubjInfo, by = c("gameid", "role")) %>%
-  filter(nativeEnglish != "no") %>%
-  mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
-  mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
-  do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
-                                       separate = F))) %>%
-  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
-  filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
-
-length(unique(tangramCombined$gameid))
-```
-
-```{r}
-pdf("tangramsFigs/wordOverTime.pdf")
-ggplot(tangramCombined %>% 
-         filter(role == "director") %>%
-         group_by(gameid, roundNum) %>% 
-         summarize(individualM = sum(numRawWords)/12) %>% 
-         group_by(roundNum) %>% 
-         summarize(m = mean(individualM), 
-                   se = sd(individualM)/sqrt(length(individualM))), 
-       aes(x = roundNum, y = m)) +
-  geom_line() +
-  geom_errorbar(aes(ymax = m + se, ymin = m - se), width = .1) +
-  ylab("mean number words (by director) per figure") +
-  xlab("trials") +
-  ylim(0,20) +
-  xlim(0, 7) +
+  geom_vline(aes(xintercept = highestValAvg), 
+             color = 'red', linetype = "dashed", size = 2) +
+  xlab("probability of match b/w Rounds 1 & 6") +
+  scale_fill_manual(values = c("random" = "black", "top"= "red")) +
   theme_bw() 
-dev.off()
+  #guides(color=FALSE)
 ```
 
-# Make wordclouds for round 6
+# Additional Result 3: Arbitrariness
+
+## Part A: wordclouds
 
 ```{r}
 library(wordcloud)   
@@ -209,7 +214,7 @@ for(i in 1:numDocs) {
 }
 ```
 
-# Compute across-pair entropy and within-pair entropy
+## Part B: across-pair entropy and within-pair entropy
 
 ```{r}
 library(entropy)
@@ -264,217 +269,4 @@ ggplot(acrossPair,
        aes(x = half, y = entropy, 
            color = tangram, linetype = type, group = interaction(tangram, type))) +
   geom_line()
-```
-
-# Copied from nicki's ipython notebook... Need to recreate this myself
-
-```{r}
-nullDistributionNums = c(0.2013888888888889,
- 0.19444444444444445,
- 0.1423611111111111,
- 0.1597222222222222,
- 0.13541666666666666,
- 0.1527777777777778,
- 0.13194444444444445,
- 0.17708333333333334,
- 0.1388888888888889,
- 0.1597222222222222,
- 0.1597222222222222,
- 0.16666666666666666,
- 0.1423611111111111,
- 0.21180555555555555,
- 0.1527777777777778,
- 0.16319444444444445,
- 0.1840277777777778,
- 0.1423611111111111,
- 0.18055555555555555,
- 0.15625,
- 0.17708333333333334,
- 0.1701388888888889,
- 0.19444444444444445,
- 0.1701388888888889,
- 0.16666666666666666,
- 0.1701388888888889,
- 0.1597222222222222,
- 0.1527777777777778,
- 0.14930555555555555,
- 0.1388888888888889,
- 0.2048611111111111,
- 0.16666666666666666,
- 0.14583333333333334,
- 0.1736111111111111,
- 0.16666666666666666,
- 0.16666666666666666,
- 0.16666666666666666,
- 0.15625,
- 0.1388888888888889,
- 0.1423611111111111,
- 0.1527777777777778,
- 0.1597222222222222,
- 0.2048611111111111,
- 0.15625,
- 0.15625,
- 0.1597222222222222,
- 0.1597222222222222,
- 0.13541666666666666,
- 0.1527777777777778,
- 0.16319444444444445,
- 0.16666666666666666,
- 0.1423611111111111,
- 0.16666666666666666,
- 0.1736111111111111,
- 0.1388888888888889,
- 0.18055555555555555,
- 0.14930555555555555,
- 0.15625,
- 0.1701388888888889,
- 0.14583333333333334,
- 0.15625,
- 0.18055555555555555,
- 0.1597222222222222,
- 0.1597222222222222,
- 0.17708333333333334,
- 0.13541666666666666,
- 0.14583333333333334,
- 0.1284722222222222,
- 0.1527777777777778,
- 0.2048611111111111, 
- 0.1527777777777778,
- 0.1527777777777778,
- 0.1527777777777778,
- 0.1423611111111111,
- 0.1597222222222222,
- 0.1388888888888889,
- 0.1701388888888889,
- 0.1597222222222222,
- 0.1597222222222222,
- 0.17708333333333334,
- 0.16319444444444445,
- 0.14930555555555555,
- 0.1597222222222222,
- 0.1527777777777778,
- 0.14930555555555555,
- 0.1423611111111111,
- 0.15625,
- 0.1736111111111111,
- 0.1597222222222222,
- 0.1701388888888889,
- 0.1527777777777778,
- 0.1423611111111111,
- 0.15625,
- 0.1388888888888889,
- 0.19791666666666666,
- 0.14583333333333334,
- 0.17708333333333334,
- 0.1388888888888889,
- 0.1909722222222222,
- 0.14583333333333334,
- 0.1875,
- 0.16666666666666666,
- 0.19444444444444445,
- 0.16319444444444445,
- 0.15625,
- 0.1527777777777778,
- 0.1701388888888889,
- 0.12152777777777778,
- 0.1701388888888889,
- 0.13194444444444445,
- 0.1597222222222222,
- 0.1388888888888889,
- 0.1736111111111111,
- 0.1527777777777778,
- 0.14930555555555555,
- 0.16319444444444445,
- 0.1527777777777778,
- 0.14583333333333334,
- 0.13541666666666666,
- 0.1875,
- 0.1597222222222222,
- 0.16666666666666666,
- 0.1909722222222222,
- 0.1597222222222222,
- 0.16319444444444445,
- 0.14930555555555555,
- 0.1909722222222222,
- 0.1527777777777778,
- 0.14930555555555555,
- 0.1527777777777778,
- 0.1736111111111111,
- 0.18055555555555555,
- 0.1423611111111111,
- 0.15625,
- 0.1840277777777778,
- 0.1388888888888889,
- 0.16319444444444445,
- 0.14930555555555555,
- 0.16319444444444445,
- 0.16319444444444445,
- 0.1840277777777778,
- 0.19791666666666666,
- 0.1597222222222222,
- 0.1388888888888889,
- 0.1736111111111111,
- 0.1423611111111111,
- 0.13541666666666666,
- 0.15625,
- 0.1875,
- 0.1597222222222222,
- 0.16319444444444445,
- 0.1597222222222222,
- 0.1423611111111111,
- 0.1597222222222222,
- 0.1875,
- 0.13194444444444445,
- 0.16319444444444445,
- 0.1423611111111111,
- 0.16666666666666666,
- 0.1388888888888889,
- 0.14930555555555555,
- 0.1527777777777778,
- 0.16319444444444445,
- 0.1423611111111111,
- 0.1701388888888889,
- 0.1388888888888889,
- 0.15625,
- 0.17708333333333334,
- 0.19444444444444445,
- 0.1736111111111111,
- 0.1701388888888889,
- 0.14583333333333334,
- 0.16319444444444445,
- 0.17708333333333334,
- 0.14583333333333334,
- 0.1875,
- 0.16666666666666666,
- 0.17708333333333334,
- 0.16666666666666666,
- 0.1527777777777778,
- 0.1736111111111111,
- 0.16666666666666666,
- 0.11805555555555555,
- 0.18055555555555555,
- 0.16666666666666666,
- 0.1701388888888889,
- 0.1388888888888889,
- 0.16666666666666666,
- 0.14930555555555555,
- 0.1909722222222222,
- 0.17708333333333334,
- 0.125,
- 0.15625,
- 0.1701388888888889,
- 0.14930555555555555,
- 0.11805555555555555,
- 0.1597222222222222,
- 0.14583333333333334,
- 0.16666666666666666,
- 0.16319444444444445)
-
-pdf("tangramsFigs/nullDistribution.pdf")
-qplot(nullDistributionNums,binwidth = .01) +
-  geom_vline(x = 0.2112, color = 'red', size = 4) +
-  xlab("probability of match b/w Rounds 1 & 6") +
-  ggtitle("Are high PMI words more likely to \n conventionalize than expected by chance?") +
-  theme_bw()
-dev.off()
 ```
