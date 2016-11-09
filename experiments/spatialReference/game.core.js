@@ -203,6 +203,7 @@ game_core.prototype.sampleTrial = function() {
     dMax: 25
   };
 
+  //the random functions handle bounds checking for us
   var getRandomRect = function getRandomRect() {
     return utils.randomRect(options);
   }
@@ -222,13 +223,45 @@ game_core.prototype.sampleTrial = function() {
     lily: getRandomPoint()
   };
 
+  if (!checkWorld(world, options)) {
+    //the world is invalid, so we just resample
+
+    return this.sampleTrial();
+  }
+
   console.log(world);
 
   return world;
 };
 
-var checkItem = function(target, firstDistractor, secondDistractor) {
-  return true;
+var checkWorld = function(world, options) {
+
+  //takes two rects with x, y, w, h parameters
+  var existsIntersection = function(object1, object2) {
+    //convert to bounding points
+    var convertToBounds = function(object) {
+      return {
+        x1: object.x,
+        x2: object.x + object.w,
+        y1: object.y,
+        y2: object.y + object.h
+      }
+    }
+
+    var between = function(min, max, value) { //TODO: is there a more canonical way to do this? a la underscore?
+      return value <= max && value >= min;
+    }
+
+    var object1Bounds = convertToBounds(object1);
+    var object2Bounds = convertToBounds(object2);
+
+    return between(object1Bounds.x1, object1Bounds.x2, object2Bounds.x1) ||
+           between(object1Bounds.x1, object1Bounds.x2, object2Bounds.x2) ||
+           between(object1Bounds.y1, object1Bounds.y2, object2Bounds.y1) ||
+           between(object1Bounds.y1, object1Bounds.y2, object2Bounds.y2);
+  }
+
+  return !existsIntersection(world.red, world.blue);
 };
 
 // // maps a grid location to the exact pixel coordinates
