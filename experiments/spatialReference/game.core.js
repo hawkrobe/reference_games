@@ -64,7 +64,6 @@ var game_core = function(options){
     this.expName = options.expName;
     this.player_count = options.player_count;
     this.trialList = this.makeTrialList();
-    console.log(this.trialList);
     this.data = {
       id : this.id.slice(0,6),
       trials : [],
@@ -134,12 +133,12 @@ game_core.prototype.advanceRound = function(delay) {
     // If you've reached the planned number of rounds, end the game
     if(localThis.roundNum == localThis.numRounds - 1) {
       _.forEach(players, function(p){
-	p.player.instance.disconnect();
+        p.player.instance.disconnect();
       });
     } else {
       // Tell players
       _.forEach(players, function(p){
-	p.player.instance.emit( 'newRoundUpdate' );
+        p.player.instance.emit( 'newRoundUpdate' );
       });
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
@@ -158,8 +157,6 @@ game_core.prototype.makeTrialList = function () {
     var world = this.sampleTrial(); // Sample a world state
     trialList.push(world);
   };
-
-  console.log(trialList);
 
   return(trialList);
 };
@@ -264,51 +261,3 @@ var checkWorld = function(world, options) {
 
   return !existsIntersection(world.red, world.blue);
 };
-
-// // maps a grid location to the exact pixel coordinates
-// // for x = 1,2,3,4; y = 1,2,3,4
-// game_core.prototype.getPixelFromCell = function (x, y) {
-//   return {
-//     centerX: (this.cellPadding/2 + this.cellDimensions.width * (x - 1)
-//         + this.cellDimensions.width / 2),
-//     centerY: (this.cellPadding/2 + this.cellDimensions.height * (y - 1)
-//         + this.cellDimensions.height / 2),
-//     upperLeftX : (this.cellDimensions.width * (x - 1) + this.cellPadding/2),
-//     upperLeftY : (this.cellDimensions.height * (y - 1) + this.cellPadding/2),
-//     width: this.cellDimensions.width,
-//     height: this.cellDimensions.height
-//   };
-// };
-
-// // maps a raw pixel coordinate to to the exact pixel coordinates
-// // for x = 1,2,3,4; y = 1,2,3,4
-// game_core.prototype.getCellFromPixel = function (mx, my) {
-//   var cellX = Math.floor((mx - this.cellPadding / 2) / this.cellDimensions.width) + 1;
-//   var cellY = Math.floor((my - this.cellPadding / 2) / this.cellDimensions.height) + 1;
-//   return [cellX, cellY];
-// };
-
-// game_core.prototype.getTangramFromCell = function (gridX, gridY) {
-//   for (i=0; i < this.objects.length; i++) {
-//     if (this.objects[i].gridX == gridX && this.objects[i].gridY == gridY) {
-//       var tangram = this.objects[i];
-//       var tangramIndex = i;
-//       // return tangram;
-//       return i;
-//     }
-//   }
-//   console.log("Did not find tangram from cell!");
-// };
-
-// // readjusts trueX and trueY values based on the objLocation and width and height of image (objImage)
-// game_core.prototype.getTrueCoords = function (coord, objLocation, objImage) {
-//   var trueX = this.getPixelFromCell(objLocation.gridX, objLocation.gridY).centerX - objImage.width/2;
-//   var trueY = this.getPixelFromCell(objLocation.gridX, objLocation.gridY).centerY - objImage.height/2;
-//   if (coord == "xCoord") {
-//     return trueX;
-//   }
-//   if (coord == "yCoord") {
-//     return trueY;
-//   }
-// };
-

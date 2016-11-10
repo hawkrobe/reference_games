@@ -57,7 +57,7 @@ var onMessage = function(client,message) {
       // Update others
       var msg = message_parts[1].replace(/~~~/g,'.');
       _.map(all, function(p){
-	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
+  p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
     }
     break;
 
@@ -74,7 +74,7 @@ var writeData = function(client, type, message_parts) {
   switch(type) {
   case "clickedObj" :
     var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
-		message_parts.slice(1).join(', ') + '\n');
+    message_parts.slice(1).join(', ') + '\n');
     console.log("clickedObj:" + line);
     break;
 
@@ -103,10 +103,10 @@ var startGame = function(game, player) {
   var startTime = utils.getLongFormTime();
   var dataFileName = startTime + "_" + game.id + ".csv";
   utils.establishStream(game, "message", dataFileName,
-			"gameid,time,roundNum,sender,contents\n");
+      "gameid,time,roundNum,sender,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
-			"gameid,time,roundNum," +
-			"redX,redY,redW,redH," +
+      "gameid,time,roundNum," +
+      "redX,redY,redW,redH," +
       "blueX,blueY,blueW,blueH," +
       "plazaX,plazaY,plazaD," +
       "lilyX,lilyY" +
