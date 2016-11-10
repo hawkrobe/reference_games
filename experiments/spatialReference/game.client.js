@@ -184,9 +184,12 @@ function mouseClickListener(evt) {
 
     drawPoint(globalGame, mouseX, mouseY);
 
-    var serialize = function (obj) { //TODO:: determine if this maintains a consistent ordering... I think it does?
-      return _.values(obj).join('.')
-    }
+    // apparently _.values() uses for..in.., which does not guarantee order, so we sort
+    // http://stackoverflow.com/a/16809901
+    var serialize = function (obj) {
+      var sortedKeys = _.keys(obj).sort();
+      return _.map(sortedKeys, function(key){return obj[key]}).join('.');
+    };
 
     globalGame.socket.send("clickedObj." +
       [serialize(world.red),
