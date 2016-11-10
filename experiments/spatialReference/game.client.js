@@ -84,9 +84,9 @@ var client_onMessage = function(data) {
       console.log(commands);
 
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-        drawPoint(globalGame, commands[2], commands[3]);
+        drawPoint(globalGame, commands[4], commands[5]);
       } else {
-        drawLily(globalGame, commands[4], commands[5]);
+        drawLily(globalGame, commands[2], commands[3]);
       }
 
 
