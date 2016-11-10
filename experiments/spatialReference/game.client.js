@@ -144,7 +144,7 @@ var client_onjoingame = function(num_players, role) {
   if(role === globalGame.playerRoleNames.role1) {
     $('#instructs').append("Send messages to tell the listener where the lily is.");
   } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Click the map where you think the lily is."); //TODO, do we want to change this text?
+    $('#instructs').append("Click as closely as possible to the location of the lily on the map.");
   }
 
   if(num_players == 1) {
