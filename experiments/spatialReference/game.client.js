@@ -88,39 +88,6 @@ var client_onMessage = function(data) {
       } else {
         drawLily(globalGame, commands[2], commands[3]);
       }
-
-
- //      var objToHighlight;
- //      var upperLeftX;
- //      var upperLeftY;
- //      var strokeColor;
- //      $("#chatbox").attr("disabled", "disabled");
- //      var clickedObjStatus = commands[2];
- //      var outcome = commands[3];
- //      // Update local score...
- //      globalGame.data.totalScore += outcome === "target" ? 1 : 0;
- //      console.log("total score is " + globalGame.data.totalScore);
-
- //      if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-	// objToHighlight = _.filter(globalGame.currStim, function(x){
-	//   return x.targetStatus == clickedObjStatus;
-	// })[0];
-	// upperLeftX = objToHighlight.speakerCoords.gridPixelX;
-	// upperLeftY = objToHighlight.speakerCoords.gridPixelY;
- //      } else {
-	// objToHighlight = _.filter(globalGame.currStim, function(x){
-	//   return x.targetStatus == "target";
-	// })[0];
-	// upperLeftX = objToHighlight.listenerCoords.gridPixelX;
-	// upperLeftY = objToHighlight.listenerCoords.gridPixelY;
- //      }
- //      if (upperLeftX != null && upperLeftY != null) {
- //        globalGame.ctx.beginPath();
- //        globalGame.ctx.lineWidth="10";
- //        globalGame.ctx.strokeStyle="green";
- //        globalGame.ctx.rect(upperLeftX+5, upperLeftY+5,290,290);
- //        globalGame.ctx.stroke();
- //      }
       break;
 
     case 'alert' : // Not in database, so you can't play...
@@ -138,7 +105,7 @@ var client_onMessage = function(data) {
         flashTitle("GO!");
       }
       globalGame.players.push({id: commanddata,
-			       player: new game_player(globalGame)}); break;
+             player: new game_player(globalGame)}); break;
     }
   }
 };
@@ -155,10 +122,10 @@ var customSetup = function(game) {
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty()
-	.append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+        .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
     } else {
       $('#roundnumber').empty()
-	.append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
+        .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
     }
   });
 };
@@ -175,27 +142,25 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to tell the listener which object " +
-			   "is the target.");
+    $('#instructs').append("Send messages to tell the listener where the lily is.");
   } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Click on the target object which the speaker " +
-			   "is telling you about.");
+    $('#instructs').append("Click the map where you think the lily is."); //TODO, do we want to change this text?
   }
 
   if(num_players == 1) {
     this.timeoutID = setTimeout(function() {
       if(_.size(this.urlParams) == 4) {
-	this.submitted = true;
-	window.opener.turk.submit(this.data, true);
-	window.close();
+        this.submitted = true;
+        window.opener.turk.submit(this.data, true);
+        window.close();
       } else {
-	console.log("would have submitted the following :");
-	console.log(this.data);
+        console.log("would have submitted the following :");
+        console.log(this.data);
       }
     }, 1000 * 60 * 15);
     $("#chatbox").attr("disabled", "disabled");
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
-				      + 'Please do not refresh the page!');
+              + 'Please do not refresh the page!');
   }
 
   // set mouse-tracking event handler
@@ -219,7 +184,7 @@ function mouseClickListener(evt) {
 
     drawPoint(globalGame, mouseX, mouseY);
 
-    var serialize = function (obj) {
+    var serialize = function (obj) { //TODO:: determine if this maintains a consistent ordering... I think it does?
       return _.values(obj).join('.')
     }
 
@@ -233,9 +198,3 @@ function mouseClickListener(evt) {
       ].join('.'));
   }
 };
-
-function hitTest(shape,mx,my) {
-  var dx = mx - shape.trueX;
-  var dy = my - shape.trueY;
-  return (0 < dx) && (dx < shape.width) && (0 < dy) && (dy < shape.height);
-}
