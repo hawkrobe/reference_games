@@ -76,6 +76,20 @@ var client_onMessage = function(data) {
       break;
 
     case 'feedback' :
+      var lilyX;
+      var lilyY;
+      var mouseX;
+      var mouseY;
+      $("#chatbox").attr("disabled", "disabled");
+      console.log(commands);
+
+      if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+        drawPoint(globalGame, commands[2], commands[3]);
+      } else {
+        drawLily(globalGame, commands[4], commands[5]);
+      }
+
+
  //      var objToHighlight;
  //      var upperLeftX;
  //      var upperLeftY;

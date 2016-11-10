@@ -1,37 +1,6 @@
 // drawing.js
 // This file contains functions to draw on the HTML5 canvas
 
-// // Draws a grid of cells on the canvas (evenly divided
-// var drawGrid = function(game){
-//   //size of canvas
-//   var cw = game.viewport.width;
-//   var ch = game.viewport.height;
-
-//   //padding around grid
-//   var p = game.cellPadding / 2;
-
-//   //grid width and height
-//   var bw = cw - (p*2) ;
-//   var bh = ch - (p*2) ;
-
-//   game.ctx.beginPath();
-
-//   // vertical lines
-//   for (var x = 0; x <= bw; x += Math.floor((cw - 2*p) / game.numHorizontalCells)) {
-//     game.ctx.moveTo(0.5 + x + p, p);
-//     game.ctx.lineTo(0.5 + x + p, bh + p);
-//   }
-
-//   // horizontal lines
-//   for (var x = 0; x <= bh; x += Math.floor((ch - 2*p) / game.numVerticalCells)) {
-//     game.ctx.moveTo(p, 0.5 + x + p);
-//     game.ctx.lineTo(bw + p, 0.5 + x + p);
-//   }
-
-//   game.ctx.lineWidth = 1;
-//   game.ctx.strokeStyle = "#000000";
-//   game.ctx.stroke();
-// };
 var drawPlaza = function(game) {
 
   //http://stackoverflow.com/questions/6295564/html-canvas-dotted-stroke-around-circle
@@ -84,42 +53,21 @@ var drawSectors = function(game) {
   drawRect(game.currStim.blue, 'blue');
 };
 
-var drawLily = function(game) {
-  if (game.my_role === game.playerRoleNames.role1) {
-    var img = new Image;
-    img.onload = function() {
-      game.ctx.drawImage(img, game.currStim.lily.x, game.currStim.lily.y);
-    }
-    img.src = "lotus.png"
+var drawLily = function(game, x, y) {
+  var img = new Image;
+  img.onload = function() {
+    game.ctx.drawImage(img, x, y);
   }
+  img.src = "lotus.png"
 }
 
 var drawPoint = function(game, x, y) {
   game.ctx.beginPath();
-  game.ctx.rect(x, y, 10, 10);
+  game.ctx.rect(x - 5, y - 5, 10, 10);
   game.ctx.fillStyle = 'yellow';
   game.ctx.fill();
   game.ctx.stroke();
 }
-
-// var highlightCell = function(game, player) {
-//   if (player.role == game.playerRoleNames.role1){
-//     var targetObjects = _.filter(game.currStim, function(x){
-//       return x.targetStatus == "target";
-//     });
-//     for (var n = 0; n < targetObjects.length; n++){
-//       var upperLeftX = targetObjects[n].speakerCoords.gridPixelX;
-//       var upperLeftY = targetObjects[n].speakerCoords.gridPixelY;
-//       if (upperLeftX != null && upperLeftY != null) {
-//         game.ctx.beginPath();
-//         game.ctx.lineWidth="10";
-//         game.ctx.strokeStyle="black";
-//         game.ctx.rect(upperLeftX + 5, upperLeftY + 5,290,290);
-//         game.ctx.stroke();
-//       }
-//     }
-//   }
-// };
 
 var drawScreen = function(game, player) {
   // draw background
@@ -141,7 +89,10 @@ var drawScreen = function(game, player) {
     if (!_.isEmpty(game.currStim)) {
       drawSectors(game, player);
       drawPlaza(game);
-      drawLily(game);
+
+      if (game.my_role === game.playerRoleNames.role1) {
+        drawLily(game, game.currStim.lily.x, game.currStim.lily.y);
+      }
     }
   }
 

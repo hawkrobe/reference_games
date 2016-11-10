@@ -35,10 +35,10 @@ var onMessage = function(client,message) {
   case 'clickedObj' :
     // Write event to file
     writeData(client, "clickedObj", message_parts);
-    // Update score
-    gc.data.totalScore += message_parts[1] === "target" ? 1 : 0;
+
+    console.log(message_parts);
     // Give feedback to players
-    var feedbackMsg = "s.feedback." + message_parts[2] + "." + message_parts[1];
+    var feedbackMsg = "s.feedback." + [message_parts[12], message_parts[13], message_parts[14], message_parts[15]].join('.');
     others[0].player.instance.send(feedbackMsg);
     target.instance.send(feedbackMsg);
     // Continue
