@@ -68,6 +68,7 @@ var game_core = function(options){
       id : this.id.slice(0,6),
       trials : [],
       catch_trials : [],
+      totalScore: 0,
       system : {},
       subject_information : {
         gameID: this.id.slice(0,6)
