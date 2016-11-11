@@ -83,6 +83,10 @@ var client_onMessage = function(data) {
       $("#chatbox").attr("disabled", "disabled");
       console.log(commands);
 
+      globalGame.data.totalScore += parseInt(commands[6]);
+      $('#score').empty()
+        .append("Score: " + globalGame.data.totalScore);
+
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
         drawPoint(globalGame, commands[4], commands[5]);
       } else {
