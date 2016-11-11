@@ -81,9 +81,9 @@ var client_onMessage = function(data) {
       var mouseX;
       var mouseY;
       $("#chatbox").attr("disabled", "disabled");
-      console.log(commands);
 
-      globalGame.data.totalScore += parseInt(commands[6]);
+      //update the score, TODO: update styling to be prettier
+      globalGame.data.totalScore = parseInt(commands[6]);
       $('#score').empty()
         .append("Score: " + globalGame.data.totalScore);
 
