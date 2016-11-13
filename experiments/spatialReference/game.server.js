@@ -44,6 +44,10 @@ var onMessage = function(client,message) {
     //TODO: is there a better way to calculate the score?
     //450 is the theoretical maximum penalty in a 600 * 400 world
     //only reward them if they are close
+
+    // We could do some exponent of the distance, but I don't see what
+    // the problem is with a linear score function
+
     gc.data.totalScore += Math.max(Math.floor(150 - penalty), 0);
     //question.. is this automatically sent to client on update?
 
