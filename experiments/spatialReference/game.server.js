@@ -123,10 +123,10 @@ var startGame = function(game, player) {
       "gameid,time,roundNum,sender,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
       "gameid,time,roundNum," +
-      "redX,redY,redW,redH," +
-      "blueX,blueY,blueW,blueH," +
-      "plazaX,plazaY,plazaD," +
-      "lilyX,lilyY" +
+      "redH,redW,redX,redY," +
+      "blueH,blueW,blueX,blueY," +
+      "plazaD,plazaX,plazaY," +
+      "lilyX,lilyY," +
       "mouseX, mouseY" +
       "\n");
   game.advanceRound(0);

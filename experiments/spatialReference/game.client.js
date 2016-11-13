@@ -148,7 +148,7 @@ var client_onjoingame = function(num_players, role) {
   if(role === globalGame.playerRoleNames.role1) {
     $('#instructs').append("Send messages to tell the listener where the lily is.");
   } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Click the map where you think the lily is."); //TODO, do we want to change this text?
+    $('#instructs').append("Click as closely as possible to the location of the lily on the map.");
   }
 
   if(num_players == 1) {
@@ -188,9 +188,12 @@ function mouseClickListener(evt) {
 
     drawPoint(globalGame, mouseX, mouseY);
 
-    var serialize = function (obj) { //TODO:: determine if this maintains a consistent ordering... I think it does?
-      return _.values(obj).join('.')
-    }
+    // apparently _.values() uses for..in.., which does not guarantee order, so we sort
+    // http://stackoverflow.com/a/16809901
+    var serialize = function (obj) {
+      var sortedKeys = _.keys(obj).sort();
+      return _.map(sortedKeys, function(key){return obj[key]}).join('.');
+    };
 
     globalGame.socket.send("clickedObj." +
       [serialize(world.red),
