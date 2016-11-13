@@ -14,14 +14,16 @@ literalListener("green", ["#14EB95","#D1C92E","#1114EE"]);
 
 // LITERAL LISTENER MODELS
 
-// assume P(s) is uniform; only think about truth value of propositions
+// assume P(s) is uniform
 
 // TODO: get the form of the input data, to determine how to process a literal "in"
 var literalIn = function(lily, utterance) {
 	return true;
 }
 
-var literalNear
+var literalNear = function(lily, utterance) {
+	return true;
+}
 
 
 // INFORMATIVE SPEAKER MODELS
