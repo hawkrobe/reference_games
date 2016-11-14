@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "underscore": "~1.7.0",
+    "underscore": "~1.8.0",
     "express": "~4.0.0",
     "socket.io": "~1.2.0",
     "node-uuid": "1.4.1",
     "csv-parse": "~0.0.6",
     "delta-e" : "~0.0.7",
-    "color-convert": "~1.0.0"
+    "color-convert": "~1.0.0",
+    "jsonfile": "~2.4.0"
   }
 }
 
