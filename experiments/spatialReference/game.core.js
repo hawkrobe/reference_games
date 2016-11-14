@@ -15,18 +15,23 @@
   variable, remember that it's only set in that instance.
 */
 
-var WORLD_HEIGHT = 400;
-var WORLD_WIDTH = 600;
-
 var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
     _ = require('underscore');
     utils  = require('../sharedUtils/sharedUtils.js');
+    assert = require('assert');
+
+    TRIALS_OBJECT_FROM_JSON = require("../spatialReference/trials.json");
+    console.log(TRIALS_OBJECT_FROM_JSON);
+    assert(_.isArray(TRIALS_OBJECT_FROM_JSON) && TRIALS_OBJECT_FROM_JSON.length == 50);
   }
   else throw 'mymodule requires underscore, see http://underscorejs.org';
 }
+
+var WORLD_HEIGHT = 400;
+var WORLD_WIDTH = 600;
 
 var game_core = function(options){
   // Store a flag if we are the server instance
@@ -63,7 +68,7 @@ var game_core = function(options){
     this.id = options.id;
     this.expName = options.expName;
     this.player_count = options.player_count;
-    this.trialList = this.makeTrialList();
+    this.trialList = _.shuffle(TRIALS_OBJECT_FROM_JSON);
     this.data = {
       id : this.id.slice(0,6),
       trials : [],
