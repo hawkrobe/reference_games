@@ -58,16 +58,13 @@ html , body {
 }
 
 #score {
-	height: 10%;
-	width: 20%;
-	text-align: center;
-	margin-left: 1%;
-	margin-top: 1%;
-	margin-right: auto;
-	margin-bottom: auto ;
-	left:0; right:0; top:20%; bottom: 0;
-	position: absolute;
-	font-size: 150%;
+  text-align: center;
+  margin-left: 75%;
+  margin-right: auto;
+  margin-bottom: auto ;
+  left:0; right:0; top:2%; bottom: 0;
+  position: absolute;
+  font-size: 150%
 }
 
 #submitbutton {
@@ -102,20 +99,20 @@ ALOT...don't understand how to adjust that.*/
 	width: 84vh;
 	margin-top: 5%;
 	margin-right: 3%;
-	background: #383838; 
+	background: #383838;
 }
 
 #message_panel {
 	height: 90%;
 	width: 40%;
- 
+
 	float: left;
 
 	margin-left: 5%;
 	margin-right: 5%;
-	list-style-type: none; 
+	list-style-type: none;
 
-	border: solid 1px #999; 
+	border: solid 1px #999;
 }
 
 #messages {
@@ -126,29 +123,29 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #chatarea form {
-	background: #212121; 
-	padding: 3px; 
+	background: #212121;
+	padding: 3px;
 	height: 7%;
-	width: 100%; 
+	width: 100%;
 	float: bottom;
 }
 
 #chatarea input {
-	border: 0; 
+	border: 0;
 	height: 100%;
 	font-size: 150%;
-	width: 80%; 
+	width: 80%;
 	margin-left: .5%;
-	margin-right: .5%; 
+	margin-right: .5%;
 	padding: 5px;
 }
 
 #chatarea button {
-	width: 15%; 
+	width: 15%;
 	height: 100%;
 	font-size: 150%;
-	background: rgb(130, 224, 255); 
-	border: none; 
+	background: rgb(130, 224, 255);
+	border: none;
 	padding: 5px;
 }
 
