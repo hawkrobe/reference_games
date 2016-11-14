@@ -22,6 +22,7 @@ if( typeof _ === 'undefined' ) {
     _ = require('underscore');
     utils  = require('../sharedUtils/sharedUtils.js');
     assert = require('assert');
+    jsonfile = require('jsonfile')
 
     TRIALS_OBJECT_FROM_JSON = require("../spatialReference/trials.json");
     console.log(TRIALS_OBJECT_FROM_JSON);
@@ -86,6 +87,10 @@ var game_core = function(options){
     }];
     this.streams = {};
     this.server_send_update();
+
+    jsonfile.writeFile("trials1.json", this.trialList, function (err) {
+      console.error(err)
+    });
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.players = [{
@@ -167,6 +172,26 @@ game_core.prototype.makeTrialList = function () {
   return(trialList);
 };
 
+// game_core.prototype.noisify = function(trialList) {
+//   var noise = 10;
+
+//   //TODO this is so slow.. even necessary?
+
+//   return _.map(trialList, function(world) {
+//     return _.mapObject(world, function(shape) {
+//       if (_.isString(shape)) return shape;
+
+//       return _.mapObject(shape, function (value) {
+
+//         var sign = _.sample([-1, 1]);
+//         var amount = Math.floor(_.random(0, 100) / noise);
+
+//         return value + (sign * amount);
+//       });
+//     });
+//   });
+// }
+
 game_core.prototype.server_send_update = function(){
   //Make a snapshot of the current state, for updating the clients
   var local_game = this;
@@ -203,9 +228,9 @@ game_core.prototype.sampleTrial = function() {
     yMin: 50,
     yMax: 400,
     wMin: 50,
-    wMax: 300,
+    wMax: 350,
     hMin: 50,
-    hMax: 250,
+    hMax: 350,
 
     //circle
     dMin: 100,
@@ -220,20 +245,58 @@ game_core.prototype.sampleTrial = function() {
     return utils.randomRect(options);
   }
 
-  var getRandomCircle = function getRandomCircle() {
-    return utils.randomCircle(options);
+  var getRandomCircle = function getRandomCircle(world) {
+    var plazaOptions = _.clone(options);
+    var mode = _.random(1,3);
+
+    if (mode == 1) { //plaza somewhere near red
+      options.xMin = world.red.x;
+      options.xMax = world.red.x + world.red.w;
+      options.yMin = world.red.y;
+      options.yMax = world.red.y + world.red.h;
+
+    } else if (mode == 2) { //plaza somewhere near blue
+      options.xMin = world.blue.x;
+      options.xMax = world.blue.x + world.blue.w;
+      options.yMin = world.blue.y;
+      options.yMax = world.blue.y + world.blue.h;
+    }
+
+    return utils.randomCircle(plazaOptions);
   }
 
-  var getRandomPoint = function getRandomPoint() {
-    return utils.randomPoint(options);
+  var getRandomPoint = function getRandomPoint(world) {
+    var lilyOptions = _.clone(options);
+    var mode = _.random(1,3);
+
+    if (mode == 1) { //lily somewhere near red
+      options.xMin = world.red.x;
+      options.xMax = world.red.x + world.red.w;
+      options.yMin = world.red.y;
+      options.yMax = world.red.y + world.red.h;
+
+    } else if (mode == 2) { //lily somewhere near blue
+      options.xMin = world.blue.x;
+      options.xMax = world.blue.x + world.blue.w;
+      options.yMin = world.blue.y;
+      options.yMax = world.blue.y + world.blue.h;
+    } else if (mode == 3) { //lily somewhere near plaza
+      options.xMin = world.plaza.x;
+      options.xMax = world.plaza.x + world.plaza.w;
+      options.yMin = world.plaza.y;
+      options.yMax = world.plaza.y + world.plaza.h;
+    }
+
+    return utils.randomPoint(lilyOptions);
   }
 
   var world = {
     red: getRandomRect(),
     blue: getRandomRect(),
-    plaza: getRandomCircle(),
-    lily: getRandomPoint()
   };
+
+  world.plaza = getRandomCircle(world);
+  world.lily = getRandomPoint(world);
 
   if (!checkWorld(world, options)) {
     //the world is invalid, so we just resample
