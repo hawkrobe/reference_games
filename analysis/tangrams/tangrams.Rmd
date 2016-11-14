@@ -282,24 +282,6 @@ tangramBoards = read.csv("../data/tangrams/finalBoard/tangramsFinalBoards.csv") 
   spread(key = type, value = location)  %>%
   rename(matcherLoc = sub, trueLoc = true) %>%
   mutate(match = matcherLoc == trueLoc)
-write.csv(tangramBoards, file = "reformattedBoards.csv", row.names = F)
-
-tangramSubjInfo = read.csv("../data/tangrams/turk/tangrams-subject_information.csv") %>%
-  rename(gameid = gameID) %>%
-  filter(!is.na(nativeEnglish)) %>%
-  select(-workerid, -DirectorBoards, -initialMatcherBoards)
-
-tangramCombined <- tangramMsgs %>%
-  rename(role = sender) %>%
-  left_join(tangramSubjInfo, by = c("gameid", "role")) %>%
-  filter(nativeEnglish != "no") %>%
-  mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
-  mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
-  mutate(numsMentions = str_replace_all(contents, "[^0-9]", "")) %>%
-  do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
-                                       separate = F))) %>%
-  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
-  filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers 
 ```
 
 subject-level performance over time?
