@@ -24,7 +24,7 @@ We've already done most of the work using nltk in the ipython notebook, so here 
 # Replication: words over time
 
 ```{r}
-tangramMsgs = read.csv("../data/tangrams/message/tangramsMessages.csv") %>%
+tangramMsgs = read_csv("../data/tangrams/message/tangramsMessages.csv") %>%
   rename(msgTime = time, 
          role = sender)
 
@@ -270,3 +270,80 @@ ggplot(acrossPair,
            color = tangram, linetype = type, group = interaction(tangram, type))) +
   geom_line()
 ```
+
+### Supplemental: accuracy over time
+
+Bring boards into it?
+
+```{r}
+tangramBoards = read.csv("../data/tangrams/finalBoard/tangramsFinalBoards.csv") %>%
+  gather(tangram, location, subA:trueL) %>% 
+  separate(tangram, into = c("type", "tangramName"), -2) %>% 
+  spread(key = type, value = location)  %>%
+  rename(matcherLoc = sub, trueLoc = true) %>%
+  mutate(match = matcherLoc == trueLoc)
+write.csv(tangramBoards, file = "reformattedBoards.csv", row.names = F)
+
+tangramSubjInfo = read.csv("../data/tangrams/turk/tangrams-subject_information.csv") %>%
+  rename(gameid = gameID) %>%
+  filter(!is.na(nativeEnglish)) %>%
+  select(-workerid, -DirectorBoards, -initialMatcherBoards)
+
+tangramCombined <- tangramMsgs %>%
+  rename(role = sender) %>%
+  left_join(tangramSubjInfo, by = c("gameid", "role")) %>%
+  filter(nativeEnglish != "no") %>%
+  mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
+  mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
+  mutate(numsMentions = str_replace_all(contents, "[^0-9]", "")) %>%
+  do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
+                                       separate = F))) %>%
+  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
+  filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers 
+```
+
+subject-level performance over time?
+
+```{r}
+tangramBoards %>% 
+  group_by(gameid, roundNum) %>% 
+  summarize(matchProp = sum(match)/12) %>%
+  ggplot(aes(x = roundNum, y = matchProp, color = gameid)) +
+    geom_line()
+```
+
+histogram of overall accuracy
+
+```{r}
+tangramBoards %>% 
+  group_by(gameid) %>% 
+  summarize(matchProp = sum(match)/(6 * 12)) %>%
+  ggplot(aes(x = matchProp)) +
+    geom_histogram()
+```
+
+histogram of accuracy for each round
+
+```{r}
+tangramBoards %>% 
+  group_by(gameid, roundNum) %>% 
+  summarize(matchProp = sum(match)/(12)) %>%
+  ggplot(aes(x = matchProp)) +
+    geom_histogram() +
+  facet_wrap(~ roundNum)
+```
+
+average performance over time (participants get better)
+
+```{r}
+tangramBoards %>% 
+  group_by(gameid, roundNum) %>% 
+  summarize(matchProp = sum(match)/(12)) %>%
+  filter(matchProp > .25) %>%
+  group_by(roundNum) %>%
+  summarize(m = mean(matchProp), se = sd(matchProp)/sqrt(length(matchProp))) %>%
+  ggplot(aes(x = roundNum, y = m)) +
+    geom_line() +
+    geom_errorbar(aes(ymax = m + se, ymin = m - se) )
+```
+
