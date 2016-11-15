@@ -88,9 +88,10 @@ var game_core = function(options){
     this.streams = {};
     this.server_send_update();
 
-    jsonfile.writeFile("trials1.json", this.trialList, function (err) {
-      console.error(err)
-    });
+    // jsonfile.writeFile("trials1.json", this.trialList, function (err) {
+    //   console.error(err)
+    // });
+
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.players = [{
