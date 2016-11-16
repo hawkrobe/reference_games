@@ -21,7 +21,7 @@
       "x": 120,
       "y": 269
     },
-    "_comment": "Lily within blue sector."
+    "_comment": "In blue sector."
   },
     {
     "red": {
@@ -45,7 +45,7 @@
       "x": 500,
       "y": 166
     },
-    "_comment": "Lily in plaza."
+    "_comment": "Edge of plaza."
   },
   {
     "red": {
@@ -69,7 +69,7 @@
       "x": 400,
       "y": 190
     },
-    "_comment": "Lily edge of red."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -93,7 +93,7 @@
       "x": 250,
       "y": 150
     },
-    "_comment": ""
+    "_comment": "Edge of blue"
   },
   {
     "red": {
@@ -117,7 +117,7 @@
       "x": 491,
       "y": 339
     },
-    "_comment": "Lily outside."
+    "_comment": "Outside all."
   },
   {
     "red": {
@@ -141,7 +141,7 @@
       "x": 470,
       "y": 210
     },
-    "_comment": "Lily in plaza."
+    "_comment": "Edge of plaza."
   },
   {
     "red": {
@@ -165,7 +165,7 @@
       "x": 190,
       "y": 360
     },
-    "_comment": "Lily in red."
+    "_comment": "Outside red."
   },
   {
     "red": {
@@ -189,7 +189,7 @@
       "x": 400,
       "y": 150
     },
-    "_comment": "Lily on edge of blue."
+    "_comment": "Edge of blue inside plaza."
   },
   {
     "red": {
@@ -213,7 +213,7 @@
       "x": 382,
       "y": 314
     },
-    "_comment": "Lily within blue sector."
+    "_comment": "In blue."
   },
   {
     "red": {
@@ -237,7 +237,7 @@
       "x": 400,
       "y": 225
     },
-    "_comment": "Lily edge of plaza."
+    "_comment": "Outside red."
   },
   {
     "red": {
@@ -261,7 +261,7 @@
       "x": 323,
       "y": 200
     },
-    "_comment": "Lily in red."
+    "_comment": "Lily in red near edge of plaza."
   },
   {
     "red": {
@@ -282,10 +282,10 @@
       "d": 100
     },
     "lily": {
-      "x": 400,
+      "x": 300,
       "y": 200
     },
-    "_comment": "Lily on edge of plaza."
+    "_comment": "Outside plaza."
   },
   {
     "red": {
@@ -306,10 +306,10 @@
       "d": 100
     },
     "lily": {
-      "x": 412,
+      "x": 355,
       "y": 277
     },
-    "_comment": "Lily edge of red sector."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -333,7 +333,7 @@
       "x": 220,
       "y": 100
     },
-    "_comment": "Lily edge of blue sector."
+    "_comment": "Edge of blue sector in plaza."
   },
   {
     "red": {
@@ -357,7 +357,7 @@
       "x": 300,
       "y": 150
     },
-    "_comment": "Lily in plaza."
+    "_comment": "Outside plaza."
   },
   {
     "red": {
@@ -381,7 +381,7 @@
       "x": 200,
       "y": 250
     },
-    "_comment": "Lily just outside plaza."
+    "_comment": "Outside all."
   },
   {
     "red": {
@@ -402,10 +402,10 @@
       "d": 100
     },
     "lily": {
-      "x": 300,
+      "x": 250,
       "y": 100
     },
-    "_comment": "Lily just outside plaza."
+    "_comment": "Lily in plaza."
   },
   {
     "red": {
@@ -429,7 +429,7 @@
       "x": 348,
       "y": 236
     },
-    "_comment": "Lily within blue sector."
+    "_comment": "In blue."
   },
   {
     "red": {
@@ -450,10 +450,10 @@
       "d": 100
     },
     "lily": {
-      "x": 140,
-      "y": 300
+      "x": 300,
+      "y": 100
     },
-    "_comment": "Lily within red sector."
+    "_comment": "Outside all."
   },
   {
     "red": {
@@ -474,10 +474,10 @@
       "d": 100
     },
     "lily": {
-      "x": 400,
+      "x": 380,
       "y": 150
     },
-    "_comment": "Lily within plaza."
+    "_comment": "In blue."
   },
   {
     "red": {
@@ -498,10 +498,10 @@
       "d": 100
     },
     "lily": {
-      "x": 500,
-      "y": 200
+      "x": 360,
+      "y": 100
     },
-    "_comment": "Lily edge of blue."
+    "_comment": "Lily in plaza."
   },
   {
     "red": {
@@ -522,10 +522,10 @@
       "d": 100
     },
     "lily": {
-      "x": 370,
-      "y": 90
+      "x": 310,
+      "y": 70
     },
-    "_comment": "Lily within plaza."
+    "_comment": "Outside plaza."
   },
   {
     "red": {
@@ -547,9 +547,9 @@
     },
     "lily": {
       "x": 311,
-      "y": 307
+      "y": 250
     },
-    "_comment": "Lily edge of red sector."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -570,10 +570,10 @@
       "d": 100
     },
     "lily": {
-      "x": 350,
+      "x": 410,
       "y": 100
     },
-    "_comment": "Lily in blue sector."
+    "_comment": "In blue."
   },
   {
     "red": {
@@ -594,10 +594,10 @@
       "d": 100
     },
     "lily": {
-      "x": 100,
-      "y": 210
+      "x": 78,
+      "y": 172
     },
-    "_comment": "Lily edge of plaza."
+    "_comment": "In plaza."
   },
   {
     "red": {
@@ -643,9 +643,9 @@
     },
     "lily": {
       "x": 110,
-      "y": 86
+      "y": 100
     },
-    "_comment": "Lily edge of red sector."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -690,10 +690,10 @@
       "d": 100
     },
     "lily": {
-      "x": 100,
+      "x": 50,
       "y": 200
     },
-    "_comment": "Lily near plaza."
+    "_comment": "In plaza."
   },
   {
     "red": {
@@ -715,9 +715,9 @@
     },
     "lily": {
       "x": 180,
-      "y": 130
+      "y": 60
     },
-    "_comment": "Lily near red."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -762,10 +762,10 @@
       "d": 100
     },
     "lily": {
-      "x": 340,
-      "y": 320
+      "x": 310,
+      "y": 250
     },
-    "_comment": "Lily near plaza."
+    "_comment": "In plaza."
   },
   {
     "red": {
@@ -789,7 +789,7 @@
       "x": 250,
       "y": 279
     },
-    "_comment": "Lily in red sector."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -813,7 +813,7 @@
       "x": 91,
       "y": 206
     },
-    "_comment": "Lily in blue sector."
+    "_comment": "In blue."
   },
   {
     "red": {
@@ -834,10 +834,10 @@
       "d": 100
     },
     "lily": {
-      "x": 426,
-      "y": 161
+      "x": 164,
+      "y": 190
     },
-    "_comment": "Lily edge of red sector."
+    "_comment": "Lily in red."
   },
   {
     "red": {
@@ -883,7 +883,7 @@
     },
     "lily": {
       "x": 200,
-      "y": 130
+      "y": 80
     },
     "_comment": "Lily in plaza."
   },
@@ -933,7 +933,7 @@
       "x": 180,
       "y": 340
     },
-    "_comment": "Lily just out of red sector."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -955,9 +955,9 @@
     },
     "lily": {
       "x": 500,
-      "y": 225
+      "y": 200
     },
-    "_comment": "Lily just outside plaza."
+    "_comment": "Outside all."
   },
   {
     "red": {
@@ -981,7 +981,7 @@
       "x": 239,
       "y": 254
     },
-    "_comment": "Lily in red sector on edge of plaza."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -1002,10 +1002,10 @@
       "d": 100
     },
     "lily": {
-      "x": 300,
-      "y": 260
+      "x": 260,
+      "y": 300
     },
-    "_comment": "Lily in red sector in center of plaza."
+    "_comment": "Outside all."
   },
   {
     "red": {
@@ -1050,10 +1050,10 @@
       "d": 100
     },
     "lily": {
-      "x": 449,
+      "x": 390,
       "y": 209
     },
-    "_comment": "Lily on edge of red sector."
+    "_comment": "Edge of red."
   },
   {
     "red": {
@@ -1074,10 +1074,10 @@
       "d": 100
     },
     "lily": {
-      "x": 274,
-      "y": 321
+      "x": 290,
+      "y": 300
     },
-    "_comment": "Lily outside of right edge of red sector."
+    "_comment": "Outside all."
   },
   {
     "red": {
@@ -1098,10 +1098,10 @@
       "d": 100
     },
     "lily": {
-      "x": 285,
-      "y": 355
+      "x": 363,
+      "y": 265
     },
-    "_comment": "Lily bottom edge of blue sector."
+    "_comment": "In plaza."
   },
   {
     "red": {
@@ -1148,7 +1148,8 @@
     "lily": {
       "x": 540,
       "y": 326
-    }
+    },
+    "_comment": "In red."
   },
   {
     "red": {
@@ -1169,9 +1170,10 @@
       "d": 100
     },
     "lily": {
-      "x": 415,
-      "y": 219
-    }
+      "x": 262,
+      "y": 300
+    },
+    "_comment": "In plaza."
   },
   {
     "red": {
@@ -1192,8 +1194,9 @@
       "d": 100
     },
     "lily": {
-      "x": 332,
-      "y": 129
-    }
+      "x": 320,
+      "y": 100
+    },
+    "_comment": "In plaza."
   }
 ]
