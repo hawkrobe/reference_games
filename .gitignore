@@ -22,4 +22,4 @@ analysis/shapeReferenceOutlines/jpgs/*
 *.blg
 tangramsManuscript.pdf
 *.synctex.gz
-				
+*.sublime-*
