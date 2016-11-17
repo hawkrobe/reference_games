@@ -16,6 +16,7 @@ library(stringr)
 library(knitr)
 library(tm)
 library(NLP)
+library(readr)
 setwd("~/Repos/reference_games/analysis")
 ```
 
@@ -24,7 +25,8 @@ We've already done most of the work using nltk in the ipython notebook, so here 
 # Replication: words over time
 
 ```{r}
-tangramMsgs = read_csv("../data/tangrams/message/tangramsMessages.csv") %>%
+#tangramMsgs = read_csv("../data/tangrams/message/tangramsMessages.csv") %>%
+tangramMsgs = read_csv("tangrams/handTagged.csv") %>%
   rename(msgTime = time, 
          role = sender)
 
@@ -73,20 +75,23 @@ dev.off()
 
 # Additional Result 1: Parts of speech 
 
+What are most common POS?
+
 ```{r}
-d = read.csv('posTagged.csv', header =T) %>%
+d = read.csv('tangrams/posTagged.csv', header =T) %>%
   filter(sender == "director") %>%
   group_by(roundNum) %>%
   summarize(numWords = sum(numWords),
-            nouns = sum(NOUNnum)/sum(numWords),
-            verbs = sum(VERBnum)/sum(numWords),
-            dets= sum(DETnum)/sum(numWords),
-            pronouns = sum(PRONnum)/sum(numWords),
-            preps = sum(ADPnum)/sum(numWords),
-            adjectives = sum(ADJnum)/sum(numWords),
-            adverbs = sum(ADVnum)/sum(numWords)) %>%
+            nouns = sum(nouns)/sum(numWords),
+            numbers = sum(numbers)/sum(numWords),
+            verbs = sum(verbs)/sum(numWords),
+            dets= sum(determiners)/sum(numWords),
+            pronouns = sum(pronouns)/sum(numWords),
+            preps = sum(prepositions)/sum(numWords),
+            adjectives = sum(adjectives)/sum(numWords),
+            adverbs = sum(adverbs)/sum(numWords)) %>%
   mutate(OTHER = (1 - nouns - verbs - dets - pronouns -
-                      preps - adjectives - adverbs)) %>%
+                      preps - adjectives - adverbs - numbers)) %>%
   gather(POS, prop, nouns:OTHER) %>%
   select(roundNum, POS, prop) 
   
@@ -99,28 +104,33 @@ ggplot(d, aes(x = roundNum, y = prop, fill = POS)) +
 ```
 
 Same thing but make them add up to number of words so we can also see that decrease over time:
+TODO: figure out why there's an uptick on the last couple rounds for some of the tangrams...
+TODO: Fix the ones where they mention all of em in one row
 
 ```{r}
-d = read.csv('posTagged.csv', header =T) %>%
+d = tangramCombined  %>% 
+  inner_join(read.csv('tangrams/posTagged.csv', header =T)) %>%
   filter(sender == "director") %>%
-  group_by(roundNum) %>%
+  group_by(roundNum, tangramRef) %>%
   summarize(numWords = sum(numWords),
-            nouns = sum(NOUNnum),
-            verbs = sum(VERBnum),
-            dets= sum(DETnum),
-            pronouns = sum(PRONnum),
-            preps = sum(ADPnum),
-            adjectives = sum(ADJnum),
-            adverbs = sum(ADVnum)) %>%
-  mutate(OTHER = (numWords - nouns - verbs - dets - pronouns -
+            nouns = sum(nouns),
+            numbers = sum(numbers),
+            verbs = sum(verbs),
+            dets= sum(determiners),
+            pronouns = sum(pronouns),
+            preps = sum(prepositions),
+            adjectives = sum(adjectives),
+            adverbs = sum(adverbs)) %>%
+  mutate(other = (numWords - nouns - verbs - dets - pronouns -numbers-
                       preps - adjectives - adverbs)) %>%
-  gather(POS, total, nouns:OTHER) %>%
-  select(roundNum, POS, total) 
+  gather(POS, total, nouns:other) %>%
+  select(roundNum, tangramRef, POS, total) 
 
 head(d)
 ggplot(d, aes(x = roundNum, y = total, fill = POS)) +
   geom_bar(stat = "identity") +
   scale_fill_brewer(palette = "Set1") +
+  #facet_wrap(~ tangramRef) +
   theme_bw()
 
 ```
@@ -130,27 +140,62 @@ ggplot(d, aes(x = roundNum, y = total, fill = POS)) +
 Scatter plot:
 
 ```{r}
-distinctiveness_d <- read.csv("matchAndPMI.csv", header = TRUE) %>%
+distinctiveness_d <- read.csv("tangrams/matchAndPMI.csv", header = TRUE) %>%
   filter(pmi > 0) %>%
   rename(num_occurrences = total) %>%
-  filter(num_occurrences >= 7) %>%
+  filter(num_occurrences > 1) %>%
+  #filter(POS == "NN") %>%
   mutate(bunny = word == "bunny") %>%
   mutate(a_match = word == "a")
 cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
+summary(lm(match ~ pmi, data = distinctiveness_d))
+
 ggplot(distinctiveness_d, aes(x = pmi, y = match)) +
-  geom_point(aes(size = num_occurrences, color = a_match)) +
+  geom_point(aes(size = num_occurrences)) +
   geom_smooth(method = 'lm') +
   theme_bw() +
   scale_colour_manual(values=cbbPalette)+
   guides(color=FALSE)
 ```
 
+Look at pmi across POS...
+
+```{r}
+pos_d <- read.csv("tangrams/matchAndPMI.csv", header = TRUE) %>%
+  filter(pmi > 0) %>%
+  mutate(POS = as.character(POS)) %>%
+  mutate(POS = ifelse(POS %in% c('NN', 'NNS', 'NNP', 'NNPS'), "noun", POS)) %>%
+  mutate(POS = ifelse(POS %in% c('MD', 'VB', 'VBZ', 'VBP', 'VBD', 'VBN', 'VBG'), "verb", POS)) %>%
+  mutate(POS = ifelse(POS %in% c('DT', 'WDT'), 'det', POS)) %>%
+  mutate(POS = ifelse(POS %in% c('PRP', 'PRP$', 'WP', 'WP$'), 'pronoun', POS)) %>%
+  mutate(POS = ifelse(POS %in% c('CC'), 'conjunction', POS)) %>%
+  mutate(POS = ifelse(POS %in% c('JJ', 'JJR', 'JJS'), 'adjective', POS)) %>%
+  mutate(POS = ifelse(POS == 'IN', 'preposition', POS)) %>%
+  group_by(POS) %>%
+  summarize(se = sd(pmi)/sqrt(length(pmi)),
+            mean_pmi = mean(pmi),
+            num = sum(total),
+            mean_match = mean(match)) %>%
+  filter(num > 200)
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+ggplot(pos_d, aes(x = reorder(POS,mean_pmi,
+                     function(x)-x), y = mean_pmi)) +
+  geom_bar(stat='identity') +
+  geom_errorbar(aes(ymax = mean_pmi + se, ymin = mean_pmi - se)) +
+  theme_bw() +
+  xlab("part of speech") +
+  ylab("pointwise mutual information")
+
+```
+
+
 Alternatively, can do a nonparametric analysis: draw a random word from each tangram/gameid pair and look at the percentage that match with round 6... This gives a null distribution. Then we can take the highest PMI word (or words) for each tangram/gameid pair and look at the percentage of *those* that match. We see that it's much higher than expected under the null.
 
 ```{r}
 # TODO: get red to show up in legend
-nonparametric_d = read.csv("PMIbootstrap.csv", header = TRUE) %>%
+nonparametric_d = read.csv("tangrams/PMIbootstrap.csv", header = TRUE) %>%
   mutate(PMI = factor(highest, levels = c('null', 'highest'), labels = c('random', 'top')))
 
 highestValAvg = nonparametric_d %>% filter(highest == 'highest') %>% summarize(avg = mean(match))
@@ -177,7 +222,7 @@ nonparametric_d %>%
 ```{r}
 library(wordcloud)   
 
-oldGrams = read.csv("oldTangrams.csv", quote = '"') %>%
+oldGrams = read.csv("tangrams/handTagged.csv", quote = '"') %>%
   mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
   mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
   do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
@@ -186,13 +231,14 @@ oldGrams = read.csv("oldTangrams.csv", quote = '"') %>%
   filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
 
 textPerGram = oldGrams %>%
-  group_by(gameid, tangram) %>%
-  filter(tangram != 0) %>%
+  group_by(gameid, tangramRef) %>%
+  filter(tangramRef != 0) %>%
+  filter(tangramRef != 'None') %>%
   filter(roundNum == 6) %>%
   summarize(a = paste(cleanMsg, collapse = " ")) %>%
-  group_by(tangram) %>%
+  group_by(tangramRef) %>%
   summarize(text = paste(a, collapse = " ")) %>%
-  rename(docs = tangram) %>%
+  rename(docs = tangramRef) %>%
   mutate(docs = paste("doc ", docs))
 
 corpus = Corpus(VectorSource(textPerGram$text))
@@ -206,11 +252,11 @@ numDocs = dim(dtm)[1]
 numTerms = dim(dtm)[2]
   
 for(i in 1:numDocs) {
-  # pdf(paste("wordcloudForTangram", i, ".pdf", sep = ""))
-  freq <- sort(colSums(as.matrix(dtm["1",])), decreasing=TRUE)
-  print(entropy(freq))
-#   wordcloud(names(freq), freq, min.freq = 1, colors=brewer.pal(6, "Dark2"))   
-#   dev.off()
+  png(paste("wordcloudForTangram", i, ".png", sep = ""), bg = "transparent")
+  freq <- sort(colSums(as.matrix(dtm[i,])), decreasing=TRUE)
+  # print(entropy(freq))
+   wordcloud(names(freq), freq, min.freq = 1, colors=brewer.pal(6, "Dark2"))   
+  dev.off()
 }
 ```
 
@@ -220,23 +266,27 @@ for(i in 1:numDocs) {
 library(entropy)
 
 withinPair <- oldGrams %>% 
-  filter(tangram != 0) %>%
-  group_by(gameid, tangram) %>%
+  filter(tangramRef != 0) %>%
+  filter(tangramRef != "None") %>%
+  filter(tangramRef != "*") %>%
+  group_by(gameid, tangramRef) %>%
   summarize(ent = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(cleanMsg, collapse = " ")))))))) %>%
-  group_by(tangram) %>%
+  group_by(tangramRef) %>%
   summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent))) 
 
 withinPair
 
 acrossPair <- oldGrams %>% 
-  filter(tangram != 0) %>%
-  group_by(tangram, roundNum) %>% 
+  filter(tangramRef != 0) %>%
+  filter(tangramRef != 'None') %>%
+  filter(tangramRef != '*') %>%
+  group_by(tangramRef, roundNum) %>% 
   summarize(acrossEnt = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(cleanMsg, collapse = " ")))))))) %>%
-  left_join(withinPair, by = "tangram") %>%
+  left_join(withinPair, by = "tangramRef") %>%
   gather(type, entropy, acrossEnt, withinEnt)
 
 ggplot(acrossPair, aes(x = roundNum, y = entropy, 
-                       color = type, linetype = tangram)) +
+                       color = type, linetype = tangramRef)) +
   geom_line()
 ```
 
@@ -282,6 +332,7 @@ tangramBoards = read.csv("../data/tangrams/finalBoard/tangramsFinalBoards.csv") 
   spread(key = type, value = location)  %>%
   rename(matcherLoc = sub, trueLoc = true) %>%
   mutate(match = matcherLoc == trueLoc)
+write.csv(tangramBoards, "reformattedBoards.csv", row.names = F)
 ```
 
 subject-level performance over time?
