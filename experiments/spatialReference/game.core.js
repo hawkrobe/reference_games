@@ -24,7 +24,7 @@ if( typeof _ === 'undefined' ) {
     assert = require('assert');
     jsonfile = require('jsonfile')
 
-    TRIALS_OBJECT_FROM_JSON = require("../spatialReference/trials.json");
+    TRIALS_OBJECT_FROM_JSON = _.shuffle(require("../spatialReference/trials.json"));
     console.log(TRIALS_OBJECT_FROM_JSON);
     assert(_.isArray(TRIALS_OBJECT_FROM_JSON) && TRIALS_OBJECT_FROM_JSON.length == 50);
   }
