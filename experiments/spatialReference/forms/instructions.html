@@ -41,55 +41,44 @@
       
       <div class="well" style="width:800px; margin: 0 auto">
 
-<h2><center>The shape matching game!</center>  </h2>
+<h2><center>The map game!</center>  </h2>
 
 	<p> 
 
 	  In this experiment you will play a fun communication game with
-	  another turker! In each round both of you are going to be given a set of
-	  loopy shapes which will look like this:
+	  another turker! In each round both of you are going to be shown a city map like this:
 </p>
     <p>
-      <center><img src="images/shapesScreenshot.png" alt="Example objects" style="width:600px;height:200px"></center>
+      <center><img src="images/screenshot_objs.png" alt="Example objects" style="width:600px; height:374px"></center>
     </p>
-<p>
-    You'll each see the same 3 shapes <b> but the order
-	will be different. </b>
-
-</p>
 
 <p>
 
     One of you will be assigned the <b> Speaker </b> role and the other will be
-    the <b> Listener </b>. For each round, one of the three objects is the target, which
-    can be identified by a <b> black box</b> around it. Only the speaker can see which object is the target. The task of the speaker
-    is to tell the listener which one of the objects is the target and the listener in turn needs to select the right
-    object based on this information provided by the speaker. Remember that it doesn't make sense to describe the location of the target object, since the order of the images is different for the listener and the speaker.
+    the <b> Listener </b>. For each round, a special Lily flower is going to grow somewhere in the city, and only
+    the speaker can see where the Lily is located. The task of the speaker
+    is to tell the listener where the Lily grew and the listener in turn needs to click somewhere on the map where they believe the Lily is
+    based on this information provided by the speaker.
 </p>
 
 <p>
-      <center><img src="images/shapesFromSpeaker.png" alt="Example gameplay" style="width:600px;height:360px"></center>
+      <center><img src="images/screenshot_speaker.png" alt="Example gameplay" style="width:600px; height:374px"></center>
     </p>
 <p>
-    <i> <center> <small> Only the speaker can see which one is the target. </small> </center> </i>
+    <i> <center> <small> Only the speaker can see where the Lily is on the map. </small> </center> </i>
 
 </p>
 <p>
-  The task of the listener to identify the correct color based on
+  The task of the listener to identify the correct location on the map based on
     what the speaker has said. In order to communicate, you're given a
     chatbox where you can send messages back and forth to each
-    other. The speaker can say whatever they need to indicate which
-    shape is the target, and the listener is free to ask for
+    other. The speaker can say whatever they need to indicate where the Lily is, and the listener is free to ask for
     clarifications if what the speaker said is not clear. Some rounds
     will be easier and some will be harder. </p>
 
-    <p> Once the speaker sends a message and the listener clicks on
-    the object they believe is the target, both players will be <b>
-    given feedback </b> (the speaker will see what the listener
-    clicked, and the listener will see the true target), and you will
-    both be automatically forwarded to the next round of objects. You
-    will <b>both</b> get a 1 cent bonus for each round where the listener
-    correctly identifies the target, for a total of <b>50
+    <p> Once the speaker sends a message and the listener clicks to make a guess about the location of the lily, both players will be <b>
+    given feedback </b> (the speaker will see where the listener
+    clicked, and the listener will see the true location of the lily), receive points based on proximity to the true location, and then automatically proceed to the next round, for a total of <b>50
     rounds</b>. After the final round you will fill out a quick 15
     second survey and be on your way.
 </p>
@@ -139,7 +128,7 @@
      <div class="well" style="width:800px; margin: 0 auto">
  
   </br>
-  The speaker can click on a shape to end the round.
+  The <b>speaker</b> can click on a map location to end the round.
     </br>
     <input type="radio" name="dgoal" value="yes"> False
     </br>
@@ -148,7 +137,7 @@
 
 
   </br>
-  The listener wants to click on the shape that the speaker is
+  The listener wants to click on the location that the speaker is
   telling them about.
       </br>
       <input type="radio" name="mgoal" value="no"> False
@@ -156,14 +145,6 @@
       <input type="radio" name="mgoal" value="yes"> True
       </br>
     
-
-  </br> 
-  The target is the shape which has the black box around it.
-      </br>
-      <input type="radio" name="round" value="yes"> True
-      </br>
-      <input type="radio" name="round" value="no"> False
-      </br>
 
   </br> 
   Only the speaker can send messages.
@@ -182,11 +163,11 @@
       </br>
 
   </br> 
-  The locations of the three shapes are the same for the speaker and the listener.
+  The locations of the Lily are the same for the speaker and the listener.
       </br>
-      <input type="radio" name="location" value="no"> True
+      <input type="radio" name="location" value="yes"> True
       </br>
-      <input type="radio" name="location" value="yes"> False
+      <input type="radio" name="location" value="no"> False
       </br>
     
   </br>
@@ -223,14 +204,13 @@
       document.getElementById("quiz_submit").onclick = function () {
         var ans1 = $('input[name="dgoal"]:checked').val();
         var ans2 = $('input[name="mgoal"]:checked').val();
-        var ans3 = $('input[name="round"]:checked').val();
-        var ans4 = $('input[name="message"]:checked').val();
-        var ans5 = $('input[name="comp"]:checked').val();
-        var ans6 = $('input[name="location"]:checked').val();
-        var ans7 = $('input[name="completed"]:checked').val();
+        var ans3 = $('input[name="message"]:checked').val();
+        var ans4 = $('input[name="comp"]:checked').val();
+        var ans5 = $('input[name="location"]:checked').val();
+        var ans6 = $('input[name="completed"]:checked').val();
 
         if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" && 
-           ans4 == "yes" && ans5 == "yes" && ans6 == "yes" && ans7 == "yes") { 
+           ans4 == "yes" && ans5 == "yes" && ans6 == "yes") { 
            var workerId = urlParams.workerId;
            var assignmentId = urlParams.assignmentId;
            var hitId = urlParams.hitId;
