@@ -42,7 +42,8 @@ var onMessage = function(client,message) {
     })(message_parts[12], message_parts[13], message_parts[14], message_parts[15]);
 
     //TODO: HOW TO MONETIZE THIS?
-    gc.data.totalScore += 100 - distance > 0 ? 5 : 0;
+    //50 = radius of the displayed target
+    gc.data.totalScore += 50 - distance > 0 ? 5 : 0;
 
     //question.. is this automatically sent to client on update?
 
