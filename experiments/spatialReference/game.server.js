@@ -37,18 +37,13 @@ var onMessage = function(client,message) {
     writeData(client, "clickedObj", message_parts);
 
     //calculate the penalty, which affects the amount the score goes up
-    var penalty = (function penalty(x1, y1, x2, y2) {
+    var distance = (function distance(x1, y1, x2, y2) {
       return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow(y2 - y1, 2));
     })(message_parts[12], message_parts[13], message_parts[14], message_parts[15]);
 
-    //TODO: is there a better way to calculate the score?
-    //450 is the theoretical maximum penalty in a 600 * 400 world
-    //only reward them if they are close
+    //TODO: HOW TO MONETIZE THIS?
+    gc.data.totalScore += 100 - distance > 0 ? 5 : 0;
 
-    // We could do some exponent of the distance, but I don't see what
-    // the problem is with a linear score function
-
-    gc.data.totalScore += Math.max(Math.floor(150 - penalty), 0);
     //question.. is this automatically sent to client on update?
 
     // Give feedback to players

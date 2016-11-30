@@ -146,7 +146,7 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to tell the listener where the lily is.");
+    $('#instructs').append("Send messages to tell the listener where the lily is. To get points, you only need to make them click within the circle around the lily. There is no bonus for increased accuracy.");
   } else if(role === globalGame.playerRoleNames.role2) {
     $('#instructs').append("Click as closely as possible to the location of the lily on the map.");
   }
