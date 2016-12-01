@@ -1,0 +1,100 @@
+// possible states of the world
+var statePrior =  Categorical({vs: ['rare', 'common'], 
+                               ps: [.2, .8]});
+// possible utterances (include null utterance to make sure dists are well-formed)
+var utterancePrior = Categorical({vs: ['cheap', 'expensive', 'n0'], 
+                                  ps: [1/3,1/3,1/3]});
+
+// TODO: can't cache functions, so prior should be over labels, which are mapped
+// to functions in a meaning function
+
+// meaning funtion to interpret the utterances
+var nullMeaning = function(state){return true;};
+var rareMeaning = function(state){return state == 'rare';};
+var commonMeaning = function(state){return state == 'common';};
+var possibleMeanings = [nullMeaning, rareMeaning, commonMeaning];
+var possibleLexicons = _.flatten(
+  map(function(cheapMeaning) {
+    map(function(expensiveMeaning) {
+      return _.extend(_.object(utterancePrior.support(), 
+			       [cheapMeaning, expensiveMeaning]),
+                      {n0 : nullMeaning});
+    }, possibleMeanings);
+  }, possibleMeanings));
+
+var lexiconPrior = Categorical({vs: possibleLexicons, 
+                                ps: [1/9,1/9,1/9,1/9,1/9,1/9,1/9,1/9,1/9]});
+
+// set speaker optimality
+var alpha = 5;
+
+// 'cheap' is cheaper than 'expensive'
+var uttCost = function(utt) {
+  return (utt == 'cheap' ? 2 : 
+          utt == 'expensive' ? 3 :
+          10);
+}
+
+// literal listener
+var L0 = function(utt, lexicon) {
+  return Infer({method:"enumerate"}, function(){
+    var state = sample(statePrior);
+    var meaning = lexicon[utt];
+    condition(meaning(state));
+    return state;
+  });
+};
+
+// pragmatic speaker
+var S1 = function(state, lexicon) {
+  return Infer({method:"enumerate"}, function(){
+    var utt = sample(utterancePrior);
+    factor(alpha * (L0(utt, lexicon).score(state) - uttCost(utt)));
+    return utt;
+  });
+};
+
+// pragmatic listener (needed for S)
+var L2 = function(utt, lexicon) {
+  return Infer({method: 'enumerate'}, function() {
+    var state = sample(statePrior);
+    observe(S1(state, lexicon), utt);
+    return state;
+  });
+};
+
+// conventional listener
+var L = function(utt, data) {
+  return Infer({method:"enumerate"}, function(){
+    var state = sample(statePrior);
+    var lexicon = sample(lexiconPrior);
+    observe(S1(state, lexicon), utt);
+    mapData({data: data}, function(datum){
+      observe(S1(datum.obj, lexicon), datum.utt);
+    });
+    return state;
+  });
+};
+
+// conventional speaker
+var S = function(state, data) {
+  return Infer({method:"enumerate"}, function(){
+    var lexicon = sample(lexiconPrior);
+    var utt = sample(utterancePrior);
+    factor(alpha * (L2(utt, lexicon).score(state) - uttCost(utt)));
+    mapData({data: data}, function(datum){
+      observe(L2(datum.utt, lexicon), datum.obj);
+    });
+    return utt;
+  });
+};
+
+// viz(L2('cheap', possibleLexicons[]))
+console.log("speaker conveying common world:");
+console.log(S('common', []).print());
+console.log("speaker conveying rare world:");
+console.log(S('rare', []).print());
+console.log("listener hearing expensive utterance:");
+console.log(L('expensive', []).print());
+console.log("listener hearing cheap utterance:");
+console.log(L('cheap', []).print());
