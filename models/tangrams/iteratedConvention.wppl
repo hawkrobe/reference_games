@@ -1,8 +1,8 @@
 // possible states of the world
-var statePrior =  Categorical({vs: ['rare', 'common'], 
-                               ps: [.2, .8]});
+var statePrior =  Categorical({vs: ['tangram1', 'tangram2'], 
+                               ps: [.5, .5]});
 // possible utterances (include null utterance to make sure dists are well-formed)
-var utterancePrior = Categorical({vs: ['cheap', 'expensive', 'n0'], 
+var utterancePrior = Categorical({vs: ['label1', 'label2', 'n0'], 
                                   ps: [1/3,1/3,1/3]});
 
 // TODO: can't cache functions, so prior should be over labels, which are mapped
@@ -10,14 +10,14 @@ var utterancePrior = Categorical({vs: ['cheap', 'expensive', 'n0'],
 
 // meaning funtion to interpret the utterances
 var nullMeaning = function(state){return true;};
-var rareMeaning = function(state){return state == 'rare';};
-var commonMeaning = function(state){return state == 'common';};
-var possibleMeanings = [nullMeaning, rareMeaning, commonMeaning];
+var tangram1Meaning = function(state){return state == 'tangram1';};
+var tangram2Meaning = function(state){return state == 'tangram2';};
+var possibleMeanings = [nullMeaning, tangram1Meaning, tangram2Meaning];
 var possibleLexicons = _.flatten(
-  map(function(cheapMeaning) {
-    map(function(expensiveMeaning) {
+  map(function(t1Meaning) {
+    map(function(t2Meaning) {
       return _.extend(_.object(utterancePrior.support(), 
-			       [cheapMeaning, expensiveMeaning]),
+			       [t1Meaning, t2Meaning]),
                       {n0 : nullMeaning});
     }, possibleMeanings);
   }, possibleMeanings));
@@ -26,14 +26,12 @@ var lexiconPrior = Categorical({vs: possibleLexicons,
                                 ps: [1/9,1/9,1/9,1/9,1/9,1/9,1/9,1/9,1/9]});
 
 // set speaker optimality
-var alpha = 3;
+var alpha = 1;
 
 // 'cheap' is cheaper than 'expensive'
 var uttCost = function(utt) {
-  return (utt == 'cheap' ? .5 : 
-          utt == 'expensive' ? 1 :
-          5);
-}
+  return (utt == 'tangram1' || utt == 'tangram2' ? 1 : 10);
+};
 
 // literal listener
 var L0 = function(utt, lexicon) {
@@ -90,7 +88,12 @@ var S = function(state, data) {
 };
 
 // viz(L2('cheap', possibleLexicons[]))
-viz(S('common', []));
-viz(S('rare', []));
-// viz(L('expensive', []))
-// viz(L('cheap', []))
+// console.log("speaker conveying common world:");
+// console.log(S('tangram1', []).print());
+// console.log("speaker conveying rare world:");
+// console.log(S('tangram2', []).print());
+console.log("listener hearing label1 after data:");
+console.log(L('label1', [{utt: 'label1', obj: 'tangram1'}]).print());
+
+console.log("listener hearing label2 after data:");
+console.log(L('label2', [{utt: 'label1', obj: 'tangram1'}]).print());
