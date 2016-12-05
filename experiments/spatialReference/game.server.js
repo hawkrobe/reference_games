@@ -41,11 +41,8 @@ var onMessage = function(client,message) {
       return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow(y2 - y1, 2));
     })(message_parts[12], message_parts[13], message_parts[14], message_parts[15]);
 
-    //TODO: HOW TO MONETIZE THIS?
     //50 = radius of the displayed target
-    gc.data.totalScore += 50 - distance > 0 ? 5 : 0;
-
-    //question.. is this automatically sent to client on update?
+    gc.data.totalScore += 50 - distance > 0 ? 0.01 : 0;
 
     // Give feedback to players
     var feedbackMsg = "s.feedback." + [message_parts[12], message_parts[13], message_parts[14], message_parts[15], gc.data.totalScore].join('.');
