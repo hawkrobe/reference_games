@@ -56,7 +56,7 @@ var drawSectors = function(game) {
 var drawLily = function(game, x, y) {
   var img = new Image;
   img.onload = function() {
-    game.ctx.drawImage(img, x, y);
+    game.ctx.drawImage(img, x-20, y-20); //adjust for size of lily
   }
   img.src = "lotus.png"
 }
@@ -65,6 +65,14 @@ var drawPoint = function(game, x, y) {
   game.ctx.beginPath();
   game.ctx.rect(x - 5, y - 5, 10, 10);
   game.ctx.fillStyle = 'yellow';
+  game.ctx.fill();
+  game.ctx.stroke();
+}
+
+var drawTarget = function(game, x, y) {
+  game.ctx.beginPath();
+  game.ctx.arc(x, y, 50, 0, 2 * Math.PI);
+  game.ctx.fillStyle = "rgba(200, 200, 200, 0.25)";
   game.ctx.fill();
   game.ctx.stroke();
 }
@@ -91,6 +99,9 @@ var drawScreen = function(game, player) {
       drawPlaza(game);
 
       if (game.my_role === game.playerRoleNames.role1) {
+        if (game.roundNum <= 2) { //trial only
+          drawTarget(game, game.currStim.lily.x, game.currStim.lily.y);
+        }
         drawLily(game, game.currStim.lily.x, game.currStim.lily.y);
       }
     }

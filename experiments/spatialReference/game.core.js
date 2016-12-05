@@ -69,7 +69,7 @@ var game_core = function(options){
     this.id = options.id;
     this.expName = options.expName;
     this.player_count = options.player_count;
-    this.trialList = TRIALS_OBJECT_FROM_JSON; //TODO: _.shuffle
+    this.trialList = _.shuffle(TRIALS_OBJECT_FROM_JSON);
     this.data = {
       id : this.id.slice(0,6),
       trials : [],
