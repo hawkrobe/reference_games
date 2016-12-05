@@ -99,7 +99,9 @@ var drawScreen = function(game, player) {
       drawPlaza(game);
 
       if (game.my_role === game.playerRoleNames.role1) {
-        drawTarget(game, game.currStim.lily.x, game.currStim.lily.y);
+        if (game.roundNum <= 2) { //trial only
+          drawTarget(game, game.currStim.lily.x, game.currStim.lily.y);
+        }
         drawLily(game, game.currStim.lily.x, game.currStim.lily.y);
       }
     }
