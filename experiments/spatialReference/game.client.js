@@ -55,6 +55,11 @@ var client_onserverupdate_received = function(data){
   globalGame.roundNum = data.roundNum;
   globalGame.data = data.dataObj;
 
+  if ((globalGame.roundNum > 2) && (globalGame.my_role === globalGame.playerRoleNames.role1)) { //TRIAL OVER
+    $('#instructs').empty()
+      .append("Send messages to tell the listener where the lily is. To get points, you only need to make them click near the lily. There is no bonus for increased accuracy.");
+  }
+
   // Draw all this new stuff
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 };
@@ -83,7 +88,7 @@ var client_onMessage = function(data) {
       $("#chatbox").attr("disabled", "disabled");
 
       //update the score, TODO: update styling to be prettier
-      globalGame.data.totalScore = parseInt(commands[6]);
+      globalGame.data.totalScore = parseFloat(commands[6] + '.' + commands[7]); //HACKY
       $('#score').empty()
         .append("Score: " + globalGame.data.totalScore);
 
@@ -146,7 +151,7 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to tell the listener where the lily is.");
+    $('#instructs').append("Send messages to tell the listener where the lily is. To get points, you only need to make them click within the circle around the lily. There is no bonus for increased accuracy. The circle will not appear after the first 3 trials.");
   } else if(role === globalGame.playerRoleNames.role2) {
     $('#instructs').append("Click as closely as possible to the location of the lily on the map.");
   }
