@@ -41,11 +41,13 @@ var onMessage = function(client,message) {
       return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow(y2 - y1, 2));
     })(message_parts[12], message_parts[13], message_parts[14], message_parts[15]);
 
-    //50 = radius of the displayed target
-    gc.data.totalScore += 50 - distance > 0 ? 0.01 : 0;
+    //50 = radius of the displayed target; interpolate smoothly in [0,1]
+    gc.data.totalScore += (distance < 50 ? 1 :
+			   distance > 150 ? 0 :
+			   1 - (distance-50)/100);
 
     // Give feedback to players
-    var feedbackMsg = "s.feedback." + [message_parts[12], message_parts[13], message_parts[14], message_parts[15], gc.data.totalScore].join('.');
+    var feedbackMsg = "s.feedback." + [message_parts[12], message_parts[13], message_parts[14], message_parts[15], gc.data.totalScore.toFixed(2)].join('.');
     console.log("Sending feedback message: ", feedbackMsg);
 
     others[0].player.instance.send(feedbackMsg);

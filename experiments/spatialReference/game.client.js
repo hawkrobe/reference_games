@@ -89,8 +89,9 @@ var client_onMessage = function(data) {
 
       //update the score, TODO: update styling to be prettier
       globalGame.data.totalScore = parseFloat(commands[6] + '.' + commands[7]); //HACKY
+
       $('#score').empty()
-        .append("Score: " + globalGame.data.totalScore);
+        .append("Bonus: $" + (globalGame.data.totalScore/100).toFixed(3));
 
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
         drawPoint(globalGame, commands[4], commands[5]);
