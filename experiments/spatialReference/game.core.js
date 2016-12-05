@@ -58,7 +58,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 50;
+  this.numRounds = 30;
 
   // This will be populated with the tangram set
   this.trialInfo = {};
