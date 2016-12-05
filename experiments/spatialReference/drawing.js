@@ -72,6 +72,8 @@ var drawPoint = function(game, x, y) {
 var drawTarget = function(game, x, y) {
   game.ctx.beginPath();
   game.ctx.arc(x, y, 50, 0, 2 * Math.PI);
+  game.ctx.fillStyle = "rgba(200, 200, 200, 0.25)";
+  game.ctx.fill();
   game.ctx.stroke();
 }
 
@@ -97,8 +99,8 @@ var drawScreen = function(game, player) {
       drawPlaza(game);
 
       if (game.my_role === game.playerRoleNames.role1) {
-        drawLily(game, game.currStim.lily.x, game.currStim.lily.y);
         drawTarget(game, game.currStim.lily.x, game.currStim.lily.y);
+        drawLily(game, game.currStim.lily.x, game.currStim.lily.y);
       }
     }
   }

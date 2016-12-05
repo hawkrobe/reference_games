@@ -83,7 +83,7 @@ var client_onMessage = function(data) {
       $("#chatbox").attr("disabled", "disabled");
 
       //update the score, TODO: update styling to be prettier
-      globalGame.data.totalScore = parseInt(commands[6]);
+      globalGame.data.totalScore = parseFloat(commands[6] + '.' + commands[7]); //HACKY
       $('#score').empty()
         .append("Score: " + globalGame.data.totalScore);
 
