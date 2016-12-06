@@ -119,14 +119,6 @@ var client_addnewround = function(game) {
 var customSetup = function(game) {
   //Store a local reference to our connection to the server
   game.socket = io.connect();
-
-  // Tell server when matncher presses the submit round button in order to advance to the next round
-  $(document).ready(function() {
-    $("#submitbutton").click(function(){
-      var matcherBoxLocations = game.getBoxLocs(globalGame.objects, 'matcher');
-      globalGame.socket.send('advanceRound.' + matcherBoxLocations);
-    });
-  });
   
   // Set up new round on client's browsers after submit round button is pressed. 
   // This means clear the chatboxes, update round number, and update score on screen
@@ -158,15 +150,8 @@ var client_onjoingame = function(num_players, role) {
   $('#roleLabel').append(role + '.');
   if(role === "director") {
     $('#instructs').append("Send messages to help the matcher move their images to match yours. Please do not refresh page!");
-    $("#submitbutton").remove();
   } else {
     $('#instructs').append("Move your images to match the director's board. Please do not refresh page!");
-    $("#submitbutton").show();
-  }
-
-  // Only give Submit board button to agent (matcher)
-  if(role === "director") {
-    $('#submitbutton').remove();
   }
 
   // set role locally
