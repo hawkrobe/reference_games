@@ -43,7 +43,7 @@ var uttCost = function(utt) {
 
 // meanings are possible disjunctions of states 
 var meanings = map(function(l){return l.join('|');}, powerset(states, {noNull: true}));
-var meaningSets = cartesianProductOf(repeat(utterances.length, function() {return meanings;}));
+var meaningSets = cartesianProductOf(repeat(utterances.slice(0,-1).length, function() {return meanings;}));
 
 // Lexicons are maps from utterances to meanings (null utterance always goes to null meaning)
 var lexicons = map(function(meaningSet) {
@@ -64,7 +64,7 @@ var meaning = function(utt, lexicon) {
 };
 
 // set speaker optimality & noiseRate
-var alpha = 1;
+var alpha = 3;
 var noiseRate = .1;  
 
 // Recursively delete words from an utterance with some rate
@@ -117,7 +117,9 @@ var S1 = function(state, lexicon) {
 var L2 = function(utt, lexicon) {
   return Infer({method: 'enumerate'}, function() {
     var state = sample(statePrior);
-    observe(S1(state, lexicon), utt);
+    var intendedUtt = sample(utterancePrior);
+    observe(noiseModel(intendedUtt), utt);    
+    observe(S1(state, lexicon), intendedUtt);
     return state;
   });
 };
@@ -128,12 +130,12 @@ var L = function(utt, data) {
     var state = sample(statePrior);
     var lexicon = sample(lexiconPrior);
     var intendedUtt = sample(utterancePrior);
-    console.log(utt);
-    console.log(noiseModel(intendedUtt).print());
-    observe(noiseModel(intendedUtt), utt);    
-    observe(S1(state, lexicon), utt);
+    observe(noiseModel(intendedUtt), utt);
+    observe(S1(state, lexicon), intendedUtt);
     mapData({data: data}, function(datum){
-      observe(S1(datum.obj, lexicon), datum.utt);
+      var intendedUtt = sample(utterancePrior);      
+      observe(noiseModel(intendedUtt), datum.utt);
+      observe(S1(datum.obj, lexicon), intendedUtt);
     });
     return state;
   });
@@ -142,18 +144,33 @@ var L = function(utt, data) {
 // conventional speaker
 var S = function(state, data) {
   return Infer({method:"enumerate"}, function(){
+    var intendedUtt = sample(utterancePrior);
     var lexicon = sample(lexiconPrior);
-    var utt = sample(utterancePrior);
-    factor(alpha * (L2(utt, lexicon).score(state) - uttCost(utt)));
+    var noisyUtt = sample(noiseModel(intendedUtt));
+    // console.log(intendedUtt);
+    // console.log(alpha * (L2(noisyUtt, lexicon).score(state) - uttCost(noisyUtt)));
+    factor(alpha * (L2(noisyUtt, lexicon).score(state) - uttCost(noisyUtt)));
     mapData({data: data}, function(datum){
       observe(L2(datum.utt, lexicon), datum.obj);
     });
-    return utt;
+    return noisyUtt;
   });
 };
 
-console.log("listener hearing small one after data:");
-console.log(L('the small', [{utt: 'the small one', obj: 't2'}]).print());
+// console.log("listener hearing small one after data:");
+// console.log(L('small', [{utt: 'small', obj: 't2'}]).print());
+// console.log(lexicons.length);
+// map(function(lexicon) {
+//   console.log(lexicon);
+//   console.log(L2('the small one', lexicon));
+//   console.log(L2('the big one', lexicon));  
+// }, lexicons);
+// console.log(L2('the small one', {'the big one' : 't1|t2', 'the small one' : 't2', 'n0' : 'null'}).print());
+// console.log(L2('the big one', {'the big one' : 't1|t2', 'the small one' : 't2', 'n0' : 'null'}).print());
+
+//console.log(S('t1', [{utt: 'the big one', obj: 't2'}, {utt: 'the small one', obj: 't1'}]).print());
+console.log(S('t1', []).print());
+console.log(S('t2', []).print());
 
 // console.log("listener hearing label2 after data:");
 // console.log(L('label2', [{utt: 'label1', obj: 'tangram1'}]).print());
