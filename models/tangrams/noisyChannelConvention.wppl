@@ -25,7 +25,39 @@ var cartesianProductOf = function(listOfLists) {
   }, [ [] ], listOfLists);                                   
 };
 
+// these are the words in our vocabulary
+var possibleWords = ['the', 'big', 'small', 'one', 'not'];
+
+// Randomly delete a word from a list...
+var deleteWords = function(words) {
+  var wordToOmit = uniformDraw(words);
+  return remove(wordToOmit,words);
+};
+
+var insertWords = function(words) {
+  var insertLoc = randomInteger(words.length + 1);
+  var insertWord = uniformDraw(possibleWords);
+  return (words.slice(0,insertLoc)
+          .concat(insertWord)
+          .concat(words.slice(insertLoc, words.length)));
+};
+
+var replaceWords = function(words) {
+  var replaceLoc = randomInteger(words.length);
+  var replaceWord = uniformDraw(possibleWords);
+  return (words.slice(0,replaceLoc)
+          .concat(replaceWord)
+          .concat(words.slice(replaceLoc+1,words.length)));
+};
+
 var nullMeaning = function(x) {return true;};
+
+var negate = function(f) {
+  return function(x) {return !f(x)};
+}
+var utteranceProbs = Infer({method: 'enumerate'}, function() {
+  return normalize(repeat(5, function(){uniformDraw([.1, .5])}))
+})
 ///
 
 // possible states of the world
@@ -33,9 +65,9 @@ var states = ['t1', 't2'];
 var statePrior = Categorical({vs: states, ps: [1/2, 1/2]});
 
 // possible utterances (include null utterance to make sure dists are well-formed)
-var possibleWords = ['the', 'big', 'small', 'one', 'kinda'];
-var utterances = ['the big one', 'the small one', 
-                  'the kinda small one', 'the kinda big one', 'n0'];
+var unconstrainedUtterances = ['the big one', 'the small one'];
+var derivedUtterances = ['the not big one', 'the not small one', 'n0'];
+var utterances = unconstrainedUtterances.concat(derivedUtterances);
 var utterancePrior = Categorical({vs: utterances, ps: [1/5,1/5,1/5,1/5,1/5]});
 
 // longer utterances more costly
@@ -44,92 +76,62 @@ var uttCost = cache(function(utt) {
 });
 
 // meanings are possible disjunctions of states 
-var meanings = map(function(l){return l.join('|');}, powerset(states, {noNull: true}));
-var meaningSets = cartesianProductOf(repeat(utterances.slice(0,-1).length, function() {return meanings;}));
+var meanings = map(function(l){return l.join('|');}, 
+                   powerset(states, {noNull: true}));
+var meaningSets = cartesianProductOf(repeat(unconstrainedUtterances.length, 
+                                            function() {return meanings;}));
 
-// Lexicons are maps from utterances to meanings (null utterance always goes to null meaning)
+// Lexicons are maps from utterances to meanings 
+// (null utterance always goes to null meaning; negatives are derived)
 var lexicons = map(function(meaningSet) {
-  return _.extend(_.object(utterances.slice(0,-1), meaningSet),
-		  {'n0': 'null'});
+  var unconstrainedMeanings = _.object(unconstrainedUtterances, meaningSet);
+  var negations = _.object(map(function(v) {
+    return [v, '!' + unconstrainedMeanings[remove('not', v.split(' ')).join(' ')]]
+  }, derivedUtterances));
+  return _.extend(unconstrainedMeanings, 
+                  _.extend(negations, {'n0': 'null'}));
 }, meaningSets);
-
 var lexiconPrior = Categorical({vs: lexicons, ps: repeat(lexicons.length, function(){return 1/lexicons.length})});
 
 // Looks up the meaning of an utterance in a lexicon object
-var meaning = cache(function(utt, lexicon) {
-  var label = lexicon[utt];
+var meaning = cache(function(utt, lexicon) {  
+  var isNegative = lexicon[utt].slice(0,1) === '!'
+  var label = isNegative ? lexicon[utt].slice(1) : lexicon[utt];
   var anyMeaning = function(trueState) {
     return any(function(labelState){
       return labelState == trueState;
     },label.split('|'));
   };
-  return label == 'null' ? nullMeaning : anyMeaning;
+  return (label == 'null' ? nullMeaning : 
+          isNegative ? negate(anyMeaning) : 
+          anyMeaning);
 });
 
 // set speaker optimality & noiseRate
-var alpha = 5;
-var noiseRate = .01;
-var maxLevDistance = 0;
+var params = {
+  alpha : 100,
+  noiseRate : .5,
+  maxDepth : 2
+};
 
-// Recursively delete words from an utterance with some rate
-var deleteWords = function(words, levDistance) {
+var transform = function(words, depth) {
   if(_.isEmpty(words)) {
     return ['n0'];
-  } else if(levDistance > maxLevDistance) {
+  } else if(depth > params.maxDepth) {
     return words;
   } else {
-    var wordToOmit = words[randomInteger(words.length)];
-    var newWords = remove(wordToOmit,words);
-    return (flip(noiseRate) ?
-	    deleteWords(newWords, levDistance + 1) :
-	    words);
+    var operations = [deleteWords, insertWords, replaceWords];
+    var operation = uniformDraw(operations);
+    return flip(params.noiseRate) ? transform(operation(words), depth + 1) : words;
   }
-};
-
-var insertWords = function(words, levDistance) {
-  if(levDistance > maxLevDistance) {
-    return words;
-  } else {
-    var insertLoc = randomInteger(words.length + 1);
-    var insertWord = uniformDraw(possibleWords);
-    var newWords = (words.slice(0,insertLoc)
-		    .concat(insertWord)
-		    .concat(words.slice(insertLoc, words.length)));
-    return (flip(noiseRate) ?
-	    insertWords(newWords, levDistance + 1) :
-	    words);
-  }
-};
-
-var replaceWords = function(words, levDistance) {
-  if(levDistance > maxLevDistance) {
-    return words;
-  } else {
-    var replaceLoc = randomInteger(words.length);
-    var replaceWord = uniformDraw(possibleWords);
-    var newWords = (words.slice(0,replaceLoc)
-		    .concat(replaceWord)
-		    .concat(words.slice(replaceLoc+1,words.length)));
-    return (flip(noiseRate) ?
-	    replaceWords(newWords, levDistance + 1) :
-	    words);
-  }
-};
+}
 
 // Gives distribution over possible noisy versions of utt
 var noiseModel = cache(function(utt) {
   return Infer({method: 'enumerate'}, function() {
     var words = utt.split(' ');
-    var operations = [deleteWords, insertWords, replaceWords];
-    var operation = uniformDraw(operations);
-    return utt == 'n0' ? 'n0' : operation(words, 0).join(' ');
+    return utt == 'n0' ? 'n0' : transform(words, 0).join(' ');
   });
-});
-
-var noisyUtterancesPrior = Infer({method: 'enumerate'}, function() {
-  var intendedUtt = sample(utterancePrior);
-  var noisyUtt = sample(noiseModel(intendedUtt));
-  return noisyUtt;
 });
 
 // literal listener w/ noisy channel inference
@@ -138,7 +140,7 @@ var L0 = cache(function(utt, lexicon) {
     var state = sample(statePrior);
     var intendedUtt = sample(utterancePrior);
     var uttMeaning = meaning(intendedUtt, lexicon);
-    condition(uttMeaning(state));
+    factor(uttMeaning(state) ? 0 : -100);
     observe(noiseModel(intendedUtt), utt);
     return state;
   });
@@ -149,8 +151,8 @@ var S1 = cache(function(state, lexicon) {
   return Infer({method:"enumerate"}, function(){
     var intendedUtt = sample(utterancePrior);
     var noisyUtt = sample(noiseModel(intendedUtt));
-    factor(alpha * (L0(noisyUtt, lexicon).score(state)
-		    - uttCost(noisyUtt)));
+    factor(params.alpha * (L0(noisyUtt, lexicon).score(state)
+                    - uttCost(noisyUtt)));
     return intendedUtt;
   });
 });
@@ -161,7 +163,7 @@ var listenerObsModel = function(state, lexicon, iUtt, pUtt) {
 };
 
 // pragmatic listener (needed for S)
-var L2 = cache(function(utt, lexicon, data) {
+var L2 = cache(function(utt, lexicon) {
   return Infer({method: 'enumerate'}, function() {
     var state = sample(statePrior);
     var intendedUtt = sample(utterancePrior);
@@ -171,58 +173,51 @@ var L2 = cache(function(utt, lexicon, data) {
 });
 
 // conventional listener
-// var L = function(utt, data) {
-//   return Infer({method:"enumerate"}, function(){
-//     var state = sample(statePrior);
-//     var lexicon = sample(lexiconPrior);
-//     var intendedUtt = sample(utterancePrior);
-//     listenerObsModel(state, lexicon, intendedUtt, utt);
-//     mapData({data: data}, function(datum){
-//       var intendedUtt = sample(utterancePrior);
-//       listenerObsModel(datum.obj, lexicon, intendedUtt, datum.utt);
-//     });
-//     return state;
-//   });
-// };
+var L = function(utt, data) {
+  return Infer({method:"enumerate"}, function(){
+    var state = sample(statePrior);
+    var lexicon = sample(lexiconPrior);
+     var intendedUtt = sample(utterancePrior)
+//    var intendedUttProbs = sample(utteranceProbs);
+//    var intendedUtt = categorical({vs: utterances, ps: intendedUttProbs})
+    listenerObsModel(state, lexicon, intendedUtt, utt);
+    mapData({data: data}, function(datum){
+      var intendedUtt = sample(utterancePrior)
+      listenerObsModel(datum.obj, lexicon, intendedUtt, datum.utt);
+    });
+    return state//, smallProb: intendedUttProbs[1], notSmallProb: intendedUttProbs[3]}
+  });
+};
+
+// viz.marginals(L('big one', [{utt:'the big one', obj:'t1'}, {utt:'the big one', obj:'t1'}, {utt:'the big one', obj:'t1'}]))
+// viz.marginals(L('big one', [{utt:'the small one', obj:'t1'}, {utt:'the small one', obj:'t1'}, {utt:'the small one', obj:'t1'}]))
+
+// viz.marginals(L('small', []))
+// viz.marginals(L('the small one', []))
+// viz.table(L('small', [{utt:'the small one', obj:'t1'}, {utt:'the big one', obj:'t2'}]))
+// viz.table(L('small', [{utt:'small', obj:'t1'},{utt:'big', obj:'t2'}]))
 
 // conventional speaker
 var S = function(state, data) {
   return Infer({method:"enumerate"}, function(){
     var lexicon = sample(lexiconPrior);
-    var noisyUtt = sample(noisyUtterancesPrior);
-    factor(alpha * (L2(noisyUtt, lexicon).score(state)
-                    - uttCost(noisyUtt)));
+    var intendedUtt = sample(utterancePrior);
+    var noisyUtt = sample(noiseModel(intendedUtt));
+
+    print(noisyUtt);
+    factor(params.alpha * (L2(noisyUtt, lexicon).score(state)
+                           - uttCost(noisyUtt)));
     mapData({data: data}, function(datum){
-      observe(noisyUtterancesPrior, datum.utt); // update beliefs about utterance dist
+      var intendedUtt = sample(utterancePrior);
+      observe(noiseModel(intendedUtt), datum.utt); // update beliefs about utterance dist
       observe(L2(datum.utt, lexicon), datum.obj); // update beliefs about lexicon
     });
-    return {noisyUtt: noisyUtt};
+    return noisyUtt;
   });
 };
 
-viz.marginals(S('t1', [{utt: 'the small one', obj: 't1'}]));
-viz.marginals(S('t1', [{utt: 'the small one', obj: 't1'},
-                       {utt: 'the small one', obj: 't1'},
-                       {utt: 'the big one', obj: 't2'}]));
-// viz.marginals(S('t1', [{utt: 'the small one', obj: 't1'},{utt: 'the big one', obj: 't2'}]));
-
-// console.log(L2('the big one', {'the big one' : 't1|t2', 'the small one' : 't2', 'the kinda big one' : 't2', 'the kinda small one': 't1', 'n0' : 'null'}));
-// console.log("listener hearing small one after data:");
-// console.log(L('small', [{utt: 'small', obj: 't2'}]).print());
-// console.log(lexicons.length);
-// map(function(lexicon) {
-//   console.log(lexicon);
-//   console.log(L2('the small one', lexicon));
-//   console.log(L2('the big one', lexicon));  
-// }, lexicons);
-// console.log(L2('the small one', {'the big one' : 't1|t2', 'the small one' : 't2', 'n0' : 'null'}).print());
-// console.log(L2('the big one', {'the big one' : 't1|t2', 'the small one' : 't2', 'n0' : 'null'}).print());
-
-//console.log(S('t1', [{utt: 'the big one', obj: 't2'}, {utt: 'the small one', obj: 't1'}]).print());
-// console.log(S('t1', []));
-
-// console.log(S('t1', [{utt: 'small', obj: 't1'}]).print());
-// console.log(S('t1', [{utt: 'the small one', obj: 't1'}]).print());
-
-// console.log("listener hearing label2 after data:");
-// console.log(L('label2', [{utt: 'label1', obj: 'tangram1'}]).print());
+// viz.table(S('t1', []));
+// viz.table(S('t1', [{utt: 'the small one', obj: 't1'}]), {top: 10});
+// viz.table(S('t1', [{utt: 'the small one', obj: 't1'},
+//                    {utt: 'the small one', obj: 't1'}]), {top: 10});
+// viz.table(S('t1', [{utt: 'the small one', obj: 't1'},{utt: 'the big one', obj: 't2'}]));
