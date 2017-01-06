@@ -17,6 +17,8 @@ PMIbootstrap.csv
 matchAndPMI.csv
 posTagged.csv
 analysis/shapeReferenceOutlines/jpgs/*
+cogsci.pdf
+cogsci.tex
 *.aux
 *.log
 *.bbl
