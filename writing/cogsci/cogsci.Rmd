@@ -1,0 +1,222 @@
+---
+title: "Arbitrariness and path dependence in a noisy-channel communication model"
+bibliography: library.bib
+csl: apa6.csl
+document-params: "10pt, letterpaper"
+
+author-information: 
+  \author{{\large \bf Robert Hawkins, Michael Frank, Noah Goodman} \\ \texttt{\{rxdh, mcfrank, ngoodman\}@stanford.edu} \\ Department of Psychology \\ Stanford University}
+ 
+abstract: 
+    ""
+    
+keywords:
+    "Add your choice of indexing terms or keywords; kindly use a semi-colon; between each term."
+    
+output: cogsci2016::cogsci_paper
+---
+
+```{r global_options, include=FALSE}
+rm(list=ls())
+knitr::opts_chunk$set(fig.width=3, fig.height=3, fig.crop = F, fig.pos = "tb", fig.path='figs/',
+                      echo=F, warning=F, cache=F, message=F, sanitize = T)
+```
+
+```{r, libraries}
+library(png)
+library(grid)
+library(ggplot2)
+library(xtable)
+```
+
+# Introduction
+
+Successful communication depends on a set of shared linguistic conventions (de Saussure, XX; Lewis, XX). These conventions allow communities of speakers to coordinate group behavior (cite collective behavior lit??), initiate speech acts [@Strawson64_IntentionConvention], and align beliefs or memories [@StolkVerhagenToni16_ConceptualAlignment; @ComanEtAl16_MnemonicConvergence]. 
+While *global* conventions adopted and sustained throughout a large population of speakers may form over much longer time scales (cite historical ling?), we also effortless coordinate on *ad hoc* or *local* conventions -- or conceptual pacts -- within the span of a single dialogue. 
+
+For instance, in a seminal study by @ClarkWilkesGibbs86_ReferringCollaborative, pairs of participants played an interactive reference game in which they were separately presented with arrays of abstract tangram shapes in randomized orders. One player -- the *speaker* -- was instructed to decribe the tangrams such that the other player -- the *listener* -- could rearrange their tangrams to accurately match the speaker's board. Over six rounds, descriptions were dramatically shortened: an early description like "All right, the next one looks like a person who’s ice skating, except they’re sticking two arms out in front" became "The ice skater" by the final round.
+
+In this paper, we present a probabilistic model of language conventionalization in a communcation game. 
+We show that this model, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS], can account for key empirical signatures of conventions, including limited arbitrariness, path-dependence, and systematic shortening over time. 
+These computational results are compared with qualitative empirical results from a new large-scale replication of @ClarkWilkesGibbs86_ReferringCollaborative. 
+
+While simple evolutionary or agent-based models [@ShohamTennenholtz97_EmergenceOfConventions;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems] have previously been used to understand the dynamics of *global* conventions, relatively little modeling work has focused on the cognitive mechanisms supporting emergence of conventions during shorter dyadic interactions. 
+
+<!-- A critical aspect of social conventions, and linguistic conventions in particular, is their arbitrariness: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. However, recent studies  emphasizing specific ways in which language is non-arbitrary [@MonaghanEtAl14_ArbitraryLanguage; @DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity; @BlasiEtAl16_SoundMeaningAssociation] force us to consider exactly in what sense arbitrariness is an essential property of conventions. Are all conventions created equal? Following classic studies by Herb Clark and colleagues, we argue that the initial seeds of conventions are *non-arbitrary* to a degree, in the sense that they are chosen proportional to their informativity in context. Yet subsequent usage is also *path-dependent* in the sense that different seeds persist across time within different groups.  -->
+
+# Model
+
+Our probabilistic model combines for the first time two recent insights 
+
+```{r image, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=2, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial"}
+img <- png::readPNG("figs/directorBoard.png")
+grid::grid.raster(img)
+```
+
+# Reference game experiment
+
+## Participants
+
+200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a reference game. We excluded X games because participants reported confusion at the instructions, Y games because one or both of the participants reported being a native language different from English, and Z games for terminating early.
+
+## Stimuli
+
+On every trial of the game, both participants were shown grid of twelve tangram shapes, reproduced from (cite Herb; see Fig. \ref{fig:stimuli}). 
+
+## Procedure
+
+After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate, but only the matcher could click and drag stimuli to reorder them. The director's goal was to tell the matcher\dots
+
+<!-- # General Formatting Instructions  -->
+
+<!-- For general information about authoring in markdown, see **[here](http://rmarkdown.rstudio.com/authoring_basics.html).** -->
+
+<!-- For standard spoken papers and standard posters, the entire  -->
+<!-- contribution (including figures, references, everything) can be  -->
+<!-- no longer than six pages. For abstract posters, the entire contribution  -->
+<!-- can be no longer than one page. For symposia, the entire contribution  -->
+<!-- can be no longer than two pages. -->
+
+<!-- The text of the paper should be formatted in two columns with an -->
+<!-- overall width of 7 inches (17.8 cm) and length of 9.25 inches (23.5 -->
+<!-- cm), with 0.25 inches between the columns. Leave two line spaces -->
+<!-- between the last author listed and the text of the paper. The left -->
+<!-- margin should be 0.75 inches and the top margin should be 1 inch. -->
+<!-- \textbf{The right and bottom margins will depend on whether you use -->
+<!-- U.S. letter or A4 paper, so you must be sure to measure the width of -->
+<!-- the printed text.} Use 10 point Times Roman with 12 point vertical -->
+<!-- spacing, unless otherwise specified. -->
+
+<!-- The title should be in 14 point, bold, and centered. The title should -->
+<!-- be formatted with initial caps (the first letter of content words -->
+<!-- capitalized and the rest lower case). Each author's name should appear -->
+<!-- on a separate line, 11 point bold, and centered, with the author's -->
+<!-- email address in parentheses. Under each author's name list the -->
+<!-- author's affiliation and postal address in ordinary 10 point  type. -->
+
+<!-- Indent the first line of each paragraph by 1/8~inch (except for the -->
+<!-- first paragraph of a new section). Do not add extra vertical space -->
+<!-- between paragraphs. -->
+
+<!-- # First-Level Headings -->
+
+<!-- First level headings should be in 12 point , initial caps, bold and -->
+<!-- centered. Leave one line space above the heading and 1/4~line space -->
+<!-- below the heading. -->
+
+<!-- ## Second-Level Headings -->
+
+<!-- Second level headings should be 11 point , initial caps, bold, and -->
+<!-- flush left. Leave one line space above the heading and 1/4~ line -->
+<!-- space below the heading. -->
+
+<!-- ### Third-Level Headings -->
+
+<!-- Third-level headings should be 10 point , initial caps, bold, and flush -->
+<!-- left. Leave one line space above the heading, but no space after the -->
+<!-- heading. -->
+
+<!-- # Formalities, Footnotes, and Floats -->
+
+<!-- Use standard APA citation format. Citations within the text should -->
+<!-- include the author's last name and year. If the authors' names are -->
+<!-- included in the sentence, place only the year in parentheses, as in -->
+<!-- [-@NewellSimon1972a], but otherwise place the entire reference in -->
+<!-- parentheses with the authors and year separated by a comma -->
+<!-- [@NewellSimon1972a]. List multiple references alphabetically and -->
+<!-- separate them by semicolons [@ChalnickBillman1988a; @NewellSimon1972a].  -->
+<!-- Use the et. al. construction only after listing all the authors to a -->
+<!-- publication in an earlier reference and for citations with four or -->
+<!-- more authors. -->
+
+<!-- For more information on citations in R Markdown, see **[here](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html#citations).** -->
+
+<!-- ## Footnotes -->
+
+<!-- Indicate footnotes with a number\footnote{Sample of the first -->
+<!-- footnote.} in the text. Place the footnotes in 9 point type at the -->
+<!-- bottom of the page on which they appear. Precede the footnote with a -->
+<!-- horizontal rule.\footnote{Sample of the second footnote.} -->
+
+<!-- ## Figures -->
+
+<!-- All artwork must be very dark for purposes of reproduction and should -->
+<!-- not be hand drawn. Number figures sequentially, placing the figure -->
+<!-- number and caption, in 10 point, after the figure with one line space -->
+<!-- above the caption and one line space below it. If necessary, leave extra white space at -->
+<!-- the bottom of the page to avoid splitting the figure and figure -->
+<!-- caption. You may float figures to the top or bottom of a column, or -->
+<!-- set wide figures across both columns. -->
+
+<!-- ## Two-column images -->
+
+<!-- You can read local images using png package for example and plot  -->
+<!-- it like a regular plot using grid.raster from the grid package.  -->
+<!-- With this method you have full control of the size of your image. **Note: Image must be in .png file format for the readPNG function to work.** -->
+
+<!-- You might want to display a wide figure across both columns. To do this, you change the `fig.env` chunk option to `figure*`. To align the image in the center of the page, set `fig.align` option to `center`. To format the width of your caption text, you set the `num.cols.cap` option to `2`. -->
+
+<!-- ```{r 2-col-image, fig.env = "figure*", fig.pos = "h", fig.width=4, fig.height=2, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "This image spans both columns. And the caption text is limited to 0.8 of the width of the document."} -->
+<!-- ``` -->
+
+<!-- ## One-column images -->
+
+<!-- Single column is the default option, but if you want set it explicitly, set `fig.env` to `figure`. Notice that the `num.cols` option for the caption width is set to `1`. -->
+
+<!-- ```{r image, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=2, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{tab:tab2} Caption caption caption"} -->
+<!-- ``` -->
+
+
+<!-- ## R Plots -->
+
+<!-- You can use R chunks directly to plot graphs. And you can use latex floats in the -->
+<!-- fig.pos chunk option to have more control over the location of your plot on the page. For more information on latex placement specifiers see **[here](https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions)** -->
+
+<!-- ```{r plot, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=2, fig.height=2, fig.cap = "R plot" } -->
+<!-- x <- 0:100 -->
+<!-- y <- 2 * (x + rnorm(length(x), sd = 3) + 3) -->
+
+<!-- ggplot2::ggplot(data = data.frame(x, y),  -->
+<!--        aes(x = x, y = y)) +  -->
+<!--   geom_point() +  -->
+<!--   geom_smooth(method = "lm") -->
+<!-- ``` -->
+
+
+<!-- ## Tables -->
+
+<!-- Number tables consecutively; place the table number and title (in -->
+<!-- 10 point) above the table with one line space above the caption and -->
+<!-- one line space below it, as in Table 1. You may float -->
+<!-- tables to the top or bottom of a column, set wide tables across both -->
+<!-- columns. -->
+
+<!-- You can use the xtable function in the xtable package. -->
+
+<!-- ```{r xtable, results="asis"} -->
+<!-- n <- 100 -->
+<!-- x <- rnorm(n) -->
+<!-- y <- 2*x + rnorm(n) -->
+<!-- out <- lm(y ~ x) -->
+
+<!-- tab1 <- xtable::xtable(summary(out)$coef, digits=c(0, 2, 2, 1, 2),  -->
+<!--                       caption = "This table prints across one column.") -->
+
+<!-- print(tab1, type="latex", comment = F, table.placement = "H") -->
+<!-- ``` -->
+
+# Acknowledgements
+
+Place acknowledgments (including funding information) in a section at
+the end of the paper.
+
+# References 
+
+```{r}
+# References will be generated automatically by Pandoc and included here.
+# The following code is some latex to format the bibliography. Do not remove it.
+```
+
+\setlength{\parindent}{-0.1in} 
+\setlength{\leftskip}{0.125in}
+\noindent
