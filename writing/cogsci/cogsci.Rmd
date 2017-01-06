@@ -38,17 +38,21 @@ For instance, in a seminal study by @ClarkWilkesGibbs86_ReferringCollaborative, 
 
 In this paper, we present a probabilistic model of language conventionalization in a communcation game. 
 We show that this model, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS], can account for key empirical signatures of conventions, including limited arbitrariness, path-dependence, and systematic shortening over time. 
-These computational results are compared with qualitative empirical results from a new large-scale replication of @ClarkWilkesGibbs86_ReferringCollaborative. 
+These computational results are compared with qualitative empirical results from a new large-scale replication of @ClarkWilkesGibbs86_ReferringCollaborative. We argue that the initial seeds of conventions are *non-arbitrary* to a degree, in the sense that they are chosen proportional to their informativity in context. Yet subsequent usage is also *path-dependent* in the sense that different seeds persist across time within different groups.
 
 While simple evolutionary or agent-based models [@ShohamTennenholtz97_EmergenceOfConventions;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems] have previously been used to understand the dynamics of *global* conventions, relatively little modeling work has focused on the cognitive mechanisms supporting emergence of conventions during shorter dyadic interactions. 
 
-<!-- A critical aspect of social conventions, and linguistic conventions in particular, is their arbitrariness: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. However, recent studies  emphasizing specific ways in which language is non-arbitrary [@MonaghanEtAl14_ArbitraryLanguage; @DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity; @BlasiEtAl16_SoundMeaningAssociation] force us to consider exactly in what sense arbitrariness is an essential property of conventions. Are all conventions created equal? Following classic studies by Herb Clark and colleagues, we argue that the initial seeds of conventions are *non-arbitrary* to a degree, in the sense that they are chosen proportional to their informativity in context. Yet subsequent usage is also *path-dependent* in the sense that different seeds persist across time within different groups.  -->
-
 # Model
 
-Our probabilistic model combines for the first time two recent insights 
+Our probabilistic model makes use of two recent innovations in modeling language understanding using Rational Speech Act (RSA) models: lexical uncertainty [@BergenLevyGoodman16_LexicalUncertainty] and a noisy communication channel [@BergenGoodman15_StrategicUseOfNoise]. The former introduces initial uncertainty over the exact meanings of words in the lexicon, such that agents jointly infer the meanings of utterances along with the information those utterances are being used to communicate. The latter introduces a perceptual noise model by which utterances can be corrupted during transmission; listeners invert this noise model to infer likely intended utterances from their noisy percepts, and speakers take this source of noise into account when selecting what utterance to use. 
 
-```{r image, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=2, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial"}
+We gradually build up to this combined model by tackling simpler sub-problems, beginning with a reimplementation of the pure lexical uncertainty model from @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS. 
+
+## Arbitrariness
+
+A critical aspect of social conventions, and linguistic conventions in particular, is their arbitrariness: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. However, recent studies  emphasizing specific ways in which language is non-arbitrary [@MonaghanEtAl14_ArbitraryLanguage; @DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity; @BlasiEtAl16_SoundMeaningAssociation] force us to consider exactly in what sense arbitrariness is an essential property of conventions. Are all conventions created equal? 
+
+```{r image, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial"}
 img <- png::readPNG("figs/directorBoard.png")
 grid::grid.raster(img)
 ```
