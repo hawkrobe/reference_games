@@ -26,3 +26,5 @@ cogsci.tex
 tangramsManuscript.pdf
 *.synctex.gz
 *.sublime-*
+packrat/lib*/
+packrat/src/
