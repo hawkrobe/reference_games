@@ -7,14 +7,13 @@ output: html_document
 
 ```{r}
 library(ggplot2)
-library(lmer)
+library(lme4)
 library(lmerTest)
 library(tidyr)
 library(dplyr)
 library(qdap)
 library(stringr)
 library(knitr)
-library(tm)
 library(NLP)
 library(readr)
 setwd("~/Repos/reference_games/analysis")
@@ -26,11 +25,11 @@ We've already done most of the work using nltk in the ipython notebook, so here 
 
 ```{r}
 #tangramMsgs = read_csv("../data/tangrams/message/tangramsMessages.csv") %>%
-tangramMsgs = read_csv("tangrams/handTagged.csv") %>%
+tangramMsgs = read_csv("handTagged.csv") %>%
   rename(msgTime = time, 
          role = sender)
 
-tangramSubjInfo = read.csv("../data/tangrams/turk/tangrams-subject_information.csv") %>%
+tangramSubjInfo = read.csv("../../data/tangrams/turk/tangrams-subject_information.csv") %>%
   rename(gameid = gameID) %>%
   filter(!is.na(nativeEnglish)) %>%
   select(-workerid, -DirectorBoards, -initialMatcherBoards)
@@ -380,3 +379,32 @@ tangramBoards %>%
     geom_errorbar(aes(ymax = m + se, ymin = m - se) )
 ```
 
+### Which words most likely to be dropped?
+
+```{r}
+read_csv("wordCounts.csv", col_names = T) %>%
+  group_by(word, POS, roundNum) %>% 
+  summarize(count = sum(count)) %>% 
+  rowwise() %>%
+  mutate(roundNum = paste0("round", roundNum, collapse = "")) %>%
+  spread(roundNum, count) %>%
+  filter(round1 > 10) %>%
+  mutate(diffSize = round1 - round6,
+         diffPct = (round1 - round6)/round1) %>% 
+  arrange(desc(diffSize))
+```
+### Which bigrams most likely to be dropped?
+
+```{r}
+read_csv("bigramCounts.csv", col_names = T) %>%
+  group_by(word, roundNum) %>% 
+  summarize(count = sum(count)) %>% 
+  rowwise() %>%
+  mutate(roundNum = paste0("round", roundNum, collapse = "")) %>%
+  spread(roundNum, count) %>%
+  filter(round1 > 10) %>%
+  mutate(diffSize = round1 - round6,
+         diffPct = (round1 - round6)/round1) %>% 
+  arrange(desc(diffSize)) %>% 
+  select(word, diffSize)
+```
