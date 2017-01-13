@@ -66,7 +66,7 @@ var lexiconPosterior = cache(function(originAgent, data) {
   });
 });
 
-// conventional listener (L1, marginalizing over lexicons)
+// conventional listener (L1, marginalizing over lexicons themselves)
 var L = function(utt, data) {
   return Infer({method:"enumerate"}, function(){
     var lexicon = sample(lexiconPosterior('L', data));
@@ -75,7 +75,7 @@ var L = function(utt, data) {
   });
 };
 
-// conventional speaker (S1, reasoning about L)
+// conventional speaker (S1, reasoning about expected L1 behavior across lexicons)
 var S = function(state, data) {
   return Infer({method:"enumerate"}, function(){
     var utt = sample(utterancePrior);
@@ -94,8 +94,13 @@ console.log(L('label1', []));
 console.log("listener hearing label1 after data:");
 console.log(L('label1', [{utt: 'label1', obj: 't1'}]));
 
-console.log("listener hearing label2 after data:");
-console.log(L('label2', [{utt: 'label1', obj: 't1'}]));
+// console.log("listener hearing label2 after data:");
+// console.log(L('label2', [{utt: 'label1', obj: 't1'}]));
 
-console.log('speaker wanting to convey t2 after data');
-console.log(S('t2', [{utt: 'label1', obj: 't1'}]));
+// console.log("listener hearing label1 after opposite data:");
+// console.log(L('label1', [{utt: 'label1', obj: 't2'}]));
+
+// console.log("listener hearing label1 after more data:");
+// console.log(L('label1', [{utt: 'label1', obj: 't1'},
+// 			 {utt: 'label1', obj: 't1'},
+// 			 {utt: 'label2', obj: 't2'}]));
