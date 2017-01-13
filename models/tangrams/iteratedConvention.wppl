@@ -1,99 +1,101 @@
 // possible states of the world
-var statePrior =  Categorical({vs: ['tangram1', 'tangram2'], 
-                               ps: [.5, .5]});
-// possible utterances (include null utterance to make sure dists are well-formed)
-var utterancePrior = Categorical({vs: ['label1', 'label2', 'n0'], 
-                                  ps: [1/3,1/3,1/3]});
+var states = ['t1', 't2'];
+var statePrior =  Categorical({vs: states, ps: [1/2, 1/2]});
 
-// TODO: can't cache functions, so prior should be over labels, which are mapped
-// to functions in a meaning function
+// possible utterances
+var utterances = ['label1', 'label2'];
+var utterancePrior = Categorical({vs: utterances, ps: [1/2, 1/2]});
 
-// meaning funtion to interpret the utterances
-var nullMeaning = function(state){return true;};
-var tangram1Meaning = function(state){return state == 'tangram1';};
-var tangram2Meaning = function(state){return state == 'tangram2';};
-var possibleMeanings = [nullMeaning, tangram1Meaning, tangram2Meaning];
-var possibleLexicons = _.flatten(
-  map(function(t1Meaning) {
-    map(function(t2Meaning) {
-      return _.extend(_.object(utterancePrior.support(), 
-			       [t1Meaning, t2Meaning]),
-                      {n0 : nullMeaning});
-    }, possibleMeanings);
-  }, possibleMeanings));
+// takes a sample from a (discretized) dirichlet distribution for each word,
+// representing the extent to which that word describes each object
+var lexiconPrior = Infer({method: 'enumerate'}, function(){
+  var meanings = map(function(utt) {
+    var t1Prob = uniformDraw([0.01, .25, .5, .75, 0.99]);
+    return {'t1' : t1Prob, 't2' : 1-t1Prob};
+  }, utterances);
+  return _.object(utterances, meanings);
+});
 
-var lexiconPrior = Categorical({vs: possibleLexicons, 
-                                ps: [1/9,1/9,1/9,1/9,1/9,1/9,1/9,1/9,1/9]});
-
-// set speaker optimality
+// speaker optimality
 var alpha = 1;
 
-// 'cheap' is cheaper than 'expensive'
+// length-based cost (although they're all the same length here)
 var uttCost = function(utt) {
-  return (utt == 'tangram1' || utt == 'tangram2' ? 1 : 10);
+  return utt.split(' ').length;
 };
 
 // literal listener
-var L0 = function(utt, lexicon) {
+var L0 = cache(function(utt, lexicon) {
   return Infer({method:"enumerate"}, function(){
     var state = sample(statePrior);
-    var meaning = lexicon[utt];
-    condition(meaning(state));
+    factor(Math.log(lexicon[utt][state]));
     return state;
   });
-};
+});
 
 // pragmatic speaker
-var S1 = function(state, lexicon) {
+var S1 = cache(function(state, lexicon) {
   return Infer({method:"enumerate"}, function(){
     var utt = sample(utterancePrior);
-    factor(alpha * (L0(utt, lexicon).score(state) - uttCost(utt)));
+    factor(alpha * (L0(utt, lexicon).score(state)
+                    - uttCost(utt)));
     return utt;
   });
-};
-
-// pragmatic listener (needed for S)
-var L2 = function(utt, lexicon) {
-  return Infer({method: 'enumerate'}, function() {
-    var state = sample(statePrior);
-    observe(S1(state, lexicon), utt);
-    return state;
-  });
-};
+});
 
 // conventional listener
-var L = function(utt, data) {
+var L1 = cache(function(utt, lexicon) {
   return Infer({method:"enumerate"}, function(){
     var state = sample(statePrior);
-    var lexicon = sample(lexiconPrior);
     observe(S1(state, lexicon), utt);
+    return state;
+  });
+});
+
+var lexiconPosterior = cache(function(originAgent, data) {
+  return Infer({method: 'enumerate'}, function() {
+    var lexicon = sample(lexiconPrior);
     mapData({data: data}, function(datum){
-      observe(S1(datum.obj, lexicon), datum.utt);
+      if(originAgent === 'L') {
+        observe(S1(datum.obj, lexicon), datum.utt);
+      } else if(originAgent === 'S') {
+        observe(L1(datum.utt, lexicon), datum.obj);
+      }
     });
+    return lexicon;
+  });
+});
+
+// conventional listener (L1, marginalizing over lexicons)
+var L = function(utt, data) {
+  return Infer({method:"enumerate"}, function(){
+    var lexicon = sample(lexiconPosterior('L', data));
+    var state = sample(L1(utt, lexicon));
     return state;
   });
 };
 
-// conventional speaker
+// conventional speaker (S1, reasoning about L)
 var S = function(state, data) {
   return Infer({method:"enumerate"}, function(){
-    var lexicon = sample(lexiconPrior);
     var utt = sample(utterancePrior);
-    factor(alpha * (L2(utt, lexicon).score(state) - uttCost(utt)));
-    mapData({data: data}, function(datum){
-      observe(L2(datum.utt, lexicon), datum.obj);
+    var listener = Infer({method: 'enumerate'}, function() {
+      var lexicon = sample(lexiconPosterior('S', data));
+      return sample(L1(utt, lexicon));
     });
+    factor(alpha * (listener.score(state) - uttCost(utt)));
     return utt;
   });
 };
 
-// viz(L2('cheap', possibleLexicons[]))
-// console.log("speaker conveying common world:");
-// console.log(S('tangram1', []).print());
-// console.log("speaker conveying rare world:");
-// console.log(S('tangram2', []).print());
+console.log("initial listener interpretation (first trial)");
+console.log(L('label1', []));
+
 console.log("listener hearing label1 after data:");
-console.log(L('label1', [{utt: 'label1', obj: 'tangram1'}]).print());
+console.log(L('label1', [{utt: 'label1', obj: 't1'}]));
 
 console.log("listener hearing label2 after data:");
-console.log(L('label2', [{utt: 'label1', obj: 'tangram1'}]).print());
+console.log(L('label2', [{utt: 'label1', obj: 't1'}]));
+
+console.log('speaker wanting to convey t2 after data');
+console.log(S('t2', [{utt: 'label1', obj: 't1'}]));
