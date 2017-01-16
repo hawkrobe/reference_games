@@ -11,7 +11,7 @@ abstract:
     ""
     
 keywords:
-    "Add your choice of indexing terms or keywords; kindly use a semi-colon; between each term."
+    "conventions; pragmatics; communication"
     
 output: cogsci2016::cogsci_paper
 ---
@@ -23,6 +23,16 @@ knitr::opts_chunk$set(fig.width=3, fig.height=3, fig.crop = F, fig.pos = "tb", f
 ```
 
 ```{r, libraries}
+library(ggplot2)
+# library(lme4)
+# library(lmerTest)
+library(tidyr)
+library(dplyr)
+library(qdap)
+library(stringr)
+library(knitr)
+library(NLP)
+library(readr)
 library(png)
 library(grid)
 library(ggplot2)
@@ -31,19 +41,79 @@ library(xtable)
 
 # Introduction
 
-Successful communication depends on a set of shared linguistic conventions: arbitrary but self-sustaining solutions to coordination problems (de Saussure, XX; Lewis, XX). These conventions allow communities of speakers to coordinate group behavior (cite collective behavior lit??), initiate speech acts [@Strawson64_IntentionConvention], and align beliefs or memories [@StolkVerhagenToni16_ConceptualAlignment; @ComanEtAl16_MnemonicConvergence]. 
-While *global* conventions adopted and sustained throughout a large population of speakers may form over much longer time scales (cite historical ling?), we also effortlessly coordinate on *ad hoc* or *local* conventions -- or conceptual pacts -- within the span of a single dialogue. Since global conventions emerge through repeated interactions of this kind [@GarrodDoherty94_GroupConventionsLinguistics], the cognitive mechanisms underlying conventionalization in dyadic communication games has been of great interest.
+Successful communication depends on a set of shared linguistic conventions: arbitrary but self-sustaining solutions to coordination problems [@Lewis69_Convention]. These conventions allow communities of speakers to coordinate group behavior (cite collective behavior lit??), initiate speech acts [@Strawson64_IntentionConvention], and align beliefs or memories [@StolkVerhagenToni16_ConceptualAlignment; @ComanEtAl16_MnemonicConvergence]. 
+While *global* conventions adopted and sustained throughout a large population of speakers may form over much longer time scales (cite historical ling?), we also effortlessly coordinate on *ad hoc* or *local* conventions -- or conceptual pacts -- within the span of a single dialogue. Since global conventions emerge through repeated interactions of this kind [@GarrodDoherty94_GroupConventionsLinguistics], the cognitive mechanisms underlying conventionalization in dyadic games are of great interest.
 
-For instance, in a seminal study by @ClarkWilkesGibbs86_ReferringCollaborative, pairs of participants played an interactive game in which they were separately presented with arrays of abstract tangram shapes in randomized orders. One player -- the *speaker* -- was instructed to decribe the tangrams such that the other player -- the *listener* -- could rearrange their tangrams to accurately match the speaker's board. Over six rounds, descriptions were dramatically shortened: an early description like "All right, the next one looks like a person who’s ice skating, except they’re sticking two arms out in front" became "The ice skater" by the final round. This was taken as evidence of a collaborative process by which participants coordinate on a mutually understood referring expression, or convention, that minimizes joint effort. 
+For instance, in a seminal study by @ClarkWilkesGibbs86_ReferringCollaborative, pairs of participants played an interactive game where they were presented with arrays of abstract tangram shapes in randomized orders. One player -- the *speaker* -- was instructed to decribe the tangrams such that the other player -- the *listener* -- could rearrange their tangrams to accurately match the speaker's board. Over six rounds, descriptions were dramatically shortened: an early description like "All right, the next one looks like a person who’s ice skating, except they’re sticking two arms out in front" became "The ice skater" by the final round. This was taken as evidence of a collaborative process by which participants coordinate on a mutually understood referring expression, or convention, that minimizes joint effort. 
 
-These results raised a number of theoretical questions that remain unresolved: To what extent are these conventions arbitrary? Why are some words from the initial utterance more likely to be dropped in future rounds than others? If conventions emerge from a process of social reasoning, how do agent represent one another, and how do they update those representations as the game progresses? In this paper, we expand upon these early results with a new large-scale replication of the tangrams task and a probabilistic model of language conventionalization in a communcation game. 
-We show that this model, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS], can account for key empirical signatures of conventionalization, including arbitrariness, path-dependence, and systematic shortening of utterances over time. These computational results are compared with qualitative empirical results from the replication.
+These results raised a number of theoretical questions that remain unresolved: To what extent are these conventions arbitrary? Why are some words from the initial utterance more likely to be dropped in future rounds than others? If conventions emerge from a process of social reasoning, how do agent represent one another, and how do they update those representations as the game progresses? In this paper, we first use modern NLP techniques to expand upon these early results in a large-scale replication of the tangrams task. 
+Next, we show that a computational model of communication in repeated reference games, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS], can account for key empirical signatures of conventionalization, including arbitrariness, path-dependence, and systematic shortening of utterances over time. 
+
+\textcolor{red}{Need a theoretical summary of modeling contribution here. One possibility is to frame it in terms of the need for pragmatics \& social reasoning (vs. pure heuristic updating as in Barr, 2004) or in terms of our perspective on establishing common ground (i.e. that you don't need to represent the common ground as an infinite recursion or some separate object you both reason about, just need to assume that other player knows true meanings...)}
 
 <!-- We argue that the initial seeds of conventions are *non-arbitrary* to a degree, in the sense that they are chosen proportional to their informativity in context. Yet subsequent usage is also *path-dependent* in the sense that different seeds persist across time within different groups. -->
 
-While simple evolutionary or agent-based models [@ShohamTennenholtz97_EmergenceOfConventions;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems] have previously been used to understand the dynamics of *global* conventions, relatively little modeling work has focused on the cognitive mechanisms supporting emergence of conventions during shorter dyadic interactions. 
+# Large-scale tangrams replication
+
+## Participants
+
+200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded X games because participants reported confusion at the instructions, Y games because one or both of the participants reported being a native language different from English, and Z games for terminating early.
+
+## Stimuli
+
+On every trial of the game, both participants were shown grid of twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative
+ (see Fig. \ref{fig:taskScreenshot}). 
+
+## Procedure
+
+After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate at any time, but only the matcher could click and drag stimuli to reorder them. When the players were satisfied with their tangram arrangements, the matcher clicked a 'submit' button that gave players feedback on their score (out of 12) and scrambled the tangrams for the next round. After six rounds, players were redirected to a short exit survey. We collected the raw text of every message sent, and every swapping action taken by the matcher. 
+
+## Results 
+
+### Reduction in raw length
+
+```{r}
+# Import message data...
+tangramMsgs = read_csv("../../analysis/tangrams/handTagged.csv") %>%
+  rename(msgTime = time, 
+         role = sender)
+
+# Import survey data...
+tangramSubjInfo = read.csv("../../data/tangrams_unconstrained/turk/tangrams-subject_information.csv") %>%
+  rename(gameid = gameID) %>%
+  filter(!is.na(nativeEnglish)) %>%
+  select(-workerid, -DirectorBoards, -initialMatcherBoards)
+
+# Combine
+tangramCombined <- tangramMsgs %>%
+  left_join(tangramSubjInfo, by = c("gameid", "role")) %>%
+  filter(nativeEnglish != "no") %>%
+  mutate(numRawWords = word_count(contents, digit.remove = F)) %>%
+  filter(!is.na(numRawWords)) %>% # filter out pure punctuation messages
+  filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
+```
+
+```{r replicationfig, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:replication} Replication of primary analyses in "}
+ggplot(tangramCombined %>% 
+         filter(role == "director") %>%
+         group_by(gameid, roundNum) %>% 
+         summarize(individualM = sum(numRawWords)/12) %>% 
+         group_by(roundNum) %>% 
+         summarize(m = mean(individualM), 
+                   se = sd(individualM)/sqrt(length(individualM))), 
+       aes(x = roundNum, y = m)) +
+  geom_line() +
+  geom_errorbar(aes(ymax = m + se, ymin = m - se), width = .1) +
+  ylab("mean number words (by director) per figure") +
+  xlab("trials") +
+  ylim(0,20) +
+  xlim(0, 7) +
+  theme_bw() 
+```
 
 # Model
+
+While simple evolutionary or agent-based models have previously been used to investigate the dynamics of *global* convention formation in signalling games [@ShohamTennenholtz97_EmergenceOfConventions;@Delgado02_ConventionsNetworks;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems], relatively little modeling work has focused on the cognitive mechanisms supporting emergence of ad hoc conventions during shorter dyadic interactions. In fact, the systematic reduction in referring expressions within an interaction poses some problems for these classes of models. Evolutionary models 
 
 Our probabilistic model makes use of two recent innovations in modeling language understanding using Rational Speech Act (RSA) models: lexical uncertainty [@BergenLevyGoodman16_LexicalUncertainty] and a noisy communication channel [@GibsonBergenPiantadosi13_RationalIntegrationNoisy;@BergenGoodman15_StrategicUseOfNoise]. The former introduces initial uncertainty over the exact meanings of words in the lexicon, such that agents jointly infer the meanings of utterances along with the information those utterances are being used to communicate. The latter introduces a perceptual noise model by which utterances can be corrupted during transmission; listeners invert this noise model to infer likely intended utterances from their noisy percepts, and speakers take this source of noise into account when selecting what utterance to use. 
 
@@ -57,20 +127,6 @@ A critical aspect of social conventions, and linguistic conventions in particula
 img <- png::readPNG("figs/directorBoard.png")
 grid::grid.raster(img)
 ```
-
-# Reference game experiment
-
-## Participants
-
-200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a reference game. We excluded X games because participants reported confusion at the instructions, Y games because one or both of the participants reported being a native language different from English, and Z games for terminating early.
-
-## Stimuli
-
-On every trial of the game, both participants were shown grid of twelve tangram shapes, reproduced from (cite Herb; see Fig. \ref{fig:stimuli}). 
-
-## Procedure
-
-After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate, but only the matcher could click and drag stimuli to reorder them. The director's goal was to tell the matcher\dots
 
 <!-- # General Formatting Instructions  -->
 
