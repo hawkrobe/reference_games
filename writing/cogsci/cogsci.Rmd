@@ -55,23 +55,6 @@ Next, we show that a computational model of communication in repeated reference 
 
 # Large-scale tangrams replication
 
-## Participants
-
-200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded X games because participants reported confusion at the instructions, Y games because one or both of the participants reported being a native language different from English, and Z games for terminating early.
-
-## Stimuli
-
-On every trial of the game, both participants were shown grid of twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative
- (see Fig. \ref{fig:taskScreenshot}). 
-
-## Procedure
-
-After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate at any time, but only the matcher could click and drag stimuli to reorder them. When the players were satisfied with their tangram arrangements, the matcher clicked a 'submit' button that gave players feedback on their score (out of 12) and scrambled the tangrams for the next round. After six rounds, players were redirected to a short exit survey. We collected the raw text of every message sent, and every swapping action taken by the matcher. 
-
-## Results 
-
-### Reduction in raw length
-
 ```{r}
 # Import message data...
 tangramMsgs = read_csv("../../analysis/tangrams/handTagged.csv") %>%
@@ -81,19 +64,63 @@ tangramMsgs = read_csv("../../analysis/tangrams/handTagged.csv") %>%
 # Import survey data...
 tangramSubjInfo = read.csv("../../data/tangrams_unconstrained/turk/tangrams-subject_information.csv") %>%
   rename(gameid = gameID) %>%
-  filter(!is.na(nativeEnglish)) %>%
   select(-workerid, -DirectorBoards, -initialMatcherBoards)
 
-# Combine
-tangramCombined <- tangramMsgs %>%
-  left_join(tangramSubjInfo, by = c("gameid", "role")) %>%
-  filter(nativeEnglish != "no") %>%
+rawTangramCombined <- tangramMsgs %>% left_join(tangramSubjInfo, by = c('gameid', 'role'))
+
+# Exclusion criteria
+nonNativeSpeakerIDs <- unique((tangramSubjInfo %>% filter(nativeEnglish != "yes"))$gameid)
+incompleteIDs <- unique((rawTangramCombined %>% group_by(gameid) %>% 
+                           filter(length(unique(roundNum)) != 6))$gameid)
+badGames <- union(incompleteIDs, nonNativeSpeakerIDs)
+
+# filter & preprocess
+tangramCombined <- rawTangramCombined %>%
+  filter(!(gameid %in% badGames)) %>%
   mutate(numRawWords = word_count(contents, digit.remove = F)) %>%
   filter(!is.na(numRawWords)) %>% # filter out pure punctuation messages
   filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
+
+numGames <- length(unique(tangramCombined$gameid))
+numUtterances <- length(tangramCombined$contents)
 ```
 
-```{r replicationfig, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:replication} Replication of primary analyses in "}
+## Participants
+
+200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded \textcolor{red}{X} games because one or both of the participants reported being a native language different from English, and \textcolor{red}{Y} games for terminating early, leaving a corpus of `r numGames` complete games with a total of `r numUtterances` utterances.
+
+## Stimuli
+
+```{r image, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial"}
+img <- png::readPNG("figs/directorBoard.png")
+grid::grid.raster(img)
+```
+
+On every trial of the game, both participants were shown a grid of twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative. The cells were all labeled with numbers from one to twelve, as an aid in reference (see Fig. \ref{fig:taskScreenshot}).
+
+## Procedure
+
+After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate at any time, but only the matcher could click and drag stimuli to reorder them. When the players were satisfied with their tangram arrangements, the matcher clicked a 'submit' button that gave players feedback on their score (out of 12) and scrambled the tangrams for the next round. After six rounds, players were redirected to a short exit survey. We collected the raw text of every message sent, and every swapping action taken by the matcher. 
+
+## Results 
+
+### Preprocessing 
+
+```{r}
+# Note that this includes Nicki's old data...
+tagCounts = tangramMsgs %>% group_by(tangramRef) %>% tally() %>% spread(tangramRef, n)
+pctTagged = 100*(1-(tagCounts$None/sum(tagCounts)))
+```
+
+Since the task was conducted with minimally constrained language use, we began by tagging which tangram was being referred to, if any, in each message. Instead of hand-tagging nearly 10,000 items, we used a hybrid strategy. First, since many of the director's messages explicitly referred to a cell number, we first cross-referenced these numbers with the locations of each tangram in their array. This successfully labelled 38.4% of utterances. Next, we combined this automatically tagged data with a previously hand-tagged pilot corpus containing 3955 utterances, and created a 80/20 split to train and evaluate a classifier that maps utterances to tangram tags. Each utterance string was vectorized into a matrix of unigram and bigram counts, then transformed into a normalized tf-idf representation (which weights counts by their overall frequency in the corpus). 
+
+We trained our logistic classifier using stochastic gradient descent, yielding 75% accuracy on the test split. We then constructed an ROC curve examining the tradeoff between the true positive and false positive rate for different confidence thresholds, and selected a cautious threshold of 90% confidence that minimized the false positive rate to <5%. Finally, we used this threshold to label the subset of our full corpus where we are sufficiently confident. We iterated this process with batches of hand-tagging until `r round(pctTagged,2)`% of the corpus was assigned a tag.
+
+### Reduction in raw length
+
+First, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation]. 
+
+```{r replicationfig, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:replication} Reduction in the mean length of utterance over time. Error bars represent 1 SE."}
 ggplot(tangramCombined %>% 
          filter(role == "director") %>%
          group_by(gameid, roundNum) %>% 
@@ -111,6 +138,51 @@ ggplot(tangramCombined %>%
   theme_bw() 
 ```
 
+## Part-of-Speech reduction
+
+Next, we ran a part-of-speech tagger on all utterances and counted 
+
+```{r POSfig, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:POS} Percent reduction between first and last round for closed-class and open-class parts of speech over time. Error bars represent 1 SE."}
+posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
+  # Count occurences of each POS on each round within games
+  group_by(roundNum, gameid) %>% 
+  summarize(numWords = sum(numWords),
+            nouns = sum(nouns),
+            numbers = sum(numbers),
+            verbs = sum(verbs),
+            dets= sum(determiners),
+            pronouns = sum(pronouns),
+            preps = sum(prepositions),
+            adjectives = sum(adjectives),
+            adverbs = sum(adverbs)) %>%
+  gather(POS, count, nouns:adverbs) %>%
+  select(gameid, roundNum, POS, count) %>%
+  # Need to put in ids to spread
+  rowwise() %>% 
+  mutate(id = row_number()) %>% 
+  mutate(roundNum = paste0('round', roundNum, collapse = '')) %>%
+  spread(roundNum, count) %>%
+  # Compute % reduction from first to last round
+  mutate(diffPct = (round1 - round6)/round1) %>%
+  group_by(POS) %>%
+  # Filter out handful of people who skipped first round w/ negative %...
+  filter(diffPct >= 0) %>% 
+  # Take mean & se over participants
+  summarize(diffPctM = mean(diffPct),
+            diffPctSE = sd(diffPct)/sqrt(length(diffPct))) %>%
+  filter(POS != "OTHER") %>%
+  mutate(cat = ifelse(POS %in% c('dets', 'pronouns', 'preps', 'adverbs'), 'closed', 'open')) %>%
+  # rearrange
+  transform(POS=reorder(POS, -diffPctM) )
+
+ggplot(posReduction, aes(x = POS, y = diffPctM, fill = cat)) +
+  geom_bar(stat = 'identity') +
+  geom_errorbar(aes(ymax = diffPctM + diffPctSE, ymin = diffPctM - diffPctSE), width = .1)+
+  theme_bw() +
+  ylab("% reduction") +
+  xlab("Part of Speech category")
+```
+
 # Model
 
 While simple evolutionary or agent-based models have previously been used to investigate the dynamics of *global* convention formation in signalling games [@ShohamTennenholtz97_EmergenceOfConventions;@Delgado02_ConventionsNetworks;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems], relatively little modeling work has focused on the cognitive mechanisms supporting emergence of ad hoc conventions during shorter dyadic interactions. In fact, the systematic reduction in referring expressions within an interaction poses some problems for these classes of models. Evolutionary models 
@@ -122,11 +194,6 @@ We gradually build up to this combined model by tackling simpler sub-problems, b
 ## Arbitrariness
 
 A critical aspect of social conventions, and linguistic conventions in particular, is their arbitrariness: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. However, recent studies  emphasizing specific ways in which language is non-arbitrary [@MonaghanEtAl14_ArbitraryLanguage; @DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity; @BlasiEtAl16_SoundMeaningAssociation] force us to consider exactly in what sense arbitrariness is an essential property of conventions. Are all conventions created equal? 
-
-```{r image, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial"}
-img <- png::readPNG("figs/directorBoard.png")
-grid::grid.raster(img)
-```
 
 <!-- # General Formatting Instructions  -->
 
