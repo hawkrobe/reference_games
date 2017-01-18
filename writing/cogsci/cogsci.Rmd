@@ -24,8 +24,9 @@ knitr::opts_chunk$set(fig.width=3, fig.height=3, fig.crop = F, fig.pos = "tb", f
 
 ```{r, libraries}
 library(ggplot2)
-# library(lme4)
-# library(lmerTest)
+library(lme4)
+library(entropy)
+library(tm)
 library(tidyr)
 library(dplyr)
 library(qdap)
@@ -78,8 +79,8 @@ badGames <- union(incompleteIDs, nonNativeSpeakerIDs)
 tangramCombined <- rawTangramCombined %>%
   filter(!(gameid %in% badGames)) %>%
   mutate(numRawWords = word_count(contents, digit.remove = F)) %>%
-  filter(!is.na(numRawWords)) %>% # filter out pure punctuation messages
-  filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
+  filter(!is.na(numRawWords)) # filter out pure punctuation messages
+  #filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
 
 numGames <- length(unique(tangramCombined$gameid))
 numUtterances <- length(tangramCombined$contents)
@@ -87,7 +88,7 @@ numUtterances <- length(tangramCombined$contents)
 
 ## Participants
 
-200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded \textcolor{red}{X} games because one or both of the participants reported being a native language different from English, and \textcolor{red}{Y} games for terminating early, leaving a corpus of `r numGames` complete games with a total of `r numUtterances` utterances.
+200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded \textcolor{red}{X} games because one or both of the participants reported being a native language different from English, and \textcolor{red}{Y} games for terminating early, leaving a corpus of `r numGames` complete games with a total of `r numUtterances` utterances. \textcolor{red}{rdh: this technically includes nicki's data, too; need to make this clearer}
 
 ## Stimuli
 
@@ -118,9 +119,9 @@ We trained our logistic classifier using stochastic gradient descent, yielding 7
 
 ### Reduction in raw length
 
-First, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation]. 
+First, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation]. The following analyses, aided by modern NLP, break down this broad reduction into a finer-grained set of phenomena. 
 
-```{r replicationfig, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:replication} Reduction in the mean length of utterance over time. Error bars represent 1 SE."}
+```{r replicationfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:replication} Reduction in the mean length of utterance over time. Error bars represent 1 SE."}
 ggplot(tangramCombined %>% 
          filter(role == "director") %>%
          group_by(gameid, roundNum) %>% 
@@ -131,24 +132,22 @@ ggplot(tangramCombined %>%
        aes(x = roundNum, y = m)) +
   geom_line() +
   geom_errorbar(aes(ymax = m + se, ymin = m - se), width = .1) +
-  ylab("mean number words (by director) per figure") +
+  ylab("mean number words per tangram") +
   xlab("trials") +
   ylim(0,20) +
   xlim(0, 7) +
-  theme_bw() 
+  theme_bw(8) 
 ```
 
-## Part-of-Speech reduction
+### Part-of-speech reduction
 
-Next, we ran a part-of-speech tagger on all utterances and counted 
-
-```{r POSfig, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:POS} Percent reduction between first and last round for closed-class and open-class parts of speech over time. Error bars represent 1 SE."}
+```{r POSfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:POS} Percent reduction between first and last round for closed-class and open-class parts of speech over time. Error bars represent 1 SE."}
 posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
   # Count occurences of each POS on each round within games
   group_by(roundNum, gameid) %>% 
   summarize(numWords = sum(numWords),
             nouns = sum(nouns),
-            numbers = sum(numbers),
+            #numbers = sum(numbers),
             verbs = sum(verbs),
             dets= sum(determiners),
             pronouns = sum(pronouns),
@@ -175,163 +174,197 @@ posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
   # rearrange
   transform(POS=reorder(POS, -diffPctM) )
 
+detReductionRate <- (posReduction %>% filter(POS == 'dets'))$diffPctM * 100
+nounReductionRate <- (posReduction %>% filter(POS == 'nouns'))$diffPctM * 100
+
 ggplot(posReduction, aes(x = POS, y = diffPctM, fill = cat)) +
   geom_bar(stat = 'identity') +
   geom_errorbar(aes(ymax = diffPctM + diffPctSE, ymin = diffPctM - diffPctSE), width = .1)+
-  theme_bw() +
+  theme_bw(8) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("% reduction") +
   xlab("Part of Speech category")
 ```
 
+What kinds of words are most likely to be dropped as the game proceeds? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:POS} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. \textcolor{red}{rdh: adverbs are a bit of both... it includes words like 'up', 'down', 'just', 'so', and 'then'}
+
+## Listener feedback aids conventionalization
+
+```{r turntakingfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:turntaking} Ratio of messages sent by speaker relative to listener. Error bars represent 1 SE."}
+listenerMsgs <- tangramCombined %>% 
+  group_by(gameid, roundNum, role) %>% 
+  summarize(individualM = n()) %>% 
+  ungroup() %>%
+  complete(role, roundNum, gameid, fill = list(individualM = 0)) %>% 
+  spread(role, individualM) 
+
+listenerMsg_lm = summary(lmer(matcher ~ roundNum + (1 | gameid), data = listenerMsgs))
+
+ggplot(listenerMsgs %>%    
+         group_by(roundNum) %>% 
+         summarize(m = mean(matcher),
+             se = sd(matcher)/sqrt(length(matcher))), aes(x = roundNum, y = m)) +
+  geom_line() +
+  geom_errorbar(aes(ymax = m + se, ymin = m - se), width = .1) +
+  ylab("# listener messages") +
+  xlab("trials") +
+  #ylim(.5,1) +
+  xlim(0, 7) +
+  theme_bw(8) 
+
+```
+
+```{r}
+turnTaking <- listenerMsgs %>% 
+  filter(roundNum %in% c(1)) %>%
+  group_by(gameid) %>%
+  summarize(numListenerMsgs = mean(matcher)) %>%
+  filter(numListenerMsgs < mean(numListenerMsgs) + 3*sd(numListenerMsgs)) %>%
+  select(gameid, numListenerMsgs)
+
+efficiency <- tangramCombined %>% 
+   filter(role == "director") %>%
+   group_by(gameid, roundNum) %>% 
+   summarize(individualM = sum(numRawWords)/12) %>%
+  rowwise() %>% 
+  mutate(id = row_number()) %>% 
+  mutate(roundNum = paste0('round', roundNum, collapse = '')) %>%
+  spread(roundNum, individualM) %>%
+  mutate(diffPct = (round1 - round6)/round1) %>%
+  filter(diffPct >= 0) %>% # Filter out handful of people who skipped first round...
+  select(gameid, diffPct)
+
+turnTakingEfficiencyPlot <- ggplot(turnTaking %>% left_join(efficiency), aes(x = numListenerMsgs, y = diffPct)) +
+  geom_point() +
+  geom_smooth(method = 'lm') +
+  theme_bw() +
+  ylab("% reduction") +
+  xlab("# listener messages on 1st round")
+
+turnTakingEfficiency_lm <- summary(lm(diffPct ~ numListenerMsgs, data = efficiency %>% left_join(turnTaking)))
+turnTakingdf <- turnTakingEfficiency_lm$df[1]
+turnTakingCoefs <- turnTakingEfficiency_lm$coefficients[2,]
+turnTakingResult <- paste0("t(", turnTakingdf, ") = ", round(turnTakingCoefs[3],2), ", p = ", round(turnTakingCoefs[4],2))
+```
+
+\textcolor{red}{rdh: I don't think we want this here as-is, since our model doesn't allow listener responses, but I figured I'd put it in for the draft just in case...}
+
+The theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argues that lexical conventions are established through a collaborative process requiring both speaker and listener input. This predicts that (1) listener feedback should be highest on the first round and drop off once meanings are agreed upon, and (2) dyads with more initial listener feedback should converge on more efficient conventions. We find both of these patterns in our data. The number of listener messages decreases significantly over the game ($t = -13.23$, see Fig. \ref{fig:turntaking}), and there is a weak but significant effect of initial listener messages on overall reduction (`r turnTakingResult`).
+
+## Distinctive words are more likely to conventionalize
+
+```{r PMI, fig.env = "figure", fig.pos = "b", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:pmi} Distinctiveness predicts conventionalization."}
+distinctiveness_d <- read.csv("../../analysis/tangrams/matchAndPMI.csv", header = TRUE) %>%
+  filter(pmi > 0) %>%
+  rename(num_occurrences = total) %>%
+  filter(num_occurrences > 1) %>%
+  #filter(POS == "NN") %>%
+  mutate(bunny = word == "bunny") %>%
+  mutate(a_match = word == "a")
+
+# summary(lm(match ~ pmi, data = distinctiveness_d))
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+ggplot(distinctiveness_d, aes(x = pmi, y = match)) +
+  geom_point(aes(size = num_occurrences)) +
+  geom_smooth(method = 'lm') +
+  theme_bw(8) +
+  scale_colour_manual(values=cbbPalette)+
+  theme(
+    plot.margin=unit(x=c(0,0,0,0),units="mm"),
+    legend.position="top") +
+  guides(color=FALSE, fill=guide_legend(title.position="top"))
+```
+
+see Fig. \ref{fig:pmi}.
+
+## Arbitrariness and path-dependence
+
+```{r entropy, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:entropy} High variability in referring expression across dyads; low variability within dyads."}
+
+oldGrams = read.csv("../../analysis/tangrams/handTagged.csv", quote = '"') %>%
+  mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
+  mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
+  do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
+                                       separate = F))) %>%
+  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
+  filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
+
+withinPair <- oldGrams %>% 
+  filter(tangramRef != 0) %>%
+  filter(tangramRef != "None") %>%
+  filter(tangramRef != "*") %>%
+  group_by(gameid, tangramRef) %>%
+  summarize(ent = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(cleanMsg, collapse = " ")))))))) %>%
+  group_by(tangramRef) %>%
+  summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent))) 
+
+acrossPair <- oldGrams %>% 
+  filter(tangramRef != 0) %>%
+  filter(tangramRef != 'None') %>%
+  filter(tangramRef != '*') %>%
+  group_by(tangramRef, roundNum) %>% 
+  summarize(acrossEnt = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(cleanMsg, collapse = " ")))))))) %>%
+  left_join(withinPair, by = "tangramRef") %>%
+  gather(type, entropy, acrossEnt, withinEnt)
+
+ggplot(acrossPair, aes(x = roundNum, y = entropy, 
+                       color = type, linetype = tangramRef)) +
+  geom_line() +
+  theme_bw(8)
+``````
+
+see Fig. \ref{fig:entropy}
+
 # Model
 
-While simple evolutionary or agent-based models have previously been used to investigate the dynamics of *global* convention formation in signalling games [@ShohamTennenholtz97_EmergenceOfConventions;@Delgado02_ConventionsNetworks;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems], relatively little modeling work has focused on the cognitive mechanisms supporting emergence of ad hoc conventions during shorter dyadic interactions. In fact, the systematic reduction in referring expressions within an interaction poses some problems for these classes of models. Evolutionary models 
+While simple evolutionary or agent-based models have previously been used to investigate the dynamics of *global* convention formation in signalling games [@ShohamTennenholtz97_EmergenceOfConventions;@Delgado02_ConventionsNetworks;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems], relatively little modeling work has focused on the cognitive mechanisms supporting emergence of local conventions during shorter dyadic interactions. In fact, the convergence on semi-arbitrary yet efficient referring expressions within an interaction poses some problems for these classes of models. Pure evolutionary models do not provide a mechanism for agents to adapt their signaling strategy within a lifetime, let alone within an extended interaction. Emergence-through-use models, such as the one proposed by @Barr2004_ConventionalCommunicationSystems, use simple updating rules based on success or failure in an interaction, but are not easily extended to richer language models and cannot straightforwardly explain the sharp reduction in word length across a repeated interaction with a single partner \textcolor{red}{rdh: might want to actually show this if I'm going to make that argument...}
 
-Our probabilistic model makes use of two recent innovations in modeling language understanding using Rational Speech Act (RSA) models: lexical uncertainty [@BergenLevyGoodman16_LexicalUncertainty] and a noisy communication channel [@GibsonBergenPiantadosi13_RationalIntegrationNoisy;@BergenGoodman15_StrategicUseOfNoise]. The former introduces initial uncertainty over the exact meanings of words in the lexicon, such that agents jointly infer the meanings of utterances along with the information those utterances are being used to communicate. The latter introduces a perceptual noise model by which utterances can be corrupted during transmission; listeners invert this noise model to infer likely intended utterances from their noisy percepts, and speakers take this source of noise into account when selecting what utterance to use. 
+Here, we present a probabilistic model of language production under uncertainty, which captures several of the signiture properties of conventions shown above. This model belongs to the family of Rational Speech Act (RSA) models, which have been successful in explaining a wide range of linguistic phenomena -- including scalar implicature, adjectival vagueness, overinformativeness, indirect questions, and non-literal language use -- as arising from a process of recursive social reasoning. Most previous applications of RSA have focused on the listener's problem of language comprehension, but the puzzle of conventionalization is primarily a question of speaker production. An $n$th order pragmatic speaker trying to convey a particular state of affairs $s \in \mathcal{S}$ assuming lexicon $\mathcal{L}$ is assumed to select an utterance $u \in \mathcal{U}$ by trading off its expected informativity (with respect to a rational listener agent) against its cost, usually based on length [@GoodmanFrank16_RSATiCS]:
 
-We gradually build up to this combined model by tackling simpler sub-problems, beginning with a reimplementation of the pure lexical uncertainty model from @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS. 
+$$S_n(u | s, \mathcal{L}) \propto \exp{\alpha \log L_n(s | u, \mathcal{L}) - \textrm{cost}(u)}$$
+
+where $\alpha$ is an optimality parameter controlling the extent to which the speaker maximizes over the expected listener distribution. The listener, in turn, reasons about what utterances would be most likely to be produced by a speaker intending to convey $u$:
+
+$$L_n(s | u, \mathcal{L}) \propto P(s) S_{n-1}(u | s, \mathcal{L})$$
+
+This recursion bottoms out in a *literal listener* who directly looks up the meaning of the utterance in the lexicon:
+
+$$L_0(s | u, \mathcal{L}) \propto \mathcal{L}(u, s)\cdot P(s)$$
+
+As in other recent applications of RSA, we take meanings as mappings from utterance-state pairs to the interval $[0,1]$. These real-valued scores represent the extent to which the utterance applies to the state, and are normalized to sum to one for a given utterance: 
+
+Our approach to convention-formation begins with the additional assumption of *lexical uncertainty* [@SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS;@BergenLevyGoodman16_LexicalUncertainty]. In other words, we assume that instead of having perfect knowledge of $\mathcal{L}$, the speaker has uncertainty over the exact meanings of lexical items in the current context (i.e. it is initially unclear which of the ambiguous tangram shapes "the skater" might refer to) and learns these meanings through repeated interactions with a knowledgeable partner:
+
+$$P(\mathcal{L} | \{s_i, u_i\}) = P(\mathcal{L})\prod_i P(\{s_i, u_i\}|\mathcal{L})$$
+
+where $\{s_i, u_i\}$ is a set of observations of states $s_i$ and $u_i$ coming from previous exchanges. The speaker then marginalize over this posterior distribution when reasoning about the listener, giving rise to the form of the pragmatic listener model we use throughout our model results (only going up to $n = 1$ in our recusion for simplicity):
+
+$$S(u | s) = \exp( \alpha\log\left(\sum_{\mathcal{L}} P(\mathcal{L} | \{s_i, u_i\}) L_1(s | u, \mathcal{L})\right) - \textrm{cost}(u) )$$
+
+Following @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS, we begin by showing how this speaker can converge on an arbitrary but stable naming convention despite having no *a priori* beliefs about which names correspond to which objects.
 
 ## Arbitrariness
 
-A critical aspect of social conventions, and linguistic conventions in particular, is their arbitrariness: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. However, recent studies  emphasizing specific ways in which language is non-arbitrary [@MonaghanEtAl14_ArbitraryLanguage; @DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity; @BlasiEtAl16_SoundMeaningAssociation] force us to consider exactly in what sense arbitrariness is an essential property of conventions. Are all conventions created equal? 
+Consider an environment with two abstract shapes ($\{s_1, s_2\}$), where the speaker must choose between two utterances ($\{u_1, u_2\}$) with equal cost. Their prior $P(\mathcal{L})$ over the meaning of each utterance is given by a Dirichlet distribution, so on the first round both utterances are equally likely to apply to either shape. The speaker, then, is equally likely to produce either utterance just by chance. 
 
-<!-- # General Formatting Instructions  -->
+On the second round, however, the speaker uses the listener's selection of a shape from the past round to update their posterior over lexicons. Assuming a knowledgeable listener, lexicons in which the chosen utterance corresponds to the chosen shape become more likely, so the . 
 
-<!-- For general information about authoring in markdown, see **[here](http://rmarkdown.rstudio.com/authoring_basics.html).** -->
-
-<!-- For standard spoken papers and standard posters, the entire  -->
-<!-- contribution (including figures, references, everything) can be  -->
-<!-- no longer than six pages. For abstract posters, the entire contribution  -->
-<!-- can be no longer than one page. For symposia, the entire contribution  -->
-<!-- can be no longer than two pages. -->
-
-<!-- The text of the paper should be formatted in two columns with an -->
-<!-- overall width of 7 inches (17.8 cm) and length of 9.25 inches (23.5 -->
-<!-- cm), with 0.25 inches between the columns. Leave two line spaces -->
-<!-- between the last author listed and the text of the paper. The left -->
-<!-- margin should be 0.75 inches and the top margin should be 1 inch. -->
-<!-- \textbf{The right and bottom margins will depend on whether you use -->
-<!-- U.S. letter or A4 paper, so you must be sure to measure the width of -->
-<!-- the printed text.} Use 10 point Times Roman with 12 point vertical -->
-<!-- spacing, unless otherwise specified. -->
-
-<!-- The title should be in 14 point, bold, and centered. The title should -->
-<!-- be formatted with initial caps (the first letter of content words -->
-<!-- capitalized and the rest lower case). Each author's name should appear -->
-<!-- on a separate line, 11 point bold, and centered, with the author's -->
-<!-- email address in parentheses. Under each author's name list the -->
-<!-- author's affiliation and postal address in ordinary 10 point  type. -->
-
-<!-- Indent the first line of each paragraph by 1/8~inch (except for the -->
-<!-- first paragraph of a new section). Do not add extra vertical space -->
-<!-- between paragraphs. -->
-
-<!-- # First-Level Headings -->
-
-<!-- First level headings should be in 12 point , initial caps, bold and -->
-<!-- centered. Leave one line space above the heading and 1/4~line space -->
-<!-- below the heading. -->
-
-<!-- ## Second-Level Headings -->
-
-<!-- Second level headings should be 11 point , initial caps, bold, and -->
-<!-- flush left. Leave one line space above the heading and 1/4~ line -->
-<!-- space below the heading. -->
-
-<!-- ### Third-Level Headings -->
-
-<!-- Third-level headings should be 10 point , initial caps, bold, and flush -->
-<!-- left. Leave one line space above the heading, but no space after the -->
-<!-- heading. -->
-
-<!-- # Formalities, Footnotes, and Floats -->
-
-<!-- Use standard APA citation format. Citations within the text should -->
-<!-- include the author's last name and year. If the authors' names are -->
-<!-- included in the sentence, place only the year in parentheses, as in -->
-<!-- [-@NewellSimon1972a], but otherwise place the entire reference in -->
-<!-- parentheses with the authors and year separated by a comma -->
-<!-- [@NewellSimon1972a]. List multiple references alphabetically and -->
-<!-- separate them by semicolons [@ChalnickBillman1988a; @NewellSimon1972a].  -->
-<!-- Use the et. al. construction only after listing all the authors to a -->
-<!-- publication in an earlier reference and for citations with four or -->
-<!-- more authors. -->
-
-<!-- For more information on citations in R Markdown, see **[here](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html#citations).** -->
-
-<!-- ## Footnotes -->
-
-<!-- Indicate footnotes with a number\footnote{Sample of the first -->
-<!-- footnote.} in the text. Place the footnotes in 9 point type at the -->
-<!-- bottom of the page on which they appear. Precede the footnote with a -->
-<!-- horizontal rule.\footnote{Sample of the second footnote.} -->
-
-<!-- ## Figures -->
-
-<!-- All artwork must be very dark for purposes of reproduction and should -->
-<!-- not be hand drawn. Number figures sequentially, placing the figure -->
-<!-- number and caption, in 10 point, after the figure with one line space -->
-<!-- above the caption and one line space below it. If necessary, leave extra white space at -->
-<!-- the bottom of the page to avoid splitting the figure and figure -->
-<!-- caption. You may float figures to the top or bottom of a column, or -->
-<!-- set wide figures across both columns. -->
-
-<!-- ## Two-column images -->
-
-<!-- You can read local images using png package for example and plot  -->
-<!-- it like a regular plot using grid.raster from the grid package.  -->
-<!-- With this method you have full control of the size of your image. **Note: Image must be in .png file format for the readPNG function to work.** -->
-
-<!-- You might want to display a wide figure across both columns. To do this, you change the `fig.env` chunk option to `figure*`. To align the image in the center of the page, set `fig.align` option to `center`. To format the width of your caption text, you set the `num.cols.cap` option to `2`. -->
-
-<!-- ```{r 2-col-image, fig.env = "figure*", fig.pos = "h", fig.width=4, fig.height=2, fig.align = "center", set.cap.width=T, num.cols.cap=2, fig.cap = "This image spans both columns. And the caption text is limited to 0.8 of the width of the document."} -->
-<!-- ``` -->
-
-<!-- ## One-column images -->
-
-<!-- Single column is the default option, but if you want set it explicitly, set `fig.env` to `figure`. Notice that the `num.cols` option for the caption width is set to `1`. -->
-
-<!-- ```{r image, fig.env = "figure", fig.pos = "H", fig.align='center', fig.width=2, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{tab:tab2} Caption caption caption"} -->
-<!-- ``` -->
+## Reduction of modifiers & conjunctions
 
 
-<!-- ## R Plots -->
 
-<!-- You can use R chunks directly to plot graphs. And you can use latex floats in the -->
-<!-- fig.pos chunk option to have more control over the location of your plot on the page. For more information on latex placement specifiers see **[here](https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions)** -->
+## Reduction of hedges
 
-<!-- ```{r plot, fig.env="figure", fig.pos = "H", fig.align = "center", fig.width=2, fig.height=2, fig.cap = "R plot" } -->
-<!-- x <- 0:100 -->
-<!-- y <- 2 * (x + rnorm(length(x), sd = 3) + 3) -->
+Something with QUDs or signaling uncertainty, which might actually work for the above cases too
 
-<!-- ggplot2::ggplot(data = data.frame(x, y),  -->
-<!--        aes(x = x, y = y)) +  -->
-<!--   geom_point() +  -->
-<!--   geom_smooth(method = "lm") -->
-<!-- ``` -->
+# General Discussion
 
+A critical aspect of social conventions, and linguistic conventions in particular, is their arbitrariness: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. However, recent studies  emphasizing specific ways in which language is non-arbitrary [@MonaghanEtAl14_ArbitraryLanguage; @DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity; @BlasiEtAl16_SoundMeaningAssociation] force us to consider exactly in what sense arbitrariness is an essential property of conventions. In our model, we move to a more probabilistic notion of arbitrariness. The initial speaker distribution may not be perfectly uniform, but different values will nonetheless be sampled in different games. Because the result of this initial choice leads the speaker to update their beliefs about the lexicon in a path-dependent trajectory, this utterance becomes increasingly probable over future rounds. When observing a large number of games, as we did in our experimental analyses, we can therefore still observe substantial variability.
 
-<!-- ## Tables -->
+Noisy communication channel [@GibsonBergenPiantadosi13_RationalIntegrationNoisy;@BergenGoodman15_StrategicUseOfNoise]?. Utterances can be corrupted during transmission; listeners invert this noise model to infer likely intended utterances from their noisy percepts, and speakers take this source of noise into account when selecting what utterance to use. 
 
-<!-- Number tables consecutively; place the table number and title (in -->
-<!-- 10 point) above the table with one line space above the caption and -->
-<!-- one line space below it, as in Table 1. You may float -->
-<!-- tables to the top or bottom of a column, set wide tables across both -->
-<!-- columns. -->
-
-<!-- You can use the xtable function in the xtable package. -->
-
-<!-- ```{r xtable, results="asis"} -->
-<!-- n <- 100 -->
-<!-- x <- rnorm(n) -->
-<!-- y <- 2*x + rnorm(n) -->
-<!-- out <- lm(y ~ x) -->
-
-<!-- tab1 <- xtable::xtable(summary(out)$coef, digits=c(0, 2, 2, 1, 2),  -->
-<!--                       caption = "This table prints across one column.") -->
-
-<!-- print(tab1, type="latex", comment = F, table.placement = "H") -->
-<!-- ``` -->
+QUD model
 
 # Acknowledgements
 
