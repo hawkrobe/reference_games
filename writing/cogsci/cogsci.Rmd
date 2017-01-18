@@ -388,12 +388,12 @@ rownames(topWords) <- c('unigrams', 'bigrams')
 print(xtable(topWords, label = 'tab:words'), floating.environment = "table*", comment=F)
 ```
 
-```{r modelResult, fig.env = "figure", fig.pos = "t", fig.align='left', fig.width=1, fig.height=1, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelResult} Example trial"}
+```{r modelResult, fig.env = "figure", fig.pos = "t", fig.align='left', fig.width=1, fig.height=1, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelResult} "}
 img1 <- png::readPNG("figs/2ae683.png")
 grid::grid.raster(img1)
 ```
 
-```{r modelResult2, fig.env = "figure", fig.pos = "t", fig.align='right', fig.width=1, fig.height=1, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelResult} Example trial"}
+```{r modelResult2, fig.env = "figure", fig.pos = "t", fig.align='right', fig.width=1, fig.height=1, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelResult} todo: generate these using rwebppl"}
 img2 <- png::readPNG("figs/dfc0c5.png")
 grid::grid.raster(img2)
 ```
