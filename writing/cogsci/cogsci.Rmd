@@ -312,7 +312,7 @@ ggplot(acrossPair, aes(x = roundNum, y = entropy,
                        color = type, linetype = tangramRef)) +
   geom_line() +
   theme_bw(8)
-``````
+```
 
 see Fig. \ref{fig:entropy}
 
@@ -322,7 +322,7 @@ While simple evolutionary or agent-based models have previously been used to inv
 
 Here, we present a probabilistic model of language production under uncertainty, which captures several of the signiture properties of conventions shown above. This model belongs to the family of Rational Speech Act (RSA) models, which have been successful in explaining a wide range of linguistic phenomena -- including scalar implicature, adjectival vagueness, overinformativeness, indirect questions, and non-literal language use -- as arising from a process of recursive social reasoning. Most previous applications of RSA have focused on the listener's problem of language comprehension, but the puzzle of conventionalization is primarily a question of speaker production. An $n$th order pragmatic speaker trying to convey a particular state of affairs $s \in \mathcal{S}$ assuming lexicon $\mathcal{L}$ is assumed to select an utterance $u \in \mathcal{U}$ by trading off its expected informativity (with respect to a rational listener agent) against its cost, usually based on length [@GoodmanFrank16_RSATiCS]:
 
-$$S_n(u | s, \mathcal{L}) \propto \exp{\alpha \log L_n(s | u, \mathcal{L}) - \textrm{cost}(u)}$$
+$$S_n(u | s, \mathcal{L}) \propto \exp{\left(\alpha \log L_n(s | u, \mathcal{L}) - \textrm{cost}(u)\right)}$$
 
 where $\alpha$ is an optimality parameter controlling the extent to which the speaker maximizes over the expected listener distribution. The listener, in turn, reasons about what utterances would be most likely to be produced by a speaker intending to convey $u$:
 
@@ -332,26 +332,83 @@ This recursion bottoms out in a *literal listener* who directly looks up the mea
 
 $$L_0(s | u, \mathcal{L}) \propto \mathcal{L}(u, s)\cdot P(s)$$
 
-As in other recent applications of RSA, we take meanings as mappings from utterance-state pairs to the interval $[0,1]$. These real-valued scores represent the extent to which the utterance applies to the state, and are normalized to sum to one for a given utterance: 
+As in several other recent applications of RSA [@GrafEtAl16_BasicLevel], we take meanings as mappings from utterance-state pairs to the interval $[0,1]$. These real-valued scores represent the extent to which the utterance applies to the state, and are normalized to sum to one for a given utterance: 
 
 Our approach to convention-formation begins with the additional assumption of *lexical uncertainty* [@SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS;@BergenLevyGoodman16_LexicalUncertainty]. In other words, we assume that instead of having perfect knowledge of $\mathcal{L}$, the speaker has uncertainty over the exact meanings of lexical items in the current context (i.e. it is initially unclear which of the ambiguous tangram shapes "the skater" might refer to) and learns these meanings through repeated interactions with a knowledgeable partner:
 
 $$P(\mathcal{L} | \{s_i, u_i\}) = P(\mathcal{L})\prod_i P(\{s_i, u_i\}|\mathcal{L})$$
 
-where $\{s_i, u_i\}$ is a set of observations of states $s_i$ and $u_i$ coming from previous exchanges. The speaker then marginalize over this posterior distribution when reasoning about the listener, giving rise to the form of the pragmatic listener model we use throughout our model results (only going up to $n = 1$ in our recusion for simplicity):
+where $\{s_i, u_i\}$ is a set of observations of states $s_i$ and $u_i$ coming from previous exchanges. \textcolor{red}{TODO: this notation makes the subscripts when describing the space of states/utterances confusing}. The speaker then marginalize over this posterior distribution when reasoning about the listener, giving rise to the form of the pragmatic listener model we use throughout our model results (only going up to $n = 1$ in our recusion for simplicity):
 
 $$S(u | s) = \exp( \alpha\log\left(\sum_{\mathcal{L}} P(\mathcal{L} | \{s_i, u_i\}) L_1(s | u, \mathcal{L})\right) - \textrm{cost}(u) )$$
 
-Following @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS, we begin by showing how this speaker can converge on an arbitrary but stable naming convention despite having no *a priori* beliefs about which names correspond to which objects.
+This model is implemented in the probabilistic programming language WebPPL [@GoodmanStuhlmuller14_DIPPL]\footnote{All results can be reproduced running our code in the browser at http://forestdb.org/models/conventions.html}. Following  @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS, we begin by showing how a random initial choice is taken to be evidence for a particular lexicon and becomes the base for successful communication even though neither party knows its meaning at the outset.
 
 ## Arbitrariness
 
-Consider an environment with two abstract shapes ($\{s_1, s_2\}$), where the speaker must choose between two utterances ($\{u_1, u_2\}$) with equal cost. Their prior $P(\mathcal{L})$ over the meaning of each utterance is given by a Dirichlet distribution, so on the first round both utterances are equally likely to apply to either shape. The speaker, then, is equally likely to produce either utterance just by chance. 
+Consider an environment with two abstract shapes ($\{s_1, s_2\}$), where the speaker must choose between two utterances ($\{u_1, u_2\}$) with equal cost. Their prior $P(\mathcal{L})$ over the meaning of each utterance is given by a Dirichlet distribution, so on the first round both utterances are equally likely to apply to either shape. If the speaker was trying to get their partner to pick $s_1$, then, they would assign .5 probability to both utterances, randomly sample one (say, $u_1$), and observe the listener's selection of a shape (say, $s_1$).
 
-On the second round, however, the speaker uses the listener's selection of a shape from the past round to update their posterior over lexicons. Assuming a knowledgeable listener, lexicons in which the chosen utterance corresponds to the chosen shape become more likely, so the . 
+On the second round, the speaker uses the  observed pair $\{u_1, s_1\}$ to update their posterior over lexicons. Assuming a knowledgeable listener, lexicons in which the chosen utterance corresponds to the chosen shape become more likely, so the likelihood of producing that utterance to communicate $s_1$ again rises to 0.67. Because they learn about the lexicon by reasoning about observations coming from a pragmatic listener, they also have beliefs about the meanings of unheard utterances. If the agent must communicate $s_2$, their likelihood of producing $u_2$ has also risen to 0.67. Thus, the initial symmetry between the meanings can be broken by an initial random choice, leading to completely arbitrary but stable mappings. 
 
 ## Reduction of modifiers & conjunctions
 
+```{r xtable, results="asis"}
+unigrams <- read_csv("../../analysis/tangrams/wordCounts.csv", col_names = T) %>%
+  group_by(word, POS, roundNum) %>% 
+  summarize(count = sum(count)) %>% 
+  rowwise() %>%
+  mutate(roundNum = paste0("round", roundNum, collapse = "")) %>%
+  spread(roundNum, count) %>%
+  filter(round1 > 10) %>%
+  mutate(diffSize = round1 - round6,
+         diffPct = (round1 - round6)/round1) %>% 
+  arrange(desc(diffSize)) %>%
+  select(word) %>% 
+  filter(word != ',') %>%
+  filter(word != '#') %>%
+  head(n = 10)
+
+bigrams <- read_csv("../../analysis/tangrams/bigramCounts.csv", col_names = T) %>%
+  group_by(word, roundNum) %>% 
+  summarize(count = sum(count)) %>% 
+  rowwise() %>%
+  mutate(roundNum = paste0("round", roundNum, collapse = "")) %>%
+  spread(roundNum, count) %>%
+  filter(round1 > 10) %>%
+  mutate(diffSize = round1 - round6,
+         diffPct = (round1 - round6)/round1) %>% 
+  arrange(desc(diffSize)) %>% 
+  select(word) %>% 
+  rename(bigrams = word) %>%
+  head(n = 10)
+
+topWords <- t(cbind(unigrams, bigrams))
+colnames(topWords) <- NULL
+rownames(topWords) <- c('unigrams', 'bigrams')
+print(xtable(topWords, label = 'tab:words'), floating.environment = "table*", comment=F)
+```
+
+```{r modelResult, fig.env = "figure", fig.pos = "t", fig.align='left', fig.width=1, fig.height=1, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelResult} Example trial"}
+img1 <- png::readPNG("figs/2ae683.png")
+grid::grid.raster(img1)
+```
+
+```{r modelResult2, fig.env = "figure", fig.pos = "t", fig.align='right', fig.width=1, fig.height=1, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelResult} Example trial"}
+img2 <- png::readPNG("figs/dfc0c5.png")
+grid::grid.raster(img2)
+```
+
+Examining the list of most frequently dropped unigrams and bigrams \ref{tab:words}, we see that many are informative clauses and modifiers, including the conjunction 'and'. Next, we show that by (1) adding a small initial bias on the meanings of utterances, and (2) extending our grammar to include conjunctions of lexical items, it is natural for a speaker to produce a (redundant) conjunction on the first trial and to drop one of the constituents shortly after (see \ref{fig:modelResult}).
+
+\textcolor{red}{TODO: set-up scenario}
+
+We see that there’s an initial preference for the longer conjunction of "type_a" and "color_a" despite the utterance cost because
+
+(1) there's an initial bias in the lexicon prior for 'a' utterances to correspond to properties with the value 0 (thus why neither of the 'b' utterances are assigned any probability)
+
+(2) the conjunction hedges against unlikely but possible lexicons where one or the other utterance actually corresponds to a property with value 1.
+
+After observing an example of this conjunction referring to the first state, the conjunction actually becomes more preferred by the speaker, as it increases the probability of utterances where both type_a and color_a mean the first state. The evidence is indeterminate about the separate meanings of "type_a" and "color_a". Because of cost considerations, however, the shorter utterances are still assigned some probability. Once the speaker produces one or the other short utterances by chance, then, it breaks the symmetry and this shorter utterance becomes the most probable in future rounds.
 
 
 ## Reduction of hedges
@@ -362,9 +419,11 @@ Something with QUDs or signaling uncertainty, which might actually work for the 
 
 A critical aspect of social conventions, and linguistic conventions in particular, is their arbitrariness: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. However, recent studies  emphasizing specific ways in which language is non-arbitrary [@MonaghanEtAl14_ArbitraryLanguage; @DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity; @BlasiEtAl16_SoundMeaningAssociation] force us to consider exactly in what sense arbitrariness is an essential property of conventions. In our model, we move to a more probabilistic notion of arbitrariness. The initial speaker distribution may not be perfectly uniform, but different values will nonetheless be sampled in different games. Because the result of this initial choice leads the speaker to update their beliefs about the lexicon in a path-dependent trajectory, this utterance becomes increasingly probable over future rounds. When observing a large number of games, as we did in our experimental analyses, we can therefore still observe substantial variability.
 
-Noisy communication channel [@GibsonBergenPiantadosi13_RationalIntegrationNoisy;@BergenGoodman15_StrategicUseOfNoise]?. Utterances can be corrupted during transmission; listeners invert this noise model to infer likely intended utterances from their noisy percepts, and speakers take this source of noise into account when selecting what utterance to use. 
+Is a noisy communication channel useful [@GibsonBergenPiantadosi13_RationalIntegrationNoisy;@BergenGoodman15_StrategicUseOfNoise]?. Utterances can be corrupted during transmission; listeners invert this noise model to infer likely intended utterances from their noisy percepts, and speakers take this source of noise into account when selecting what utterance to use. 
 
-QUD model
+What does our model say about common ground? It's situated somewhere between the non-representational agents of @Barr2004_ConventionalCommunicationSystems and the explicit representation of a common ground memory store used by Brown-Schmidt (XXXX). Agents coordinate on conventions by updating their beliefs based on the same objective history of observations. Still, our model will not be able to account for some empirical effects, such as the impact of explicit listener feedback on the formation of efficient conventions, without relaxing the assumption that one's partner knows the true lexicon with complete certainty. Listeners often reply with question or paraphrases or suggestions for better names. This will require our RSA model to deal with extended dialogues.
+
+While our model was explicitly designed to account for a language phenomenon, many behavioral conventions share the same properties. For example, the real-time coordination games used in @HawkinsGoldstone16_SocialConventions may not require players to reason about a structured lexicon with noise, but an action policy representation may play a similar role. 
 
 # Acknowledgements
 
