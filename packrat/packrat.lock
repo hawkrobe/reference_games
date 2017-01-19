@@ -218,6 +218,12 @@ Version: 2.17.0
 Hash: e7d520c2a9597b303f54499e3bd90644
 Requires: gtools
 
+Package: gdtools
+Source: CRAN
+Version: 0.1.3
+Hash: b83d06c5333560b37ff0cc05c9725daa
+Requires: Rcpp, withr
+
 Package: geiger
 Source: CRAN
 Version: 2.0.6
@@ -625,6 +631,11 @@ Source: CRAN
 Version: 0.3.4
 Hash: c98cc0ee11a389f397c38ddb3762880c
 Requires: ggplot2, gridExtra
+
+Package: withr
+Source: CRAN
+Version: 1.0.2
+Hash: 774eb7be9087cdc24b53b74e5359cfac
 
 Package: wordcloud
 Source: CRAN

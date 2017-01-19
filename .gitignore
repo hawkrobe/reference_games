@@ -9,7 +9,6 @@ models/wppl-color/node_modules/
 models/.ipynb_checkpoints/
 models/stanza/
 models/coop-nets/
-reference_games.Rproj
 .Rproj.user
 analysis/tangrams/.ipynb_checkpoints/
 analysis/.ipynb_checkpoints/
@@ -26,5 +25,4 @@ cogsci.tex
 tangramsManuscript.pdf
 *.synctex.gz
 *.sublime-*
-packrat/lib*/
-packrat/src/
+/writing/cogsci/figs/*
