@@ -31,10 +31,8 @@ library(entropy)
 library(tm)
 library(tidyr)
 library(dplyr)
-library(qdap)
 library(stringr)
 library(knitr)
-library(NLP)
 library(readr)
 library(png)
 library(grid)
@@ -83,9 +81,8 @@ badGames <- union(incompleteIDs, nonNativeSpeakerIDs)
 # filter & preprocess
 tangramCombined <- rawTangramCombined %>%
   filter(!(gameid %in% badGames)) %>%
-  mutate(numRawWords = word_count(contents, digit.remove = F)) %>%
+  mutate(numRawWords = str_count(contents, "\\S+")) %>%
   filter(!is.na(numRawWords)) # filter out pure punctuation messages
-  #filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
 
 numGames <- length(unique(tangramCombined$gameid))
 numUtterances <- length(tangramCombined$contents)
@@ -258,67 +255,26 @@ turnTakingResult <- paste0("t(", turnTakingdf, ") = ", round(turnTakingCoefs[3],
 
 The theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argues that lexical conventions are established through a collaborative process requiring both speaker and listener input. This predicts that (1) listener feedback should be highest on the first round and drop off once meanings are agreed upon, and (2) dyads with more initial listener feedback should converge on more efficient conventions. We find both of these patterns in our data. The number of listener messages decreases significantly over the game ($t = -13.23$, see Fig. \ref{fig:turntaking}), and there is a weak but significant effect of initial listener messages on overall reduction (`r turnTakingResult`).
 
-## Distinctive words are more likely to conventionalize
-
-```{r PMI, fig.env = "figure", fig.pos = "b", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:pmi} Distinctiveness predicts conventionalization."}
-distinctiveness_d <- read.csv("../../analysis/tangrams/matchAndPMI.csv", header = TRUE) %>%
-  filter(pmi > 0) %>%
-  rename(num_occurrences = total) %>%
-  filter(num_occurrences > 1) %>%
-  #filter(POS == "NN") %>%
-  mutate(bunny = word == "bunny") %>%
-  mutate(a_match = word == "a")
-
-# summary(lm(match ~ pmi, data = distinctiveness_d))
-cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-
-ggplot(distinctiveness_d, aes(x = pmi, y = match)) +
-  geom_point(aes(size = num_occurrences)) +
-  geom_smooth(method = 'lm') +
-  theme_bw(8) +
-  scale_colour_manual(values=cbbPalette)+
-  theme(
-    plot.margin=unit(x=c(0,0,0,0),units="mm"),
-    legend.position="top") +
-  guides(color=FALSE, fill=guide_legend(title.position="top"))
-```
-
-see Fig. \ref{fig:pmi}.
-
 ## Arbitrariness and path-dependence
 
 ```{r entropy, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:entropy} High variability in referring expression across dyads; low variability within dyads."}
 
-oldGrams = read.csv("../../analysis/tangrams/handTagged.csv", quote = '"') %>%
-  mutate(numRawWords = 1 + str_count(contents, fixed(" "))) %>%
-  mutate(strippedContents = str_replace_all(contents, "[^[:alnum:][:space:]']",' ')) %>%
-  do(mutate(., cleanMsg = rm_stopwords(.$strippedContents, tm::stopwords("english"), 
-                                       separate = F))) %>%
-  mutate(numCleanWords = 1 + str_count(cleanMsg, fixed(" "))) %>%
-  filter(numRawWords < mean(numRawWords) + 3*sd(numRawWords)) # Get rid of outliers
+## TODO: bootstrap errors, double-check that we're controlling for size of word distribution (right now might slightly misleading just because support of acrossPair distribution is much bigger...)
+withinPair <- tangramCombined %>% 
+  group_by(gameid) %>%
+  summarize(ent = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(contents, collapse = " ")))))))) %>%
+  summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent)))
 
-withinPair <- oldGrams %>% 
-  filter(tangramRef != 0) %>%
-  filter(tangramRef != "None") %>%
-  filter(tangramRef != "*") %>%
-  group_by(gameid, tangramRef) %>%
-  summarize(ent = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(cleanMsg, collapse = " ")))))))) %>%
-  group_by(tangramRef) %>%
-  summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent))) 
+acrossPair <- tangramCombined %>% 
+  group_by(roundNum) %>% 
+  summarize(acrossEnt = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(contents, collapse = " "))))))))
+  # left_join(withinPair, by = "tangramRef") %>%
+  # gather(type, entropy, acrossEnt, withinEnt)
 
-acrossPair <- oldGrams %>% 
-  filter(tangramRef != 0) %>%
-  filter(tangramRef != 'None') %>%
-  filter(tangramRef != '*') %>%
-  group_by(tangramRef, roundNum) %>% 
-  summarize(acrossEnt = entropy(colSums(as.matrix(DocumentTermMatrix(Corpus(VectorSource(paste(cleanMsg, collapse = " ")))))))) %>%
-  left_join(withinPair, by = "tangramRef") %>%
-  gather(type, entropy, acrossEnt, withinEnt)
-
-ggplot(acrossPair, aes(x = roundNum, y = entropy, 
-                       color = type, linetype = tangramRef)) +
-  geom_line() +
-  theme_bw(8)
+# ggplot(acrossPair, aes(x = roundNum, y = entropy, 
+#                        color = type, linetype = tangramRef)) +
+#   geom_line() +
+#   theme_bw(8)
 ```
 
 see Fig. \ref{fig:entropy}
