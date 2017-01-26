@@ -107,7 +107,7 @@ After passing a short quiz about task instructions, participants were randomly a
 
 ## Results 
 
-### Preprocessing 
+<!-- ### Preprocessing  -->
 
 ```{r}
 # Note that this includes Nicki's old data...
@@ -115,15 +115,15 @@ tagCounts = tangramMsgs %>% group_by(tangramRef) %>% tally() %>% spread(tangramR
 pctTagged = 100*(1-(tagCounts$None/sum(tagCounts)))
 ```
 
-\textcolor{red}{rdh: as Mike points out, I think this was a valient but ultimately doomed attempt... We should either run the sequential version of the task, pay turkers to label the rest, or stick to analyses that don't require these tags (gotta leave something for the journal paper...)}
+<!-- \textcolor{red}{rdh: as Mike points out, I think this was a valient but ultimately doomed attempt... We should either run the sequential version of the task, pay turkers to label the rest, or stick to analyses that don't require these tags (gotta leave something for the journal paper...)} -->
 
-Since the task was conducted with minimally constrained language use, we began by tagging which tangram was being referred to, if any, in each message. Instead of hand-tagging nearly 10,000 items, we used a hybrid strategy. First, since many of the director's messages explicitly referred to a cell number, we first cross-referenced these numbers with the locations of each tangram in their array. This successfully labelled 38.4% of utterances. Next, we combined this automatically tagged data with a previously hand-tagged pilot corpus containing 3955 utterances, and created a 80/20 split to train and evaluate a classifier that maps utterances to tangram tags. Each utterance string was vectorized into a matrix of unigram and bigram counts, then transformed into a normalized tf-idf representation (which weights counts by their overall frequency in the corpus). 
+<!-- Since the task was conducted with minimally constrained language use, we began by tagging which tangram was being referred to, if any, in each message. Instead of hand-tagging nearly 10,000 items, we used a hybrid strategy. First, since many of the director's messages explicitly referred to a cell number, we first cross-referenced these numbers with the locations of each tangram in their array. This successfully labelled 38.4% of utterances. Next, we combined this automatically tagged data with a previously hand-tagged pilot corpus containing 3955 utterances, and created a 80/20 split to train and evaluate a classifier that maps utterances to tangram tags. Each utterance string was vectorized into a matrix of unigram and bigram counts, then transformed into a normalized tf-idf representation (which weights counts by their overall frequency in the corpus).  -->
 
-We trained our logistic classifier using stochastic gradient descent, yielding 75% accuracy on the test split. We then constructed an ROC curve examining the tradeoff between the true positive and false positive rate for different confidence thresholds, and selected a cautious threshold of 90% confidence that minimized the false positive rate to <5%. Finally, we used this threshold to label the subset of our full corpus where we are sufficiently confident. We iterated this process with batches of hand-tagging until `r round(pctTagged,2)`% of the corpus was assigned a tag.
+<!-- We trained our logistic classifier using stochastic gradient descent, yielding 75% accuracy on the test split. We then constructed an ROC curve examining the tradeoff between the true positive and false positive rate for different confidence thresholds, and selected a cautious threshold of 90% confidence that minimized the false positive rate to <5%. Finally, we used this threshold to label the subset of our full corpus where we are sufficiently confident. We iterated this process with batches of hand-tagging until `r round(pctTagged,2)`% of the corpus was assigned a tag. -->
 
 ## Reduction in raw length
 
-First, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation]. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
+First, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation], although perhaps due to our purely textual (vs. spoken) interface, participants in our task used much fewer words overall. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
 
 ```{r replicationfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:replication} Reduction in the mean length of utterance over time. Error bars represent 1 SE."}
 ggplot(tangramCombined %>% 
@@ -192,6 +192,10 @@ ggplot(posReduction, aes(x = POS, y = diffPctM, fill = cat)) +
 
 What kinds of words are most likely to be dropped as the game proceeds? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:POS} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. \textcolor{red}{rdh: adverbs are a bit of both... it includes words like 'up', 'down', 'just', 'so', and 'then'}
 
+## Reduction in meaningful clauses
+
+\textcolor{red}{to-do: use dependency parser to count dependent clauses and phrases...}
+
 ## Listener feedback aids conventionalization
 
 ```{r turntakingfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:turntaking} Ratio of messages sent by speaker relative to listener. Error bars represent 1 SE."}
@@ -251,7 +255,6 @@ turnTakingCoefs <- turnTakingEfficiency_lm$coefficients[2,]
 turnTakingResult <- paste0("t(", turnTakingdf, ") = ", round(turnTakingCoefs[3],2), ", p = ", round(turnTakingCoefs[4],2))
 ```
 
-\textcolor{red}{rdh: I don't think we want this here as-is, since our model doesn't allow listener responses, but I figured I'd put it in for the draft just in case...}
 
 The theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argues that lexical conventions are established through a collaborative process requiring both speaker and listener input. This predicts that (1) listener feedback should be highest on the first round and drop off once meanings are agreed upon, and (2) dyads with more initial listener feedback should converge on more efficient conventions. We find both of these patterns in our data. The number of listener messages decreases significantly over the game ($t = -13.23$, see Fig. \ref{fig:turntaking}), and there is a weak but significant effect of initial listener messages on overall reduction (`r turnTakingResult`).
 
@@ -281,7 +284,9 @@ see Fig. \ref{fig:entropy}
 
 # Model
 
-While simple evolutionary or agent-based models have previously been used to investigate the dynamics of *global* convention formation in signalling games [@ShohamTennenholtz97_EmergenceOfConventions;@Delgado02_ConventionsNetworks;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems], relatively little modeling work has focused on the cognitive mechanisms supporting emergence of local conventions during shorter dyadic interactions. In fact, the convergence on semi-arbitrary yet efficient referring expressions within an interaction poses some problems for these classes of models. Pure evolutionary models do not provide a mechanism for agents to adapt their signaling strategy within a lifetime, let alone within an extended interaction. Emergence-through-use models, such as the one proposed by @Barr2004_ConventionalCommunicationSystems, use simple updating rules based on success or failure in an interaction, but are not easily extended to richer language models and cannot straightforwardly explain the sharp reduction in word length across a repeated interaction with a single partner \textcolor{red}{rdh: might want to actually show this if I'm going to make that argument...}
+While simple evolutionary or agent-based models have previously been used to investigate the dynamics of *global* convention formation in signalling games [@ShohamTennenholtz97_EmergenceOfConventions;@Delgado02_ConventionsNetworks;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems], relatively little modeling work has focused on the cognitive mechanisms supporting emergence of local conventions during shorter dyadic interactions. In fact, the convergence on semi-arbitrary yet efficient referring expressions within an interaction poses some problems for these classes of models. 
+
+Pure evolutionary models do not provide a mechanism for agents to adapt their signaling strategy within a lifetime, let alone within an extended interaction. Emergence-through-use models, such as the one proposed by @Barr2004_ConventionalCommunicationSystems, use simple updating rules based on success or failure in an interaction, but are not easily extended to richer language models and cannot straightforwardly explain the sharp reduction in word length across a repeated interaction with a single partner \textcolor{red}{rdh: might want to actually show this if I'm going to make that argument...}
 
 Here, we present a probabilistic model of language production under uncertainty, which captures several of the signiture properties of conventions shown above. This model belongs to the family of Rational Speech Act (RSA) models, which have been successful in explaining a wide range of linguistic phenomena -- including scalar implicature, adjectival vagueness, overinformativeness, indirect questions, and non-literal language use -- as arising from a process of recursive social reasoning. Most previous applications of RSA have focused on the listener's problem of language comprehension, but the puzzle of conventionalization is primarily a question of speaker production. An $n$th order pragmatic speaker trying to convey a particular state of affairs $s \in \mathcal{S}$ assuming lexicon $\mathcal{L}$ is assumed to select an utterance $u \in \mathcal{U}$ by trading off its expected informativity (with respect to a rational listener agent) against its cost, usually based on length [@GoodmanFrank16_RSATiCS]:
 
@@ -313,21 +318,24 @@ This model is implemented in the probabilistic programming language WebPPL [@Goo
 
 ## Arbitrariness
 
-```{r model1, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data."}
+```{r model1, cache=TRUE, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data."}
 res <- webppl(program_file = 'webpplModels/arbitrary.wppl',
              model_var = 'model',
-             inference_opts = list(method="enumerate"),
-             data = 1,
-             data_var = 'numSteps')
+             inference_opts = list(method="forward", samples=5000),
+             data = 6,
+             data_var = 'numSteps',
+             output_format = 'samples')
 accuracyRes <- res %>% 
   mutate(sampleId = row_number()) %>%
-  gather(infotype, val, -prob, -sampleId ) %>%
-  separate(infotype, c('type', 'roundNum'), remove=TRUE, sep = '_') %>%
+  gather(infotype, val, -sampleId ) %>%
+  separate(infotype, c('garbage', 'type', 'roundNum')) %>%
+  select(-garbage) %>%
   spread(type, val) %>%
   group_by(roundNum, acc) %>%
-  filter(acc == TRUE) %>%
-  summarize(prob = sum(prob)) %>%
+  tally() %>%   
+  mutate(prob = n / sum(n)) %>%
   ungroup() %>%
+  filter(acc == TRUE) %>%
   mutate(roundNum = as.numeric(roundNum)) 
 ggplot(accuracyRes, aes(x = roundNum, y = prob)) +
   ylab('accuracy') +
@@ -335,11 +343,70 @@ ggplot(accuracyRes, aes(x = roundNum, y = prob)) +
   theme_bw()
 ```
 
+```{r model_arbitrariness, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Accuracy rises as speaker and listener learn from the same data."}
+accuracyRes <- res %>%
+  mutate(sampleId = row_number()) %>%
+  gather(infotype, val, -sampleId ) %>%
+  separate(infotype, c('garbage', 'type', 'roundNum')) %>%
+  select(-garbage) %>%
+  spread(type, val) %>%
+  unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
+  unite(realPair, utt, response, sep = '<->', remove = F) %>% 
+  group_by(sampleId) %>% 
+  mutate(firstPair = first(realPair)) %>%
+  group_by(firstPair, roundNum, intendedPair) %>% 
+  tally() %>%
+  ungroup() %>%
+  complete(firstPair, roundNum, intendedPair, fill = list(n = 0)) %>%  
+  group_by(firstPair, roundNum) %>%
+  mutate(prob = n/sum(n)) %>%
+  filter(intendedPair == 't1<->label1') %>%
+  filter(firstPair %in% c('label1<->t1', 'label1<->t2'))
+
+ggplot(accuracyRes, aes(x = roundNum, y = prob, 
+                        group = firstPair, linetype =firstPair, color = firstPair)) +
+  ylab("S(label1 | t1) (expected)") +
+  geom_line() +
+  theme_bw(8) +
+  theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), legend.position="top")
+```
+
 Consider an environment with two abstract shapes ($\{s_1, s_2\}$), where the speaker must choose between two utterances ($\{u_1, u_2\}$) incurring equal cost. Their prior $P(\mathcal{L})$ over the meaning of each utterance is given by a (discretized) Dirichlet distribution, so on the first round both utterances are equally likely to apply to either shape. If the speaker was trying to get their partner to pick $s_1$, then, since each utterance is equally (un)informative, they would randomly sample one (say, $u_1$), and observe the listener's selection of a shape (say, $s_1$). On the next round, the speaker uses the observed pair $\{u_1, s_1\}$ to update their beliefs about the lexicon, uses these beliefs to generate a new utterance, and so on. To examine expected dynamics over multiple rounds, we enumerate over all possible trajectories our simulated speaker and listener models could produce.
 
-We observe several important qualitative effects in our simulations. First, the fact that a knowledgeable listener responds to utterance $u$ with $s$ provides evidence for lexicons in which $u$ is a good fit for $s$, hence the likelihood of the speaker using $u$ to refer to $s$ on subsequent rounds (see Fig.?) In other words, the initial symmetry between the meanings can be broken by initial random choices, leading to completely *arbitrary but stable mappings* in future rounds. Second, because the listener is also learning the lexicon from these observations under the same set of assumptions, they converge on a shared set of meanings; hence, expected *accuracy* rises on future rounds (see Fig. ?). Third, because one's partner is assumed to be pragmatic, agents can also learn about *unheard* utterances: observing $\{u_1, s_1\}$ also provides evidence for lexicons in which $u_2$ is a good fit for $s_2$ by standard Gricean reasoning. \textcolor{red}{rdh: maybe worth sketching out this reasoning, but it's kind of a minor point...} Finally, *failed references* lead to conventions just as effectively as successful references: if the speaker intends $s_1$ and says $u_1$, but then the listener incorrectly picks $s_2$, the speaker will take this as evidence that $u_1$ actually means $s_1$ and use it that way on subsequent rounds.
+We observe several important qualitative effects in our simulations. First, the fact that a knowledgeable listener responds to utterance $u$ with $s$ provides evidence for lexicons in which $u$ is a good fit for $s$, hence the likelihood of the speaker using $u$ to refer to $s$ increases on subsequent rounds (see Fig.\ref{fig:modelConvergence}). In other words, the initial symmetry between the meanings can be broken by initial random choices, leading to completely *arbitrary but stable mappings* in future rounds. Second, because the listener is also learning the lexicon from these observations under the same set of assumptions, they converge on a shared set of meanings; hence, expected *accuracy* rises on future rounds (see Fig. \ref{fig:modelAcc}). Third, because one's partner is assumed to be pragmatic, agents can also learn about *unheard* utterances: observing $\{u_1, s_1\}$ also provides evidence for lexicons in which $u_2$ is a good fit for $s_2$ by standard Gricean reasoning. Finally, *failed references* lead to conventions just as effectively as successful references: if the speaker intends $s_1$ and says $u_1$, but then the listener incorrectly picks $s_2$, the speaker will take this as evidence that $u_1$ actually means $s_1$ and use it that way on subsequent rounds.
+
+\textcolor{red}{possible TODOs: split out model curves by diff alphas (currently shown for alpha = 5)? Collapse across 'conventional systems', e.g. treat t1<->label1/t2<->label2 as one system and t1<->label2/t2<->label1 as another?}
 
 ## Reduction of modifiers \& conjunctions
+
+```{r modelReduction, cache=TRUE}
+conjunctionRes <- webppl(program_file = 'webpplModels/conjunction.wppl',
+             model_var = 'model',
+             inference_opts = list(method="forward", samples=1000),
+             data = list(numSteps=6, alpha=13, beta=1),
+             data_var = 'params',
+             output_format = 'samples')
+```
+
+```{r modelReductionPlot, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time"}
+reductionRes <- conjunctionRes %>% 
+  select(value.utt.0:value.acc.3) %>%
+  mutate(sampleId = row_number()) %>%
+  gather(infotype, val, -sampleId ) %>%
+  separate(infotype, c('garbage', 'type', 'roundNum')) %>%
+  spread(type, val) %>%
+  mutate(numWords = str_count(utt, "\\S+")) %>%
+  group_by(roundNum, garbage) %>%
+  summarize(m = mean(numWords), 
+            se = sd(numWords)/sqrt(length(numWords)))
+
+ggplot(reductionRes, aes(x = roundNum, y = m, group = garbage)) +
+  ylab('mean utterance length') +
+  geom_line() +
+  geom_errorbar(aes(ymax = m + se, ymin = m - se), width = .1) +  
+  theme_bw()
+```
+
 
 ```{r xtable, results="asis"}
 unigrams <- read_csv("../../analysis/tangrams/wordCounts.csv", col_names = T) %>%
@@ -377,17 +444,7 @@ rownames(topWords) <- c('unigrams', 'bigrams')
 print(xtable(topWords, label = 'tab:words'), floating.environment = "table*", comment=F)
 ```
 
-```{r modelResult, fig.env = "figure", fig.pos = "t", fig.align='left', fig.width=1, fig.height=1, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelResult} "}
-img1 <- png::readPNG("figs/2ae683.png")
-grid::grid.raster(img1)
-```
-
-```{r modelResult2, fig.env = "figure", fig.pos = "t", fig.align='right', fig.width=1, fig.height=1, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelResult} todo: generate these using rwebppl"}
-img2 <- png::readPNG("figs/dfc0c5.png")
-grid::grid.raster(img2)
-```
-
-Examining the list of most frequently dropped unigrams and bigrams \ref{tab:words}, we see that many are informative clauses and modifiers, including the conjunction 'and'. Next, we show that by (1) adding a small initial bias on the meanings of utterances, and (2) extending our grammar to include conjunctions of lexical items, it is natural for a speaker to produce a (redundant) conjunction on the first trial and to drop one of the constituents shortly after (see \ref{fig:modelResult}).
+Examining the list of most frequently dropped unigrams and bigrams \ref{tab:words}, we see that many are informative clauses and modifiers, including the conjunction 'and'. Next, we show that by (1) adding a small initial bias on the meanings of utterances, and (2) extending our grammar to include conjunctions of lexical items, it is natural for a speaker to produce a (redundant) conjunction on the first trial and to drop one of the constituents shortly after (see \ref{fig:modelReduction}).
 
 \textcolor{red}{TODO: set-up scenario}
 
