@@ -2,7 +2,7 @@
 var getTrajectories = function(data) {
   var keys = _.keys(data[0]);
   return reduce(function(key, memo) {
-    var timeBasedKeys = map(function(i) {return key + "_" + i}, _.range(data.length));
+    var timeBasedKeys = map(function(i) {return key + "." + i}, _.range(data.length));
     var vals = _.map(data, key);
     return _.extend(_.zipObject(timeBasedKeys, vals), memo)
   }, [], keys)
