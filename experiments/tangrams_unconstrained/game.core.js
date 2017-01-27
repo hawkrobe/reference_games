@@ -302,7 +302,6 @@ game_core.prototype.makeTrialList = function () {
       return tangram;
     });
   });
-  console.log(trialList);
   return(trialList);
 };
 
