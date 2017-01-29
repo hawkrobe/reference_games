@@ -8,7 +8,7 @@ author-information:
   \author{{\large \bf Robert Hawkins, Michael Frank, Noah Goodman} \\ \texttt{\{rxdh, mcfrank, ngoodman\}@stanford.edu} \\ Department of Psychology \\ Stanford University}
  
 abstract: 
-    ""
+    "What cognitive mechanisms support the emergence of conventions in repeated interactions? We argue that conventions form when agents assume they already exist and attempt to learn them through reasoning about knowledgeable, informative partners. We formalize this theory in a computational model of language understanding as social inference and demonstrate that it explains several key empirical signatures of conventionalization in language games including arbitrariness, path-dependence, and reduction in utterance length over time. In particular, we present results from a large-scale, multi-player replication of a classic *tangrams* paradigm which show that reduction is primarily due to the speaker dropping meaningful modifiers and clauses. According to our model, these additional sources of information are initially useful in hedging against uncertainty about the conventional lexicon but become redundant as the agent learns."
     
 keywords:
     "conventions; pragmatics; communication"
@@ -64,6 +64,8 @@ grid::grid.raster(img)
 
 # Large-scale tangrams replication
 
+## Methods
+
 ```{r}
 # Import message data...
 tangramMsgs = read_csv("../../analysis/tangrams/handTagged.csv") %>%
@@ -99,11 +101,11 @@ numUtterances <- length(tangramCombined$contents)
 
 ### Stimuli
 
-On every trial of the game, both participants were shown a grid of twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative. The cells were all labeled with numbers from one to twelve, as an aid in reference (see Fig. \ref{fig:taskScreenshot}).
+On every trial of the game, both participants were shown a grid of twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative. The cells were labeled with numbers from one to twelve, as an aid in reference (see Fig. \ref{fig:taskScreenshot}).
 
 ### Procedure
 
-After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate at any time, but only the matcher could click and drag stimuli to reorder them. When the players were satisfied with their tangram arrangements, the matcher clicked a 'submit' button that gave players feedback on their score (out of 12) and scrambled the tangrams for the next round. After six rounds, players were redirected to a short exit survey. We collected the raw text of every message sent, and every swapping action taken by the matcher. 
+After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate at any time, but only the matcher could click and drag stimuli to reorder them. When the players were satisfied with their tangram arrangements, the matcher clicked a 'submit' button that gave players feedback on their score (out of 12) and scrambled the tangrams for the next round. After six rounds, players were redirected to a short exit survey. We collected the raw text of every message sent and every swapping action taken by the matcher. 
 
 ## Results 
 
@@ -290,7 +292,7 @@ topWords <- t(cbind(unigrams, bigrams))
 colnames(topWords) <- NULL
 rownames(topWords) <- c('unigrams', 'bigrams')
 print(xtable(topWords, label = 'tab:words', caption = 'Top 10 unigrams and bigrams with the highest reduction'), 
-      floating.environment = "table*", comment=F)
+      floating.environment = "table*", comment=F, table.placement = 'th')
 ```
 
 However, examining the words most likely to be dropped (see Table \ref{tab:words}), we notice that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifying clauses ('of', 'with', 'the right'). This suggests that when utterances are reduced, it is not merely formal function words that are dropped from laziness. Initial phrases pile on multiple ambiguous but redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running a dependency parser and tagging the occurence of dependent clauses and modifiers. 
