@@ -183,7 +183,7 @@ ggplot(lengthReduction, aes(x = roundNum, y = mean)) +
   theme_bw(8) 
 ```
 
-Next, we turn to a set of analyses examining reduction in utterance length over the course of the experiment. At the coarsest level, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation], although perhaps due to our purely textual (vs. spoken) interface, participants in our task used many fewer words overall. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
+Next, we turn to a set of analyses examining reduction in utterance length over the course of the experiment. At the coarsest level, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This decrease replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation], although perhaps due to our purely textual (vs. spoken) interface, participants in our task used many fewer words overall. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
 
 ```{r POSfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:POS} Percent reduction between first and last round for closed-class and open-class parts of speech over time. Error bars are bootstrapped 95\\% CIs."}
 posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
@@ -268,7 +268,7 @@ print(xtable(topWords, label = 'tab:words', caption = 'Top 10 unigrams and bigra
       floating.environment = "table*", comment=F, table.placement = 'th')
 ```
 
-However, examining the words most likely to be dropped (see Table \ref{tab:words}), we notice that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifying clauses ('of', 'with', 'the right'). This suggests that when utterances are reduced, it is not merely formal function words that are dropped from laziness. Initial phrases pile on multiple ambiguous but redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running a dependency parser and tagging the occurence of dependent clauses and modifiers. 
+However, examining the words most likely to be dropped (see Table \ref{tab:words}), we notice that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifying clauses ('of', 'with', 'the right'). This result suggests that when utterances are reduced, it is not merely formal function words that are dropped from laziness. Initial phrases pile on multiple ambiguous but redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running a dependency parser and tagging the occurence of dependent clauses and modifiers. 
 
 \textcolor{red}{to-do: use dependency parser to count dependent clauses and modifiers...}
 
@@ -350,10 +350,9 @@ $$L_0(s | u, \mathcal{L}) \propto \mathcal{L}(u, s)\cdot P(s)$$
 
 As in several other recent applications of RSA [@GrafEtAl16_BasicLevel], we use a graded semantics, where utterances are better or worse descriptions of particular referents. For instance, the utterance "dancer" may initially be expected to apply to a photorealistic image of a ballerina ($\mathcal{L}(\textrm{'dancer'}, \textrm{*ballerina*}) = 0.99$) more than an abstract image of one ($0.6$), but apply to both better than a non-category member like an image of a dog ($0.05$).
 
-Our approach to convention-formation begins with the additional assumption of *lexical uncertainty* [@SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS;@BergenLevyGoodman16_LexicalUncertainty]. In other words, we assume that instead of having perfect knowledge of $\mathcal{L}$, the speaker has uncertainty over the exact meanings of lexical items in the current context (i.e. it is initially unclear which of the ambiguous tangram shapes "the dancer" might refer to). They begin with some prior $P(\mathcal{L})$ over meanings, which may be initially biased toward one certain meanings, and updates these beliefs through repeated interactions with a knowledgeable partner. 
+Our approach to convention-formation begins with the additional assumption of *lexical uncertainty* [@SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS;@BergenLevyGoodman16_LexicalUncertainty]. In other words, we assume that instead of having perfect knowledge of $\mathcal{L}$, the speaker has uncertainty over the exact meanings of lexical items in the current context (i.e. it is initially unclear which of the ambiguous tangram shapes "the dancer" might refer to). They begin with some prior $P(\mathcal{L})$ over meanings, which may be initially biased toward one certain meanings, and update these beliefs through repeated interactions with a knowledgeable partner. 
 
 $$P(\mathcal{L} | d) \propto P(\mathcal{L})\prod_i L_{n-1}(s_i|u_i, \mathcal{L})$$
-
 where $d = \{s_i, u_i\}$ is a set of observations of $s_i$ and $u_i$ coming from previous exchanges. \textcolor{red}{TODO: this notation makes the subscripts when describing the space of states/utterances confusing}. The speaker then marginalizes over this posterior distribution when reasoning about the listener, giving rise to the form of the pragmatic listener model we use throughout our model results (only going up to $n = 2$ in our recusion for simplicity):
 
 $$S(u | s, d) \propto \exp( \alpha\log\left(\sum_{\mathcal{L}} P(\mathcal{L} | d) L_1(s | u, \mathcal{L})\right) - \textrm{cost}(u) )$$
@@ -364,7 +363,9 @@ $$L(s | u, d) \propto \sum_\mathcal{L}P(\mathcal{L}|d)L_1(s|u,\mathcal{L})$$
 
 This model is implemented in the probabilistic programming language WebPPL [@GoodmanStuhlmuller14_DIPPL]\footnote{All results can be reproduced running our code in the browser at http://forestdb.org/models/conventions.html}. Following  @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS, we begin by showing how a random initial choice is taken to be evidence for a particular lexicon and becomes the base for successful communication even though neither party knows its meaning at the outset.
 
-## Arbitrariness
+## Results
+
+### Arbitrariness and path-dependence
 
 ```{r model1, cache=TRUE, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data."}
 res <- webppl(program_file = 'webpplModels/arbitrary.wppl',
@@ -391,7 +392,7 @@ ggplot(accuracyRes, aes(x = roundNum, y = prob)) +
   theme_bw(8)
 ```
 
-```{r model_arbitrariness, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Accuracy rises as speaker and listener learn from the same data."}
+```{r model_arbitrariness, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Different mappings on the first round leads to widely diverging trajectories in subsequent rounds (path-dependence)."}
 accuracyRes <- res %>%
   mutate(sampleId = row_number()) %>%
   gather(infotype, val, -sampleId ) %>%
@@ -425,7 +426,7 @@ We observe several important qualitative effects in our simulations. First, the 
 
 \textcolor{red}{possible TODOs: split out model curves by diff alphas (currently shown for alpha = 5)? Collapse across 'conventional systems', e.g. treat t1:label1/t2:label2 as one system and t1:label2/t2:label1 as another?}
 
-## Reduction of modifiers \& conjunctions
+## Reduction in utterance length
 
 ```{r modelReduction, cache=TRUE}
 conjunctionRes <- webppl(program_file = 'webpplModels/conjunction.wppl',
