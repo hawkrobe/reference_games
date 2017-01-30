@@ -114,8 +114,6 @@ After passing a short quiz about task instructions, participants were randomly a
 
 ## Results 
 
-<!-- ### Preprocessing  -->
-
 ```{r}
 # Note that this includes Nicki's old data...
 tagCounts = tangramMsgs %>% group_by(tangramRef) %>% tally() %>% spread(tangramRef, n)
@@ -128,7 +126,39 @@ pctTagged = 100*(1-(tagCounts$None/sum(tagCounts)))
 
 <!-- We trained our logistic classifier using stochastic gradient descent, yielding 75% accuracy on the test split. We then constructed an ROC curve examining the tradeoff between the true positive and false positive rate for different confidence thresholds, and selected a cautious threshold of 90% confidence that minimized the false positive rate to <5%. Finally, we used this threshold to label the subset of our full corpus where we are sufficiently confident. We iterated this process with batches of hand-tagging until `r round(pctTagged,2)`% of the corpus was assigned a tag. -->
 
-### Reduction in raw length
+### Arbitrariness and path-dependence
+
+```{r entropy}
+getCounts <- function(contents) {
+  corpus <- Corpus(VectorSource(paste(contents, collapse = " ")))
+  #cleanedCorpus <- tm_map(corpus, removeWords, stopwords('english'))
+  return(colSums(as.matrix(DocumentTermMatrix(corpus))))
+}
+
+# TODO: double-check that we're controlling for size of word distribution 
+# (right now might slightly misleading just because support of acrossPair distribution is much bigger...)
+withinPair <- tangramCombined %>% 
+  group_by(gameid) %>%
+  mutate(alphabetSize = length(getCounts(contents)),
+         ent = entropy(getCounts(contents))) %>%
+  ungroup() %>%
+  #summarize(normedEnt = mean(ent)/log(mean(alphabetSize))) %>%
+  summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent)))
+
+acrossPair <- tangramCombined %>% 
+  group_by(roundNum) %>% 
+  mutate(alphabetSize = length(getCounts(contents)),
+         ent = entropy(getCounts(contents))) %>%
+  #summarize(normedEnt = mean(ent)/log(mean(alphabetSize))) %>%
+  ungroup() %>%
+  summarize(acrossEnt = mean(ent))
+```
+
+A final key aspect of conventions is their *arbitrariness* [@Lewis69_Convention]: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. In the context of our task, different pairs may converge on different but equally successful referring expressions. By the final round, for example, one pair successfully communicated about one tangram as the 'dancer' while another successfully used 'ice skater' to refer to the same object. However, once a pair adopts a convention, it is usually in their best interest to continue using it: in this sense, conventions are *path-dependent*. In our data, we can operationalize these concepts by comparing the entropy of the word distribution *across* games against the entropy *within* games. In the absence of arbitrariness, we would expect entropy to be lower across different games, since all players would adopt the single optimal way to refer to each tangram. Similarly, in the absence of path-dependence, we would expect entropy to be higher within games, since participants would be randomly sampling arbitrary referents each round. The across-game entropy for a given round $r_i$ is defined by
+$$H(r_i) = \sum_{w \in \mathcal{L}_{r_i}} P(w) \log P(w)$$
+where $P(w)$ is the empirical word-frequency distribution defined on the set of unique words $\mathcal{L}_i$ found across all utterances produced in all games in round $r_i$. The within-game entropy for a given game $g_i$ is given by substituting in the distribution $P(w)$ over the unique words $\mathcal{L}_{g_i}$ produced in that game. We find a mean entropy of `r round(withinPair$withinEnt,2)` within games, which is smaller than the mean entropy of `r round(acrossPair$acrossEnt, 2)` across games. In other words, there is more variability in the expressions chosen across different speakers than there is across repeated interactions of a single speaker. This pattern, though indirect, is consistent with both signatures of arbitrariness and path-dependence. \textcolor{red}{rdh: mention why I'm not normalizing entropies by alphabet size? (at first I thought this was right, but changed my mind: it's precisely the increase in total number of words we're interested in...}
+
+### Reduction in utterance length
 
 ```{r replicationfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:replication} Reduction in the mean length of utterance over time. Error bars are bootstrapped 95\\% CIs"}
 lengthReduction = (tangramCombined %>% 
@@ -148,7 +178,94 @@ ggplot(lengthReduction, aes(x = roundNum, y = mean)) +
   theme_bw(8) 
 ```
 
-First, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation], although perhaps due to our purely textual (vs. spoken) interface, participants in our task used much fewer words overall. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
+First, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation], although perhaps due to our purely textual (vs. spoken) interface, participants in our task used many fewer words overall. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
+
+```{r POSfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:POS} Percent reduction between first and last round for closed-class and open-class parts of speech over time. Error bars are bootstrapped 95\\% CIs."}
+posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
+  # Count occurences of each POS on each round within games
+  group_by(roundNum, gameid) %>% 
+  summarize(numWords = sum(numWords),
+            nouns = sum(nouns),
+            #numbers = sum(numbers),
+            verbs = sum(verbs),
+            dets= sum(determiners),
+            pronouns = sum(pronouns),
+            preps = sum(prepositions),
+            adjectives = sum(adjectives),
+            adverbs = sum(adverbs)) %>%
+  gather(POS, count, nouns:adverbs) %>%
+  select(gameid, roundNum, POS, count) %>%
+  # Need to put in ids to spread
+  rowwise() %>% 
+  mutate(id = row_number()) %>% 
+  mutate(roundNum = paste0('round', roundNum, collapse = '')) %>%
+  spread(roundNum, count) %>%
+  # Compute % reduction from first to last round
+  mutate(diffPct = (round1 - round6)/round1) %>%
+  group_by(POS) %>%
+  # Filter out handful of people who skipped first round w/ negative %...
+  filter(diffPct >= 0) %>% 
+  filter(POS != "OTHER") %>%
+  # Take mean & se over participants
+  multi_boot_standard('diffPct') %>%
+  mutate(cat = ifelse(POS %in% c('dets', 'pronouns', 'preps'), 'closed', 'open')) %>%
+  # rearrange
+  transform(POS=reorder(POS, -mean) )
+
+detReductionRate <- (posReduction %>% filter(POS == 'dets'))$diffPctM * 100
+nounReductionRate <- (posReduction %>% filter(POS == 'nouns'))$diffPctM * 100
+
+ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
+  geom_bar(stat = 'identity') +
+  geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1)+
+  theme_bw(8) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("% reduction") +
+  xlab("Part of Speech category")
+```
+
+What kinds of words are most likely to be dropped as the game proceeds? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:POS} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. 
+
+```{r xtable, results="asis", caption="fasdfasdf"}
+unigrams <- read_csv("../../analysis/tangrams/wordCounts.csv", col_names = T) %>%
+  group_by(word, POS, roundNum) %>% 
+  summarize(count = sum(count)) %>% 
+  rowwise() %>%
+  mutate(roundNum = paste0("round", roundNum, collapse = "")) %>%
+  spread(roundNum, count) %>%
+  filter(round1 > 10) %>%
+  mutate(diffSize = round1 - round6,
+         diffPct = (round1 - round6)/round1) %>% 
+  arrange(desc(diffSize)) %>%
+  select(word) %>% 
+  filter(word != ',') %>%
+  filter(word != '#') %>%
+  head(n = 10)
+
+bigrams <- read_csv("../../analysis/tangrams/bigramCounts.csv", col_names = T) %>%
+  group_by(word, roundNum) %>% 
+  summarize(count = sum(count)) %>% 
+  rowwise() %>%
+  mutate(roundNum = paste0("round", roundNum, collapse = "")) %>%
+  spread(roundNum, count) %>%
+  filter(round1 > 10) %>%
+  mutate(diffSize = round1 - round6,
+         diffPct = (round1 - round6)/round1) %>% 
+  arrange(desc(diffSize)) %>% 
+  select(word) %>% 
+  rename(bigrams = word) %>%
+  head(n = 10)
+
+topWords <- t(cbind(unigrams, bigrams))
+colnames(topWords) <- NULL
+rownames(topWords) <- c('unigrams', 'bigrams')
+print(xtable(topWords, label = 'tab:words', caption = 'Top 10 unigrams and bigrams with the highest reduction'), 
+      floating.environment = "table*", comment=F, table.placement = 'th')
+```
+
+However, examining the words most likely to be dropped (see Table \ref{tab:words}), we notice that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifying clauses ('of', 'with', 'the right'). This suggests that when utterances are reduced, it is not merely formal function words that are dropped from laziness. Initial phrases pile on multiple ambiguous but redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running a dependency parser and tagging the occurence of dependent clauses and modifiers. 
+
+\textcolor{red}{to-do: use dependency parser to count dependent clauses and modifiers...}
 
 ### Listener feedback aids conventionalization
 
@@ -211,130 +328,7 @@ turnTakingResult <- paste0("t(", turnTakingdf, ") = ", round(turnTakingCoefs[3],
 ```
 
 
-The theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argues that lexical conventions are established through a collaborative process requiring both speaker and listener input. This predicts that (1) listener feedback should be highest on the first round and drop off once meanings are agreed upon, and (2) dyads with more initial listener feedback should converge on more efficient conventions. We find both of these patterns in our data. The number of listener messages decreases significantly over the game ($t = -13.23$, see Fig. \ref{fig:turntaking}), and there is a weak but significant effect of initial listener messages on overall reduction (`r turnTakingResult`).
-
-### Part-of-speech reduction
-
-```{r POSfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:POS} Percent reduction between first and last round for closed-class and open-class parts of speech over time. Error bars are bootstrapped 95\\% CIs."}
-posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
-  # Count occurences of each POS on each round within games
-  group_by(roundNum, gameid) %>% 
-  summarize(numWords = sum(numWords),
-            nouns = sum(nouns),
-            #numbers = sum(numbers),
-            verbs = sum(verbs),
-            dets= sum(determiners),
-            pronouns = sum(pronouns),
-            preps = sum(prepositions),
-            adjectives = sum(adjectives),
-            adverbs = sum(adverbs)) %>%
-  gather(POS, count, nouns:adverbs) %>%
-  select(gameid, roundNum, POS, count) %>%
-  # Need to put in ids to spread
-  rowwise() %>% 
-  mutate(id = row_number()) %>% 
-  mutate(roundNum = paste0('round', roundNum, collapse = '')) %>%
-  spread(roundNum, count) %>%
-  # Compute % reduction from first to last round
-  mutate(diffPct = (round1 - round6)/round1) %>%
-  group_by(POS) %>%
-  # Filter out handful of people who skipped first round w/ negative %...
-  filter(diffPct >= 0) %>% 
-  filter(POS != "OTHER") %>%
-  # Take mean & se over participants
-  multi_boot_standard('diffPct') %>%
-  mutate(cat = ifelse(POS %in% c('dets', 'pronouns', 'preps'), 'closed', 'open')) %>%
-  # rearrange
-  transform(POS=reorder(POS, -mean) )
-
-detReductionRate <- (posReduction %>% filter(POS == 'dets'))$diffPctM * 100
-nounReductionRate <- (posReduction %>% filter(POS == 'nouns'))$diffPctM * 100
-
-ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
-  geom_bar(stat = 'identity') +
-  geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1)+
-  theme_bw(8) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  ylab("% reduction") +
-  xlab("Part of Speech category")
-```
-
-What kinds of words are most likely to be dropped as the game proceeds? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:POS} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. 
-
-### Reduction in meaningful clauses
-
-```{r xtable, results="asis", caption="fasdfasdf"}
-unigrams <- read_csv("../../analysis/tangrams/wordCounts.csv", col_names = T) %>%
-  group_by(word, POS, roundNum) %>% 
-  summarize(count = sum(count)) %>% 
-  rowwise() %>%
-  mutate(roundNum = paste0("round", roundNum, collapse = "")) %>%
-  spread(roundNum, count) %>%
-  filter(round1 > 10) %>%
-  mutate(diffSize = round1 - round6,
-         diffPct = (round1 - round6)/round1) %>% 
-  arrange(desc(diffSize)) %>%
-  select(word) %>% 
-  filter(word != ',') %>%
-  filter(word != '#') %>%
-  head(n = 10)
-
-bigrams <- read_csv("../../analysis/tangrams/bigramCounts.csv", col_names = T) %>%
-  group_by(word, roundNum) %>% 
-  summarize(count = sum(count)) %>% 
-  rowwise() %>%
-  mutate(roundNum = paste0("round", roundNum, collapse = "")) %>%
-  spread(roundNum, count) %>%
-  filter(round1 > 10) %>%
-  mutate(diffSize = round1 - round6,
-         diffPct = (round1 - round6)/round1) %>% 
-  arrange(desc(diffSize)) %>% 
-  select(word) %>% 
-  rename(bigrams = word) %>%
-  head(n = 10)
-
-topWords <- t(cbind(unigrams, bigrams))
-colnames(topWords) <- NULL
-rownames(topWords) <- c('unigrams', 'bigrams')
-print(xtable(topWords, label = 'tab:words', caption = 'Top 10 unigrams and bigrams with the highest reduction'), 
-      floating.environment = "table*", comment=F, table.placement = 'th')
-```
-
-However, examining the words most likely to be dropped (see Table \ref{tab:words}), we notice that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifying clauses ('of', 'with', 'the right'). This suggests that when utterances are reduced, it is not merely formal function words that are dropped from laziness. Initial phrases pile on multiple ambiguous but redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running a dependency parser and tagging the occurence of dependent clauses and modifiers. 
-
-\textcolor{red}{to-do: use dependency parser to count dependent clauses and modifiers...}
-
-### Arbitrariness and path-dependence
-
-```{r entropy}
-getCounts <- function(contents) {
-  corpus <- Corpus(VectorSource(paste(contents, collapse = " ")))
-  #cleanedCorpus <- tm_map(corpus, removeWords, stopwords('english'))
-  return(colSums(as.matrix(DocumentTermMatrix(corpus))))
-}
-
-# TODO: double-check that we're controlling for size of word distribution 
-# (right now might slightly misleading just because support of acrossPair distribution is much bigger...)
-withinPair <- tangramCombined %>% 
-  group_by(gameid) %>%
-  mutate(alphabetSize = length(getCounts(contents)),
-         ent = entropy(getCounts(contents))) %>%
-  ungroup() %>%
-  #summarize(normedEnt = mean(ent)/log(mean(alphabetSize))) %>%
-  summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent)))
-
-acrossPair <- tangramCombined %>% 
-  group_by(roundNum) %>% 
-  mutate(alphabetSize = length(getCounts(contents)),
-         ent = entropy(getCounts(contents))) %>%
-  #summarize(normedEnt = mean(ent)/log(mean(alphabetSize))) %>%
-  ungroup() %>%
-  summarize(acrossEnt = mean(ent))
-```
-
-A final key aspect of conventions is their *arbitrariness* [@Lewis69_Convention]: "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. In the context of our task, different pairs may converge on different but equally successful referring expressions. By the final round, for example, one pair successfully communicated about one tangram as the 'dancer' while another successfully used 'ice skater' to refer to the same object. However, once a pair adopts a convention, it is usually in their best interest to continue using it: in this sense, conventions are *path-dependent*. In our data, we can operationalize these concepts by comparing the entropy of the word distribution *across* games against the entropy *within* games. In the absence of arbitrariness, we would expect entropy to be lower across different games, since all players would adopt the single optimal way to refer to each tangram. Similarly, in the absence of path-dependence, we would expect entropy to be higher within games, since participants would be randomly sampling arbitrary referents each round. The across-game entropy for a given round $r_i$ is defined by
-$$H(r_i) = \sum_{w \in \mathcal{L}_{r_i}} P(w) \log P(w)$$
-where $P(w)$ is the empirical word-frequency distribution defined on the set of unique words $\mathcal{L}_i$ found across all utterances produced in all games in round $r_i$. The within-game entropy for a given game $g_i$ is given by substituting in the distribution $P(w)$ over the unique words $\mathcal{L}_{g_i}$ produced in that game. We find a mean entropy of `r round(withinPair$withinEnt,2)` within games, which is smaller than the mean entropy of `r round(acrossPair$acrossEnt, 2)` across games. In other words, there is more variability in the expressions chosen across different speakers than there is across repeated interactions of a single speaker. This pattern, though indirect, is consistent with both signatures of arbitrariness and path-dependence. \textcolor{red}{rdh: mention why I'm not normalizing entropies by alphabet size? (at first I thought this was right, but changed my mind: it's precisely the increase in total number of words we're interested in...}
+Finally, the theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argues that lexical conventions are established through a collaborative process requiring both speaker and listener input. This predicts that (1) listener feedback should be highest on the first round and drop off once meanings are agreed upon, and (2) dyads with more initial listener feedback should converge on more efficient conventions. We find correlational evidence of both patterns in our data. The number of listener messages decreases significantly over the game ($t = -13.23$, see Fig. \ref{fig:turntaking}), and there is a weak but significant effect of initial listener messages on overall reduction (`r turnTakingResult`).
 
 # Model
 
