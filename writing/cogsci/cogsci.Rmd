@@ -106,11 +106,11 @@ numUtterances <- length(tangramCombined$contents)
 
 ### Stimuli
 
-On every trial of the game, both participants were shown a grid of twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative. The cells were labeled with numbers from one to twelve, as an aid in reference (see Fig. \ref{fig:taskScreenshot}).
+On every trial of the game, both participants were shown a $6 \times 2$ grid containing twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative. The cells were labeled with fixed numbers from one to twelve in order to help participants easily refer to locations in the grid (see Fig. \ref{fig:taskScreenshot}).
 
 ### Procedure
 
-After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate at any time, but only the matcher could click and drag stimuli to reorder them. When the players were satisfied with their tangram arrangements, the matcher clicked a 'submit' button that gave players feedback on their score (out of 12) and scrambled the tangrams for the next round. After six rounds, players were redirected to a short exit survey. We collected the raw text of every message sent and every swapping action taken by the matcher. 
+After passing a short quiz about task instructions, participants were randomly assigned the role of either 'director' or 'matcher' and automatically paired into virtual rooms containing a chat box and grid of stimuli. Both participants could freely use the chat box to communicate at any time. The director's tangrams were fixed in place, but the matcher could click and drag the shapes to reorder them. The director had to send messages about the locations of different tangrams on their fixed board (e.g. "#1 looks like an X", "2 is the one with the Y"); the matcher had to identify the corresponding tangram shapes and move them to the correct locations. When the players were satisfied that their boards matched, the matcher clicked a 'submit' button that gave players feedback on their score (out of 12) and scrambled the tangrams for the next round. After six rounds, players were redirected to a short exit survey. We collected the raw text of every message sent and every swapping action taken by the matcher. 
 
 ## Results 
 
