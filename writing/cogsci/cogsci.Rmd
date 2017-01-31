@@ -1,5 +1,5 @@
 ---
-title: "Convention-formation in a communication model"
+title: "Convention-formation in iterated reference games"
 bibliography: library.bib
 csl: apa6.csl
 document-params: "10pt, letterpaper"
@@ -244,7 +244,7 @@ ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
 
 What kinds of words are most likely to be dropped as the game proceeds? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:POS} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. 
 
-```{r xtable, results="asis", caption="fasdfasdf"}
+```{r xtable, results="asis"}
 unigrams <- read_csv("../../analysis/tangrams/wordCounts.csv", col_names = T) %>%
   group_by(word, POS, roundNum) %>% 
   summarize(count = sum(count)) %>% 
@@ -281,9 +281,21 @@ print(xtable(topWords, label = 'tab:words', caption = 'Top 10 unigrams and bigra
       floating.environment = "table*", comment=F, table.placement = 'th')
 ```
 
-However, examining the words most likely to be dropped (see Table \ref{tab:words}), we notice that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifying clauses ('of', 'with', 'the right'). This result suggests that when utterances are reduced, it is not merely formal function words that are dropped from laziness. Initial phrases pile on multiple ambiguous but redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running a dependency parser and tagging the occurence of dependent clauses and modifiers. 
+```{r dependencyParsing}
+clauseReduction = read_csv('../../analysis/tangrams/posTagged.csv') %>%
+  group_by(roundNum, clauses) %>%
+  tally() %>%
+  group_by(roundNum) %>%
+  mutate(prob = n / sum(n)) %>%
+  filter(clauses == 'True') 
 
-\textcolor{red}{to-do: use dependency parser to count dependent clauses and modifiers...}
+# ggplot(clauseReduction, aes(x = roundNum, y = prob)) +
+#     ylab('% messages with dependent clauses') +
+#     geom_line() +
+#     theme_bw(8)
+```
+
+However, examining the words most likely to be dropped (see Table \ref{tab:words}), we notice that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifying clauses ('of', 'with', 'the right'). This result suggests that when utterances are reduced, it is not merely formal function words that are dropped from laziness. Initial phrases pile on multiple ambiguous but redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running the Stanford Parser [@SchusterManning16] and tagging the occurence of subordinate clauses (i.e. clausal subjects and complements) 
 
 \textcolor{green}{ndg: looking forward to seeing this result. once it's in consider revising this section to make the different hypotheses about reduction more clear.}
 
@@ -384,38 +396,55 @@ This model is implemented in the probabilistic programming language WebPPL [@Goo
 
 ### Arbitrariness and path-dependence
 
-```{r model1, cache=TRUE, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data."}
-res <- webppl(program_file = 'webpplModels/arbitrary.wppl',
-             model_var = 'model',
-             inference_opts = list(method="forward", samples=5000),
-             data = list(alpha = 6, beta = 1, numSteps = 6),
-             data_var = 'params',
-             output_format = 'samples')
-accuracyRes <- res %>% 
-  mutate(sampleId = row_number()) %>%
-  gather(infotype, val, -sampleId ) %>%
-  separate(infotype, c('garbage', 'type', 'roundNum')) %>%
-  select(-garbage) %>%
-  spread(type, val) %>%
-  group_by(roundNum, acc) %>%
+```{r model1, cache=TRUE}
+arbitrarinessModel <- function(alpha, beta) {
+  res <- webppl(program_file = 'webpplModels/arbitrary.wppl',
+               model_var = 'model',
+               inference_opts = list(method="forward", samples=5000),
+               data = list(alpha = alpha, beta = beta, numSteps = 6),
+               data_var = 'params',
+               output_format = 'samples')
+  accuracyRes = res %>% 
+    mutate(sampleId = row_number()) %>%
+    gather(infotype, val, -sampleId ) %>%
+    separate(infotype, c('garbage', 'type', 'roundNum')) %>%
+    select(-garbage) %>%
+    spread(type, val) %>%
+    mutate(alpha = as.character(alpha),
+           beta = as.character(beta))
+  return(accuracyRes)
+}
+
+arbitrarinessResults <- complete(data.frame(
+  alpha=c(1,2,5),
+  beta =c(1)
+), alpha, beta) %>%
+  rowwise() %>%
+  do(arbitrarinessModel(.$alpha,.$beta))
+```
+
+```{r accuracyFig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data."}
+arbitrarinessResults %>%
+  group_by(roundNum, acc, alpha, beta) %>%
   tally() %>%   
+  group_by(roundNum, alpha, beta) %>%
   mutate(prob = n / sum(n)) %>%
   ungroup() %>%
   filter(acc == TRUE) %>%
-  mutate(roundNum = as.numeric(roundNum)) 
-ggplot(accuracyRes, aes(x = roundNum, y = prob)) +
-  ylab('accuracy') +
-  geom_line() +
-  theme_bw(8)
+  mutate(roundNum = as.numeric(roundNum)) %>%
+  ggplot(aes(x = roundNum, y = prob, color=alpha)) +
+    ylab('accuracy') +
+    xlab('round #') +
+    geom_line() +
+    theme_bw(8) +
+    theme( plot.margin=unit(x=c(0,0,0,0),units="mm"),
+           legend.position="top")
+
 ```
 
-```{r model_arbitrariness, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Different mappings on the first round leads to widely diverging trajectories in subsequent rounds (path-dependence)."}
-accuracyRes <- res %>%
-  mutate(sampleId = row_number()) %>%
-  gather(infotype, val, -sampleId ) %>%
-  separate(infotype, c('garbage', 'type', 'roundNum')) %>%
-  select(-garbage) %>%
-  spread(type, val) %>%
+```{r arbitrarinessFig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Different mappings on the first round leads to widely diverging trajectories in subsequent rounds (path-dependence)."}
+accuracyRes <- arbitrarinessResults %>%
+  filter(alpha == 5) %>%
   unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
   unite(realPair, utt, response, sep = '<->', remove = F) %>% 
   group_by(sampleId) %>% 
