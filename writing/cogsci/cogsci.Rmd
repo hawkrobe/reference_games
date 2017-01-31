@@ -63,7 +63,7 @@ Simulations elegantly show how arbitrary signaling systems can spread and come t
 
 In this paper, we argue for a theoretical position on the spectrum between these poles: conventions form when agents *assume conventions already exist*. In other words, agents believe there is a true lexicon used by other agents but are initially unsure of its identity. Through their interactions with a partner who is assumed to knowledgeable and informative, agents can learn this true lexicon, even though their partner in fact begins in the same state of ignorance. Agents thus coordinate on the same lexicon, which becomes conventional. To support this theory, we first conduct a large-scale, multi-player replication of the tangrams task, which has traditionally been limited to relatively small sample sizes in the lab. We demonstrate signatures of arbitrariness, path-dependence, and reduction which have been difficult to study at a fine-grained level due to the sparseness of existing data. Next, we formulate our theory in a computational model of communication in repeated reference games, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS] and show that this model qualitatively produces all three signatures.
 
-```{r image, fig.env = "figure", fig.pos = "tb", fig.align='center', fig.width=3.5, fig.height=3.5, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial in experimental interface. Both players could freely use the chat box, and the matcher could click and drag the tangram images."}
+```{r image, fig.env = "figure", fig.pos = "tb", fig.align='center', fig.width=3, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial in experimental interface. Both players could freely use the chat box, and the matcher could click and drag the tangram images."}
 img <- png::readPNG("figs/directorBoard.png")
 grid::grid.raster(img)
 ```
@@ -109,7 +109,7 @@ numUtterances <- length(tangramCombined$contents)
 
 ### Stimuli
 
-On every trial of the game, both participants were shown a $6 \times 2$ grid containing twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative. The cells were labeled with fixed numbers from one to twelve in order to help participants easily refer to locations in the grid (see Fig. \ref{fig:taskScreenshot}).
+On every trial of the game, both participants were shown a $6 \times 2$ grid containing twelve tangram shapes, reproduced from @ClarkWilkesGibbs86_ReferringCollaborative. Cells were labeled with fixed numbers from one to twelve in order to help participants easily refer to locations in the grid (see Fig. \ref{fig:taskScreenshot}).
 
 ### Procedure
 
