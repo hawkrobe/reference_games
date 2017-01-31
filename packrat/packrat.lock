@@ -308,6 +308,16 @@ Source: CRAN
 Version: 0.3
 Hash: ecf589b42cd284b03a4beb9665482d3e
 
+Package: langcog
+Source: github
+Version: 0.1.9001
+Hash: 9ce15756fb472d1471514923e9b2c149
+Requires: assertthat, dplyr, ggplot2, lazyeval, quadprog
+GithubRepo: langcog
+GithubUsername: langcog
+GithubRef: master
+GithubSha1: 9d500a0499c5bf98195f336ead8cc6f81ff7bc5f
+
 Package: latticeExtra
 Source: CRAN
 Version: 0.6-28
@@ -406,6 +416,11 @@ Package: png
 Source: CRAN
 Version: 0.1-7
 Hash: 421d7d6e0fb4bd885ecbd909b6456b8b
+
+Package: quadprog
+Source: CRAN
+Version: 1.5-5
+Hash: 69000b7dc41b09977dcf781f909d235c
 
 Package: readr
 Source: CRAN
