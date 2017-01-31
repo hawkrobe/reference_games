@@ -67,9 +67,9 @@ img <- png::readPNG("figs/directorBoard.png")
 grid::grid.raster(img)
 ```
 
-# Large-scale tangrams replication
+# Replication of tangrams task
 
-\textcolor{green}{ndg: one or two sentences about what we're doing and why it's cool...}
+To collect a corpus of reference game dialogue that supports more detailed analyses of convention-formation, we ported the tangrams task used in @ClarkWilkesGibbs86_ReferringCollaborative to a real-time, multi-player web environment. 
 
 ## Methods
 
@@ -104,7 +104,7 @@ numUtterances <- length(tangramCombined$contents)
 
 ### Participants
 
-200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded \textcolor{red}{X} games because one or both of the participants reported being a native language different from English, and \textcolor{red}{Y} games for terminating early, leaving a corpus of `r numGames` complete games with a total of `r numUtterances` utterances. \textcolor{red}{rdh: this technically includes nicki's data, too; need to make this clearer}
+200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded \textcolor{red}{X} games because one or both of the participants reported being a native language different from English, and \textcolor{red}{Y} games for terminating early, leaving a corpus of `r numGames` complete games with a total of `r numUtterances` utterances.
 
 ### Stimuli
 
@@ -141,28 +141,39 @@ getCounts <- function(contents) {
 # removes the contribution of a bigger vocabulary (as we would expect)
 withinPair <- tangramCombined %>% 
   group_by(gameid) %>%
-  mutate(alphabetSize = length(getCounts(contents)),
+  summarize(alphabetSize = length(getCounts(contents)),
          ent = entropy(getCounts(contents))) %>%
-  ungroup() %>%
+  ungroup() 
   #summarize(normedEnt = mean(ent)/log(mean(alphabetSize))) %>%
-  summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent)))
+  #summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent)))
 
 acrossPair <- tangramCombined %>% 
   group_by(roundNum) %>% 
-  mutate(alphabetSize = length(getCounts(contents)),
+  summarize(alphabetSize = length(getCounts(contents)),
          ent = entropy(getCounts(contents))) %>%
   #summarize(normedEnt = mean(ent)/log(mean(alphabetSize))) %>%
-  ungroup() %>%
-  summarize(acrossEnt = mean(ent))
+  ungroup() 
+  #summarize(acrossEnt = mean(ent))
+
+ttest = t.test(withinPair$ent, acrossPair$ent)
+ttestRes = paste0("t(", 
+                  round(ttest$parameter, 2),
+                  ") = ", 
+                  round(ttest$statistic, 2),
+                  ", p < 0.001")
 ```
 
-We begin by examining signatures of *arbitrariness* and *path-dependence*. We operationalize these concepts by comparing the entropy of the word distribution *across* games against the entropy *within* games. In the absence of arbitrariness, we would expect entropy to be lower across different games, since all players would adopt the single optimal way to refer to each tangram. Similarly, in the absence of path-dependence, we would expect entropy to be higher within games, since participants would be randomly sampling arbitrary referents each round. \textcolor{green}{ndg: this could be clarified. say more clearly why arbitrariness and path-dependence are related to entropy. does the one etropy comparison imply both phenomena? basically, upack this relation a bit more.}
+We begin by examining signatures of *arbitrariness* and *path-dependence*. We operationalize these concepts by comparing the entropy of the word distribution *across* games against the entropy *within* games. Broadly speaking, entropy measures the predictability of a distribution: it is maximized when all elements are equally likely and declines as the distribution becomes more structured, i.e. when the probability mass is concentrated on a subset of elements:
 
-The across-game entropy for a given round $r_i$ is defined by
-$$H(r_i) = \sum_{w \in \mathcal{L}_{r_i}} P(w) \log P(w)$$
-where $P(w)$ is the empirical word-frequency distribution defined on the set of unique words $\mathcal{L}_i$ found across all utterances produced in all games in round $r_i$. The within-game entropy for a given game $g_i$ is given by substituting in the distribution $P(w)$ over the unique words $\mathcal{L}_{g_i}$ produced in that game. We find a mean entropy of `r round(withinPair$withinEnt,2)` within games, which is smaller than the mean entropy of `r round(acrossPair$acrossEnt, 2)` across games. \textcolor{green}{ndg: stats?} In other words, there is more variability in the expressions chosen across different speakers than there is across repeated interactions of a single speaker. This pattern, though indirect, is consistent with both signatures of arbitrariness and path-dependence.
-\textcolor{green}{ndg: isn't there an entropy result comparing first half to second half too?}
-<!-- \textcolor{red}{rdh: mention why I'm not normalizing entropies by alphabet size? (at first I thought this was right, but changed my mind: it's precisely the increase in total number of words we're interested in...} -->
+$$H(W) = \sum_{w \in \mathcal{L}} P(w) \log P(w)$$
+
+In the absence of arbitrariness, we would expect entropy to be low when we aggregate word frequencies across different games, since all players would adopt the single optimal way to refer to each tangram. Pure arbitrariness, on the other hand, predicts that every pair of participants should adopt different referring expressions, making the distribution relatively uniform across these different choices, and the entropy relatively high. 
+
+While arbitrariness makes predictions for the word distribution aggregated *across* different games, path-dependence is concerned with word distributions aggregated over different rounds *within* a game. In the absence of path-dependence, we would expect entropy to be high within games, since participants would be randomly sampling arbitrary referents each round. Pure path-dependence, on the other hand, predicts that a given pair will continue using the same referring expressions, concentrating probability on a smaller set of words.
+
+We can roughly test both of these predictions with a single comparison between across-game entropy and mean within-game entropy. We find a mean within-game entropy of `r round(mean(withinPair$ent),2)` averaged across 67 games, which is significantly smaller than the mean across-game entropy of `r round(mean(acrossPair$ent), 2)` averaged across 6 rounds, `r ttestRes`. In other words, there is more variability in the expressions chosen across different speakers than there is across repeated interactions of a single speaker. This pattern, though rather crude and indirect, is consistent with both signatures of arbitrariness and path-dependence. 
+
+\textcolor{red}{rdh: can someone check me here to make sure this section isn't too sketchy? Not sure how much of this detail I want to get into in the text: (1) the high across-game entropies are, of course, partially due to a larger support size N but I'm purposefully not normalizing by log(N) because we're precisely interested in the larger set of vocab... still feels like cheating a bit, though. (2) one way to partially control for this might be to exclude words that only occur a small number of times [i.e. cut off the long tail?] (3) Is there a better way of slicing the across-game entropies than by round? It feels weird to do a t-test where one sample size is just 6... Maybe I should do a permutation test instead? (4) there's also technically a small trend where across-game entropies go down as rounds progress due to reduction but I didn't think this was worth reporting: they're all much higher than the the within-game distribution...}
 
 ### Reduction in utterance length
 
