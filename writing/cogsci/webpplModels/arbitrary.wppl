@@ -4,7 +4,7 @@ var getTrajectories = function(data) {
   return reduce(function(key, memo) {
     var timeBasedKeys = map(function(i) {return key + "." + i}, _.range(data.length));
     var vals = _.map(data, key);
-    return _.extend(_.zipObject(timeBasedKeys, vals), memo)
+    return extend(_.zipObject(timeBasedKeys, vals), memo)
   }, [], keys)
 };
 ///
@@ -27,9 +27,6 @@ var lexiconPrior = Infer({method: 'enumerate'}, function(){
   return _.zipObject(utterances, meanings);
 });
 
-// speaker optimality
-var alpha = 5;
-
 // length-based cost (although they're all the same length here)
 var uttCost = function(utt) {
   return utt.split(' ').length;
@@ -44,12 +41,12 @@ var L0 = cache(function(utt, lexicon) {
   });
 });
 
-// pragmatic speaker (opti
+// pragmatic speaker 
 var S1 = cache(function(state, lexicon) {
   return Infer({method:"enumerate"}, function(){
     var utt = sample(utterancePrior);
-    factor(alpha * (L0(utt, lexicon).score(state)
-                    - uttCost(utt)));
+    factor(params.alpha * (L0(utt, lexicon).score(state))
+           - params.beta * uttCost(utt));
     return utt;
   });
 });
@@ -95,14 +92,15 @@ var S = cache(function(state, data) {
       var lexicon = sample(lexiconPosterior('S', data));
       return sample(L1(utt, lexicon))
     });
-    factor(alpha * (listener.score(state) - uttCost(utt)));
+    factor(params.alpha * listener.score(state)
+           - params.beta * uttCost(utt));
     return utt;
   });
 });
 
 var model = function() {
   var step = function(data) {
-    if(data.length > numSteps) return getTrajectories(data);
+    if(data.length > params.numSteps) return getTrajectories(data);
     var state = sample(statePrior);
     var utt = sample(S(state, data));
     var response = sample(L(utt, data));
