@@ -389,7 +389,7 @@ where $d = \{s_i, u_i\}$ is a set of observations of $s_i$ and $u_i$ coming from
 
 $$S(u | s, d) \propto \exp( \alpha\log\left(\sum_{\mathcal{L}} P(\mathcal{L} | d) L_1(s | u, \mathcal{L})\right) - \textrm{cost}(u) )$$
 
-A listener with lexical uncertainty can be defined similarity, simply swapping out $L_{n-1}$ in the lexicon posterior update with a knowledgeable speaker $S_{n-1}$: \textcolor{green}{ndg: fixme}
+A listener with lexical uncertainty can be defined similarity, simply swapping out $L_{n-1}$ in the lexicon posterior update with a knowledgeable speaker $S_{n}$:
 
 $$L(s | u, d) \propto \sum_\mathcal{L}P(\mathcal{L}|d)L_1(s|u,\mathcal{L})$$
 
