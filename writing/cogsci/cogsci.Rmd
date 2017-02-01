@@ -63,7 +63,7 @@ Simulations elegantly show how arbitrary signaling systems can spread and come t
 
 In this paper, we argue for a theoretical position on the spectrum between these poles: conventions form when agents *assume conventions already exist*. In other words, agents believe there is a true lexicon used by other agents but are initially unsure of its identity. Through their interactions with a partner who is assumed to knowledgeable and informative, agents can learn this true lexicon, even though their partner in fact begins in the same state of ignorance. Agents thus coordinate on the same lexicon, which becomes conventional. To support this theory, we first conduct a large-scale, multi-player replication of the tangrams task, which has traditionally been limited to relatively small sample sizes in the lab. We demonstrate signatures of arbitrariness, path-dependence, and reduction which have been difficult to study at a fine-grained level due to the sparseness of existing data. Next, we formulate our theory in a computational model of communication in repeated reference games, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS] and show that this model qualitatively produces all three signatures.
 
-```{r image, fig.env = "figure", fig.pos = "tb", fig.align='center', fig.width=3, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial in experimental interface. Both players could freely use the chat box, and the matcher could click and drag the tangram images."}
+```{r image, cache=T, fig.env = "figure", fig.pos = "tb", fig.align='center', fig.width=3, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial in experimental interface. Both players could freely use the chat box, and the matcher could click and drag the tangram images."}
 img <- png::readPNG("figs/directorBoard.png")
 grid::grid.raster(img)
 ```
@@ -74,7 +74,7 @@ To collect a corpus of reference game dialogue that supports more detailed analy
 
 ## Methods
 
-```{r}
+```{r, cache=T}
 # Import message data...
 tangramMsgs = read_csv("../../analysis/tangrams/handTagged.csv") %>%
   rename(msgTime = time, 
@@ -117,88 +117,8 @@ After passing a short quiz about task instructions, participants were randomly a
 
 ## Results 
 
-```{r}
-# Note that this includes Nicki's old data...
-tagCounts = tangramMsgs %>% group_by(tangramRef) %>% tally() %>% spread(tangramRef, n)
-pctTagged = 100*(1-(tagCounts$None/sum(tagCounts)))
-```
 
-<!-- \textcolor{red}{rdh: as Mike points out, I think this was a valient but ultimately doomed attempt... We should either run the sequential version of the task, pay turkers to label the rest, or stick to analyses that don't require these tags (gotta leave something for the journal paper...)} -->
-
-<!-- Since the task was conducted with minimally constrained language use, we began by tagging which tangram was being referred to, if any, in each message. Instead of hand-tagging nearly 10,000 items, we used a hybrid strategy. First, since many of the director's messages explicitly referred to a cell number, we first cross-referenced these numbers with the locations of each tangram in their array. This successfully labelled 38.4% of utterances. Next, we combined this automatically tagged data with a previously hand-tagged pilot corpus containing 3955 utterances, and created a 80/20 split to train and evaluate a classifier that maps utterances to tangram tags. Each utterance string was vectorized into a matrix of unigram and bigram counts, then transformed into a normalized tf-idf representation (which weights counts by their overall frequency in the corpus).  -->
-
-<!-- We trained our logistic classifier using stochastic gradient descent, yielding 75% accuracy on the test split. We then constructed an ROC curve examining the tradeoff between the true positive and false positive rate for different confidence thresholds, and selected a cautious threshold of 90% confidence that minimized the false positive rate to <5%. Finally, we used this threshold to label the subset of our full corpus where we are sufficiently confident. We iterated this process with batches of hand-tagging until `r round(pctTagged,2)`% of the corpus was assigned a tag. -->
-
-### Arbitrariness and path-dependence
-
-```{r entropy}
-getCounts <- function(contents) {
-  corpus <- Corpus(VectorSource(paste(contents, collapse = " ")))
-  #cleanedCorpus <- tm_map(corpus, removeWords, stopwords('english'))
-  return(colSums(as.matrix(DocumentTermMatrix(corpus))))
-}
-
-# Note that we explicitly do *not* normalize entropies, as this
-# removes the contribution of a bigger vocabulary (as we would expect)
-withinPair <- tangramCombined %>% 
-  group_by(gameid) %>%
-  summarize(alphabetSize = length(getCounts(contents)),
-         ent = entropy(getCounts(contents))) %>%
-  ungroup() 
-  #summarize(normedEnt = mean(ent)/log(mean(alphabetSize))) %>%
-  #summarize(withinEnt = mean(ent), withinSE = sd(ent)/sqrt(length(ent)))
-
-acrossPair <- tangramCombined %>% 
-  group_by(roundNum) %>% 
-  summarize(alphabetSize = length(getCounts(contents)),
-         ent = entropy(getCounts(contents))) %>%
-  #summarize(normedEnt = mean(ent)/log(mean(alphabetSize))) %>%
-  ungroup() 
-  #summarize(acrossEnt = mean(ent))
-
-ttest = t.test(withinPair$ent, acrossPair$ent)
-ttestRes = paste0("t(", 
-                  round(ttest$parameter, 2),
-                  ") = ", 
-                  round(ttest$statistic, 2),
-                  ", p < 0.001")
-```
-
-We begin by examining signatures of *arbitrariness* and *path-dependence*. We operationalize these concepts by comparing the entropy of the word distribution *across* games against the entropy *within* games. Broadly speaking, entropy measures the predictability of a distribution: it is maximized when all elements are equally likely and declines as the distribution becomes more structured, i.e. when the probability mass is concentrated on a subset of elements:
-
-$$H(W) = \sum_{w \in \mathcal{L}} P(w) \log P(w)$$
-
-In the absence of arbitrariness, we would expect entropy to be low when we aggregate word frequencies across different games, since all players would adopt the single optimal way to refer to each tangram. Pure arbitrariness, on the other hand, predicts that every pair of participants should adopt different referring expressions, making the distribution relatively uniform across these different choices, and the entropy relatively high. 
-
-While arbitrariness makes predictions for the word distribution aggregated *across* different games, path-dependence is concerned with word distributions aggregated over different rounds *within* a game. In the absence of path-dependence, we would expect entropy to be high within games, since participants would be randomly sampling arbitrary referents each round. Pure path-dependence, on the other hand, predicts that a given pair will continue using the same referring expressions, concentrating probability on a smaller set of words.
-
-We can test both of these predictions with a single comparison between across-game entropy and mean within-game entropy. We find a mean within-game entropy of `r round(mean(withinPair$ent),2)` averaged across 67 games, which is significantly smaller than the mean across-game entropy of `r round(mean(acrossPair$ent), 2)` averaged across 6 rounds, `r ttestRes`. In other words, there is more variability in the expressions chosen across different speakers than there is across repeated interactions of a single speaker. This pattern, though rather crude and indirect, is consistent with both signatures of arbitrariness and path-dependence. 
-
-\textcolor{red}{rdh: can someone check me here to make sure this section isn't too sketchy? Not sure how much of this detail I want to get into in the text: (1) the high across-game entropies are, of course, partially due to a larger support size N but I'm purposefully not normalizing by log(N) because we're precisely interested in the larger set of vocab... still feels like cheating a bit, though. (2) one way to partially control for this might be to exclude words that only occur a small number of times [i.e. cut off the long tail?] (3) Is there a better way of slicing the across-game entropies than by round? It feels weird to do a t-test where one sample size is just 6... Maybe I should do a permutation test instead? (4) there's also technically a small trend where across-game entropies go down as rounds progress due to reduction but I didn't think this was worth reporting: they're all much higher than the the within-game distribution...}
-
-### Reduction in utterance length
-
-```{r replicationfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:replication} Reduction in the mean length of utterance over time. Error bars are bootstrapped 95\\% CIs"}
-lengthReduction = (tangramCombined %>% 
-         filter(role == "director") %>%
-         group_by(gameid, roundNum) %>% 
-         summarize(individualM = sum(numRawWords)/12) %>% 
-         group_by(roundNum) %>% 
-         multi_boot_standard("individualM"))
-
-ggplot(lengthReduction, aes(x = roundNum, y = mean)) +
-  geom_line() +
-  geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +
-  ylab("mean # words per tangram") +
-  xlab("trials") +
-  ylim(0,23) +
-  xlim(0, 7) +
-  theme_bw(8) 
-```
-
-Next, we turn to a set of analyses examining reduction in utterance length over the course of the experiment. At the coarsest level, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This decrease replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation], although perhaps due to our purely textual (vs. spoken) interface, participants in our task used many fewer words overall. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
-
-```{r POSfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:POS} Percent reduction between first and last round for closed-class and open-class parts of speech over time. Error bars are bootstrapped 95\\% CIs."}
+```{r posReduction, cache =T}
 posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
   # Count occurences of each POS on each round within games
   group_by(roundNum, gameid) %>% 
@@ -232,6 +152,66 @@ posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
 
 detReductionRate <- (posReduction %>% filter(POS == 'dets'))$mean * 100
 nounReductionRate <- (posReduction %>% filter(POS == 'nouns'))$mean * 100
+```
+
+```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=3.5, fig.height=2, fig.show='hold', set.cap.width=T, num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. Clockwise from top-left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) Percent reduction between first and last round for closed-class and open-class parts of speech over time, (4) proportion of utterances containing subordinate clauses, (5) proportion of utterances containing adjectival clauses. Error bars are bootstrapped 95\\% CIs. \textcolor{red}{TODO: put CIs back on facetted fig.}'}
+lengthReduction = tangramCombined %>% 
+   filter(role == "director") %>%
+   group_by(gameid, roundNum) %>% 
+   summarize(individualM = sum(numRawWords)/12) %>% 
+   group_by(roundNum) %>% 
+   multi_boot_standard("individualM") %>%
+   rename(val = mean) %>%
+   select(roundNum, val) %>%
+   mutate(measure = '# words per tangram') 
+
+
+clauseReduction = read_csv('../../analysis/tangrams/posTagged.csv') %>%
+  group_by(roundNum, clauses) %>%
+  tally() %>%
+  group_by(roundNum) %>%
+  mutate(val = n / sum(n)) %>%
+  filter(clauses == 'True') %>%
+  select(roundNum, val) %>%
+  ungroup() %>%
+  mutate(measure = '% subordinate clauses') 
+
+aclReduction = read_csv('../../analysis/tangrams/posTagged.csv') %>%
+  group_by(roundNum, acl) %>%
+  tally() %>%
+  group_by(roundNum) %>%
+  mutate(val = n / sum(n)) %>%
+  filter(acl == 'True') %>%
+  select(roundNum, val) %>%
+  ungroup() %>%
+  mutate(measure = '% adjectival clauses') 
+
+listenerMsgs <- tangramCombined %>%  
+  group_by(gameid, roundNum, role) %>% 
+  summarize(individualM = n()) %>% 
+  ungroup() %>%
+  complete(role, roundNum, gameid, fill = list(individualM = 0)) %>% 
+  spread(role, individualM) 
+
+listenerMsgs %>%    
+   group_by(roundNum) %>% 
+   multi_boot_standard("matcher") %>%
+   rename(val = mean) %>%
+   select(roundNum, val) %>%
+   ungroup() %>%
+   mutate(measure = '# listener messages')  %>%
+  rbind(lengthReduction) %>%
+  rbind(clauseReduction) %>%
+  rbind(aclReduction) %>%
+  mutate(measure = factor(measure, levels = c(
+    "# words per tangram", "# listener messages", 
+    "% adjectival clauses","% subordinate clauses"))) %>%
+  ggplot(aes(x = roundNum, y = val)) +
+    geom_line() +
+    xlab('round #') +
+    ylab('metric') +
+    facet_wrap(~ measure, scales = 'free') + 
+    theme_bw(8)
 
 ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
   geom_bar(stat = 'identity') +
@@ -240,11 +220,76 @@ ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("% reduction") +
   xlab("Part of Speech category")
+
+# ggplot(lengthReduction, aes(x = roundNum, y = mean)) +
+#   geom_line() +
+#   geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +
+#   ylab("mean # words per tangram") +
+#   xlab("trials") +
+#   ylim(0,23) +
+#   xlim(0, 7) +
+#   theme_bw(8) 
 ```
 
-What kinds of words are most likely to be dropped as the game proceeds? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:POS} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. 
+```{r}
+# Note that this includes Nicki's old data...
+tagCounts = tangramMsgs %>% group_by(tangramRef) %>% tally() %>% spread(tangramRef, n)
+pctTagged = 100*(1-(tagCounts$None/sum(tagCounts)))
+```
 
-```{r xtable, results="asis"}
+<!-- \textcolor{red}{rdh: as Mike points out, I think this was a valient but ultimately doomed attempt... We should either run the sequential version of the task, pay turkers to label the rest, or stick to analyses that don't require these tags (gotta leave something for the journal paper...)} -->
+
+<!-- Since the task was conducted with minimally constrained language use, we began by tagging which tangram was being referred to, if any, in each message. Instead of hand-tagging nearly 10,000 items, we used a hybrid strategy. First, since many of the director's messages explicitly referred to a cell number, we first cross-referenced these numbers with the locations of each tangram in their array. This successfully labelled 38.4% of utterances. Next, we combined this automatically tagged data with a previously hand-tagged pilot corpus containing 3955 utterances, and created a 80/20 split to train and evaluate a classifier that maps utterances to tangram tags. Each utterance string was vectorized into a matrix of unigram and bigram counts, then transformed into a normalized tf-idf representation (which weights counts by their overall frequency in the corpus).  -->
+
+<!-- We trained our logistic classifier using stochastic gradient descent, yielding 75% accuracy on the test split. We then constructed an ROC curve examining the tradeoff between the true positive and false positive rate for different confidence thresholds, and selected a cautious threshold of 90% confidence that minimized the false positive rate to <5%. Finally, we used this threshold to label the subset of our full corpus where we are sufficiently confident. We iterated this process with batches of hand-tagging until `r round(pctTagged,2)`% of the corpus was assigned a tag. -->
+
+### Arbitrariness and stability
+
+```{r entropy, cache = T}
+getCounts <- function(contents) {
+  corpus <- Corpus(VectorSource(paste(contents, collapse = " ")))
+  return(colSums(as.matrix(DocumentTermMatrix(corpus))))
+}
+
+permutationTest <- function(df) {
+  permuted = df %>% 
+    group_by(roundNum) %>% 
+    mutate(permutation = sample(contents)) %>%
+    group_by(gameid) %>%
+    summarize(ent = entropy(getCounts(permutation))) %>%
+    ungroup() 
+  return(mean(permuted$ent))
+}
+
+permutations <- replicate(1000, {
+  permutationTest(tangramCombined)
+})
+
+# Note that we explicitly do *not* normalize entropies, as this
+# removes the contribution of a bigger vocabulary (as we would expect)
+trueEntropy <- mean((tangramCombined %>% 
+  group_by(gameid) %>%
+  summarize(ent = entropy(getCounts(contents))) %>%
+  ungroup())$ent)
+```
+
+We begin by examining signatures of *arbitrariness* and *stability* in our data. We operationalize these concepts using the information-theoretic measure of entropy. Broadly speaking, entropy measures the predictability of a distribution. It is maximized when all elements are equally likely and declines as the distribution becomes more structured, i.e. when the probability mass is concentrated on a subset of elements:
+
+$$H(W) = \sum_w P(w) \log P(w)$$
+
+To derive predictions, we consider a permutation-test null model in which utterances are scrambled within each round. We argue that the empirical entropy of individual games should only differ from the null distribution if *both* arbitrariness and stability hold. First, note that if stability did *not* hold, scrambling would have no effect on the entropy within individual games: speakers would already use different words each round, and swapping out the identity of those words would not affect the entropy of the word distribution. 
+
+Next, we turn to the case where stability holds but arbitrariness does not. In the strongest form of arbitrariness, all players would adopt the single optimal way to refer to each tangram on any given round. Therefore, the entropy of their word distributions also should not be affected by scrambling: a speaker's real words would be swapped out for the same words, just generated by another speaker. Finally, if both arbitrariness and stability hold, then different speakers adopt different referring expressions that persist from round to round. Hence, scrambling should *increase* the average game's entropy from a relatively low baseline: each game's idiosyncratic, concetrated distribution of words would be mixed together to form more heterogeneous and therefore high-entropy distributions.
+
+To test this prediction, we computed the average within-game entropy for 1000 different permutations of speaker utterances. We permuted utterances within rounds rather than across the entire dataset to control for the fact that earlier rounds have longer utterances and thus a larger vocabulary than later rounds (see the following section). Since this permutation scheme keeps the number of messages per participant constant and simply swaps out the content of those messages, it also controls for the fact that some speakers sent more messages than others. We found that our null distribution lay within the interval [`r round(min(permutations), 2)`, `r round(max(permutations), 2)`], which is significantly higher than the true mean entropy of `r round(trueEntropy,2)`, $p < 0.001$. This pattern is consistent only with signatures of both arbitrariness and stability. 
+
+### Reduction in utterance length
+
+Next, we turn to a set of analyses examining reduction in utterance length over the course of the experiment. At the coarsest level, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This decrease replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation], although perhaps due to our purely textual (vs. spoken) interface, participants in our task used many fewer words overall than previously reported. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
+
+The next level of granularity motivating our model approach concerns which kinds of words are most likely to be dropped. Is the speaker adopting a shorthand where they drop uninformative function words, or are they simplifying or narrowing their descriptions by omitting meaningful details [@ClarkWilkesGibbs86_ReferringCollaborative]? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:replication} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. 
+
+```{r xtable, cache=T, results="asis"}
 unigrams <- read_csv("../../analysis/tangrams/wordCounts.csv", col_names = T) %>%
   group_by(word, POS, roundNum) %>% 
   summarize(count = sum(count)) %>% 
@@ -281,52 +326,15 @@ print(xtable(topWords, label = 'tab:words', caption = 'Top 10 unigrams and bigra
       floating.environment = "table*", comment=F, table.placement = 'th')
 ```
 
-```{r dependencyParsing}
-clauseReduction = read_csv('../../analysis/tangrams/posTagged.csv') %>%
-  group_by(roundNum, clauses) %>%
-  tally() %>%
-  group_by(roundNum) %>%
-  mutate(prob = n / sum(n)) %>%
-  filter(clauses == 'True') 
-
-# ggplot(clauseReduction, aes(x = roundNum, y = prob)) +
-#     ylab('% messages with dependent clauses') +
-#     geom_line() +
-#     theme_bw(8)
-```
-
-However, examining the words most likely to be dropped (see Table \ref{tab:words}), we notice that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifying clauses ('of', 'with', 'the right'). This result suggests that when utterances are reduced, it is not merely formal function words that are dropped from laziness. Initial phrases pile on multiple ambiguous but redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running the Stanford Parser [@SchusterManning16] and tagging the occurence of subordinate clauses (i.e. clausal subjects and complements) 
-
-\textcolor{green}{ndg: looking forward to seeing this result. once it's in consider revising this section to make the different hypotheses about reduction more clear.}
+While this suggests that speakers might just be adopting a shorthand using more ungrammatical fragments as the game proceeds, we find a more complex dynamic by examining the table of unigrams and bigrams most likely to be dropped (see Table \ref{tab:words}). Note that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifiers ('of', 'with', 'the right'). In other words, it may be more likely that when function words are dropped, it is primarily as part of larger grammatical units that provide additional information in identifying the target. Initial phrases pile on multiple ambiguous but partially redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped. We explicitly examined this hypothesis by running the Stanford constituency parser [@SchusterManning16], tagging the occurence of subordinate/adverbial clauses ('sitting *facing left*') and adjectival clauses ('angel *that is praying*')\footnote{Specifically, we used the Universal Dependencies tags \texttt{csubj, ccomp, xcomp}, and \texttt{advcl} for subordinate clauses and \texttt{acl} for adjectival clauses [@SchusterManning16]}. We found that both were reduced over the course of the game (see Fig. \ref{fig:replication}), lending additional support for the hypothesis that meaningful details are increasingly omitted. 
 
 ### Listener feedback aids conventionalization
 
-```{r turntakingfig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:turntaking} Mean number of messages sent by listener per round. Error bars are bootstrapped 95\\% CIs."}
-listenerMsgs <- tangramCombined %>% 
-  group_by(gameid, roundNum, role) %>% 
-  summarize(individualM = n()) %>% 
-  ungroup() %>%
-  complete(role, roundNum, gameid, fill = list(individualM = 0)) %>% 
-  spread(role, individualM) 
-
+```{r turntakingfig, cache = TRUE}
 listenerMsg_lm = summary(lmer(matcher ~ roundNum + (1 | gameid), data = listenerMsgs))
-
-listenerMsgIncrease = listenerMsgs %>%    
-   group_by(roundNum) %>% 
-   multi_boot_standard("matcher")
-
-ggplot(listenerMsgIncrease, aes(x = roundNum, y = mean)) +
-  geom_line() +
-  geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +
-  ylab("# listener messages") +
-  xlab("trials") +
-  #ylim(.5,1) +
-  xlim(0, 7) +
-  theme_bw(8) 
-
 ```
 
-```{r}
+```{r, cache= T}
 turnTaking <- listenerMsgs %>% 
   filter(roundNum %in% c(1)) %>%
   group_by(gameid) %>%
@@ -423,7 +431,7 @@ arbitrarinessResults <- complete(data.frame(
   do(arbitrarinessModel(.$alpha,.$beta))
 ```
 
-```{r accuracyFig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data."}
+```{r accuracyFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data. The rate of increase depends on the speaker optimality parameter $\\alpha$."}
 arbitrarinessResults %>%
   group_by(roundNum, acc, alpha, beta) %>%
   tally() %>%   
@@ -442,7 +450,7 @@ arbitrarinessResults %>%
 
 ```
 
-```{r arbitrarinessFig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Different mappings on the first round leads to widely diverging trajectories in subsequent rounds (path-dependence)."}
+```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Different mappings on the first round leads to widely diverging trajectories in subsequent rounds (path-dependence)."}
 accuracyRes <- arbitrarinessResults %>%
   filter(alpha == 5) %>%
   unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
@@ -487,7 +495,7 @@ conjunctionRes <- webppl(program_file = 'webpplModels/conjunction.wppl',
              output_format = 'samples')
 ```
 
-```{r modelReductionPlot, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time"}
+```{r modelReductionPlot, cache=T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time"}
 reductionRes <- conjunctionRes %>% 
   select(value.utt.0:value.acc.3) %>%
   mutate(sampleId = row_number()) %>%
