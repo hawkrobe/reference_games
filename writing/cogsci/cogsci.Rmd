@@ -512,11 +512,7 @@ While we established in the previous section that conventions can emerge over a 
 
 We ran 1000 forward samples of 6 rounds of speaker-listener interaction, and averaged over the utterance length at each round. Our results are shown in Figure \ref{fig:modelReduction}: the expected utterance length decreases systematically over each round. To illustrate in more detail how this dynamic is driven by an initial rational preference for redundency relaxing as reference becomes more reliable, we walk step-by-step through a single trajectory. 
 
-Consider a speaker who wants to refer to object $o_1$. They believe their knowledgeable partner is slightly more likely to interpret their language using a lexicon in which $u_{s1}$ and $u_{c1}$ apply to this object, due to their initial bias. However, there is still a reasonable chance that one or the other alone actually refers strongly to $o_2$ in the true lexicon. Thus, it is useful to produce the conjunction "$u_{s1}$ and $u_{c1}$" to hedge against this possibility, despite its higher cost. Upon observing the listener's response (say, $o_1$), the evidence is indeterminate about the separate meanings of $u_{s1}$ and $u_{c1}$ but both become increasingly likely to refer to $o_1$. In the tradeoff between informativity and cost, the shorter utterances remain useful options. Once the speaker chooses one of m, the symmetry collapses and that utterance becomes the most probable in future rounds. In this way, meaningful sub-phrases are omitted over time as the speaker becomes more confident about the true lexicon. 
-
- <!-- Suppose are two objects $\{o_1, o_2\}$ each with ambiguous values on two different dimensions: shape and color. -->
-
-<!-- \textcolor{green}{ndg: and what the results mean. maybe run a simulation where the initial semantics and more certain (like the "skater" to photo of skater example earlier), to make the point that some amount of initial vagueness is needed? and discuss to hammer home the idea that reduction comes from .} -->
+Consider a speaker who wants to refer to object $o_1$. They believe their knowledgeable partner is slightly more likely to interpret their language using a lexicon in which $u_{s1}$ and $u_{c1}$ apply to this object, due to their initial bias. However, there is still a reasonable chance that one or the other alone actually refers strongly to $o_2$ in the true lexicon. Thus, it is useful to produce the conjunction "$u_{s1}$ and $u_{c1}$" to hedge against this possibility, despite its higher cost. Upon observing the listener's response (say, $o_1$), the evidence is indeterminate about the separate meanings of $u_{s1}$ and $u_{c1}$ but both become increasingly likely to refer to $o_1$. In the tradeoff between informativity and cost, the shorter utterances remain probable options, with the probability increasing as the speaker becomes more certain of the meanings. Once the speaker chooses one of them, the symmetry collapses and that utterance becomes the most probable in future rounds. In this way, meaningful sub-phrases are omitted over time as the speaker becomes more confident about the true lexicon. 
 
 
 # General Discussion
@@ -546,7 +542,7 @@ By capturing reduction, which purely heuristic theories have not yet demonstrate
 
 # Acknowledgements
 
-\small We thank Nicole Maslan for her contributions during piloting. This work was supported by ONR grant N00014-13-1-0788 and a James S. McDonnell Foundation Scholar Award to NDG. RXDH was supported by the Stanford Graduate Fellowship and the National Science Foundation Graduate Research Fellowship under Grant No. DGE-114747.
+\small We thank Nicole Maslan for her contributions during piloting. This work was supported by ONR grant N00014-13-1-0788 and a Sloan Research Fellowship to NDG. RXDH was supported by the Stanford Graduate Fellowship and the National Science Foundation Graduate Research Fellowship under Grant No. DGE-114747.
 
 # References 
 
