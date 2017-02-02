@@ -510,7 +510,7 @@ Analogous to our tangram stimuli, which have many ambiguous features and figurat
 
 While it was definitionally important in the previous section to demonstrate that conventions can emerge over a reference game in the complete absence of initial preferences, players often bring such preferences to the table. A player who hears 'ice skater' on the first round of our tangrams task is more likely to select some objects more than others, even though they still have some uncertainty over its meaning in the context. To demonstrate this dynamic, we suppose that our speaker's initial prior over the meaning of color and type terms to be slightly biased. $u_{s1}$ and $u_{c1}$ are more likely to mean $o_1$; $u_{s2}$ and $u_{c2}$ are more likely to mean $o_2$.
 
-Intuitively, if a speaker has uncertainty over the individual meanings of $s_A$ and $c_A$, it is useful to produce the conjunction to hedge against the case that one or the other basic term does not apply to the desired object. Upon observing the listener's response (say, $o_1$), the evidence is indeterminate about the separate meanings of $s_A$ and $c_A$ but both become increasingly likely to refer to $o_1$. Because of cost considerations, the shorter utterances are still assigned some probability. Once the speaker samples one of the two component utterances, the symmetry breaks and that utterance becomes the most probable in future rounds. We ran 1000 forward samples from this model and averaged over the utterance length at each round. Our results are shown in Figure \ref{fig:modelReduction}: the expected utterance length decreases systematically over each round.
+Intuitively, if a speaker has uncertainty over the individual meanings of $s_A$ and $c_A$, it is useful to produce the conjunction to hedge against the case that one or the other basic term does not apply to the desired object. Upon observing the listener's response (say, $o_1$), the evidence is indeterminate about the separate meanings of $s_A$ and $c_A$ but both become increasingly likely to refer to $o_1$. Because of cost considerations, the shorter utterances are still assigned some probability, with the probability increasing as the speaker becomes more certain of the meanings. Once the speaker samples one of the two component utterances, the symmetry breaks and that utterance becomes the most probable in future rounds. We ran 1000 forward samples from this model and averaged over the utterance length at each round. Our results are shown in Figure \ref{fig:modelReduction}: the expected utterance length decreases systematically over each round.
 
  <!-- Suppose are two objects $\{o_1, o_2\}$ each with ambiguous values on two different dimensions: shape and color. -->
 
@@ -546,7 +546,7 @@ By capturing reduction, which purely heuristic theories have not yet demonstrate
 
 # Acknowledgements
 
-\small We thank Nicole Maslan for her contributions during piloting. This work was supported by ONR grant N00014-13-1-0788 and a James S. McDonnell Foundation Scholar Award to NDG. RXDH was supported by the Stanford Graduate Fellowship and the National Science Foundation Graduate Research Fellowship under Grant No. DGE-114747.
+\small We thank Nicole Maslan for her contributions during piloting. This work was supported by ONR grant N00014-13-1-0788 and a Sloan Research Fellowship to NDG. RXDH was supported by the Stanford Graduate Fellowship and the National Science Foundation Graduate Research Fellowship under Grant No. DGE-114747.
 
 # References 
 
