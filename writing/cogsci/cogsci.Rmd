@@ -154,43 +154,7 @@ print(xtable(topWords, label = 'tab:words', caption = 'Top 10 unigrams and bigra
       floating.environment = "table*", comment=F, table.placement = 't')
 ```
 
-```{r posReduction, cache =T}
-posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
-  # Count occurences of each POS on each round within games
-  group_by(roundNum, gameid) %>% 
-  summarize(numWords = sum(numWords),
-            nouns = sum(nouns),
-            #numbers = sum(numbers),
-            verbs = sum(verbs),
-            dets= sum(determiners),
-            pronouns = sum(pronouns),
-            preps = sum(prepositions),
-            adjectives = sum(adjectives),
-            adverbs = sum(adverbs)) %>%
-  gather(POS, count, nouns:adverbs) %>%
-  select(gameid, roundNum, POS, count) %>%
-  # Need to put in ids to spread
-  rowwise() %>% 
-  mutate(id = row_number()) %>% 
-  mutate(roundNum = paste0('round', roundNum, collapse = '')) %>%
-  spread(roundNum, count) %>%
-  # Compute % reduction from first to last round
-  mutate(diffPct = (round1 - round6)/round1) %>%
-  group_by(POS) %>%
-  # Filter out handful of people who skipped first round w/ negative %...
-  filter(diffPct >= 0) %>% 
-  filter(POS != "OTHER") %>%
-  # Take mean & se over participants
-  multi_boot_standard('diffPct') %>%
-  mutate(cat = ifelse(POS %in% c('dets', 'pronouns', 'preps'), 'closed', 'open')) %>%
-  # rearrange
-  transform(POS=reorder(POS, -mean) )
-
-detReductionRate <- (posReduction %>% filter(POS == 'dets'))$mean * 100
-nounReductionRate <- (posReduction %>% filter(POS == 'nouns'))$mean * 100
-```
-
-```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=7, fig.height=1.17, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. Clockwise from top-left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) Percent reduction between first and last round for closed-class and open-class parts of speech over time, (4) proportion of utterances containing subordinate clauses, (5) proportion of utterances containing adjectival clauses. Error bars are bootstrapped 95\\% CIs. \\textcolor{red}{TODO: put CIs back on facetted fig.}'}
+```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=7, fig.height=1.17, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. From left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) proportion of utterances containing subordinate clauses, (4) proportion of utterances containing adjectival clauses. Error bars are bootstrapped 95\\% CIs. \\textcolor{red}{TODO: put CIs back on facetted fig.}'}
 lengthReduction = tangramCombined %>% 
    filter(role == "director") %>%
    group_by(gameid, roundNum) %>% 
@@ -259,6 +223,40 @@ listenerMsgs %>%
 ```
 
 ```{r POSfig, fig.env = "figure", fig.pos = "t!", fig.align='center', fig.width=3, fig.height=1.5, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:pos} Reduction rates for different parts of speech. Error bars are bootstrapped 95\\% CIs.'}
+posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
+  # Count occurences of each POS on each round within games
+  group_by(roundNum, gameid) %>% 
+  summarize(numWords = sum(numWords),
+            nouns = sum(nouns),
+            #numbers = sum(numbers),
+            verbs = sum(verbs),
+            dets= sum(determiners),
+            pronouns = sum(pronouns),
+            preps = sum(prepositions),
+            adjectives = sum(adjectives),
+            adverbs = sum(adverbs)) %>%
+  gather(POS, count, nouns:adverbs) %>%
+  select(gameid, roundNum, POS, count) %>%
+  # Need to put in ids to spread
+  rowwise() %>% 
+  mutate(id = row_number()) %>% 
+  mutate(roundNum = paste0('round', roundNum, collapse = '')) %>%
+  spread(roundNum, count) %>%
+  # Compute % reduction from first to last round
+  mutate(diffPct = (round1 - round6)/round1) %>%
+  group_by(POS) %>%
+  # Filter out handful of people who skipped first round w/ negative %...
+  filter(diffPct >= 0) %>% 
+  filter(POS != "OTHER") %>%
+  # Take mean & se over participants
+  multi_boot_standard('diffPct') %>%
+  mutate(cat = ifelse(POS %in% c('dets', 'pronouns', 'preps'), 'closed', 'open')) %>%
+  # rearrange
+  transform(POS=reorder(POS, -mean) )
+
+detReductionRate <- (posReduction %>% filter(POS == 'dets'))$mean * 100
+nounReductionRate <- (posReduction %>% filter(POS == 'nouns'))$mean * 100
+
 ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
   geom_bar(stat = 'identity') +
   geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1)+
@@ -315,6 +313,7 @@ $$H(W) = \sum_w P(w) \log P(w)$$
 Broadly speaking, entropy measures the predictability of a distribution. It is maximized when all elements are equally likely and declines as the distribution becomes more structured, i.e. when the probability mass is concentrated on a subset of elements.
 
 To derive predictions, we consider a permutation-test null model in which utterances are scrambled within each round. The empirical entropy of individual games should only differ from the null distribution if *both* arbitrariness and stability hold. First, note that if stability did *not* hold, scrambling would have no effect on the entropy within individual games: speakers would already use different words each round, and swapping out the identity of those words would not affect the entropy of the word distribution. 
+
 If stability holds but arbitrariness does not, all players would adopt the single optimal (non-arbitrary) way to refer to each tangram. Therefore, the entropy of their word distributions also should not be affected by scrambling: a speaker's real words would be swapped out for the same words, just generated by another speaker. Finally, if both arbitrariness and stability hold, then different speakers adopt different referring expressions that persist from round to round. Hence, scrambling should *increase* the average game's entropy from a relatively low level: each game's idiosyncratic, concetrated distribution of words would be mixed together to form more heterogeneous and therefore high-entropy distributions.
 
 To test this prediction, we computed the average within-game entropy for 1000 different permutations of speaker utterances. We permuted utterances within rounds rather than across the entire dataset to control for the fact that earlier rounds have longer utterances and thus a larger vocabulary than later rounds (see the following section). Since this permutation scheme keeps the number of messages per participant constant and simply swaps out the content of those messages, it also controls for the fact that some speakers sent more messages than others. We found that our null distribution lay within the interval [`r round(min(permutations), 2)`, `r round(max(permutations), 2)`], which is significantly higher than the true entropy (averaged across games) of `r round(trueEntropy,2)`, $p < 0.001$. This pattern is consistent only with signatures of both arbitrariness and stability. 
@@ -323,7 +322,7 @@ To test this prediction, we computed the average within-game entropy for 1000 di
 
 Next, we turn to a set of analyses examining reduction in utterance length over the course of the experiment. At the coarsest level, we find that the mean number of words used by speakers decreases over time (see Fig. \ref{fig:replication}). This decrease replicates a highly reliable reduction effect found throughout the literature on iterated reference games [@KraussWeinheimer64_ReferencePhrases;@BrennanClark96_ConceptualPactsConversation], although perhaps due to our purely textual (vs. spoken) interface, participants in our task used many fewer words overall than previously reported. The following analyses break down this broad reduction into a finer-grained set of phenomena. 
 
-The next level of granularity motivating our model approach concerns which kinds of words are most likely to be dropped. Is the speaker adopting a shorthand where they drop uninformative function words, or are they simplifying or narrowing their descriptions by omitting meaningful details [@ClarkWilkesGibbs86_ReferringCollaborative]? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:replication} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. 
+The next level of granularity motivating our model approach concerns which kinds of words are most likely to be dropped. Is the speaker adopting a shorthand where they drop uninformative function words, or are they simplifying or narrowing their descriptions by omitting meaningful details [@ClarkWilkesGibbs86_ReferringCollaborative]? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:pos} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. 
 
 While this suggests that speakers might just be adopting a shorthand using more ungrammatical fragments as the game proceeds, we find a more complex dynamic by examining the table of unigrams and bigrams most likely to be dropped (see Table \ref{tab:words}). Note that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifiers ('of', 'with', 'the right'). In other words, it may be more likely that when function words are dropped, it is primarily as part of larger grammatical units that provide additional information in identifying the target. We explicitly examined this hypothesis by running the Stanford constituency parser [@SchusterManning16], tagging the occurence of subordinate/adverbial clauses ('sitting *facing left*') and adjectival clauses ('angel *that is praying*') ^[Specifically, we used the Universal Dependencies tags \texttt{csubj, ccomp, xcomp}, and \texttt{advcl} for subordinate clauses and \texttt{acl} for adjectival clauses [@SchusterManning16]]. We found that both were reduced over the course of the game (see Fig. \ref{fig:replication}), lending additional support for the hypothesis that meaningful details are increasingly omitted. Initial phrases pile on multiple ambiguous, partially redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped.
 
@@ -371,30 +370,32 @@ Finally, the theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argue
 # Model
 
 Here, we present a probabilistic model of language production under uncertainty, which captures several of the signiture properties of conventions shown above. This model belongs to the family of Rational Speech Act (RSA) models, which have been successful in explaining a wide range of linguistic phenomena -- including scalar implicature, adjectival vagueness, overinformativeness, indirect questions, and non-literal language use -- as arising from a process of recursive social reasoning. Most previous applications of RSA have focused on the listener's problem of language comprehension, but the puzzle of conventionalization is primarily a question of speaker production. An $n$th order pragmatic speaker trying to convey a particular state of affairs $s \in \mathcal{S}$ assuming lexicon $\mathcal{L}$ is assumed to select an utterance $u \in \mathcal{U}$ by trading off its expected informativity (with respect to a rational listener agent) against its cost, usually based on length [@GoodmanFrank16_RSATiCS]:
-
+<!-- -->
 $$S_n(u | s, \mathcal{L}) \propto \exp{\left(\alpha \log L_n(s | u, \mathcal{L}) - \textrm{cost}(u)\right)}$$
+<!-- -->
 where $\alpha$ is an optimality parameter controlling the extent to which the speaker maximizes over the expected listener distribution. The listener, in turn, reasons about what utterances would be most likely to be produced by a speaker intending to convey $u$:
-
+<!-- -->
 $$L_n(s | u, \mathcal{L}) \propto P(s) S_{n-1}(u | s, \mathcal{L})$$
-
-This recursion bottoms out in a *literal listener* who directly looks up the meaning of the utterance in the lexicon:
-
+<!-- -->
+\indent This recursion bottoms out in a *literal listener* who directly looks up the meaning of the utterance in the lexicon:
+<!-- -->
 $$L_0(s | u, \mathcal{L}) \propto \mathcal{L}(u, s)\cdot P(s)$$
-
-As in several other recent applications of RSA [@GrafEtAl16_BasicLevel], we use a graded semantics, where utterances are better or worse descriptions of particular referents. For instance, the utterance "dancer" may initially be expected to apply to a photorealistic image of a ballerina ($\mathcal{L}(\textrm{'dancer'}, \textit{ballerina}) = 0.99$) more than an abstract image of one ($\mathcal{L}(\textrm{'dancer'}, \textit{abstract ballerina}) =0.6$), but apply to both better than a non-category member like an image of a dog ($\mathcal{L}(\textrm{'dancer'}, \textit{dog}) = 0.05$).
+<!-- -->
+\indent As in several other recent applications of RSA [@GrafEtAl16_BasicLevel], we use a graded semantics, where utterances are better or worse descriptions of particular referents. For instance, the utterance "dancer" may initially be expected to apply to a photorealistic image of a ballerina ($\mathcal{L}(\textrm{'dancer'}, \textit{ballerina}) = 0.99$) more than an abstract image of one ($\mathcal{L}(\textrm{'dancer'}, \textit{abstract ballerina}) =0.6$), but apply to both better than a non-category member like an image of a dog ($\mathcal{L}(\textrm{'dancer'}, \textit{dog}) = 0.05$).
 
 Our approach to convention-formation begins with the additional assumption of *lexical uncertainty* [@SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS;@BergenLevyGoodman16_LexicalUncertainty]. In other words, we assume that instead of having perfect knowledge of $\mathcal{L}$, the speaker has uncertainty over the exact meanings of lexical items in the current context (i.e. it is initially unclear which of the ambiguous tangram shapes "the dancer" might refer to). They begin with some prior $P(\mathcal{L})$ over meanings, which may be initially biased toward certain meanings, and update these beliefs through repeated interactions with a knowledgeable partner:
-
+<!-- -->
 $$P(\mathcal{L} | d) \propto P(\mathcal{L})\prod_i L_{n-1}(s_i|u_i, \mathcal{L})$$
+<!-- -->
 where $d = \{s_i, u_i\}$ is a set of observations of $s_i$ and $u_i$ coming from previous exchanges^[There is a broader debate over the timescales at which lexicons and lexicon learning mechanisms operate; here, we assume a discourse-level structure to the lexicon, where there is uncertainty over how words are used *in the given conversation*. See @FrankGoodmanTenenbaum09_Wurwur for a related approach at the scale of cross-situational word learning.]. The speaker then marginalizes over this posterior distribution when reasoning about the listener, giving rise to the form of the pragmatic listener model we use throughout our model results (only going up to $n = 2$ in our recusion for simplicity):
-
+<!-- -->
 $$S(u | s, d) \propto \exp( \alpha\log\left(\sum_{\mathcal{L}} P(\mathcal{L} | d) L_1(s | u, \mathcal{L})\right) - \textrm{cost}(u) )$$
-
-A listener with lexical uncertainty can be defined similarity, simply swapping out $L_{n-1}$ in the lexicon posterior update with a knowledgeable speaker $S_{n}$:
-
+<!-- -->
+\indent A listener with lexical uncertainty can be defined similarity, simply swapping out $L_{n-1}$ in the lexicon posterior update with a knowledgeable speaker $S_{n}$:
+<!-- -->
 $$L(s | u, d) \propto \sum_\mathcal{L}P(\mathcal{L}|d)L_1(s|u,\mathcal{L})$$
-
-This model is implemented in the probabilistic programming language WebPPL [@GoodmanStuhlmuller14_DIPPL] ^[All results can be reproduced running our code in the browser at \url{http://forestdb.org/models/conventions.html}]. Following  @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS, we begin by showing how a random initial choice is taken to be evidence for a particular lexicon and becomes the base for successful communication even though neither party knows its meaning at the outset.
+<!-- -->
+\indent This model is implemented in the probabilistic programming language WebPPL [@GoodmanStuhlmuller14_DIPPL] ^[All results can be reproduced running our code in the browser at \url{http://forestdb.org/models/conventions.html}]. Following  @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS, we begin by showing how a random initial choice is taken to be evidence for a particular lexicon and becomes the base for successful communication even though neither party knows its meaning at the outset.
 
 ## Results
 
@@ -427,7 +428,7 @@ arbitrarinessResults <- complete(data.frame(
   do(arbitrarinessModel(.$alpha,.$beta))
 ```
 
-```{r accuracyFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data. The rate of increase depends on the speaker optimality parameter $\\alpha$."}
+```{r accuracyFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data. The rate of increase depends on the speaker optimality parameter $\\alpha$."}
 arbitrarinessResults %>%
   group_by(roundNum, acc, alpha, beta) %>%
   tally() %>%   
@@ -447,7 +448,7 @@ arbitrarinessResults %>%
 
 ```
 
-```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, however, that mapping is likely to persist (stability)."}
+```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, however, that mapping is likely to persist (stability)."}
 accuracyRes <- arbitrarinessResults %>%
   filter(alpha == 5) %>%
   unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
@@ -488,7 +489,7 @@ conjunctionRes <- webppl(program_file = 'webpplModels/conjunction.wppl',
              output_format = 'samples')
 ```
 
-```{r modelReductionPlot, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time"}
+```{r modelReductionPlot, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time"}
 reductionRes <- conjunctionRes %>% 
   select(value.utt.0:value.acc.3) %>%
   mutate(sampleId = row_number()) %>%
