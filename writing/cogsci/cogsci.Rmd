@@ -63,7 +63,7 @@ Simulations elegantly show how arbitrary signaling systems can spread and come t
 
 In this paper, we argue for a theoretical position on the spectrum between these poles: conventions form when agents *assume conventions already exist*. In other words, agents believe there is a true lexicon used by other agents but are initially unsure of its identity. Through their interactions with a partner who is assumed to be knowledgeable and informative, agents can learn this true lexicon; even though their partner in fact begins in the same state of ignorance. Agents thus coordinate on the same lexicon, which becomes conventional. To support this theory, we first conduct a large-scale, multi-player replication of the tangrams task, which has traditionally been limited to relatively small sample sizes in the lab. We demonstrate signatures of arbitrariness, stability, and reduction which have been difficult to study at a fine-grained level due to the sparseness of existing data. Next, we formulate our theory in a computational model of communication in repeated reference games, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS] and show that this model qualitatively produces all three empirical signatures.
 
-```{r image, cache=T, fig.env = "figure", fig.pos = "tb", fig.align='center', fig.width=3, fig.height=3, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial in experimental interface. Both players could freely use the chat box, and the matcher could click and drag the tangram images."}
+```{r image, cache=T, fig.env = "figure", fig.pos = "tb", fig.align='center', fig.width=3, fig.height=3, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial in experimental interface. Both players could freely use the chat box, and the matcher could click and drag the tangram images."}
 img <- png::readPNG("figs/directorBoard.png")
 grid::grid.raster(img)
 ```
@@ -190,7 +190,7 @@ detReductionRate <- (posReduction %>% filter(POS == 'dets'))$mean * 100
 nounReductionRate <- (posReduction %>% filter(POS == 'nouns'))$mean * 100
 ```
 
-```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=3.5, fig.height=2, fig.show='hold', set.cap.width=T, num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. Clockwise from top-left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) Percent reduction between first and last round for closed-class and open-class parts of speech over time, (4) proportion of utterances containing subordinate clauses, (5) proportion of utterances containing adjectival clauses. Error bars are bootstrapped 95\\% CIs. \\textcolor{red}{TODO: put CIs back on facetted fig.}'}
+```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=7, fig.height=1.17, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. Clockwise from top-left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) Percent reduction between first and last round for closed-class and open-class parts of speech over time, (4) proportion of utterances containing subordinate clauses, (5) proportion of utterances containing adjectival clauses. Error bars are bootstrapped 95\\% CIs. \\textcolor{red}{TODO: put CIs back on facetted fig.}'}
 lengthReduction = tangramCombined %>% 
    filter(role == "director") %>%
    group_by(gameid, roundNum) %>% 
@@ -246,17 +246,8 @@ listenerMsgs %>%
     geom_line() +
     xlab('round #') +
     ylab('metric') +
-    facet_wrap(~ measure, scales = 'free') + 
+    facet_wrap(~ measure, nrow = 1, ncol = 4, scales = 'free') + 
     theme_bw(8)
-
-ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
-  geom_bar(stat = 'identity') +
-  geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1)+
-  theme_bw(8) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  ylab("% reduction") +
-  xlab("Part of Speech category")
-
 # ggplot(lengthReduction, aes(x = roundNum, y = mean)) +
 #   geom_line() +
 #   geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +
@@ -265,6 +256,16 @@ ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
 #   ylim(0,23) +
 #   xlim(0, 7) +
 #   theme_bw(8) 
+```
+
+```{r POSfig, fig.env = "figure", fig.pos = "t!", fig.align='center', fig.width=3, fig.height=1.5, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:pos} Reduction rates for different parts of speech. Error bars are bootstrapped 95\\% CIs.'}
+ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
+  geom_bar(stat = 'identity') +
+  geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1)+
+  theme_bw(8) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("% reduction") +
+  xlab("Part of Speech category")
 ```
 
 ```{r}
@@ -426,7 +427,7 @@ arbitrarinessResults <- complete(data.frame(
   do(arbitrarinessModel(.$alpha,.$beta))
 ```
 
-```{r accuracyFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data. The rate of increase depends on the speaker optimality parameter $\\alpha$."}
+```{r accuracyFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data. The rate of increase depends on the speaker optimality parameter $\\alpha$."}
 arbitrarinessResults %>%
   group_by(roundNum, acc, alpha, beta) %>%
   tally() %>%   
@@ -441,11 +442,12 @@ arbitrarinessResults %>%
     geom_line() +
     theme_bw(8) +
     theme( plot.margin=unit(x=c(0,0,0,0),units="mm"),
+           legend.margin=unit(0,"cm"),
            legend.position="top")
 
 ```
 
-```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, however, that mapping is likely to persist (stability)."}
+```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, however, that mapping is likely to persist (stability)."}
 accuracyRes <- arbitrarinessResults %>%
   filter(alpha == 5) %>%
   unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
@@ -466,7 +468,9 @@ ggplot(accuracyRes, aes(x = roundNum, y = prob,
   ylab("S(label1 | t1) (expected)") +
   geom_line() +
   theme_bw(8) +
-  theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), legend.position="top")
+  theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), 
+         legend.margin=unit(0,"cm"),
+         legend.position="top")
 ```
 
 Consider an environment with two abstract shapes ($\{s_1, s_2\}$), where the speaker must choose between two utterances ($\{u_1, u_2\}$) incurring equal cost. Their prior $P(\mathcal{L})$ over the meaning of each utterance is given by a (discretized) Dirichlet distribution, so on the first round both utterances are equally likely to apply to either shape. If the speaker was trying to get their partner to pick $s_1$, then, since each utterance is equally (un)informative, they would randomly sample one (say, $u_1$), and observe the listener's selection of a shape (say, $s_1$). On the next round, the speaker uses the observed pair $\{u_1, s_1\}$ to update their beliefs about the lexicon, uses these beliefs to generate a new utterance, and so on. To examine expected dynamics over multiple rounds, we enumerate over all possible trajectories our simulated speaker and listener models could produce.
@@ -484,7 +488,7 @@ conjunctionRes <- webppl(program_file = 'webpplModels/conjunction.wppl',
              output_format = 'samples')
 ```
 
-```{r modelReductionPlot, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, set.cap.width=T, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time"}
+```{r modelReductionPlot, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=2, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time"}
 reductionRes <- conjunctionRes %>% 
   select(value.utt.0:value.acc.3) %>%
   mutate(sampleId = row_number()) %>%
@@ -499,7 +503,8 @@ ggplot(reductionRes, aes(x = roundNum, y = mean, group = garbage)) +
   ylab('mean utterance length') +
   geom_line() +
   geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +  
-  theme_bw(8)
+  theme_bw(8) +
+  theme(plot.margin=unit(x=c(0,0,0,0),units="mm"))
 ```
 
 Finally, we show how our model explains reduction of utterance length over multiple interactions. For utterances to be reduced, of course, they must vary in length. Motivated by our empirical observation that meaningful clauses are the primary unit of reduction, we extend our grammar to include *conjunctions*. This is one of the simplest ways to constructing longer utterances compositionally from lexical primitives, using the product rule: 
@@ -518,20 +523,19 @@ Consider a speaker who wants to refer to object $o_1$. They believe their knowle
 # General Discussion
 
 In this paper, we revisited the classic phenomenon of convention-formation in a large-scale replication of the tangrams task, finding evidence of arbitrariness and stability as well as finer-grained reduction of meaningful clauses.
-We argued that several empirical signatures including arbitrariness, stability, and the reduction of utterance length over repeated interactions can be explained by our model of informative communication under lexical uncertainty. This model formalizes a theory where conventions emerge via initially uncertain agents assuming that conventions are already in place and inferring them by reasoning about a knowledgeable, informative partner.  Two concepts -- *common ground* and *arbitrariness* -- have been of particular interest to recent theoretical debates about conventions, and it's worth sketching out our model's implications for both, in turn. 
+We argued that several empirical signatures including arbitrariness, stability, and the reduction of utterance length over repeated interactions can be explained by our model of informative communication under lexical uncertainty. This model formalizes a theory where conventions emerge via initially uncertain agents assuming that conventions are already in place and inferring them by reasoning about a knowledgeable, informative partner.  
 
 Theories of convention-formation vary in the extent to which social reasoning about common ground is required. 
 Our agents lie on a spectrum between the heustic updating agents of @Barr2004_ConventionalCommunicationSystems and the sophisticated agents of @ClarkWilkesGibbs86_ReferringCollaborative, who collaboratively build up explicit representations of mutual knowledge. 
 Speakers and listeners in our model implicitly coordinate their beliefs through a shared history of observations, which serves as "common ground" in an informal sense. They make critical use of pragmatic, social reasoning in order to learn
-meanings, but do not explicitly consider the fact that this history is shared, or represent their partner's own uncertainty. While there remain many complex aspects of convention-formation in communication games that our model does not yet capture, as we discuss further below, this approach nonetheless serves as a lower bound on the degree of social reasoning needed to capture lexical conventions in these games.
+meanings, but do not explicitly consider the fact that this history is shared, or represent their partner's own uncertainty. 
 
-Recent studies have also called into question the extent to which linguistic conventions are, in fact, perfectly arbitrary [@DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity]
-This forces us to consider exactly in what sense arbitrariness is an essential property of conventions. In our model, we moved to a more probabilistic notion of arbitrariness that does not require initial beliefs to be completely uniform, as in the game-theoretic cases considered by @Lewis69_Convention. Because speakers assume their partner is knowledgeable and choose utterances using a soft-max decision rule, choices that are relatively unlikely *a priori* -- say, calling a tangram an idiosyncratic name like "crazy chicken" or "touchdown Jesus" may nonetheless be sampled and subsequently used by both partners to form stable beliefs about the lexicon. When observing a large number of games, as we did in our experimental analyses, we can therefore observe substantial variability even though some descriptions may initially fit better than others. 
+<!-- Recent studies have also called into question the extent to which linguistic conventions are, in fact, perfectly arbitrary [@DingemanseEtAl15_IconicityLanguage; @LewisFrank16_LengthOfWordsComplexity]. This forces us to consider exactly in what sense arbitrariness is an essential property of conventions. In our model, we moved to a more probabilistic notion of arbitrariness that does not require initial beliefs to be completely uniform, as in the game-theoretic cases considered by @Lewis69_Convention. Because speakers assume their partner is knowledgeable and choose utterances using a soft-max decision rule, choices that are relatively unlikely *a priori* -- say, calling a tangram an idiosyncratic name like "crazy chicken" or "touchdown Jesus" may nonetheless be sampled and subsequently used by both partners to form stable beliefs about the lexicon. When observing a large number of games, as we did in our experimental analyses, we can therefore observe substantial variability even though some descriptions may initially fit better than others.  -->
 
 <!-- relatively little modeling work has focused on the cognitive mechanisms supporting emergence of local conventions during shorter dyadic interactions. In fact, the convergence on semi-arbitrary yet efficient referring expressions within an interaction poses some problems for these classes of models. Pure evolutionary models do not provide a mechanism for agents to adapt their signaling strategy within a lifetime, let alone within an extended interaction. Emergence-through-use models, such as the one proposed by @Barr2004_ConventionalCommunicationSystems, use simple updating rules based on success or failure in an interaction, but are not easily extended to richer language models and cannot straightforwardly explain the sharp reduction in word length across a repeated interaction with a single partner \textcolor{red}{rdh: might want to actually show this if I'm going to make that argument...} -->
 
+By capturing reduction, which purely heuristic theories have not yet demonstrated, we showed that minimal assumptions of social reasoning go a long way in accounting for key phenomena. Still, our model falls short in some ways. For instance, because we do not provide a mechanisms for the listener agent to respond with confirmation, repair, or follow-up questions, we cannot make explicit predictions about the reduction in *listener messages* (as in Fig. \ref{fig:replication}) or the impact of early listener responses on conventionalization. These phenomena require our model to deal with planning over extended dialogues, and to potentially weaken the assumption that one's partner knows the true lexicon with complete certainty. Similarly, while our model was explicitly designed with linguistic conventions in mind, it remains to be seen whether the same formulation generalizes to broader behavioral conventions. For example, the real-time coordination games used in @HawkinsGoldstone16_SocialConventions may not require players to reason about a structured lexicon with noise, but an action policy representation may play a similar role. While there remain many complex aspects of convention-formation in communication games left for future research, our approach nonetheless serves as a lower bound on the degree of social reasoning needed to capture lexical conventions in these games.
 
-By capturing reduction, which purely heuristic theories have not yet demonstrated, we showed that minimal assumptions of social reasoning go a long way in accounting for key phenomena. Still, our model falls short in some ways. For instance, because we do not provide a mechanisms for the listener agent to respond with confirmation, repair, or follow-up questions, we cannot make explicit predictions about the reduction in *listener messages* (as in Fig. \ref{fig:turntaking}) or the impact of early listener responses on conventionalization. These phenomena require our model to deal with planning over extended dialogues, and to potentially weaken the assumption that one's partner knows the true lexicon with complete certainty. Similarly, while our model was explicitly designed with linguistic conventions in mind, it remains to be seen whether the same formulation generalizes to broader behavioral conventions. For example, the real-time coordination games used in @HawkinsGoldstone16_SocialConventions may not require players to reason about a structured lexicon with noise, but an action policy representation may play a similar role. 
 
 
 
