@@ -226,6 +226,12 @@ Hash: 46e5cb78836848aa44655e577433f54b
 Requires: MASS, digest, gtable, lazyeval, plyr, reshape2, scales,
     tibble
 
+Package: ggthemes
+Source: CRAN
+Version: 3.3.0
+Hash: f52c9c0b6b18d2c58d2c5ac1044ef760
+Requires: assertthat, colorspace, ggplot2, scales
+
 Package: git2r
 Source: CRAN
 Version: 0.18.0
