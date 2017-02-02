@@ -48,14 +48,20 @@ library(langcog)
 
 Just as drivers depend on shared behavioral conventions to safely navigate traffic, successful communication depends on a set of shared linguistic conventions. Speakers of different languages around the world refer to the same object in many different ways, yet when ordering a coffee in San Francisco, I can confidently use the English word "coffee" and assume that I will be understood. How do these conventions -- classically characterized by @Lewis69_Convention as arbitrary but stable solutions to recurring coordination problems -- form in the first place? 
 
-While *global* conventions adopted and sustained throughout a large population of speakers may develop over longer time scales [@Campbell13_HistoricalLinguistics], we also effortlessly coordinate on *local* conventions -- or conceptual pacts [@BrennanClark96_ConceptualPactsConversation] -- within the span of a single dialogue. For example, when discussing possible conditions to use in an upcoming experiment, a team of collaborators might begin the meeting using long descriptions to refer to each condition but end the meeting using conventional terms like "condition A" and "condition B". Since global conventions are hypothesized to emerge through diffuse, repeated interactions of this more local kind [@GarrodDoherty94_GroupConventionsLinguistics], the cognitive mechanisms underlying convention-formation in such games are of foundational interest.
+While *global* conventions adopted and sustained throughout a large population of speakers may develop over longer time scales 
+<!-- [@Campbell13_HistoricalLinguistics] -->
+, we also effortlessly coordinate on *local* conventions -- or conceptual pacts [@BrennanClark96_ConceptualPactsConversation] -- within the span of a single dialogue. For example, when discussing possible conditions to use in an upcoming experiment, a team of collaborators might begin the meeting using long descriptions to refer to each condition but end the meeting using conventional terms like "condition A" and "condition B". Since global conventions are hypothesized to emerge through diffuse, repeated interactions of this more local kind [@GarrodDoherty94_GroupConventionsLinguistics], the cognitive mechanisms underlying convention-formation in such games are of foundational interest.
 
 
 In a seminal study by @KraussWeinheimer64_ReferencePhrases, pairs of participants played a cooperative language game where they were presented with arrays of ambiguous shapes in randomized orders. The players were assigned the roles of *director* and *matcher* and allowed to talk freely. The matcher's goal was to rearrange their shapes to match the director's board, and the director's goal was to communicate useful descriptions. Over multiple rounds, descriptions were dramatically shortened: an early description like "upside-down martini glass in a wire stand," became simply "martini" by the end. Later studies [e.g. @ClarkWilkesGibbs86_ReferringCollaborative] refined this paradigm, using larger arrays of tangram-like figures and emphasizing the intricate back-and-forth process through which speakers and listeners negotiate over references. These studies revealed a number of key empirical signatures that inform theories of convention-formation. Here, we focus on three: arbitrariness, stability, and the systematic reduction of utterance length over time. 
 
-*Arbitrariness* is a classic definitional property of conventions [@Lewis69_Convention]: there must be multiple solutions that would be equally successful as long as both players "agree" (e.g. driving on the left vs. right side of the road).
+*Arbitrariness* is a definitional property of conventions [@Lewis69_Convention]: there must be multiple solutions that would be equally successful as long as both players "agree" (e.g. driving on the left vs. right side of the road).
 <!-- "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. -->
-In the context of language games, different pairs may converge on different but equally successful referring expressions. By the final round, for example, the same tangram might be the 'dancer' to one pair and the 'skater' to another. The other definitional property we consider is *stability*: once a convention is established, it is in everyone's best interests to follow it. In our language games, this means that we expect players to stick with the same referring expressions over the course of the game, as opposed to switching to a novel description on the final round. *Reduction* is more specific to the reference game paradigm and refers to the transformation of longer, complex expressions into simpler expressions over the course of interaction, as @KraussWeinheimer64_ReferencePhrases observed. While this broad phenomenon has been replicated many times, exactly what is reduced remains an open empirical question.
+<!-- In the context of language games, different pairs may converge on different but equally successful referring expressions.  -->
+By the final round in a language game, for example, the same tangram might be called the 'dancer' to one pair and the 'skater' to another. 
+The other definitional property we consider is *stability*: it must be in everyone's best interest to keep using the convention, once established. 
+<!-- In our language games, this means that we expect players to stick with the same referring expressions over the course of the game, as opposed to switching to a novel description on the final round.  -->
+Finally, *reduction* is more specific to the reference game paradigm and refers to the transformation of longer, complex expressions into simpler expressions over the course of interaction, as @KraussWeinheimer64_ReferencePhrases observed. While this broad phenomenon has been replicated many times, exactly what is reduced remains an open empirical question.
 
 Theories of convention-formation differ primarily in the extent to which sophisticated social reasoning and common ground is required. At one extreme, agents use simple heuristic updating rules and do not need to represent or reason about other agents at all [@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems].
 <!-- [@ShohamTennenholtz97_EmergenceOfConventions;@Delgado02_ConventionsNetworks;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems].  -->
@@ -442,13 +448,10 @@ arbitrarinessResults %>%
     xlab('round #') +
     geom_line() +
     theme_bw(8) +
-    theme( plot.margin=unit(x=c(0,0,0,0),units="mm"),
-           legend.margin=unit(0,"cm"),
-           legend.position="top")
-
+    theme( plot.margin=unit(x=c(0,0,0,0),units="mm"))
 ```
 
-```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, however, that mapping is likely to persist (stability)."}
+```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, that mapping is likely to persist (stability)."}
 accuracyRes <- arbitrarinessResults %>%
   filter(alpha == 5) %>%
   unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
