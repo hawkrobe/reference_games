@@ -96,7 +96,7 @@ var client_onMessage = function(data) {
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
         drawPoint(globalGame, commands[4], commands[5]);
       } else {
-        drawLily(globalGame, commands[2], commands[3]);
+        drawLily(globalGame, {x : commands[2], y: commands[3], w : globalGame.lilySize, h : globalGame.lilySize});
       }
       break;
 
@@ -194,20 +194,15 @@ function mouseClickListener(evt) {
 
     drawPoint(globalGame, mouseX, mouseY);
 
-    // apparently _.values() uses for..in.., which does not guarantee order, so we sort
-    // http://stackoverflow.com/a/16809901
-    var serialize = function (obj) {
-      var sortedKeys = _.keys(obj).sort();
-      return _.map(sortedKeys, function(key){return obj[key]}).join('.');
+    var serializeBox = function(box) {
+      return box.w + "." + box.h + "." + box.x + "." + box.y + "." + box.color;
     };
 
-    globalGame.socket.send("clickedObj." +
-      [serialize(world.red),
-       serialize(world.blue),
-       serialize(world.plaza),
-       serialize(world.lily),
-       mouseX,
-       mouseY
-      ].join('.'));
+    var serializeLily = function(lily) {
+      return lily.w + "." + lily.h + "." + lily.x + "." + lily.y;
+    };
+
+    var serializedBoxes = _.map(world.boxes, serializeBox).join(".");
+    globalGame.socket.send(["clickedObj", mouseX, mouseY, serializeLily(world.lily), serializedBoxes].join('.'));
   }
 };
