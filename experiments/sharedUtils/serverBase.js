@@ -14,7 +14,8 @@ module.exports = function(expName) {
   gameServer.onMessage = serverLocal.onMessage;
   gameServer.writeData = serverLocal.writeData;
   gameServer.startGame = serverLocal.startGame;
-
+  gameServer.setCustomEvents = serverLocal.setCustomEvents;
+  
   // Incorprate task-specific core
   var core = require('../' + expName + '/game.core.js');
 
