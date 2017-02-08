@@ -93,13 +93,15 @@ var valid_id = function(id) {
 var initialize = function(query, client, id) {                        
   client.userid = id;
   client.emit('onconnected', { id: client.userid } );
+  gameServer.setCustomEvents(client);
 
   // Good to know when they connected
   console.log('\t socket.io:: player ' + client.userid + ' connected');
 
   //Pass off to game.server.js code
   gameServer.findGame(client);
-
+  
+  
   // Now we want set up some callbacks to handle messages that clients will send.
   // We'll just pass messages off to the server_onMessage function for now.
   client.on('message', function(m) {
