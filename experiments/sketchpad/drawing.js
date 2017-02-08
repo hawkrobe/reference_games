@@ -64,6 +64,11 @@ var highlightCell = function(game, player) {
   }
 };
 
+function wipeSketchpad(game) {
+  game.sketchCTX.fillStyle = "#ffffff";
+  game.sketchCTX.fillRect(0, 0, game.sketchpad.width, game.sketchpad.height);
+};
+
 function drawOnCanvas(plots) {
   var ctx = globalGame.sketchCTX;
   ctx.beginPath();
