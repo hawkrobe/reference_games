@@ -120,7 +120,17 @@ var startGame = function(game, player) {
   game.newRound();
 };
 
+var setCustomEvents = function(socket) {
+  socket.on('stroke', function(data) {
+    var others = socket.game.get_others(socket.userid);
+    _.map(others, function(p) {                             
+      p.player.instance.emit( 'stroke', {points: data.points});  
+    });                                                     
+  });
+};
+
 module.exports = {
+  setCustomEvents : setCustomEvents,
   writeData : writeData,
   startGame : startGame,
   onMessage : onMessage

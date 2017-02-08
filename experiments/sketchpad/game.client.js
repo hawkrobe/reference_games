@@ -151,9 +151,13 @@ var client_addnewround = function(game) {
 };
 
 var customSetup = function(game) {
+  game.sketchpad = document.getElementById('sketchpad');
+  game.sketchCTX = game.sketchpad.getContext('2d');
+
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
+    wipeSketchpad(game);
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty()
@@ -163,12 +167,13 @@ var customSetup = function(game) {
 	.append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
     }
   });
-  globalGame.sketchpad = document.getElementById('sketchpad');
-  console.log(globalGame.sketchpad.width);
-  globalGame.sketchCTX = globalGame.sketchpad.getContext('2d');
-  globalGame.sketchCTX.fillStyle = "#ffffff";
-  globalGame.sketchCTX.fillRect(0,0,globalGame.sketchpad.width,globalGame.sketchpad.height);
 
+  game.socket.on('stroke', function(data) {
+    game.messageSent = true;
+    drawOnCanvas(data.points);
+  });
+
+  wipeSketchpad(game);
 }; 
 
 var client_onjoingame = function(num_players, role) {
@@ -221,17 +226,17 @@ var client_onjoingame = function(num_players, role) {
  MOUSE EVENT LISTENERS
  */
 
-function startDraw(e) {
+function startDraw(e) {  
   globalGame.isActive = true;
 }
 
 function endDraw(e) {
+  // send stroke to other player
+  globalGame.socket.emit('stroke', {points : globalGame.plots});
+
+  // reset for next stroke
   globalGame.isActive = false;
-
-  // empty the array
   globalGame.plots = [];
-
-  // TODO: send to server
 }
 
 function draw(e) {
