@@ -42,15 +42,14 @@ library(ggplot2)
 library(xtable)
 library(rwebppl)
 library(langcog)
+library(ggthemes)
 ```
 
 # Introduction
 
 Just as drivers depend on shared behavioral conventions to safely navigate traffic, successful communication depends on a set of shared linguistic conventions. Speakers of different languages around the world refer to the same object in many different ways, yet when ordering a coffee in San Francisco, I can confidently use the English word "coffee" and assume that I will be understood. How do these conventions -- classically characterized by @Lewis69_Convention as arbitrary but stable solutions to recurring coordination problems -- form in the first place? 
 
-While *global* conventions adopted and sustained throughout a large population of speakers may develop over longer time scales 
-<!-- [@Campbell13_HistoricalLinguistics] -->
-, we also effortlessly coordinate on *local* conventions -- or conceptual pacts [@BrennanClark96_ConceptualPactsConversation] -- within the span of a single dialogue. For example, when discussing possible conditions to use in an upcoming experiment, a team of collaborators might begin the meeting using long descriptions to refer to each condition but end the meeting using conventional terms like "condition A" and "condition B". Since global conventions are hypothesized to emerge through diffuse, repeated interactions of this more local kind [@GarrodDoherty94_GroupConventionsLinguistics], the cognitive mechanisms underlying convention-formation in such games are of foundational interest.
+While *global* conventions adopted and sustained throughout a large population of speakers may develop over longer time scales, we also effortlessly coordinate on *local* conventions -- or conceptual pacts [@BrennanClark96_ConceptualPactsConversation] -- within the span of a single dialogue. For example, when discussing possible conditions to use in an upcoming experiment, a team of collaborators might begin the meeting using long descriptions to refer to each condition but end the meeting using conventional terms like "condition A" and "condition B." Since global conventions are hypothesized to emerge through diffuse, repeated interactions of this more local kind [@GarrodDoherty94_GroupConventionsLinguistics], the cognitive mechanisms underlying convention-formation in such games are of foundational interest.
 
 
 In a seminal study by @KraussWeinheimer64_ReferencePhrases, pairs of participants played a cooperative language game where they were presented with arrays of ambiguous shapes in randomized orders. The players were assigned the roles of *director* and *matcher* and allowed to talk freely. The matcher's goal was to rearrange their shapes to match the director's board, and the director's goal was to communicate useful descriptions. Over multiple rounds, descriptions were dramatically shortened: an early description like "upside-down martini glass in a wire stand," became simply "martini" by the end. Later studies [e.g. @ClarkWilkesGibbs86_ReferringCollaborative] refined this paradigm, using larger arrays of tangram-like figures and emphasizing the intricate back-and-forth process through which speakers and listeners negotiate over references. These studies revealed a number of key empirical signatures that inform theories of convention-formation. Here, we focus on three: arbitrariness, stability, and the systematic reduction of utterance length over time. 
@@ -59,7 +58,7 @@ In a seminal study by @KraussWeinheimer64_ReferencePhrases, pairs of participant
 <!-- "cat" (English) and "chat" (French) are equally good ways of referring to a feline in their respective language communities. -->
 <!-- In the context of language games, different pairs may converge on different but equally successful referring expressions.  -->
 By the final round in a language game, for example, the same tangram might be called the 'dancer' to one pair and the 'skater' to another. 
-The other definitional property we consider is *stability*: it must be in everyone's best interest to keep using the convention, once established. 
+The other definitional property we consider is *stability*: it is in everyone's best interest to keep using the convention, once established. 
 <!-- In our language games, this means that we expect players to stick with the same referring expressions over the course of the game, as opposed to switching to a novel description on the final round.  -->
 Finally, *reduction* is more specific to the reference game paradigm and refers to the transformation of longer, complex expressions into simpler expressions over the course of interaction, as @KraussWeinheimer64_ReferencePhrases observed. While this broad phenomenon has been replicated many times, exactly what is reduced remains an open empirical question.
 
@@ -67,7 +66,9 @@ Theories of convention-formation differ primarily in the extent to which sophist
 <!-- [@ShohamTennenholtz97_EmergenceOfConventions;@Delgado02_ConventionsNetworks;@Young15_EvolutionOfSocialNorms;@CentolaBaronchelli15_ConventionEmergence;@Barr2004_ConventionalCommunicationSystems].  -->
 Simulations elegantly show how arbitrary signaling systems can spread and come to dominate large populations. However, due to their 'rich get richer' dynamic, it is not clear how emergence-through-use mechanisms alone could account for reduction in repeated interaction. At the other extreme, are theories in which agents explicitly consider their partner's beliefs and track what information is *mutual knowledge*, often formalized in a game theoretic setting [@Lewis69_Convention]. @WilkesGibbsClark92_CoordinatingBeliefs and others have proposed that agents engage in a collaborative process of establishing mutual knowledge, though the mechanisms allowing conventions to emerge under such conditions have not been instantiated in a formal model to our knowledge.
 
-In this paper, we argue for a theoretical position on the spectrum between these poles: conventions form when agents *assume conventions already exist*. In other words, agents believe there is a true lexicon used by other agents but are initially unsure of its identity. Through their interactions with a partner who is assumed to be knowledgeable and informative, agents can learn this true lexicon; even though their partner in fact begins in the same state of ignorance. Agents thus coordinate on the same lexicon, which becomes conventional. To support this theory, we first conduct a large-scale, multi-player replication of the tangrams task, which has traditionally been limited to relatively small sample sizes in the lab. We demonstrate signatures of arbitrariness, stability, and reduction which have been difficult to study at a fine-grained level due to the sparseness of existing data. Next, we formulate our theory in a computational model of communication in repeated reference games, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS] and show that this model qualitatively produces all three empirical signatures.
+In this paper, we argue for a theoretical position on the spectrum between these poles: *conventions form when agents assume conventions already exist*. In other words, agents believe there is a true lexicon used by other agents but are initially unsure of its identity. Through their interactions with a partner who is assumed to be knowledgeable and informative, agents can learn this true lexicon even though their partner in fact begins in the same state of ignorance. Agents thus coordinate on the same lexicon, which becomes conventional. 
+
+To support this theory, we first conduct a large-scale, multi-player replication of the tangrams task, which has traditionally been limited to relatively small sample sizes in the lab. We demonstrate signatures of arbitrariness, stability, and reduction which have been difficult to study at a fine-grained level due to the sparseness of existing data. Next, we formulate our theory in a computational model of communication in repeated reference games, based on recent successes capturing language understanding as social inference [@GoodmanStuhlmuller13_KnowledgeImplicature;@GoodmanFrank16_RSATiCS] and show that this model qualitatively produces all three empirical signatures.
 
 ```{r image, cache=T, fig.env = "figure", fig.pos = "tb", fig.align='center', fig.width=3, fig.height=3, num.cols.cap=1, fig.cap = "\\label{fig:taskScreenshot} Example trial in experimental interface. Both players could freely use the chat box, and the matcher could click and drag the tangram images."}
 img <- png::readPNG("figs/directorBoard.png")
@@ -111,7 +112,7 @@ numUtterances <- length(tangramCombined$contents)
 
 ### Participants
 
-200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded \textcolor{red}{X} games because one or both of the participants reported being a native language different from English, and \textcolor{red}{Y} games for terminating early, leaving a corpus of `r numGames` complete games with a total of `r numUtterances` utterances.
+200 participants were recruited from Amazon's Mechanical Turk and paired into dyads to play a real-time communication game using the framework in @Hawkins15_RealTimeWebExperiments. We excluded games that terminated before the completion of 6 rounds and where participants reported a native language different from English, leaving a corpus of `r numGames` complete games with a total of `r numUtterances` utterances.
 
 ### Stimuli
 
@@ -154,42 +155,35 @@ bigrams <- read_csv("../../analysis/tangrams/bigramCounts.csv", col_names = T) %
   head(n = 10)
 
 topWords <- t(cbind(unigrams, bigrams))
-colnames(topWords) <- NULL
+colnames(topWords) <- paste0(paste('#', seq(10), sep = ''))
 rownames(topWords) <- c('unigrams', 'bigrams')
-print(xtable(topWords, label = 'tab:words', caption = 'Top 10 unigrams and bigrams with the highest reduction'), 
-      floating.environment = "table*", comment=F, table.placement = 't')
+topWords.toPrint = xtable(topWords, label = 'tab:words', 
+                          caption = 'Top 10 unigrams and bigrams with the highest reduction')
+align(topWords.toPrint) <- paste0(c("|r||", rep('l|', 10)), collapse = "")
+print(topWords.toPrint, floating.environment = "table*", comment=F, table.placement = 't')
 ```
 
-```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=7, fig.height=1.17, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. From left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) proportion of utterances containing subordinate clauses, (4) proportion of utterances containing adjectival clauses. Error bars are bootstrapped 95\\% CIs. \\textcolor{red}{TODO: put CIs back on facetted fig.}'}
+```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=7, fig.height=1.17, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. From left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) proportion of utterances containing subordinate clauses, (4) proportion of utterances containing adjectival clauses. Error bars are bootstrapped 95\\% CIs.'}
+posTags <- read_csv('../../analysis/tangrams/posTagged.csv')
+
 lengthReduction = tangramCombined %>% 
    filter(role == "director") %>%
    group_by(gameid, roundNum) %>% 
    summarize(individualM = sum(numRawWords)/12) %>% 
    group_by(roundNum) %>% 
    multi_boot_standard("individualM") %>%
-   rename(val = mean) %>%
-   select(roundNum, val) %>%
    mutate(measure = '# words per tangram') 
 
-
-clauseReduction = read_csv('../../analysis/tangrams/posTagged.csv') %>%
-  group_by(roundNum, clauses) %>%
-  tally() %>%
+clauseReduction = posTags %>%
   group_by(roundNum) %>%
-  mutate(val = n / sum(n)) %>%
-  filter(clauses == 'True') %>%
-  select(roundNum, val) %>%
-  ungroup() %>%
+  mutate(clauses=as.logical(clauses)) %>%
+  multi_boot_standard('clauses') %>%
   mutate(measure = '% subordinate clauses') 
 
-aclReduction = read_csv('../../analysis/tangrams/posTagged.csv') %>%
-  group_by(roundNum, acl) %>%
-  tally() %>%
+aclReduction = posTags %>%
   group_by(roundNum) %>%
-  mutate(val = n / sum(n)) %>%
-  filter(acl == 'True') %>%
-  select(roundNum, val) %>%
-  ungroup() %>%
+  mutate(acl=as.logical(acl)) %>%
+  multi_boot_standard('acl') %>%
   mutate(measure = '% adjectival clauses') 
 
 listenerMsgs <- tangramCombined %>%  
@@ -202,9 +196,6 @@ listenerMsgs <- tangramCombined %>%
 listenerMsgs %>%    
    group_by(roundNum) %>% 
    multi_boot_standard("matcher") %>%
-   rename(val = mean) %>%
-   select(roundNum, val) %>%
-   ungroup() %>%
    mutate(measure = '# listener messages')  %>%
   rbind(lengthReduction) %>%
   rbind(clauseReduction) %>%
@@ -212,23 +203,17 @@ listenerMsgs %>%
   mutate(measure = factor(measure, levels = c(
     "# words per tangram", "# listener messages", 
     "% adjectival clauses","% subordinate clauses"))) %>%
-  ggplot(aes(x = roundNum, y = val)) +
+  ggplot(aes(x = roundNum, y = mean)) +
     geom_line() +
     xlab('round #') +
     ylab('metric') +
+    geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +
     facet_wrap(~ measure, nrow = 1, ncol = 4, scales = 'free') + 
-    theme_bw(8)
-# ggplot(lengthReduction, aes(x = roundNum, y = mean)) +
-#   geom_line() +
-#   geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +
-#   ylab("mean # words per tangram") +
-#   xlab("trials") +
-#   ylim(0,23) +
-#   xlim(0, 7) +
-#   theme_bw(8) 
+    ylim(c(0, NA)) +
+    theme_few(9)
 ```
 
-```{r POSfig, fig.env = "figure", fig.pos = "t!", fig.align='center', fig.width=3, fig.height=1.5, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:pos} Reduction rates for different parts of speech. Error bars are bootstrapped 95\\% CIs.'}
+```{r POSfig, cache = T, fig.env = "figure", fig.pos = "t!", fig.align='center', fig.width=3, fig.height=1.5, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:pos} Reduction rates for different parts of speech. Error bars are bootstrapped 95\\% CIs.'}
 posReduction = read.csv('../../analysis/tangrams/posTagged.csv', header =T) %>%
   # Count occurences of each POS on each round within games
   group_by(roundNum, gameid) %>% 
@@ -266,7 +251,7 @@ nounReductionRate <- (posReduction %>% filter(POS == 'nouns'))$mean * 100
 ggplot(posReduction, aes(x = POS, y = mean, fill = cat)) +
   geom_bar(stat = 'identity') +
   geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1)+
-  theme_bw(8) +
+  theme_bw(9) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("% reduction") +
   xlab("Part of Speech category")
@@ -320,9 +305,9 @@ Broadly speaking, entropy measures the predictability of a distribution. It is m
 
 To derive predictions, we consider a permutation-test null model in which utterances are scrambled within each round. The empirical entropy of individual games should only differ from the null distribution if *both* arbitrariness and stability hold. First, note that if stability did *not* hold, scrambling would have no effect on the entropy within individual games: speakers would already use different words each round, and swapping out the identity of those words would not affect the entropy of the word distribution. 
 
-If stability holds but arbitrariness does not, all players would adopt the single optimal (non-arbitrary) way to refer to each tangram. Therefore, the entropy of their word distributions also should not be affected by scrambling: a speaker's real words would be swapped out for the same words, just generated by another speaker. Finally, if both arbitrariness and stability hold, then different speakers adopt different referring expressions that persist from round to round. Hence, scrambling should *increase* the average game's entropy from a relatively low level: each game's idiosyncratic, concetrated distribution of words would be mixed together to form more heterogeneous and therefore high-entropy distributions.
+If stability holds but arbitrariness does not, all players would adopt the single optimal (non-arbitrary) way to refer to each tangram. Therefore, the entropy of their word distributions also should not be affected by scrambling: a speaker's real words would be swapped out for the same words, just generated by another speaker. Finally, if both arbitrariness and stability hold, then different speakers adopt different referring expressions that persist from round to round. Hence, scrambling should *increase* the average game's entropy from a relatively low level: each game's idiosyncratic, concentrated distribution of words would be mixed together to form more heterogeneous and therefore high-entropy distributions.
 
-To test this prediction, we computed the average within-game entropy for 1000 different permutations of speaker utterances. We permuted utterances within rounds rather than across the entire dataset to control for the fact that earlier rounds have longer utterances and thus a larger vocabulary than later rounds (see the following section). Since this permutation scheme keeps the number of messages per participant constant and simply swaps out the content of those messages, it also controls for the fact that some speakers sent more messages than others. We found that our null distribution lay within the interval [`r round(min(permutations), 2)`, `r round(max(permutations), 2)`], which is significantly higher than the true entropy (averaged across games) of `r round(trueEntropy,2)`, $p < 0.001$. This pattern is consistent only with signatures of both arbitrariness and stability. 
+To test this prediction, we computed the average within-game entropy for 1000 different permutations of speaker utterances. We permuted utterances within rounds rather than across the entire data set to control for the fact that earlier rounds have longer utterances and thus a larger vocabulary than later rounds (see the following section). Since this permutation scheme keeps the number of messages per participant constant and simply swaps out the content of those messages, it also controls for the fact that some speakers sent more messages than others. We found that our null distribution lay within the interval [`r round(min(permutations), 2)`, `r round(max(permutations), 2)`], which is significantly higher than the true entropy (averaged across games) of `r round(trueEntropy,2)`, $p < 0.001$. This pattern is consistent only with signatures of both arbitrariness and stability. 
 
 ### Reduction
 
@@ -330,7 +315,9 @@ Next, we turn to a set of analyses examining reduction in utterance length over 
 
 The next level of granularity motivating our model approach concerns which kinds of words are most likely to be dropped. Is the speaker adopting a shorthand where they drop uninformative function words, or are they simplifying or narrowing their descriptions by omitting meaningful details [@ClarkWilkesGibbs86_ReferringCollaborative]? We used the Stanford CoreNLP part-of-speech tagger [@Toutanova03_POStagging] to count the number of words belonging to each part of speech in each message. Fig. \ref{fig:pos} shows the percent reduction of different parts of speech from the first round to the sixth round. We find that determiners ('the', 'a', 'an') are the most likely class of words to be dropped with an `r round(detReductionRate)`% reduction rate, on average. Nouns ('dancer', 'rabbit') are the least likely class to be dropped with only an `r round(nounReductionRate)`% rate. Closed-class parts of speech are strictly more likely to be dropped than open-class parts of speech. 
 
-While this suggests that speakers might just be adopting a shorthand using more ungrammatical fragments as the game proceeds, we find a more complex dynamic by examining the table of unigrams and bigrams most likely to be dropped (see Table \ref{tab:words}). Note that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifiers ('of', 'with', 'the right'). In other words, it may be more likely that when function words are dropped, it is primarily as part of larger grammatical units that provide additional information in identifying the target. We explicitly examined this hypothesis by running the Stanford constituency parser [@SchusterManning16], tagging the occurence of subordinate/adverbial clauses ('sitting *facing left*') and adjectival clauses ('angel *that is praying*') ^[Specifically, we used the Universal Dependencies tags \texttt{csubj, ccomp, xcomp}, and \texttt{advcl} for subordinate clauses and \texttt{acl} for adjectival clauses [@SchusterManning16]]. We found that both were reduced over the course of the game (see Fig. \ref{fig:replication}), lending additional support for the hypothesis that meaningful details are increasingly omitted. Initial phrases pile on multiple ambiguous, partially redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped.
+While this finding suggests that speakers might just be adopting a shorthand using more ungrammatical fragments as the game proceeds, we find a more complex dynamic by examining the table of unigrams and bigrams most likely to be dropped (see Table \ref{tab:words}). Note that alongside dropped articles, there are a number of words that form conjunctions ('and') and modifiers ('of', 'with', 'the right'). In other words, it may be more likely that when function words are dropped, it is primarily as part of larger grammatical units that provide additional information in identifying the target. 
+
+We explicitly examined this hypothesis by running the Stanford constituency parser [@SchusterManning16], tagging the occurrence of subordinate/adverbial clauses ('sitting *facing left*') and adjectival clauses ('angel *that is praying*') ^[Specifically, we used the Universal Dependencies tags \texttt{csubj, ccomp, xcomp}, and \texttt{advcl} for subordinate clauses and \texttt{acl} for adjectival clauses [@SchusterManning16]]. We found that both were reduced over the course of the game (see Fig. \ref{fig:replication}), lending additional support for the hypothesis that meaningful details are increasingly omitted. Initial phrases pile on multiple ambiguous, partially redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped.
 
 ### Listener feedback
 
@@ -361,7 +348,7 @@ efficiency <- tangramCombined %>%
 turnTakingEfficiencyPlot <- ggplot(turnTaking %>% left_join(efficiency), aes(x = numListenerMsgs, y = diffPct)) +
   geom_point() +
   geom_smooth(method = 'lm') +
-  theme_bw(8) +
+  theme_bw(9) +
   ylab("% reduction") +
   xlab("# listener messages on 1st round")
 
@@ -375,7 +362,7 @@ Finally, the theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argue
 
 # Model
 
-Here, we present a probabilistic model of language production under uncertainty, which captures several of the signiture properties of conventions shown above. This model belongs to the family of Rational Speech Act (RSA) models, which have been successful in explaining a wide range of linguistic phenomena -- including scalar implicature, adjectival vagueness, overinformativeness, indirect questions, and non-literal language use -- as arising from a process of recursive social reasoning. Most previous applications of RSA have focused on the listener's problem of language comprehension, but the puzzle of conventionalization is primarily a question of speaker production. An $n$th order pragmatic speaker trying to convey a particular state of affairs $s \in \mathcal{S}$ assuming lexicon $\mathcal{L}$ is assumed to select an utterance $u \in \mathcal{U}$ by trading off its expected informativity (with respect to a rational listener agent) against its cost, usually based on length [@GoodmanFrank16_RSATiCS]:
+Here, we present a probabilistic model of language production under uncertainty, which captures several of the signature properties of conventions shown above. This model belongs to the family of Rational Speech Act (RSA) models, which have been successful in explaining a wide range of linguistic phenomena -- including scalar implicature, adjectival vagueness, overinformativeness, indirect questions, and non-literal language use -- as arising from a process of recursive social reasoning. Most previous applications of RSA have focused on the listener's problem of language comprehension, but the puzzle of conventionalization is primarily a question of speaker production. An $n$th order pragmatic speaker trying to convey a particular state of affairs $s \in \mathcal{S}$ assuming lexicon $\mathcal{L}$ is assumed to select an utterance $u \in \mathcal{U}$ by trading off its expected informativity (with respect to a rational listener agent) against its cost, usually based on length [@GoodmanFrank16_RSATiCS]:
 <!-- -->
 $$S_n(u | s, \mathcal{L}) \propto \exp{\left(\alpha \log L_n(s | u, \mathcal{L}) - \textrm{cost}(u)\right)}$$
 <!-- -->
@@ -393,7 +380,7 @@ Our approach to convention-formation begins with the additional assumption of *l
 <!-- -->
 $$P(\mathcal{L} | d) \propto P(\mathcal{L})\prod_i L_{n-1}(s_i|u_i, \mathcal{L})$$
 <!-- -->
-where $d = \{s_i, u_i\}$ is a set of observations of $s_i$ and $u_i$ coming from previous exchanges^[There is a broader debate over the timescales at which lexicons and lexicon learning mechanisms operate; here, we assume a discourse-level structure to the lexicon, where there is uncertainty over how words are used *in the given conversation*. See @FrankGoodmanTenenbaum09_Wurwur for a related approach at the scale of cross-situational word learning.]. The speaker then marginalizes over this posterior distribution when reasoning about the listener, giving rise to the form of the pragmatic listener model we use throughout our model results (only going up to $n = 2$ in our recusion for simplicity):
+where $d = \{s_i, u_i\}$ is a set of observations of $s_i$ and $u_i$ coming from previous exchanges^[There is a broader debate over the timescales at which lexicons and lexicon learning mechanisms operate; here, we assume a discourse-level structure to the lexicon, where there is uncertainty over how words are used *in the given conversation*. See @FrankGoodmanTenenbaum09_Wurwur for a related approach at the scale of cross-situational word learning.]. The speaker then marginalizes over this posterior distribution when reasoning about the listener, giving rise to the form of the pragmatic listener model we use throughout our model results (only going up to $n = 2$ in our recursion for simplicity):
 <!-- -->
 $$S(u | s, d) \propto \exp( \alpha\log\left(\sum_{\mathcal{L}} P(\mathcal{L} | d) L_1(s | u, \mathcal{L})\right) - \textrm{cost}(u) )$$
 <!-- -->
@@ -411,7 +398,7 @@ $$L(s | u, d) \propto \sum_\mathcal{L}P(\mathcal{L}|d)L_1(s|u,\mathcal{L})$$
 arbitrarinessModel <- function(alpha, beta) {
   res <- webppl(program_file = 'webpplModels/arbitrary.wppl',
                model_var = 'model',
-               inference_opts = list(method="forward", samples=5000),
+               inference_opts = list(method="forward", samples=10000),
                data = list(alpha = alpha, beta = beta, numSteps = 6),
                data_var = 'params',
                output_format = 'samples')
@@ -427,7 +414,7 @@ arbitrarinessModel <- function(alpha, beta) {
 }
 
 arbitrarinessResults <- complete(data.frame(
-  alpha=c(1,2,5),
+  alpha=c(1,2,5,10),
   beta =c(1)
 ), alpha, beta) %>%
   rowwise() %>%
@@ -447,12 +434,14 @@ arbitrarinessResults %>%
     ylab('accuracy') +
     xlab('round #') +
     geom_line() +
-    theme_bw(8) +
+    geom_hline(aes(yintercept=.5), linetype = 2) +
+    ylim(0,1) +
+    theme_bw(9) +
     theme( plot.margin=unit(x=c(0,0,0,0),units="mm"))
 ```
 
 ```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, that mapping is likely to persist (stability)."}
-accuracyRes <- arbitrarinessResults %>%
+arbitrarinessResults %>%
   filter(alpha == 5) %>%
   unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
   unite(realPair, utt, response, sep = '<->', remove = F) %>% 
@@ -465,16 +454,15 @@ accuracyRes <- arbitrarinessResults %>%
   group_by(firstPair, roundNum) %>%
   mutate(prob = n/sum(n)) %>%
   filter(intendedPair == 't1<->label1') %>%
-  filter(firstPair %in% c('label1<->t1', 'label1<->t2'))
-
-ggplot(accuracyRes, aes(x = roundNum, y = prob, 
-                        group = firstPair, linetype =firstPair, color = firstPair)) +
-  ylab("S(label1 | t1) (expected)") +
-  geom_line() +
-  theme_bw(8) +
-  theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), 
-         legend.margin=unit(0,"cm"),
-         legend.position="top")
+  filter(firstPair %in% c('label1<->t1', 'label1<->t2')) %>%
+  ggplot(aes(x = roundNum, y = prob, group = firstPair, 
+             linetype =firstPair, color = firstPair)) +
+    ylab("S(label1 | t1) (expected)") +
+    geom_line() +
+    theme_bw(9) +
+    theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), 
+           legend.margin=unit(0,"cm"),
+           legend.position="top")
 ```
 
 Consider an environment with two abstract shapes ($\{s_1, s_2\}$), where the speaker must choose between two utterances ($\{u_1, u_2\}$) incurring equal cost. Their prior $P(\mathcal{L})$ over the meaning of each utterance is given by a (discretized) Dirichlet distribution, so on the first round both utterances are equally likely to apply to either shape. If the speaker was trying to get their partner to pick $s_1$, then, since each utterance is equally (un)informative, they would randomly sample one (say, $u_1$), and observe the listener's selection of a shape (say, $s_1$). On the next round, the speaker uses the observed pair $\{u_1, s_1\}$ to update their beliefs about the lexicon, uses these beliefs to generate a new utterance, and so on. To examine expected dynamics over multiple rounds, we enumerate over all possible trajectories our simulated speaker and listener models could produce.
@@ -507,7 +495,8 @@ ggplot(reductionRes, aes(x = roundNum, y = mean, group = garbage)) +
   ylab('mean utterance length') +
   geom_line() +
   geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +  
-  theme_bw(8) +
+  theme_bw(9) +
+  ylim(1,NA) +
   theme(plot.margin=unit(x=c(0,0,0,0),units="mm"))
 ```
 
@@ -517,11 +506,11 @@ $$\mathcal{L}(u_i \textrm{ and } u_j, o) = \mathcal{L}(u_i, o) \times \mathcal{L
 
 Analogous to our tangram stimuli, which have many ambiguous features and figurative perspectives that may be evoked in speaker descriptions, we consider a simplified scenario where speakers can refer to two different features of the two objects $\{o_1, o_2\}$. The speaker has four primitive words at their disposal -- two words for shape ($\{u_{s1}, u_{s2}\}$) and two for color $\{u_{c1}, u_{c2}\}$ -- and has uncertainty over the initial meanings of all four.
 
-While we established in the previous section that conventions can emerge over a reference game in the complete absence of initial preferences, players often bring such preferences to the table. A player who hears 'ice skater' on the first round of our tangrams task is more likely to select some objects more than others, even though they still have some uncertainty over its meaning in the context. To show that our model can accomodate this fact, we allow the speaker's initial prior meanings to be slightly biased. $u_{s1}$ and $u_{c1}$ are more likely to mean $o_1$; $u_{s2}$ and $u_{c2}$ are more likely to mean $o_2$.
+While we established in the previous section that conventions can emerge over a reference game in the complete absence of initial preferences, players often bring such preferences to the table. A player who hears 'ice skater' on the first round of our tangrams task is more likely to select some objects more than others, even though they still have some uncertainty over its meaning in the context. To show that our model can accommodate this fact, we allow the speaker's initial prior meanings to be slightly biased. $u_{s1}$ and $u_{c1}$ are more likely to mean $o_1$; $u_{s2}$ and $u_{c2}$ are more likely to mean $o_2$.
 
-We ran 1000 forward samples of 6 rounds of speaker-listener interaction, and averaged over the utterance length at each round ^[In our simulations, we used $\alpha = 13$ and found the basic reduction effect over a range of different biases, with different intercepts and slopes]. Our results are shown in Figure \ref{fig:modelReduction}: the expected utterance length decreases systematically over each round. To illustrate in more detail how this dynamic is driven by an initial rational preference for redundency relaxing as reference becomes more reliable, we walk step-by-step through a single trajectory. 
+We ran 1000 forward samples of 6 rounds of speaker-listener interaction, and averaged over the utterance length at each round ^[In our simulations, we used $\alpha = 13$ and found the basic reduction effect over a range of different biases, with different intercepts and slopes]. Our results are shown in Figure \ref{fig:modelReduction}: the expected utterance length decreases systematically over each round. To illustrate in more detail how this dynamic is driven by an initial rational preference for redundancy relaxing as reference becomes more reliable, we walk step-by-step through a single trajectory. 
 
-Consider a speaker who wants to refer to object $o_1$. They believe their knowledgeable partner is slightly more likely to interpret their language using a lexicon in which $u_{s1}$ and $u_{c1}$ apply to this object, due to their initial bias. However, there is still a reasonable chance that one or the other alone actually refers strongly to $o_2$ in the true lexicon. Thus, it is useful to produce the conjunction "$u_{s1}$ and $u_{c1}$" to hedge against this possibility, despite its higher cost. Upon observing the listener's response (say, $o_1$), the evidence is indeterminate about the separate meanings of $u_{s1}$ and $u_{c1}$ but both become increasingly likely to refer to $o_1$. In the tradeoff between informativity and cost, the shorter utterances remain probable options, with the probability increasing as the speaker becomes more certain of the meanings. Once the speaker chooses one of them, the symmetry collapses and that utterance remains most probable in future rounds. In this way, meaningful sub-phrases are omitted over time as the speaker becomes more confident about the true lexicon. 
+Consider a speaker who wants to refer to object $o_1$. They believe their knowledgeable partner is slightly more likely to interpret their language using a lexicon in which $u_{s1}$ and $u_{c1}$ apply to this object, due to their initial bias. However, there is still a reasonable chance that one or the other alone actually refers strongly to $o_2$ in the true lexicon. Thus, it is useful to produce the conjunction "$u_{s1}$ and $u_{c1}$" to hedge against this possibility, despite its higher cost. Upon observing the listener's response (say, $o_1$), the evidence is indeterminate about the separate meanings of $u_{s1}$ and $u_{c1}$ but both become increasingly likely to refer to $o_1$. In the trade-off between informativity and cost, the shorter utterances remain probable options. Once the speaker chooses one of them, the symmetry collapses and that utterance remains most probable in future rounds. In this way, meaningful sub-phrases are omitted over time as the speaker becomes more confident about the true lexicon. 
 
 
 # General Discussion
@@ -530,7 +519,7 @@ In this paper, we revisited the classic phenomenon of convention-formation in a 
 We argued that several empirical signatures including arbitrariness, stability, and the reduction of utterance length over repeated interactions can be explained by our model of informative communication under lexical uncertainty. This model formalizes a theory where conventions emerge via initially uncertain agents assuming that conventions are already in place and inferring them by reasoning about a knowledgeable, informative partner.  
 
 Theories of convention-formation vary in the extent to which social reasoning about common ground is required. 
-Our agents lie on a spectrum between the heustic updating agents of @Barr2004_ConventionalCommunicationSystems and the sophisticated agents of @ClarkWilkesGibbs86_ReferringCollaborative, who collaboratively build up explicit representations of mutual knowledge. 
+Our agents lie on a spectrum between the heuristic updating agents of @Barr2004_ConventionalCommunicationSystems and the sophisticated agents of @ClarkWilkesGibbs86_ReferringCollaborative, who collaboratively build up explicit representations of mutual knowledge. 
 Speakers and listeners in our model implicitly coordinate their beliefs through a shared history of observations, which serves as "common ground" in an informal sense. They make critical use of pragmatic, social reasoning in order to learn
 meanings, but do not explicitly consider the fact that this history is shared, or represent their partner's own uncertainty. 
 
