@@ -22,6 +22,8 @@ var incorrect;
 var dragging;
 var waiting;
 
+var SPEAKER_INSTRUCTIONS = "Send messages to tell the listener where the lily is. To get points, you only need to make them click near the lily.  Limit your instructions to one short sentence.  Try not to use measurement units in your instructions (centimeters, inches, spaces, etc), as the listener's screen size may differ from your own.";
+
 //test: let's try a variable selecting, for when the listener selects an object
 // we don't need the dragging.
 var selecting;
@@ -57,7 +59,7 @@ var client_onserverupdate_received = function(data){
 
   if ((globalGame.roundNum > 2) && (globalGame.my_role === globalGame.playerRoleNames.role1)) { //TRIAL OVER
     $('#instructs').empty()
-      .append("Send messages to tell the listener where the lily is. To get points, you only need to make them click near the lily. There is no bonus for increased accuracy.");
+      .append(SPEAKER_INSTRUCTIONS);
   }
 
   // Draw all this new stuff
@@ -152,7 +154,7 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to tell the listener where the lily is. To get points, you only need to make them click within the circle around the lily. There is no bonus for increased accuracy. The circle will not appear after the first 3 trials.");
+    $('#instructs').append(SPEAKER_INSTRUCTIONS);
   } else if(role === globalGame.playerRoleNames.role2) {
     $('#instructs').append("Click as closely as possible to the location of the lily on the map.");
   }
