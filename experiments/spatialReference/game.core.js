@@ -34,9 +34,10 @@ if( typeof _ === 'undefined' ) {
 var WORLD_HEIGHT = 400;
 var WORLD_WIDTH = 600;
 var LILY_SIZE = 50;
-var NUM_BOXES = 12;
-var BOX_SIZES = [{ w : 100, h : 100}, { w : 100, h : 25}, { w : 25, h : 100}, { w : 50, h : 50 }];
-var BOX_COLORS = ["blue", "red", "green"];
+var NUM_BOXES = 5;
+var BOX_SIZES = [{ w : 100, h : 100}, { w : 100, h : 200}, { w : 200, h : 100}, { w : 300, h : 50}];
+var BOX_COLORS = ["blue", "red", "green", "yellow", "black"];
+var COLOR_VARIETY = true;
 
 var game_core = function(options){
   // Store a flag if we are the server instance
@@ -63,6 +64,7 @@ var game_core = function(options){
   this.lilySize = LILY_SIZE;
   this.boxSizes = BOX_SIZES;
   this.boxColors = BOX_COLORS;
+  this.colorVariety = COLOR_VARIETY;
 
     // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
@@ -233,15 +235,15 @@ game_core.prototype.server_send_update = function(){
 
 game_core.prototype.sampleTrial = function() {
   var lilyPrior = uniformLilyPrior;
-  var boxPrior = makeUniformBoxPrior(this.boxSizes, this.boxColors);
+  var boxPrior = makeUniformBoxPrior(this.boxSizes, this.boxColors, this.colorVariety);
 
   return lilyRectangleWorldPrior(lilyPrior, boxPrior, this.numBoxes);
 }
 
-var makeUniformBoxPrior = function(possibleDimensions, possibleColors) {
-    return function() {
+var makeUniformBoxPrior = function(possibleDimensions, possibleColors, colorVariety) {
+    return function(i) {
         var dims = _.sample(possibleDimensions);
-        var color = _.sample(possibleColors);
+        var color = (colorVariety) ? possibleColors[i % possibleColors.length] : _.sample(possibleColors);
         var point = utils.randomPoint({
             xMin: 0,
             xMax: WORLD_WIDTH - dims.w,
@@ -261,7 +263,26 @@ var makeUniformBoxPrior = function(possibleDimensions, possibleColors) {
     }
 }
 
-var uniformLilyPrior = function() {
+
+var checkPartialIntersection = function(box1, box2) {
+    var convertToBounds = function(object) {
+        return {
+            x1: object.x,
+            x2: object.x + object.w,
+            y1: object.y,
+            y2: object.y + object.h
+        }
+    }
+
+    var o1 = convertToBounds(box1);
+    var o2 = convertToBounds(box2);
+
+    return !((o1.x1 > o2.x1 && o1.x2 < o2.x2 && o1.y1 > o2.y1 && o1.y2 < o2.y2)
+    || (o2.x1 > o1.x1 && o2.x2 < o1.x2 && o2.y1 > o1.y1 && o2.y2 < o1.y2)
+    || (o1.x2 < o2.x1 || o1.x1 > o2.x2 || o1.y2 < o2.y1 || o1.y1 > o2.y2));
+}
+
+var uniformLilyPrior = function(boxes) {
     var point = utils.randomPoint({
         xMin : 0,
         xMax : WORLD_WIDTH - LILY_SIZE,
@@ -276,7 +297,11 @@ var uniformLilyPrior = function() {
         h : LILY_SIZE
     };
 
-    return lily;
+    var hasIntersection = _.some(boxes, function(box) { return checkPartialIntersection(lily, box) });
+    if (hasIntersection)
+        return uniformLilyPrior(boxes);
+    else
+        return lily;
 }
 
 var checkBoxIntersection = function(box1, box2) {
@@ -301,7 +326,7 @@ var lilyRectangleWorldPrior = function(lilyPrior, boxPrior, boxCount) {
         if (n == 0)
             return boxes;
 
-        var box = boxPrior();
+        var box = boxPrior(n);
         var hasIntersection = _.some(boxes, function(oBox) { return checkBoxIntersection(box, oBox) });
         if (hasIntersection) {
             return makeBoxes(n, boxes);
