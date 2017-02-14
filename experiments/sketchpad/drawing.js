@@ -64,68 +64,35 @@ var highlightCell = function(game, player) {
   }
 };
 
-function wipeSketchpad(game) {
-  game.sketchCTX.fillStyle = "#ffffff";
-  game.sketchCTX.fillRect(0, 0, game.sketchpad.width, game.sketchpad.height);
-};
-
-function drawOnCanvas(plots) {
-  var ctx = globalGame.sketchCTX;
-  ctx.beginPath();
-  ctx.moveTo(plots[0].x, plots[0].y);
-
-  for(var i=1; i<plots.length; i++) {
-    ctx.lineTo(plots[i].x, plots[i].y);
-  }
-  ctx.stroke();
+// Make sketchpad class using global 'paper' functions
+function Sketchpad() {
+  paper.setup('sketchpad');
+  view.viewSize = new Size(750, 250);
 }
 
-// var drawGridNums = function(game, player) {
+Sketchpad.prototype.setupTool = function() {
+  var tool = new Tool();
+  tool.onMouseDown = function(event) {
+    globalGame.path = new Path({
+      segments: [event.point],
+      strokeColor: 'black'
+    });
+  };
 
-//   // for (var gridNumber=1; gridNumber++; gridNumber<=2) {
-//   //   for (var x=25; x++; x < 1800) {
-//   //     game.ctx.font = '40pt Calibri';
-//   //     game.ctx.fillStyle = 'blue';
-//   //     game.ctx.fillText(gridNumber, x, 70);
-//   //   }
-//   // }
+  tool.onMouseDrag = function(event) {
+    globalGame.path.add(event.point);
+  };
 
-// // var numberCells = 6
-// // var topGridNums = 1;
-// // var bottomGridNums = 7;
+  tool.onMouseUp = function(event) {
+    // Simplify path to reduce data sent
+    globalGame.path.simplify(10);
 
-// var numberCells = 3
-// var topGridNums = 1;
-// var bottomGridNums = 4;
-
-// var topX = 40;
-// // var bottomX = 40;
-// var topY = 70;
-// // var bottomY = 370;
-
-//     // ensure text is left-aligned
-//     game.ctx.textAlign = 'left';
-//      //top cells
-//      _.map(_.range(numberCells), function(v) {
-//       game.ctx.font = '40pt Calibri';
-//       game.ctx.fillStyle = 'blue'; 
-//       game.ctx.fillText(topGridNums, topX, topY);
-//       topGridNums++;
-//       topX= topX + 300;
-//     });    
-//     //  //bottom cells
-//     // _.map(_.range(numberCells), function(v) {
-//     //   game.ctx.font = '40pt Calibri';
-//     //   game.ctx.fillStyle = 'blue'; 
-//     //   game.ctx.fillText(bottomGridNums, bottomX, bottomY);
-//     //   bottomGridNums++;
-//     //   bottomX = bottomX + 300;
-//     // });   
-//   };
-
-
-
-
+    // Send stroke to listener's viewer
+    globalGame.socket.emit('stroke', {
+      path: globalGame.path.exportJSON({asString: true})
+    });
+  };
+};
 
 var drawScreen = function(game, player) {
   // draw background
@@ -143,12 +110,9 @@ var drawScreen = function(game, player) {
              25);
   }
   else {
-    // eraseHighlight(game, player, upperLeftY, upperLeftY);
     drawGrid(game);
     drawObjects(game, player);  
     highlightCell(game, player);    
-    // //draw grid numbers
-    // drawGridNums(game, player);
   }
 
 };
