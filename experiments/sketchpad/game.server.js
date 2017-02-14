@@ -124,7 +124,7 @@ var setCustomEvents = function(socket) {
   socket.on('stroke', function(data) {
     var others = socket.game.get_others(socket.userid);
     _.map(others, function(p) {                             
-      p.player.instance.emit( 'stroke', {points: data.points});  
+      p.player.instance.emit( 'stroke', data);  
     });                                                     
   });
 };

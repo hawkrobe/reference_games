@@ -151,13 +151,13 @@ var client_addnewround = function(game) {
 };
 
 var customSetup = function(game) {
-  game.sketchpad = document.getElementById('sketchpad');
-  game.sketchCTX = game.sketchpad.getContext('2d');
-
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
+  game.sketchpad = new Sketchpad();
+
+
   game.socket.on('newRoundUpdate', function(data){
-    wipeSketchpad(game);
+//    game.sketchpad.clear();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty()
@@ -169,11 +169,14 @@ var customSetup = function(game) {
   });
 
   game.socket.on('stroke', function(data) {
+    // Now that we've received data, allow listener to respond
     game.messageSent = true;
-    drawOnCanvas(data.points);
+
+    // draw stroke
+    var path = new Path();
+    path.importJSON(data.path);
   });
 
-  wipeSketchpad(game);
 }; 
 
 var client_onjoingame = function(num_players, role) {
@@ -211,44 +214,17 @@ var client_onjoingame = function(num_players, role) {
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
 				      + 'Please do not refresh the page!'); 
   }
-
   // set mouse-tracking event handler
   if(role === globalGame.playerRoleNames.role2) {
     globalGame.viewport.addEventListener("click", responseListener, false);
   } else {
-    globalGame.sketchpad.addEventListener('mousedown', startDraw, false);
-    globalGame.sketchpad.addEventListener('mousemove', draw, false);
-    globalGame.sketchpad.addEventListener('mouseup', endDraw, false);
+    globalGame.sketchpad.setupTool();
   }
 };    
 
 /*
  MOUSE EVENT LISTENERS
  */
-
-function startDraw(e) {  
-  globalGame.isActive = true;
-}
-
-function endDraw(e) {
-  // send stroke to other player
-  globalGame.socket.emit('stroke', {points : globalGame.plots});
-
-  // reset for next stroke
-  globalGame.isActive = false;
-  globalGame.plots = [];
-}
-
-function draw(e) {
-  if(!globalGame.isActive) return;
-
-  var bRect = globalGame.sketchpad.getBoundingClientRect();
-  var mouseX = (e.clientX - bRect.left)*(globalGame.sketchpad.width/bRect.width);
-  var mouseY = (e.clientY - bRect.top)*(globalGame.sketchpad.height/bRect.height);
-  globalGame.plots.push({x: mouseX, y: mouseY});
-
-  drawOnCanvas(globalGame.plots);
-}
 
 function responseListener(evt) {
   var bRect = globalGame.viewport.getBoundingClientRect();
