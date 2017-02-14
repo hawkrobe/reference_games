@@ -13,7 +13,9 @@
 
     <!-- Load jQuery, which lets us handle mouse events -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    
+
+    <script type="text/javascript" src="../node_modules/paper/dist/paper-full.min.js"></script>
+    <script type="text/javascript">	paper.install(window); </script>
     <!-- Load the common game code. -->
     <script type="text/javascript" src="game.core.js"></script>
 
@@ -44,7 +46,7 @@
     
     <div id='main'>
       <span>
-	<canvas id='sketchpad' width="750px" height="250px"></canvas>
+	<canvas id="sketchpad" width="750px" height="250px"></canvas>
         <canvas id="viewport"> </canvas>
 	<div id="exit_survey" style="display:none">
 	  <br><br><br><br><br>

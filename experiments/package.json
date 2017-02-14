@@ -10,7 +10,8 @@
     "csv-parse": "~0.0.6",
     "delta-e" : "~0.0.7",
     "color-convert": "~1.0.0",
-    "jsonfile": "~2.4.0"
+    "jsonfile": "~2.4.0",
+    "paper" : "~0.10.2"
   }
 }
 
