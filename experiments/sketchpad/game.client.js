@@ -153,11 +153,12 @@ var client_addnewround = function(game) {
 var customSetup = function(game) {
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
+
   game.sketchpad = new Sketchpad();
 
-
   game.socket.on('newRoundUpdate', function(data){
-//    game.sketchpad.clear();
+    // Reset sketchpad each round
+    project.activeLayer.removeChildren();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty()
