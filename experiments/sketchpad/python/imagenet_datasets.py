@@ -58,7 +58,6 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
       os.makedirs(path)
   imagenet_to_labels = build_imagenet_to_labels_dict()
   synsets = list(synsets)
-  random.seed(seed)
   kept_names = []
   kept_synset_list = []
   for i, synset in enumerate(synsets):
