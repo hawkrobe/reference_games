@@ -37,13 +37,23 @@ def build_imagenet_to_labels_dict():
   imagenet_to_labels = dict(zip(synset,labels))
   return imagenet_to_labels
 
-def download_images_by_synset(synsets, seed=None, num_per_synset=100, path=None,
+def get_list_of_eitz_synsets():
+  d0 = oc.sketch_obj_correspondences
+  synset = []
+  for key in d0:
+    try:
+      synset.append(d0[key]['imagenet'][0])
+    except:
+      pass
+  return synset
+
+def download_images_by_synset(synsets, num_per_synset=100, path=None,
                               imagenet_username='jefan', accesskey='f5f789c3fb79bfc5e76237ac3feb55b4e959b0ff'):
   """
-  Stores a random #num images for synsets specified by synsets from the latest release to path specified
+  Downloads images by synset, like it says. 
+  Takes in a list of synsets, and optionally number of photos per synset, and saves images in a directory called photos 
   """
-  if path is None:
-      path = os.getcwd()
+  path = os.path.join(os.getcwd(),'photos')
   if not os.path.exists(path):
       os.makedirs(path)
   imagenet_to_labels = build_imagenet_to_labels_dict()
