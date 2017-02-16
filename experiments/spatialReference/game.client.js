@@ -22,7 +22,7 @@ var incorrect;
 var dragging;
 var waiting;
 
-var SPEAKER_INSTRUCTIONS = "Send messages to tell the listener where the lily is. To get points, you only need to make them click near the lily.  Limit your instructions to one short sentence.  Try not to use measurement units in your instructions (centimeters, inches, spaces, etc), as the listener's screen size may differ from your own.";
+var SPEAKER_INSTRUCTIONS = "Send messages to tell the listener where the lily is. To get points, you only need to make them click near the lily.  Limit your messages to one short sentence.  Try not to use measurement units in your messages (centimeters, inches, spaces, etc), as the listener's screen size may differ from your own.";
 
 //test: let's try a variable selecting, for when the listener selects an object
 // we don't need the dragging.
