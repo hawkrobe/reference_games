@@ -61,25 +61,24 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
   synsets = list(synsets)
   kept_names = []
   kept_synset_list = []
-  for i, synset in enumerate(synsets):
-      synset_names = []
+  for i, s in enumerate(synsets):
       url = 'http://www.image-net.org/api/text/imagenet.synset.geturls?' + \
-            'wnid=' + str(synset) + \
+            'wnid=' + str(s) + \
             '&username=' + imagenet_username + \
             '&accesskey=' + accesskey + \
             '&release=latest'
       print i
       print url
-      label = imagenet_to_labels[synset]
+      label = imagenet_to_labels[s]
       url_file = urlopen(url)
       counter = 0
       for f in url_file:
-        if counter <10:
-          # print (f)
+        if counter<num_per_synset:
+          f1 = (f)
           try:
-            img_data = requests.get(f).content
+            img_data = requests.get(f1).content
             with open(label + '_{0:03d}.jpg'.format(counter), 'wb') as handler:
-                handler.write(os.path.join('photos',img_data))
+                handler.write(os.path.join(path,img_data))
                 counter += 1
           except Exception as e:
             print e
