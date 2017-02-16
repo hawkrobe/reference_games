@@ -100,7 +100,7 @@ var writeData = function(client, type, message_parts) {
   switch(type) {
   case "clickedObj" :
     var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
-    message_parts.slice(1).join(', ') + '\n');
+    message_parts.slice(1).join(',') + '\n');
     console.log("clickedObj:" + line);
     break;
 
@@ -133,11 +133,11 @@ var startGame = function(game, player) {
 
   var dims = ["gameid,time,roundNum,mouseX,mouseY,lilyW,lilyH,lilyX,lilyY"];
   for (var i = 0; i < game.numBoxes; i++) {
-    dims.push("box" + i + "W");
-    dims.push("box" + i + "H");
-    dims.push("box" + i + "X");
-    dims.push("box" + i + "Y");
-    dims.push("box" + i + "C")
+    dims.push("boxW" + i);
+    dims.push("boxH" + i);
+    dims.push("boxX" + i);
+    dims.push("boxY" + i);
+    dims.push("boxC" + i);
   }
 
   var dimsStr = dims.join(",") + "\n";
