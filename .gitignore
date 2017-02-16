@@ -4,6 +4,7 @@
 *Rhistory
 cogsci_cache
 data/colorReference/clickedObj/node_modules/
+data/sketchpad/*.csv
 experiments/node_modules/
 models/node_modules/
 models/wppl-color/node_modules/
