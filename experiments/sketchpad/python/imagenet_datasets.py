@@ -76,9 +76,9 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
         if counter<num_per_synset:
           f1 = (f)
           try:
-            img_data = requests.get(f1).content
-            with open(label + '_{0:03d}.jpg'.format(counter), 'wb') as handler:
-                handler.write(os.path.join(path,img_data))
+            img_data = requests.get(f1, stream=True).content
+            with open(os.path.join(path,label + '_{0:03d}.jpg'.format(counter)), 'wb') as handler:
+                handler.write(img_data)
                 counter += 1
           except Exception as e:
             print e
