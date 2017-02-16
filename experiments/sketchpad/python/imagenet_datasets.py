@@ -48,6 +48,18 @@ def get_list_of_eitz_synsets():
       pass
   return synset
 
+def deborkify_eitz_names():
+  d0 = oc.sketch_obj_correspondences
+  borked_keys = d0.keys()
+  doctify = dict(zip(borked_keys,borked_keys))
+  doctify['car (sedan)'] = 'car'
+  doctify['computer monitor'] = 'monitor'
+  doctify['mouse (animal)'] = 'mouse'
+  doctify['santa claus'] = 'santa'
+  doctify['space shuttle'] = 'space-shuttle'
+  doctify['standing bird'] = 'standing-bird'
+  return doctify
+
 def download_images_by_synset(synsets, num_per_synset=100, path=None,
                               imagenet_username='jefan', accesskey='f5f789c3fb79bfc5e76237ac3feb55b4e959b0ff'):
   """
@@ -70,6 +82,8 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
       print i
       print url
       label = imagenet_to_labels[s]
+      deborked_dict = deborkify_eitz_names() # deborkify eitz names in some cases
+      label = deborked_dict[label]
       url_file = urlopen(url)
       counter = 0
       for f in url_file:
@@ -77,9 +91,16 @@ def download_images_by_synset(synsets, num_per_synset=100, path=None,
           f1 = (f)
           try:
             img_data = requests.get(f1, stream=True).content
-            with open(os.path.join(path,label + '_{0:03d}.jpg'.format(counter)), 'wb') as handler:
+            filename = os.path.join(path,label + '_{0:03d}.jpg'.format(counter))
+            with open(filename, 'wb') as handler:
                 handler.write(img_data)
-                counter += 1
+                # validate image before moving on
+                filesize = os.stat(filename).st_size
+                #print label, counter, filesize
+                if filesize<100000: # smaller than some threshold filesize
+                  os.remove(filename)
+                else:
+                  counter += 1
           except Exception as e:
             print e
             pass
