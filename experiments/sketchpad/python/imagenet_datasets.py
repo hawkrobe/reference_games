@@ -18,6 +18,7 @@ from joblib import Parallel, delayed
 import pymongo as pm
 import gridfs
 import boto
+import requests
 
 import object_correspondences as oc
 
