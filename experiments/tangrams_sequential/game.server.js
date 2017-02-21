@@ -100,9 +100,11 @@ var startGame = function(game, player) {
   var startTime = utils.getLongFormTime();
   var dataFileName = startTime + "_" + game.id;
   utils.establishStream(game, "message", dataFileName,
-		       "gameid,time,roundNum,sender,contents\n");
+			"gameid,time,roundNum,sender,intendedName," +
+			"timeElapsed,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
-		       "gameid,time,roundNum,score,objName,objBox\n");
+			"gameid,time,roundNum,score,intendedObj," +
+			"clickedObj,objBox,correct\n");
   game.newRound();
   game.server_send_update();
 };
