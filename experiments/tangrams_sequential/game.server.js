@@ -33,7 +33,6 @@ var onMessage = function(client,message) {
     writeData(client, "clickedObj", message_parts);
     others[0].player.instance.send('s.feedback.' + message_parts[1]);
     target.instance.send('s.feedback.' + message_parts[1]);
-    // TODO: trigger feedback
     setTimeout(function() {
       _.forEach(all, function(p){
 	p.player.instance.emit( 'newRoundUpdate', {user: client.userid});
@@ -65,23 +64,29 @@ var onMessage = function(client,message) {
   }
 };
 
+function getIntendedTargetName(objects) {
+  return _.filter(objects, function(x){
+    return x.targetStatus == 'target';
+  })[0]['name']; 
+}
+
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
+  var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
   var roundNum = gc.state.roundNum + 1;
-  var id = gc.id.slice(0,6);
-  var score = gc.game_score(gc.trialInfo.currStim);  
   var line;
   switch(type) {
   case "clickedObj" :
     // parse the message
-    var objName = message_parts[1];
+    var clickedName = message_parts[1];
+    var correct = intendedName == clickedName ? 1 : 0;
     var objBox = message_parts[2];
-    line = [id, Date.now(), roundNum, score, objName, objBox];
+    line = [gc.id, Date.now(), roundNum, intendedName, clickedName, objBox, correct];
     break;
 
   case "message" :
     var msg = message_parts[1].replace('~~~','.');
-    line = [id, Date.now(), roundNum, client.role, msg];
+    line = [gc.id, Date.now(), roundNum, client.role, intendedName, msg];
     break;
   }
   console.log(type + ":" + line.join(','));
