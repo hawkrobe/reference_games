@@ -69,7 +69,6 @@ app.get( '/*' , function( req, res ) {
 io.on('connection', function (client) {
   // Recover query string information and set condition
   var hs = client.request;
-  console.log(hs.headers);
   var query = require('url').parse(hs.headers.referer, true).query;
   var id;
   if( !(query.workerId && query.workerId in global_player_set) ) {
@@ -93,14 +92,13 @@ var valid_id = function(id) {
 var initialize = function(query, client, id) {                        
   client.userid = id;
   client.emit('onconnected', { id: client.userid } );
-  gameServer.setCustomEvents(client);
-
+  if(gameServer.setCustomEvents) {gameServer.setCustomEvents(client);};
+  
   // Good to know when they connected
   console.log('\t socket.io:: player ' + client.userid + ' connected');
 
   //Pass off to game.server.js code
   gameServer.findGame(client);
-  
   
   // Now we want set up some callbacks to handle messages that clients will send.
   // We'll just pass messages off to the server_onMessage function for now.
@@ -123,7 +121,6 @@ var initialize = function(query, client, id) {
     //If the client was in a game set by gameServer.findGame,
     //we can tell the game server to update that game state.
     if(client.userid && client.game && client.game.id) 
-      //player leaving a game should change that game
       gameServer.endGame(client.game.id, client.userid);            
   });
 };
