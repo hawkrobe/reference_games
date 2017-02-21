@@ -44,6 +44,7 @@ var sharedSetup = function(game) {
     console.log("inputting...");
     if($('#chatbox').val() != "" && !globalGame.sentTyping) {
       game.socket.send('playerTyping.true');
+      globalGame.typingStartTime = Date.now();
       globalGame.sentTyping = true;
     } else if($("#chatbox").val() == "") {
       game.socket.send('playerTyping.false');
@@ -54,7 +55,8 @@ var sharedSetup = function(game) {
   // Tell server when client types something in the chatbox
   $('form').submit(function(){
     var origMsg = $('#chatbox').val();
-    var msg = 'chatMessage.' + origMsg.replace(/\./g, '~~~');
+    var timeElapsed = Date.now() - globalGame.typingStartTime;
+    var msg = ['chatMessage', origMsg.replace(/\./g, '~~~'), timeElapsed].join('.');
     if($('#chatbox').val() != '') {
       game.socket.send(msg);
       globalGame.sentTyping = false;
