@@ -32,8 +32,8 @@ var client_onserverupdate_received = function(data){
     });
   }
   
-  //get names of objects sent from server and current objects 
-  var dataNames = _.map(data.objects, function(e)
+  //get names of objects sent from server and current objects
+  var dataNames = _.map(data.trialInfo.currStim, function(e)
 			{ return e.name;});
   var localNames = _.map(globalGame.objects,function(e)
 			 {return e.name;});
@@ -99,9 +99,6 @@ var client_onMessage = function(data) {
       // update local score
       var target = _.filter(globalGame.objects,
 			    function(x){return x.targetStatus == 'target';})[0];
-      console.log('targetname: ' + target.name);
-      console.log('clickedobjname: ' + clickedObjName);
-      console.log('correct: ' + target.name == clickedObjName);
       var scoreDiff = target.name == clickedObjName ? 1 : 0;
       globalGame.data.subject_information.score += scoreDiff;
       
@@ -147,19 +144,17 @@ var customSetup = function(game) {
   // Set up new round on client's browsers after submit round button is pressed. 
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
+    var score = game.data.subject_information.score;
     $('#chatbox').removeAttr("disabled");
     $('#chatbox').focus();
     $('#messages').empty();
     if(game.roundNum+2 > game.numRounds) {
       $('#roundnumber').empty();
-      $('#instructs').empty().append("Round " + (game.roundNum + 1) + 
-				     " score: " + data.score + " correct!");
+      $('#instructs').empty().append("Number correct: " + score);
     } else {
       $('#roundnumber').empty().append("Round ", game.roundNum + 2);
     }
-    $('#score').empty().append("Round " + (game.roundNum + 1) + 
-			       " score: " + data.score + " correct!");
-    globalGame.data.totalScore += data.score;
+    $('#score').empty().append("Number correct: " + score);
   });
 
 }; 
