@@ -61,7 +61,6 @@ var client_onserverupdate_received = function(data){
       return _.extend(customObj, {img: imgObj});
     });
   };
-  console.log(globalGame.objects);
   
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
@@ -71,8 +70,11 @@ var client_onserverupdate_received = function(data){
   globalGame.players_threshold = data.pt;
   globalGame.player_count = data.pc;
   globalGame.roundNum = data.roundNum;
-  globalGame.data = data.dataObj;
-  
+  // update data object on first round, don't overwrite (FIXME)  
+  if(!_.has(globalGame, 'data')) {
+    globalGame.data = data.dataObj;
+  }
+
   // Draw all this new stuff
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 }; 
@@ -101,7 +103,6 @@ var client_onMessage = function(data) {
 			    function(x){return x.targetStatus == 'target';})[0];
       var scoreDiff = target.name == clickedObjName ? 1 : 0;
       globalGame.data.subject_information.score += scoreDiff;
-      
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
 	highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'green',
