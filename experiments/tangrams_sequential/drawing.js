@@ -46,23 +46,20 @@ var drawObjects = function(game, player) {
 
 };
 
-var highlightCell = function(game, player) {
-  if (player.role == game.playerRoleNames.role1){
-    var targetObjects = _.filter(game.objects, function(x){
-      return x.targetStatus == "target";
-    });
-    for (var n = 0; n < targetObjects.length; n++){
-      var gridX = targetObjects[n].directorCoords.gridX;
-      var gridY = targetObjects[n].directorCoords.gridY;
-      var upperLeftX = game.getPixelFromCell(gridX, gridY).upperLeftX;
-      var upperLeftY = game.getPixelFromCell(gridX, gridY).upperLeftY;
-      if (upperLeftX != null && upperLeftY != null) {
-        game.ctx.beginPath();
-        game.ctx.lineWidth="10";
-        game.ctx.strokeStyle="black";
-        game.ctx.rect(upperLeftX + 5, upperLeftY + 5,290,290); 
-        game.ctx.stroke();
-      }
+var highlightCell = function(game, player, color, condition) {
+  var targetObjects = _.filter(game.objects, condition);
+  var customCoords = game.my_role == "director" ? 'directorCoords' : 'matcherCoords';
+  for (var i = 0; i < targetObjects.length; i++){
+    var gridX = targetObjects[i][customCoords]['gridX'];
+    var gridY = targetObjects[i][customCoords]['gridY'];
+    var upperLeftX = game.getPixelFromCell(gridX, gridY).upperLeftX;
+    var upperLeftY = game.getPixelFromCell(gridX, gridY).upperLeftY;
+    if (upperLeftX != null && upperLeftY != null) {
+      game.ctx.beginPath();
+      game.ctx.lineWidth="10";
+      game.ctx.strokeStyle=color;
+      game.ctx.rect(upperLeftX + 5, upperLeftY + 5,290,290); 
+      game.ctx.stroke();
     }
   }
 };
@@ -85,7 +82,10 @@ var drawScreen = function(game, player) {
   else {
     drawGrid(game);
     drawObjects(game, player);  
-    highlightCell(game, player);
+    if(game.my_role === game.playerRoleNames.role1) {
+      highlightCell(game, player, 'black',
+		    function(x){return x.targetStatus == 'target';});
+    }
   }
 };
 
