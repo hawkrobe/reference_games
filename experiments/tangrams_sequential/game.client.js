@@ -91,6 +91,30 @@ var client_onMessage = function(data) {
     case 'end' :
       ondisconnect(); break;
 
+    case 'feedback' :
+      // Prevent them from sending messages b/w trials
+      $('#chatbox').attr("disabled", "disabled");
+      var clickedObjName = commanddata;
+
+      // update local score
+      var target = _.filter(globalGame.objects,
+			    function(x){return x.targetStatus == 'target';})[0];
+      console.log('targetname: ' + target.name);
+      console.log('clickedobjname: ' + clickedObjName);
+      console.log('correct: ' + target.name == clickedObjName);
+      var scoreDiff = target.name == clickedObjName ? 1 : 0;
+      globalGame.data.subject_information.score += scoreDiff;
+      
+      // draw feedback
+      if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+	highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'green',
+		      function(x) {return x.name == clickedObjName;});
+      } else {
+	highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'green',
+		      function(x) {return x.targetStatus == 'target';});
+      }
+      break;
+
     case 'alert' : // Not in database, so you can't play...
       alert('You did not enter an ID'); 
       window.location.replace('http://nodejs.org'); break;
@@ -123,6 +147,8 @@ var customSetup = function(game) {
   // Set up new round on client's browsers after submit round button is pressed. 
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
+    $('#chatbox').removeAttr("disabled");
+    $('#chatbox').focus();
     $('#messages').empty();
     if(game.roundNum+2 > game.numRounds) {
       $('#roundnumber').empty();
@@ -134,9 +160,6 @@ var customSetup = function(game) {
     $('#score').empty().append("Round " + (game.roundNum + 1) + 
 			       " score: " + data.score + " correct!");
     globalGame.data.totalScore += data.score;
-    var player = game.get_player(globalGame.my_id);
-    player.currentHighlightX = null;
-    player.currentHighlightY = null;
   });
 
 }; 
@@ -163,7 +186,7 @@ var client_onjoingame = function(num_players, role) {
   }
   
   if(role === "matcher") {
-    globalGame.viewport.addEventListener("mousedown", mouseDownListener, false);
+    globalGame.viewport.addEventListener("click", mouseClickListener, false);
   }
 };    
 
@@ -171,23 +194,27 @@ var client_onjoingame = function(num_players, role) {
  MOUSE EVENT LISTENERS
  */
 
-function mouseDownListener(evt) {
+function mouseClickListener(evt) {
   evt.preventDefault();
   
-  //getting mouse position correctly, being mindful of resizing that may have occured in the browser:
+  //getting mouse position correctly, being mindful of resizing 
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
-  
-  //find which shape was clicked
-  _.forEach(globalGame.objects, function(obj) {
-    if (hitTest(obj, mouseX, mouseY)) {
-      var packet = ["clickedObj", obj.name, obj.box,
-		    Math.round(obj.trueX), Math.round(obj.trueY)];
-      globalGame.socket.send(packet.join('.'));
-    }
-  });
 
+  if (globalGame.messageSent) {
+    //find which shape was clicked
+    _.forEach(globalGame.objects, function(obj) {
+      if (hitTest(obj, mouseX, mouseY)) {
+	globalGame.messageSent = false;
+	highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
+		      function(x){return x.name == obj.name;});
+	var packet = ["clickedObj", obj.name, obj.box,
+		      Math.round(obj.trueX), Math.round(obj.trueY)];
+	globalGame.socket.send(packet.join('.'));
+      }
+    });
+  }
   return false;
 }
 
