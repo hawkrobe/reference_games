@@ -86,7 +86,8 @@ var writeData = function(client, type, message_parts) {
 
   case "message" :
     var msg = message_parts[1].replace('~~~','.');
-    line = [gc.id, Date.now(), roundNum, client.role, intendedName, msg];
+    var timeElapsed = message_parts[2];
+    line = [gc.id, Date.now(), roundNum, client.role, intendedName, timeElapsed, msg];
     break;
   }
   console.log(type + ":" + line.join(','));
