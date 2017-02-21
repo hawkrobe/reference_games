@@ -50,13 +50,9 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 6;
+  this.numRounds = 50;
 
-  // How many mistakes have the pair made on the current trial?
-  this.attemptNum = 0;
-
-  // This will be populated with the tangram set
-  this.objects = [];
+  this.trialInfo = {currStim: []};
   
   if(this.server) {
     // If we're initializing the server game copy, pre-create the list of trials
@@ -66,15 +62,13 @@ var game_core = function(options){
     this.player_count = options.player_count;
     this.trialList = this.makeTrialList();
     this.data = {
-      id : this.id.slice(0,6),
+      id : this.id,
       trials : [],
       catch_trials : [],
       system : {}, 
-      totalScore : 0,
       subject_information : {
-	gameID: this.id.slice(0,6), 
-	DirectorBoards : this.nameAndBoxAll(this.trialList, 'director'),
-	initialMatcherBoards : this.nameAndBoxAll(this.trialList, 'matcher')
+	score: 0,
+	gameID: this.id
       }
     };
     this.players = [{
@@ -313,22 +307,6 @@ game_core.prototype.makeTrialList = function () {
   return(trialList);
 };
 
-//scores the number of incorrect tangram matches between matcher and director
-//returns the correct score out of total tangrams
-game_core.prototype.game_score = function(game_objects) {
-  var correct = 0;
-  var incorrect = 0;
-  for(var i = game_objects.length; i--; i>=0) {
-    if(game_objects[i].matcherCoords.gridX == game_objects[i].directorCoords.gridX) {
-      if(game_objects[i].matcherCoords.gridY == game_objects[i].directorCoords.gridY) {
-        correct = correct + 1;
-      }
-    }
-    incorrect = incorrect + 1;
-  }
-  return correct;
-}
-
 // maps a grid location to the exact pixel coordinates
 // for x = 1,2,3,4; y = 1,2,3,4
 game_core.prototype.getPixelFromCell = function (x, y) {
@@ -351,18 +329,6 @@ game_core.prototype.getCellFromPixel = function (mx, my) {
   var cellY = Math.floor((my - this.cellPadding / 2) / this.cellDimensions.height) + 1;
   return [cellX, cellY];
 };
-
-game_core.prototype.getTangramFromCell = function (gridX, gridY) {
-    for (i=0; i < this.objects.length; i++) {
-      if (this.objects[i].gridX == gridX && this.objects[i].gridY == gridY) {
-        var tangram = this.objects[i];
-        var tangramIndex = i;
-        // return tangram;
-        return i;
-        }
-    }
-    console.log("Did not find tangram from cell!")
-  }
 
 // readjusts trueX and trueY values based on the objLocation and width and height of image (objImage)
 game_core.prototype.getTrueCoords = function (coord, objLocation, objImage) {
@@ -403,7 +369,3 @@ game_core.prototype.server_send_update = function(){
   _.map(local_game.get_active_players(), function(p){
     p.player.instance.emit( 'onserverupdate', state);});
 };
-
-// (4.22208334636).fixed(n) will return fixed point value to n places, default n = 3
-// Number.prototype.fixed = function(n) { n = n || 3; return parseFloat(this.toFixed(n)); };
-
