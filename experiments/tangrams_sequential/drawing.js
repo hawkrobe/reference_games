@@ -33,17 +33,10 @@ var drawGrid = function(game){
 
 // Loop through the object list and draw each one in its specified location
 var drawObjects = function(game, player) {
-  //console.log(game.objects);
-    _.map(game.objects, function(obj) { 
-      game.ctx.drawImage(obj.img, obj.trueX, obj.trueY,
-			 obj.width, obj.height);
-    });
-    var currentDragObject = game.objects[game.dragIndex];
-    if (currentDragObject) {
-      game.ctx.drawImage(currentDragObject.img, currentDragObject.trueX, currentDragObject.trueY,
-       currentDragObject.width, currentDragObject.height);
-    }
-
+  _.map(game.objects, function(obj) { 
+    game.ctx.drawImage(obj.img, obj.trueX, obj.trueY,
+		       obj.width, obj.height);
+  });
 };
 
 var highlightCell = function(game, player, color, condition) {
