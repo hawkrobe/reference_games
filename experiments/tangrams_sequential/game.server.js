@@ -70,9 +70,16 @@ function getIntendedTargetName(objects) {
   })[0]['name']; 
 }
 
+function getIntendedTargetOccurrence(objects) {
+  return _.filter(objects, function(x){
+    return x.targetStatus == 'target';
+  })[0]['occurrence']; 
+}
+
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
+  var occurrence = getIntendedTargetOccurrence(gc.trialInfo.currStim);
   var roundNum = gc.state.roundNum + 1;
   var line;
   switch(type) {
@@ -81,13 +88,13 @@ var writeData = function(client, type, message_parts) {
     var clickedName = message_parts[1];
     var correct = intendedName == clickedName ? 1 : 0;
     var objBox = message_parts[2];
-    line = [gc.id, Date.now(), roundNum, intendedName, clickedName, objBox, correct];
+    line = [gc.id, Date.now(), roundNum, occurrence, intendedName, clickedName, objBox, correct];
     break;
 
   case "message" :
     var msg = message_parts[1].replace('~~~','.');
     var timeElapsed = message_parts[2];
-    line = [gc.id, Date.now(), roundNum, client.role, intendedName, timeElapsed, msg];
+    line = [gc.id, Date.now(), roundNum, occurrence, client.role, intendedName, timeElapsed, msg];
     break;
   }
   console.log(type + ":" + line.join(','));
@@ -100,10 +107,10 @@ var startGame = function(game, player) {
   var startTime = utils.getLongFormTime();
   var dataFileName = startTime + "_" + game.id;
   utils.establishStream(game, "message", dataFileName,
-			"gameid,time,roundNum,sender,intendedName," +
+			"gameid,time,roundNum,occurrenceNum,sender,intendedName," +
 			"timeElapsed,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
-			"gameid,time,roundNum,score,intendedObj," +
+			"gameid,time,roundNum,occurrenceNum,intendedObj," +
 			"clickedObj,objBox,correct\n");
   game.newRound();
   game.server_send_update();

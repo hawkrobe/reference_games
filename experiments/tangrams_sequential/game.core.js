@@ -50,7 +50,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 50;
+  this.numRounds = 72;
 
   this.trialInfo = {currStim: []};
   
@@ -282,9 +282,10 @@ game_core.prototype.makeTrialList = function () {
 
     // debugger;
     return _.map(_.zip(localTangramList, directorLocs, matcherLocs, directorBoxes, matcherBoxes), function(pair) {
-      var tangram = pair[0];   // [[tangramA,[4,1]*director, [3,2]*matcher], [tangramB, [3,2]...]]
+      var tangram = pair[0]; 
       var directorGridCell = local_this.getPixelFromCell(pair[1][0], pair[1][1]); 
       var matcherGridCell = local_this.getPixelFromCell(pair[2][0], pair[2][1]);
+      tangram.occurrence = condition.occurrence;
       tangram.targetStatus = tangram.name == condition.target ? 'target' : 'distractor';
       tangram.directorCoords = {
         gridX : pair[1][0],
