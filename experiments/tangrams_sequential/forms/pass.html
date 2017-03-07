@@ -52,37 +52,62 @@
       <p>
         <center><button id="agree" type="button" class="btn btn-sm btn-primary">START</button></center>
 	<noscript><strong>JavaScript must be enabled to start.</strong></noscript>
+
+	<center><td style="vertical-align: middle;"><input class="form-control" id="surveycode" name="surveycode" placeholder="e.g. 5872-dd5b23c4-f1c6-433c-9de2-50ad90b5953f" style="display:none;" type="text"/></td>
       </p>
 
     </div> <!-- /container -->
 
+     <form id="mturk_form" method="POST" action="https://workersandbox.mturk.com/mturk/externalSubmit">
+    <input type="hidden" id="assignmentId" name="assignmentId" value="<%=assignmentId %>">
+    <input type="hidden" id="code" name="code" value="">
+    <input type="hidden" id="comments" name="comments" value="">
+
+     </form>
+
+         <button type="button" id="submitButton" value="Submit to MTurk" onclick="submissionFunc()" style="display: none;"> Submit to MTurk! </button>
+  <div> <p id="error" style="display: none"> This code is incorrect -- please try again </p> </div>
+  <script>
+    var urlParams;
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = location.search.substring(1);
+    urlParams = {};
+    while (match = search.exec(query))
+       urlParams[decode(match[1])] = decode(match[2]);
+
+    if(urlParams.assignmentId != "ASSIGNMENT_ID_NOT_AVAILABLE") {
+      $("#submitButton").show()
+      document.getElementById("assignmentId").value = urlParams.assignmentId;
+      document.getElementById("mturk_form").action = urlParams.turkSubmitTo + "/mturk/externalSubmit";
+    }
     
-    <script type="text/javascript">
-      $('html,body').scrollTop(0);
-      var urlParams;
-      var match,
-          pl     = /\+/g,  // Regex for replacing addition symbol with a space
-          search = /([^&=]+)=?([^&]*)/g,
-          decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-          query  = location.search.substring(1);
+    var submissionFunc = function() {
+        var surveyVal = $("#surveycode").val()
+        if(surveyVal == "E2iZwi8c") {
+            document.forms["mturk_form"].submit();
+        } else {
+            $("#error").show()
+      }
+    }
 
-      urlParams = {};
-      while (match = search.exec(query))
-      urlParams[decode(match[1])] = decode(match[2]);
-      
-      console.log(urlParams)
+    document.getElementById("agree").onclick = function () {
+      var workerId = urlParams.workerId;
+      var assignmentId = urlParams.assignmentId;
+      var hitId = urlParams.hitId;
+      var turkSubmitTo = urlParams.turkSubmitTo;
+    
+      window.open("https://rxdhawkins.me:8888/tangrams/index.html?workerId=" + workerId
+                 + "&assignmentId=" + assignmentId
+                 + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo,
+                 '_blank');
+      $("#surveycode").show();
+    };
 
-      document.getElementById("agree").onclick = function () {
-        var workerId = urlParams.workerId;
-        var assignmentId = urlParams.assignmentId;
-        var hitId = urlParams.hitId;
-        var turkSubmitTo = urlParams.turkSubmitTo;
-        window.open("https://rxdhawkins.me:8888/tangrams/index.html?workerId=" + workerId
-                         + "&assignmentId=" + assignmentId
-                         + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo,
-                    '_blank');
-      };
-    </script>
+  </script>
+
 
   </body>
 </html>
