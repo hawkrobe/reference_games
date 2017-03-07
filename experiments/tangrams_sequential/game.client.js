@@ -153,7 +153,8 @@ var customSetup = function(game) {
       $('#roundnumber').empty();
       $('#instructs').empty().append("Number correct: " + score);
     } else {
-      $('#roundnumber').empty().append("Round ", game.roundNum + 2);
+      $('#roundnumber').empty().append("Round ", game.roundNum + 2,
+				       " of ", game.numRounds);
     }
     $('#score').empty().append("Number correct: " + score);
   });
