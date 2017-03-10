@@ -65,7 +65,7 @@
 
      </form>
 
-         <button type="button" id="submitButton" value="Submit to MTurk" onclick="submissionFunc()" style="display: none;"> Submit to MTurk! </button>
+         <button type="button" id="submitButton" value="Submit to MTurk" onclick="submissionFunc()" style="display:none;"> Submit to MTurk! </button>
   <div> <p id="error" style="display: none"> This code is incorrect -- please try again </p> </div>
   <script>
     var urlParams;
@@ -79,14 +79,13 @@
        urlParams[decode(match[1])] = decode(match[2]);
 
     if(urlParams.assignmentId != "ASSIGNMENT_ID_NOT_AVAILABLE") {
-      $("#submitButton").show()
       document.getElementById("assignmentId").value = urlParams.assignmentId;
       document.getElementById("mturk_form").action = urlParams.turkSubmitTo + "/mturk/externalSubmit";
     }
     
     var submissionFunc = function() {
         var surveyVal = $("#surveycode").val()
-        if(surveyVal == "E2iZwi8c") {
+        if(surveyVal == "E2iZwi8d") {
             document.forms["mturk_form"].submit();
         } else {
             $("#error").show()
@@ -99,11 +98,12 @@
       var hitId = urlParams.hitId;
       var turkSubmitTo = urlParams.turkSubmitTo;
     
-      window.open("https://rxdhawkins.me:8888/tangrams/index.html?workerId=" + workerId
+      window.open("https://rxdhawkins.me:8888/tangrams_sequential/index.html?workerId=" + workerId
                  + "&assignmentId=" + assignmentId
                  + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo,
                  '_blank');
       $("#surveycode").show();
+      $("#submitButton").show();
     };
 
   </script>
