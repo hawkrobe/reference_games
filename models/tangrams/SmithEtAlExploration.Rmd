@@ -1,0 +1,133 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(rwebppl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggthemes)
+```
+
+We begin with the simple horn implicature model... 
+
+```{r}
+arbitrarinessModel <- function(alpha, beta) {
+  res <- webppl(program_file = 'arbitrariness.wppl')
+  print(res)
+  accuracyRes = res %>%
+    separate(Parameter, c('type', 'roundNum')) %>%
+    mutate(alpha = as.character(alpha),
+           beta = as.character(beta))
+  return(accuracyRes)
+}
+arbitrarinessRes <- arbitrarinessModel(10,1)
+```
+
+```{r}
+arbitrarinessRes %>% 
+  filter(type == 'acc') %>%
+  group_by(roundNum, value) %>%
+  tally() %>%   
+  group_by(roundNum) %>%
+  mutate(prob = n / sum(n)) %>%
+  ungroup() %>%
+  filter(value == TRUE) %>%
+  mutate(roundNum = as.numeric(roundNum)) %>%
+  ggplot(aes(x = roundNum, y = prob)) +
+    ylab('accuracy') +
+    xlab('round #') +
+    geom_line() +
+    geom_hline(aes(yintercept=.5), linetype = 2) +
+    ylim(0,1) +
+    theme_few(9) +
+    theme( plot.margin=unit(x=c(0,0,0,0),units="mm"))
+```
+
+```{r}
+arbitrarinessRes %>%
+  spread(type, value) %>%
+  unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
+  unite(realPair, utt, response, sep = '<->', remove = F) %>% 
+  group_by(Iteration) %>% 
+  mutate(firstPair = first(realPair)) %>%
+  group_by(firstPair, roundNum, intendedPair) %>% 
+  tally() %>%
+  ungroup() %>%
+  complete(firstPair, roundNum, intendedPair, fill = list(n = 0)) %>%  
+  group_by(firstPair, roundNum) %>%
+  mutate(prob = n/sum(n)) %>%
+  filter(intendedPair == 't1<->label1') %>%
+  filter(firstPair %in% c('label1<->t1', 'label1<->t2')) %>%
+  ggplot(aes(x = roundNum, y = prob, group = firstPair, 
+             linetype =firstPair, color = firstPair)) +
+    ylab("S(label1 | t1) (expected)") +
+    geom_line() +
+    geom_point() + 
+    theme_few(9) +
+    theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), 
+           legend.margin=unit(0,"cm"),
+           legend.position="top")
+```
+
+
+```{r}
+lexicalizationModel <- function(alpha, beta) {
+  res <- webppl(program_file = 'hornLexicalization.wppl')
+  accuracyRes = res %>%
+    separate(Parameter, c('type', 'roundNum')) %>%
+    mutate(alpha = as.character(alpha),
+           beta = as.character(beta))
+  return(accuracyRes)
+}
+lexicalizationRes <- lexicalizationModel(10,1)
+```
+
+```{r}
+lexicalizationRes %>% 
+  filter(type == 'acc') %>%
+  group_by(roundNum, value) %>%
+  tally() %>%   
+  group_by(roundNum) %>%
+  mutate(prob = n / sum(n)) %>%
+  ungroup() %>%
+  filter(value == TRUE) %>%
+  mutate(roundNum = as.numeric(roundNum)) %>%
+  ggplot(aes(x = roundNum, y = prob)) +
+    ylab('accuracy') +
+    xlab('round #') +
+    geom_line() +
+    geom_hline(aes(yintercept=.5), linetype = 2) +
+    ylim(0,1) +
+    theme_few(9) +
+    theme( plot.margin=unit(x=c(0,0,0,0),units="mm"))
+```
+
+
+```{r}
+lexicalizationRes %>%
+  spread(type, value) %>%
+  unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
+  unite(realPair, utt, response, sep = '<->', remove = F) %>% 
+  group_by(Iteration) %>% 
+  mutate(firstPair = first(realPair)) %>%
+  group_by(firstPair, roundNum, intendedPair) %>% 
+  tally() %>%
+  ungroup() %>%
+  complete(firstPair, roundNum, intendedPair, fill = list(n = 0)) %>%  
+  group_by(firstPair, roundNum) %>%
+  mutate(prob = n/sum(n)) %>%
+  filter(intendedPair == 'common<->cheap') %>%
+  filter(firstPair %in% c('cheap<->common', 'expensive<->common')) %>%
+  ggplot(aes(x = roundNum, y = prob, group = firstPair, 
+             linetype =firstPair, color = firstPair)) +
+    ylab("S(label1 | t1) (expected)") +
+    geom_line() +
+    geom_point() + 
+    theme_few(9) +
+    theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), 
+           legend.margin=unit(0,"cm"),
+           legend.position="top")
+```
