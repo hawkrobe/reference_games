@@ -1,5 +1,15 @@
+var getTrajectories = function(data) {
+  var keys = _.keys(data[0]);
+  return reduce(function(key, memo) {
+    var timeBasedKeys = map(function(i) {return key + "." + i;}, _.range(data.length));
+    var vals = _.map(data, key);
+    return extend(_.zipObject(timeBasedKeys, vals), memo);
+  }, [], keys);
+};
+
 // possible states of the world
-var statePrior =  Categorical({vs: ['rare', 'common'], ps: [.2, .8]});
+var states = ['rare', 'common'];
+var statePrior =  Categorical({vs: states, ps: [.2, .8]});
 
 // possible utterances (include null utterance to make sure dists are well-formed)
 var utterances = ['cheap', 'expensive'];
@@ -9,7 +19,7 @@ var utterancePrior = Categorical({vs: utterances, ps: [.5, .5]});
 // representing the extent to which that word describes each object
 var lexiconPrior = function(){
   var meanings = map(function(utt) {
-    var t1Prob = uniform(0,1);
+    var t1Prob = uniformDrift({a:0,b:1,width:.1});
     return {'rare' : t1Prob, 'common' : 1-t1Prob};
   }, utterances);
   return _.zipObject(utterances, meanings);
@@ -18,7 +28,8 @@ var lexiconPrior = function(){
 // set speaker optimality
 var params = {
   alpha : 3,
-  beta : 1
+  beta : 1,
+  numSteps: 6
 };
 
 // 'cheap' is cheaper than 'expensive'
@@ -55,10 +66,26 @@ var L1 = function(utt, lexicon) {
   });
 };
 
+// compute lexicon posterior, taking into account some previous observations
+// speakers do this by assuming data came from knowledgable listener, and vice versa
+var lexiconPosterior = cache(function(originAgent, data) {
+  setFreshParamsId();
+  return Infer({method: 'MCMC', samples: 1000, verbose: false, onlyMAP: true}, function() {
+    var lexicon = lexiconPrior();
+    mapData({data: data}, function(datum){
+      if(originAgent === 'L') 
+        observe(S1(datum.response, lexicon), datum['utt']);
+      else if(originAgent === 'S') 
+        observe(L1(datum.utt, lexicon), datum['response']);
+    });
+    return lexicon;
+  });
+});
+
 // conventional listener (L1, marginalizing over lexicons)
 var L = function(utt, data) {
-  return Infer({method:"forward", samples: 10000}, function(){
-    var lexicon = lexiconPrior();
+  return Infer({method:"enumerate"}, function(){
+    var lexicon = sample(lexiconPosterior('L', data));
     var state = sample(L1(utt, lexicon));
     return state;
   });
@@ -68,8 +95,8 @@ var L = function(utt, data) {
 var S = function(state, data) {
   return Infer({method:"enumerate"}, function(){
     var utt = sample(utterancePrior);
-    var listener = Infer({method: 'forward', samples: 10000}, function() {
-      var lexicon = lexiconPrior();
+    var listener = Infer({method: 'enumerate'}, function() {
+      var lexicon = sample(lexiconPosterior('S', data));
       return sample(L1(utt, lexicon));
     });
     factor(params.alpha * (listener.score(state) - uttCost(utt)));
@@ -77,13 +104,18 @@ var S = function(state, data) {
   });
 };
 
-// viz(L2('cheap', possibleLexicons[]))
-console.log("speaker conveying common world:");
-console.log(S('common', []).print());
-console.log("speaker conveying rare world:");
-console.log(S('rare', []).print());
+var model = function() {
+  console.log('sampling...');
+  var step = function(data) {
+    if(data.length > params.numSteps) return getTrajectories(data);
+    console.log(data.length);
+    var state = sample(statePrior);
+    var utt = sample(S(state, data));
+    var response = sample(L(utt, data));
+    var newDatum = {utt, response, intended: state, acc: state == response};
+    return step(data.concat(newDatum));
+  };
+  step([]);
+};
 
-console.log("listener hearing expensive utterance:");
-console.log(L('expensive', []).print());
-console.log("listener hearing cheap utterance:");
-console.log(L('cheap', []).print());
+Infer({method: 'forward', samples: 100}, model);
