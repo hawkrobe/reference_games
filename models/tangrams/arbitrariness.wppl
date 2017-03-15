@@ -13,12 +13,6 @@ var getTrajectories = function(data) {
 };
 ///
 
-var params = {
-  alpha: 10,
-  beta: 1,
-  numSteps: 6
-};
-
 // possible states of the world
 var states = ['t1', 't2'];
 var statePrior =  Categorical({vs: states, ps: [1/2, 1/2]});
@@ -27,14 +21,20 @@ var statePrior =  Categorical({vs: states, ps: [1/2, 1/2]});
 var utterances = ['label1', 'label2'];
 var utterancePrior = Categorical({vs: utterances, ps: [1/2, 1/2]});
 
+var params = {
+  alpha: 5,
+  beta: 1,
+  numSteps: 3
+};
+
 // takes a sample from a dirichlet distribution for each word,
 // representing the extent to which that word describes each object
 var lexiconPrior = function(){
   var meanings = map(function(utt) {
     var t1Prob = sample(Beta({a: 1, b: 1}), {
       guide () {
-	return Beta({a: softplus(param({name: 'beta_a_' + utt})),
-		     b: softplus(param({name: 'beta_b_' + utt}))});
+	return Beta({a: softplus(param({name: 'beta_a_' + utt + globalStore.originAgent})),
+		     b: softplus(param({name: 'beta_b_' + utt + globalStore.originAgent}))});
       }
     });
     return {'t1' : t1Prob, 't2' : 1-t1Prob};
@@ -92,13 +92,14 @@ var lexiconModel = function() {
 // compute lexicon posterior, taking into account some previous observations
 // speakers do this by assuming data came from knowledgable listener, and vice versa
 var marginalizedL1 = cache(function(originAgent, utt, data) {
-  setFreshParamsId();
   globalStore.data = data;
   globalStore.originAgent = originAgent;
+
   Optimize({model: lexiconModel,
-	    method: 'optimize', steps: 2000,
-	    optMethod: {adam: {stepSize: .01}}});
-  return Infer({method: 'forward', samples: 2000, guide: true, model: function() {
+	    method: 'optimize', steps: 1000, verbose: false,
+	    optMethod: {adam: {stepSize: .1}}});
+
+  return Infer({method: 'forward', samples: 250, guide: true, model: function() {
     var dist = L1(utt, lexiconModel());
     return sample(dist, {guide() {return dist;}});
   }});
@@ -121,6 +122,8 @@ var S = cache(function(state, data) {
 });
 
 var model = function() {
+  console.log('sampling...');
+  setFreshParamsId();
   var step = function(data) {
     if(data.length > params.numSteps) return getTrajectories(data);
     var state = sample(statePrior);
