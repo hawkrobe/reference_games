@@ -22,7 +22,6 @@ import requests
 
 import object_correspondences as oc
 
-
 def build_imagenet_to_labels_dict():
   # define mapping from imagenet synset to common labels
   d0 = oc.sketch_obj_correspondences

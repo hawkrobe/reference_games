@@ -67,7 +67,7 @@ var highlightCell = function(game, player) {
 // Make sketchpad class using global 'paper' functions
 function Sketchpad() {
   paper.setup('sketchpad');
-  view.viewSize = new Size(750, 250);
+  view.viewSize = new Size(500, 500);
 }
 
 Sketchpad.prototype.setupTool = function() {
