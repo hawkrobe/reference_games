@@ -100,8 +100,8 @@ ALOT...don't understand how to adjust that.*/
 #viewport {
     float: bottom;
     border:solid 1px #333;
-    height: 50vh;
-    width: 150vh;
+    height: 40vh;
+    width: 120vh;
     margin: center;    
     /*margin-right: 2.5%;*/
     background: #383838;
@@ -110,8 +110,9 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #sketchpad {
-    height: 40vh;
-    width: 120vh;
+    height: 500px;
+    width: 500px;
+    top: 10vh;    
     float: top;
     margin: auto;
     background: #ffffff;

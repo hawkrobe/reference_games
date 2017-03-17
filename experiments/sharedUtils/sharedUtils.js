@@ -117,6 +117,50 @@ var colorDiff = function(color1, color2) {
   return diff;
 };
 
+
+// --- below added by jefan March 2017
+// extracts all the values of the javascript dictionary by key
+var vec = function extractEntries(dict,key) {
+    vec = []
+    for (i=0; i<dict.length; i++) {
+        vec.push(dict[i][key]);    
+    } 
+    return vec;
+}
+
+// finds matches to specific value given key
+var vec = function matchingValue(dict,key,value) {
+  vec = []
+  for (i=0; i<dict.length; i++) {
+    if (dict[i][key]==value) {      
+        vec.push(dict[i]);    
+    }
+  } 
+  return vec;
+}
+
+// add entry to dictionary object
+var dict = function addEntry(dict,key,value) {
+  for (i=0; i<dict.length; i++) {
+      dict[i][key] = value;   
+  } 
+  return dict;  
+}
+
+// make integer series from lb (lower) to ub (upper)
+var series = function makeSeries(lb,ub) {
+    series = new Array();
+    if (ub<=lb) {
+      throw new Error("Upper bound should be greater than lower bound!");
+    }
+   for (var i = lb; i<(ub+1); i++) {
+      series = series.concat(i);
+   }
+   return series;
+}
+
+// --- above added by jefan March 2017
+
 module.exports = {
   UUID : UUID,
   getLongFormTime : getLongFormTime,
