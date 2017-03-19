@@ -30,7 +30,10 @@ var onconnect = function(data) {
   this.my_id = data.id;
   this.players[0].id = this.my_id;
   this.urlParams = getURLParams();
-  console.log(this.urlParams);
+  // console.log(this.urlParams);
+  // console.log(this.my_id,this.players[0].id);
+  console.log(this);
+  // console.log(this.get_player(this.my_id));
   drawScreen(this, this.get_player(this.my_id));
 };
 
@@ -49,6 +52,7 @@ var sharedSetup = function(game) {
     } else if($("#chatbox").val() == "") {
       game.socket.send('playerTyping.false');
       globalGame.sentTyping = false;
+      console.log("globalGame is being used here!");
     }
   });
   
@@ -227,8 +231,12 @@ function onchange (evt) {
   } else {
     document.body.className = evt.target.hidden ? "hidden" : "visible";
   }
+  // console.log(evt);
+  // console.log(document.body.className);
+  // console.log(globalGame);
   visible = document.body.className;
-  globalGame.socket.send("h." + document.body.className);
+  globalGame.socket.send("h." + document.body.className);  
+
 };
 
 (function () {
