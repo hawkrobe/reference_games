@@ -35,3 +35,4 @@ packrat/src/
 experiments/sketchpad/test_stim/*
 experiments/sketchpad/python/photos/*
 experiments/sketchpad/python/.ipynb_checkpoints
+experiments/sketchpad/_*
