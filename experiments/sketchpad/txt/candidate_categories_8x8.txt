@@ -11,7 +11,9 @@ birds --
 	flamingo
 	peacock
 	robin	
-	owl	
+	owl
+	seagull
+	pelican
 
 dogs -- 
 	pug
