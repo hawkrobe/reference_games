@@ -20,7 +20,6 @@ if( typeof _ === 'undefined' ) {
   if( has_require ) {
     _ = require('underscore');
     utils  = require('../sharedUtils/sharedUtils.js');
-    console.log('got here');
   }
   else throw 'mymodule requires underscore, see http://underscorejs.org';
 }
@@ -32,10 +31,11 @@ var game_core = function(options){
   // How many players in the game?
   this.players_threshold = 2;
   this.playerRoleNames = {
-    role1 : 'speaker',
-    role2 : 'listener'
+    role1 : 'sketcher',
+    role2 : 'viewer'
   };
-  
+
+
   //Dimensions of world in pixels and number of cells to be divided into;
   this.numHorizontalCells = 4;
   this.numVerticalCells = 1;
@@ -56,21 +56,22 @@ var game_core = function(options){
   this.trialNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 10;
+  this.numRounds = 40;
 
-  // How many trials per round (how many items in the menu)?
-  this.numTrialsPerRound = this.numHorizontalCells*this.numVerticalCells;
+  // How many objects per round (how many items in the menu)?
+  this.numItemsPerRound = this.numHorizontalCells*this.numVerticalCells;
 
-  // How many total trials?
-  this.numTotalTrials = this.numTrialsPerRound*this.numRounds;
+  // Items x Rounds?
+  this.numItemsxRounds = this.numItemsPerRound*this.numRounds;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
 
-  // This will be populated with the tangram set
+  // This will be populated with the set of objects
   this.trialInfo = {};
   
   if(this.server) {
+    console.log('sent server update bc satisfied this.server')
     // If we're initializing the server game copy, pre-create the list of trials
     // we'll use, make a player object, and tell the player who they are
     this.id = options.id;
@@ -148,9 +149,11 @@ game_core.prototype.newRound = function() {
     _.map(this.get_active_players(), function(p){
       p.player.instance.disconnect();});
   } else {
-    // Otherwise, get the preset list of tangrams for the new round
+    // console.log('got to newRound in game.core.js and not the final round');
+    // Otherwise, get the preset list of objects for the new round
     this.roundNum += 1;
     this.trialInfo = {currStim: this.trialList[this.roundNum]};
+    this.objects = this.trialList[this.roundNum];
     this.server_send_update();
   }
 };
@@ -167,7 +170,7 @@ game_core.prototype.getRandomizedConditions = function() {
 
   if (condition=="closer") {
     this_cat = _.shuffle(_.range(0,4))[0];
-    tmpc = []; for (k=0; k<this.numTrialsPerRound; k++) {tmpc = tmpc.concat(this_cat);};
+    tmpc = []; for (k=0; k<this.numItemsPerRound; k++) {tmpc = tmpc.concat(this_cat);};
     for (j=0; j<this.numRounds; j++) {
       category.push(tmpc);
       object.push(_.shuffle(tmp));
@@ -178,12 +181,12 @@ game_core.prototype.getRandomizedConditions = function() {
       zipped = new Array; _zipped = new Array;  
       _zipped = _.zip(category,object); // link category# & object# to ensure you are sampling same objects
       for (j=0; j<this.numRounds; j++) {
-        zipped.push(_.shuffle(_zipped)); // zipped becomes numRounds x numTrialsPerRound x 2(cat,obj)
+        zipped.push(_.shuffle(_zipped)); // zipped becomes numRounds x numItemsPerRound x 2(cat,obj)
       };
       catl = new Array; objl = new Array;  
       for (a=0;a<this.numRounds;a++) {  
         _catl = new Array;  _objl = new Array;      
-        for (b=0;b<this.numTrialsPerRound;b++) {
+        for (b=0;b<this.numItemsPerRound;b++) {
           _catl = _catl.concat(zipped[a][b][0]);
           _objl = _objl.concat(zipped[a][b][1]);
         };
@@ -194,15 +197,15 @@ game_core.prototype.getRandomizedConditions = function() {
       object = objl;
   }; 
   // shuffle poses
-  multiples = Math.floor(this.numTotalTrials/this.numPoses); // num times #poses
-  remainder =  this.numTotalTrials % this.numPoses;
+  multiples = Math.floor(this.numItemsxRounds/this.numPoses); // num times #poses
+  remainder =  this.numItemsxRounds % this.numPoses;
   _pose = new Array;
   for (k=0; k<multiples; k++) {
     _pose = _pose.concat(_.shuffle(_.range(this.numPoses)));
   }
   _pose = _pose.concat(_.shuffle(_.range(this.numPoses).slice(0,remainder)));
   for (r=0;r<this.numRounds;r++){
-    pose.push(_pose.slice( r*this.numTrialsPerRound, (r+1)*this.numTrialsPerRound  ))
+    pose.push(_pose.slice( r*this.numItemsPerRound, (r+1)*this.numItemsPerRound  ))
   }
   
   design_dict = {condition:condition,
@@ -216,62 +219,12 @@ game_core.prototype.getRandomizedConditions = function() {
 game_core.prototype.sampleStimulusLocs = function() {
   var listenerLocs = _.shuffle([[1,1], [2,1], [3,1], [4,1]]);
   var speakerLocs = _.shuffle([[1,1], [2,1], [3,1], [4,1]]);
+
+  // // temporarily turn off shuffling to make sure that it has to do with this
+  // var listenerLocs = [[1,1], [2,1], [3,1], [4,1]];
+  // var speakerLocs = [[1,1], [2,1], [3,1], [4,1]];
   return {listener : listenerLocs, speaker : speakerLocs};
 };
-
-
-// jefan 2/17/2017
-
-// extracts all the values of the javascript dictionary by key
-function extractEntries(dict,key) {
-    vec = []
-    for (i=0; i<dict.length; i++) {
-        vec.push(dict[i][key]);    
-    } 
-    return vec;
-}
-
-// finds matches to specific value given key
-function matchingValue(dict,key,value) {
-  vec = []
-  for (i=0; i<dict.length; i++) {
-    if (dict[i][key]==value) {      
-        vec.push(dict[i]);    
-    }
-  } 
-  return vec;
-}
-
-
-// // customizations to load in 3D objects to menu
-// first load in stim dictionary
-// data = $.ajax({
-//   url: "stimList_subord3D.js",
-//   dataType: "script",
-//   success: success
-// }).done(function(data) {thonk = data;});
-
-// // data = $.getScript( "stimList_subord3D.js").done(function(data) {thonk = data;});
-// stimList = JSON.parse(thonk);
-// basic_cats = _.unique(_.map(stimList, function(entry){ return entry['basic']}));
-
-// cat_dict = new Object();
-// basic_subord_dict = _.map(basic_cats, function(key){ 
-//   subords = _.unique(extractEntries(matchingValue(stimList,'basic',key),'subordinate'))
-//   console.log(key,subords);
-//   cat_dict[key] = subords;
-//   return cat_dict });
-
-// // for demo version, just focus on birds
-// basic = 'birds';
-// session_objs = cat_dict[basic];
-// condition = 'narrow'; // possible conditions are 'narrow' and 'broad'
-// _filelist = extractEntries(matchingValue(stimList,'basic',basic),'filename');
-// _poses = _.unique(extractEntries(matchingValue(stimList,'basic',basic),'pose'));
-// _objs = _.unique(extractEntries(matchingValue(stimList,'basic',basic),'subordinate'));
-// _fileurls = _.map(_filelist,function (fname) {return "https://s3.amazonaws.com/sketchloop-images-subord/" + fname + ".png"});
-// _allfilenames = extractEntries(stimList,'filename');
-// _allfileurls = _.map(_allfilenames, function (fname) {return "https://s3.amazonaws.com/sketchloop-images-subord/" + fname + ".png"});
 
 
 game_core.prototype.makeTrialList = function () { 
@@ -282,45 +235,43 @@ game_core.prototype.makeTrialList = function () {
   var _objectList = design_dict['object'];
   var poseList = design_dict['pose'];
 
-  var trialList = [];
-  for (var i = 0; i < categoryList.length; i++) { // "i" indexes round number
- 
-    for (var j = 0; j < categoryList[0].length; j++) { // "j" indexes trial number
+  var objList = new Array;
+  var locs = new Array;
 
-      // sample four object images that are unique and follow the condition constraints
-      var objList = sampleTrial(i,j,categoryList,_objectList,poseList);
-      // sample locations for those objects
-      var locs = this.sampleStimulusLocs(); // Sample locations for those objects      
-      
-      // construct trial list
-      trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
-        var object = _.clone(tuple[0]);
-        object.width = local_this.cellDimensions.width;
-        object.height = local_this.cellDimensions.height;      
-        var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
-        var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);
-        
-        object.speakerCoords = {
-        	gridX : tuple[1][0],
-        	gridY : tuple[1][1],
-        	trueX : speakerGridCell.centerX - object.width/2,
-        	trueY : speakerGridCell.centerY - object.height/2,
-        	gridPixelX: speakerGridCell.centerX - 100,
-        	gridPixelY: speakerGridCell.centerY - 100
-              };
-              object.listenerCoords = {
-        	gridX : tuple[2][0],
-        	gridY : tuple[2][1],
-        	trueX : listenerGridCell.centerX - object.width/2,
-        	trueY : listenerGridCell.centerY - object.height/2,
-        	gridPixelX: listenerGridCell.centerX - 100,
-        	gridPixelY: listenerGridCell.centerY - 100
-        };
-        return object;
+  var trialList = [];
+  for (var i = 0; i < categoryList.length; i++) { // "i" indexes round number    
+    // sample four object images that are unique and follow the condition constraints
+    var objList = sampleTrial(i,categoryList,_objectList,poseList);  
+    // sample locations for those objects
+    var locs = this.sampleStimulusLocs(); 
+    // construct trial list (in sets of complete rounds)
+    trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
+      var object = _.clone(tuple[0]);
+      object.width = local_this.cellDimensions.width;
+      object.height = local_this.cellDimensions.height;      
+      var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
+      var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);      
+      object.speakerCoords = {
+      	gridX : tuple[1][0],
+      	gridY : tuple[1][1],
+      	trueX : speakerGridCell.centerX - object.width/2,
+      	trueY : speakerGridCell.centerY - object.height/2,
+      	gridPixelX: speakerGridCell.centerX - 100,
+      	gridPixelY: speakerGridCell.centerY - 100
+            };
+      object.listenerCoords = {
+      	gridX : tuple[2][0],
+      	gridY : tuple[2][1],
+      	trueX : listenerGridCell.centerX - object.width/2,
+      	trueY : listenerGridCell.centerY - object.height/2,
+      	gridPixelX: listenerGridCell.centerX - 100,
+      	gridPixelY: listenerGridCell.centerY - 100
+      };
+      return object;
 
       }));
   
-    }
+    
   };
 
   return(trialList);
@@ -342,12 +293,18 @@ game_core.prototype.server_send_update = function(){
     pc : this.player_count,
     dataObj  : this.data,
     roundNum : this.roundNum,
-    trialInfo: this.trialInfo
+    trialNum : this.trialNum,
+    trialInfo: this.trialInfo,
+    objects: this.objects
   };
 
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
-
+  if(player_packet.length == 2) {
+    _.extend(state, {objects: this.objects});
+  }
+  // console.log('printing state variable from server_send_update');
+  // console.log(state);
   //Send the snapshot to the players
   this.state = state;
   _.map(local_game.get_active_players(), function(p){
@@ -367,50 +324,69 @@ var getRemainingTargets = function(earlierTargets) {
   });
 };
 
-var sampleTrial = function(roundNum,trialNum,categoryList,_objectList,poseList) {
-  // // NEW OBJECT STUFF 
+var sampleTrial = function(roundNum,categoryList,_objectList,poseList) {
+  // // jefan 7PM 3/16/17 STILL have to vary pose number by trial in this round
+  trialNum = 0;
   theseCats = categoryList[roundNum];
   theseObjs = _objectList[roundNum];
   thisPose = poseList[roundNum][trialNum];
+
   var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
   var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
   var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==thisPose) ) })[0];
   var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==thisPose) ) })[0];
+
+  // // make exception for basset (cluster 3, object 2), which rotates in opposite direction to the other objects  
+  basset_ind = _.indexOf(_.zip(theseCats,theseObjs), function(x) { return ((x[0]==3) && (x[1]==2))});    
+  if (basset_ind>-1) {
+      console.log('basset_ind:');
+      console.log(basset_ind);      
+  }
+  // console.log(basset_ind);
+  // switch(basset_ind) {
+  //   case 0 : var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 1 : var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 2 : var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 3 : var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  // }
+  // // make exception for blue cushion 'knob' chair (cluster 2, object 7), which rotates in opposite direction to the other objects  
+  knob_ind = _.indexOf(_.zip(theseCats,theseObjs), function(x) { return ((x[0]==2) && (x[1]==7))});    
+  if (knob_ind > -1) {
+    console.log('knob_ind:');
+    console.log(knob_ind);    
+  } 
+  // switch(knob_ind) {
+  //   case 0 : var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 1 : var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 2 : var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 3 : var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  // }
+  // // make exception for ornate 'inlay' chair (cluster 2, object 6), which rotates in opposite direction to the other objects  
+  inlay_ind = _.indexOf(_.zip(theseCats,theseObjs), function(x) { return ((x[0]==2) && (x[1]==6))});    
+  if (inlay_ind > -1) {
+    console.log('inlay_ind:');
+    console.log(inlay_ind);
+  }  
+  // switch(inlay_ind) {
+  //   case 0 : var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 1 : var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 2 : var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  //   case 3 : var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
+  // }  
+
   var im_all = [im0,im1,im2,im3]; 
   var target = im_all[trialNum]; // actual target on this trial
-  notTargs = _.filter(_.range(4), function(x) { return x!=trialNum});
-  var firstDistractor = im_all[notTargs[0]];
+  var notTargs = _.filter(_.range(4), function(x) { return x!=trialNum});
+  var firstDistractor = im_all[notTargs[0]]; 
   var secondDistractor = im_all[notTargs[1]];
   var thirdDistractor = im_all[notTargs[2]];
+  var target_status = ["target","distractor","distractor","distractor"];
+  _.extend(target,{target_status: "target"});
+  _.extend(firstDistractor,{target_status: "distr1"}); // this will be the 2nd target in this round
+  _.extend(secondDistractor,{target_status: "distr2"});
+  _.extend(thirdDistractor,{target_status: "distr3"});
 
   return [target, firstDistractor, secondDistractor, thirdDistractor];
-
-  // if (condition=='closer') {
-  //   tmp = _.shuffle(cat_dict['birds']);
-  //   curr_pose = _.shuffle(_poses)[0];
-  //   var target = {basic: 'birds', subord:tmp[0], targetStatus:"target", pose: curr_pose, condition: condition};
-  //   var firstDistractor = {basic: 'birds', subord:tmp[1], targetStatus:"distr1", pose: curr_pose, condition: condition};
-  //   var secondDistractor = {basic: 'birds', subord:tmp[2], targetStatus:"distr2", pose: curr_pose, condition: condition};
-  //   return _.map([target, firstDistractor, secondDistractor], function(x) {      
-  //     return _.extend(x, {condition: condition})});
-
-  // } else if (condition == 'further') {
-  //   console.log('this condition is not yet supported!');
-  // }
-
-  // // // // OLD COLOR STUFF
-  // var opts = {fixedL : true};
-  // var target = {color: utils.randomColor(opts), targetStatus : "target"};
-  // var firstDistractor = {color: utils.randomColor(opts), targetStatus: "distr1"};
-  // var secondDistractor = {color: utils.randomColor(opts), targetStatus: "distr2"};
-  // if(checkItem(condition,target,firstDistractor,secondDistractor)) {
-  //   // attach "condition" to each stimulus object
-  //   return _.map([target, firstDistractor, secondDistractor], function(x) {
-  //     return _.extend(x, {condition: condition});
-  //   });
-  // } else { // Try again if something is wrong
-  //   return sampleTrial(condition);
-  // }
 
 };
 
@@ -508,15 +484,15 @@ game_core.prototype.getCellFromPixel = function (mx, my) {
 
 
 
-// readjusts trueX and trueY values based on the objLocation and width and height of image (objImage)
-game_core.prototype.getTrueCoords = function (coord, objLocation, objImage) {
-  var trueX = this.getPixelFromCell(objLocation.gridX, objLocation.gridY).centerX - objImage.width/2;
-  var trueY = this.getPixelFromCell(objLocation.gridX, objLocation.gridY).centerY - objImage.height/2;
-  if (coord == "xCoord") {
-    return trueX;
-  }
-  if (coord == "yCoord") {
-    return trueY;
-  }
-};
+// // readjusts trueX and trueY values based on the objLocation and width and height of image (objImage)
+// game_core.prototype.getTrueCoords = function (coord, objLocation, objImage) {
+//   var trueX = this.getPixelFromCell(objLocation.gridX, objLocation.gridY).centerX - objImage.width/2;
+//   var trueY = this.getPixelFromCell(objLocation.gridX, objLocation.gridY).centerY - objImage.height/2;
+//   if (coord == "xCoord") {
+//     return trueX;
+//   }
+//   if (coord == "yCoord") {
+//     return trueY;
+//   }
+// };
   
