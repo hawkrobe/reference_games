@@ -11,6 +11,9 @@
         fs    = require('fs'),
         utils = require('../sharedUtils/sharedUtils.js');
 
+
+
+
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
 // game. For example, if someone clicks on the map, they send a packet
@@ -20,7 +23,9 @@
 var onMessage = function(client,message) {
   //Cut the message up into sub components
   var message_parts = message.split('.');
-
+  // console.log('message_parts from inside onMessage');
+  // console.log(message_parts);
+  // console.log(message_parts[1]);
   //The first is always the type of message
   var message_type = message_parts[0];
   
@@ -34,8 +39,8 @@ var onMessage = function(client,message) {
     
   case 'clickedObj' :
     writeData(client, "clickedObj", message_parts);
-    others[0].player.instance.send("s.feedback." + message_parts[2]);
-    target.instance.send("s.feedback." + message_parts[2]);
+    others[0].player.instance.send("s.feedback." + message_parts[1]); // used to be message_parts[2]
+    target.instance.send("s.feedback." + message_parts[1]); // used to be message_parts[2]
     setTimeout(function() {
       _.map(all, function(p){
         p.player.instance.emit( 'newRoundUpdate', {user: client.userid} );
@@ -68,38 +73,49 @@ var onMessage = function(client,message) {
   }
 };
 
+function getIntendedTargetName(objects) {
+  return _.filter(objects, function(x){
+    return x.target_status == 'target';
+  })[0]['name']; 
+}
+
+function getIntendedTargetOccurrence(objects) {
+  return _.filter(objects, function(x){
+    return x.target_status == 'target';
+  })[0]['occurrence']; 
+}
+
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
+  var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
+  var occurrence = getIntendedTargetOccurrence(gc.trialInfo.currStim);  
   var roundNum = gc.state.roundNum + 1;
   var id = gc.id.slice(0,6);
   switch(type) {
   case "clickedObj" :
-    var outcome = message_parts[2] === "target";
-    var targetVsD1 = utils.colorDiff(getStim(gc, "target"), getStim(gc, "distr1"));
-    var targetVsD2 = utils.colorDiff(getStim(gc, "target"), getStim(gc, "distr2"));
-    var D1VsD2 = utils.colorDiff(getStim(gc, "distr1"), getStim(gc, "distr2"));
-    var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
-		message_parts.slice(1).join(',') +
-		targetVsD1 + "," + targetVsD2 + "," + D1VsD2 + "," + outcome +
-		'\n');
-    console.log("clickedObj:" + line);
+    // parse the message
+    var clickedName = message_parts[1];
+    var correct = intendedName == clickedName ? 1 : 0;
+    var objBox = message_parts[2];
+    line = [gc.id, Date.now(), roundNum, occurrence, intendedName, clickedName, objBox, correct];
     break;
 
 
   case "message" :
-    var msg = message_parts[1].replace(/~~~/g,'.');
-    var line = (id + ',' + Date.now() + ',' + roundNum + ',' + client.role + ',"' + msg + '"\n');
-    console.log("message:" + line);
+    var msg = message_parts[1].replace('~~~','.');
+    var timeElapsed = message_parts[2];
+    line = [gc.id, Date.now(), roundNum, occurrence, client.role, intendedName, timeElapsed, msg];
     break;
   }
-  gc.streams[type].write(line, function (err) {if(err) throw err;});
+  console.log(type + ":" + line.join(','));
+  gc.streams[type].write(line.join(',') + "\n", function (err) {if(err) throw err;});
 };
 
-var getStim = function(game, targetStatus) {
-  return _.filter(game.trialInfo.currStim, function(x){
-    return x.targetStatus == targetStatus;
-  })[0]['color'];
-};
+
+
+
+
+
 
 // /* 
 //    The following functions should not need to be modified for most purposes
