@@ -130,10 +130,7 @@ var L = cache(function(utt, data) {
 });
 
 // conventional speaker (S1, reasoning about expected L1 behavior across lexicons)
-
-// Note: this calls marginalizedL1 for each utterance, which means it optimizes several times...
-// Should probably factor out the optimize call to happen outside the enumerate, then only do the forward
-// sampling inside enumerate...
+// Note: It'd be nice to not have to build the listener distribution explicitly...
 var S = cache(function(state, data) {
   updateBeliefs('S', data);
   return Infer({method: 'enumerate'}, function(){
