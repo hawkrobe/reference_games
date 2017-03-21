@@ -27,17 +27,37 @@ var params = {
   numSteps: 3
 };
 
-// takes a sample from a dirichlet distribution for each word,
+var getBetaParam = function(paramName, uniqueID, roundNum) {
+  if(roundNum > 0) {
+    var label = ['beta', paramName, uniqueID, roundNum].join('_');
+    return T.toScalars(getParams()[label][0])[0];
+  } else {
+    return 1;
+  }
+};
+
+// takes a sample from a beta distribution for each word,
 // representing the extent to which that word describes each object
+// at an implementational level, we use the params from the previous
+// step as the prior for next step, so that we only condition on the most recent obs
 var lexiconPrior = function(){
   var meanings = map(function(utt) {
-    var uniqueID = [utt, globalStore.originAgent, globalStore.roundNum].join('_');
-    var newParams = {'a': param({name: ['beta', 'a', uniqueID].join('_')}),
-		     'b': param({name: ['beta', 'b', uniqueID].join('_')})};
-    var t1Prob = sample(Beta({a: softplus(globalStore.betaPriorA),
-			      b: softplus(globalStore.betaPriorB)}), {
-      guide () {return Beta({a: softplus(newParams.a), b: softplus(newParams.b)});}
-    });
+    var uniqueID = [utt, globalStore.originAgent].join('_'); 
+    var oldParams = {
+      'a' : getBetaParam('a', uniqueID, globalStore.roundNum - 1),
+      'b' : getBetaParam('b', uniqueID, globalStore.roundNum - 1)
+    };
+   
+    var betaGuide = function() {
+      var newParams = {
+	'a': param({name: ['beta_a', uniqueID, globalStore.roundNum].join('_')}),
+	'b': param({name: ['beta_b', uniqueID, globalStore.roundNum].join('_')})
+      };
+      return Beta({a: softplus(newParams.a), b: softplus(newParams.b)});
+    };
+    
+    var t1Prob = sample(Beta({a: softplus(oldParams.a), b: softplus(oldParams.a)}),
+			{guide: betaGuide});
     return {'t1' : t1Prob, 't2' : 1-t1Prob};
   }, utterances);
   return _.zipObject(utterances, meanings);
@@ -87,38 +107,26 @@ var lexiconModel = function() {
   return lexicon;
 };
 
-var getBetaParam = function(paramName, utt, originAgent, roundNum) {
-  if(roundNum > 0) {
-    var label = ['beta', paramName, utt, originAgent, (roundNum - 1)].join('_');
-    return T.toScalars(getParams()[label][0])[0];
-  } else {
-    return 1;
-  }
-};
-
 // compute lexicon posterior, taking into account some previous observations
 // speakers do this by assuming data came from knowledgable listener, and vice versa
-var marginalizedL1 = cache(function(originAgent, utt, data) {
+var updateBeliefs = function(originAgent, data) {
   // Only condition on most recent datapoint, since we're using learned params as prior
   globalStore.data = _.isEmpty(data) ? [] : [_.last(data)];
   globalStore.originAgent = originAgent;
   globalStore.roundNum = data.length;
-  globalStore.betaPriorA = getBetaParam('a', utt, originAgent, globalStore.roundNum);
-  globalStore.betaPriorB = getBetaParam('b', utt, originAgent, globalStore.roundNum);
 
   Optimize({model: lexiconModel,
-	    method: 'optimize', steps: 2000, verbose: false,
+	    method: 'optimize', steps: 5000, verbose: false,
 	    optMethod: {adam: {stepSize: .1}}});
-
-  return Infer({method: 'forward', samples: 250, guide: true, model: function() {
-    var dist = L1(utt, lexiconModel());
-    return sample(dist, {guide() {return dist;}});
-  }});
-});
+};
 
 // conventional listener (L1, marginalizing over lexicons)
 var L = cache(function(utt, data) {
-  return marginalizedL1('L', utt, data);
+  updateBeliefs('L', data);
+  return Infer({method: 'forward', samples: 250, guide: true, model: function() {
+    var dist = L1(utt, lexiconPrior());
+    return sample(dist, {guide() {return dist;}});
+  }});
 });
 
 // conventional speaker (S1, reasoning about expected L1 behavior across lexicons)
@@ -127,9 +135,13 @@ var L = cache(function(utt, data) {
 // Should probably factor out the optimize call to happen outside the enumerate, then only do the forward
 // sampling inside enumerate...
 var S = cache(function(state, data) {
+  updateBeliefs('S', data);
   return Infer({method: 'enumerate'}, function(){
     var utt = sample(utterancePrior);
-    var listener = marginalizedL1('S', utt, data);
+    var listener = Infer({method: 'forward', samples: 250, guide: true, model: function() {
+      var dist = L1(utt, lexiconPrior());
+      return sample(dist, {guide() {return dist;}});
+    }});
     factor(params.alpha * listener.score(state)
            - params.beta * uttCost(utt));
     return utt;
@@ -137,16 +149,14 @@ var S = cache(function(state, data) {
 });
 
 var model = function() {
+  console.log('sample...');
   var step = function(data) {
     if(data.length > params.numSteps) return getTrajectories(data);
     var state = sample(statePrior);
     var utt = sample(S(state, data));
     var response = sample(L(utt, data));
     var newDatum = {utt, response, intended: state, acc: state == response};
-    console.log(newDatum);
     return step(data.concat(newDatum));
   };
   step([]);
 };
-
-Infer({method: 'forward', samples: 1, model: model});
