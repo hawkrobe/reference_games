@@ -169,9 +169,9 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === "director") {
-    $('#instructs').append("Send messages to help the matcher move their images to match yours. Please do not refresh page!");
+    $('#instructs').append("Send messages to help the matcher pick the target image. You are free to use the chatbox to talk to the director at any time.");
   } else {
-    $('#instructs').append("Move your images to match the director's board. Please do not refresh page!");
+    $('#instructs').append("Select the correct target out of the lineup. You are free to use the chatbox to talk to the director at any time.");
   }
 
   // set role locally
