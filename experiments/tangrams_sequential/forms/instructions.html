@@ -48,12 +48,11 @@
     </p>
 <p>
     You'll each have the same 12 images but the order they are in will be different. 
-
 </p>
 
   <p>
-    One of you will be assigned the <b> Speaker </b> role and the
-    other will be the <b> Listener</b>. On each round, one of the
+    One of you will be assigned the <b> Director </b> role and the
+    other will be the <b> Matches</b>. On each round, one of the
     twelve objects is marked as the target, which can be identified by a <b>
     black box</b> around it. Only the speaker can see which object is
     the target. The task of the speaker is to tell the listener which
@@ -66,46 +65,49 @@
 </p>
 
     <p>
-      <center><img src="images/chatBox.png" alt="Example gameplay" style="width:700px;height:400px"></center>
+      <center><img src="images/directorView.png" alt="Example gameplay" style="width:700px;height:413px"></center>
     </p>
 
     <p>
-    Thus, the goal is for the listener to identify the correct color
+      <i> <center> <small> Only the director can see the black square around the target object. </small> </center> </i>
+    </p>
+    
+<p>
+    Thus, the goal is for the listener to identify the correct shape
     based on what the speaker has said. In order to communicate,
     you're given a chatbox where you can send messages back and forth
-    to each other. The speaker can say whatever they need to indicate
+    to each other. The director can say whatever they need to indicate
     which color is the target (this isn't a game of "taboo"!), and the
-    listener can respond or ask questions at any point. Some rounds
+    matcher can respond or ask questions at any point. Some rounds
     will be easier and some will be harder. </p>
 
-    <p> Once the speaker sends a message and the listener clicks on
-    the object they believe is the target, both players will be given
-    feedback (the speaker will see what the listener clicked, and the
-    listener will see the true target), and you will both be
-    automatically forwarded to the next round of objects. There are a
-    total of <b>50 rounds</b>. After the final round you will fill out a quick
-    15 second survey and be on your way. You're welcome to accept another HIT and play again.
-</p>
-
-<p>
-    
-  You won't get feedback on how many images you have correct while you are playing the round, but after each round ends you will be told your score from the previous round. 
-</p>
-
-<p>
-  If this task isn't fun enough already (which we think it is) you and your teammate will individually be rewarded 1 cent for every correctly matching images you finish a round with. This means you and your partner each have the chance to earn up to 12 BONUS CENTS per round for each of the 6 rounds. 
-</p>
-
-<p>
-    As mentioned above, there are a total of 6 rounds. At the start of each round, you and your teammates images  will be shuffled again. After the sixth round you will fill out a quick 15 second survey and be on your way. 
-</p>
-
-<p> Two final notes: Since you are playing with another turker, you may see this screen before the game begins. 
-      <p>
-      <center><img src="images/waitScreen.png" alt="initial matcher's board" style="width:700px;height:150px"></center>
+    <p> Once the matcher clicks on the object they believe is the
+    target based on conversation through the chat box, both players
+    will be given feedback (the director will see what the matcher
+    clicked, and the matcher will see the true target), and you will
+    both be automatically forwarded to the next round of
+    objects. There are a total of <b>72 rounds</b> so each shape will be
+    the target several times. After the final round you will fill out a quick 15
+    second survey and be on your way.
     </p>
 
-Just hold tight. Another turker should join the game within the next few minutes; if you're still waiting after 15 minutes have passed, your HIT will automatically submit and you will be compensated the full amount for your time.
+<p> A few final notes: First, since you are playing with another
+  turker, you may see this screen before the game begins:
+  <p>
+    <center><img src="images/waitScreen.png" alt="initial matcher's
+    board" style="width:700px;height:150px"></center>
+  </p>
+  Just hold tight. Another turker should join the game within the next
+  few minutes. If you're in the waiting room 15 minutes without
+  another player joining, your HIT will automatically be submitted and
+  accepted, out of gratitude for the time you spent waiting.
+</p>
+
+<p>
+  Second, please be respectful of the turker you're playing with: do
+  not send inappropriate material through the chat box (including
+  screenshots of the shape you're trying to refer to), and try to be
+  as responsive as possible.
 </p>
 
 <p> Finally, please DO NOT refresh the page at any point once you start the game (including the waiting page). If you refresh, you will not be able to rejoin the game you were in and you and your partner may not be able to submit the HIT. Thank you! 
@@ -124,16 +126,15 @@ Just hold tight. Another turker should join the game within the next few minutes
      <div class="well" style="width:800px; margin: 0 auto">
  
   </br>
-  The director can move their images
-    </br>
-    <input type="radio" name="dgoal" value="yes"> False
+  The director can click on a color to end the round
     </br>
     <input type="radio" name="dgoal" value="no"> True 
     </br>
-
+    <input type="radio" name="dgoal" value="yes"> False
+    </br>
 
   </br>
-  The matcher wants their board to match the director's board
+  The matcher wants to click on the target that the speaker is describing
       </br>
       <input type="radio" name="mgoal" value="yes"> True
       </br>
@@ -142,11 +143,11 @@ Just hold tight. Another turker should join the game within the next few minutes
     
 
   </br> 
-  There are a total of 3 rounds
+  The target object is marked for the speaker with a black box
       </br>
-      <input type="radio" name="round" value="yes"> False
+      <input type="radio" name="round" value="yes"> True
       </br>
-      <input type="radio" name="round" value="no"> True
+      <input type="radio" name="round" value="no"> False
       </br>
 
   </br> 
@@ -158,19 +159,19 @@ Just hold tight. Another turker should join the game within the next few minutes
       </br>
 
   </br> 
-  At the end of a round
+  At the end of each round
        </br>
-       <input type="radio" name="comp" value="no"> All tangrams stay the same
+       <input type="radio" name="comp" value="no"> All tangrams stay in the same locations
        </br>
        <input type="radio" name="comp" value="yes"> The tangrams are shuffled
        </br>
-    
+       
   </br>
-  Have you participated in this study before? 
+  The locations of the 12 objects are the same for the speaker and the listener
         </br>
-        <input type="radio" name="completed" value="no"> Yes
+        <input type="radio" name="completed" value="no"> True
         </br>
-        <input type="radio" name="completed" value="yes"> No
+        <input type="radio" name="completed" value="yes"> False
         </br>
 
   </br>
