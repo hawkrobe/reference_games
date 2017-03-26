@@ -46,20 +46,19 @@ console.log('\t :: Express :: Listening on port ' + gameport );
 //  This handler will listen for requests on /*, any file from the
 //  root of our server. See expressjs documentation for more info 
 app.get( '/*' , function( req, res ) {
-  // this is the current file they have requested
-  var file = req.params[0]; 
   if(req.query.workerId && !valid_id(req.query.workerId)) {
     console.log("invalid id: blocking request");
-    res.redirect('https://rxdhawkins.me:8888/sharedUtils/invalid.html');
+    return res.redirect('https://rxdhawkins.me:8888/sharedUtils/invalid.html');
   } else if(req.query.workerId && req.query.workerId in global_player_set) {
     console.log("duplicate id: blocking request");
-    res.redirect('https://rxdhawkins.me:8888/sharedUtils/duplicate.html');
+    return res.redirect('https://rxdhawkins.me:8888/sharedUtils/duplicate.html');
   } else {
-    console.log('\t :: Express :: file requested: ' + file);
+    var fileName = req.params[0];
+    console.log('\t :: Express :: file requested: ' + fileName);
     if(req.query.workerId) {
       console.log(" by workerID " + req.query.workerId);
     }
-    res.sendfile("./" + file); // give them what they want
+    return res.sendFile(fileName, {root: __dirname}); // give them what they want
   }
 }); 
 
