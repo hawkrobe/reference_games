@@ -58,7 +58,7 @@ app.get( '/*' , function( req, res ) {
     if(req.query.workerId) {
       console.log(" by workerID " + req.query.workerId);
     }
-    return res.sendFile(fileName, {root: __dirname}); // give them what they want
+    return res.sendFile(fileName, {root: __dirname}); 
   }
 }); 
 
@@ -72,8 +72,8 @@ io.on('connection', function (client) {
   var id;
   if( !(query.workerId && query.workerId in global_player_set) ) {
     if(query.workerId) {
-      global_player_set[query.workerId] = true;
       // useid from query string if exists
+      global_player_set[query.workerId] = true;
       id = query.workerId; 
     } else {
       id = utils.UUID();
