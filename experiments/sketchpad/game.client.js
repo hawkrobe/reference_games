@@ -224,7 +224,7 @@ var customSetup = function(game) {
 
   game.sketchpad = new Sketchpad();
 
-  game.socket.on('newRoundUpdate', function(data){
+  game.socket.on('newRoundUpdate', function(data){    
     // Reset sketchpad each round
     project.activeLayer.removeChildren();
     if(game.roundNum + 2 > game.numRounds) {
@@ -306,7 +306,7 @@ function responseListener(evt) {
     _.forEach(globalGame.objects, function(obj) {
     if (hitTest(obj, mouseX, mouseY)) {
         globalGame.messageSent = false;
-        console.log('in the responseListener function, about to call highlightCell');
+        // console.log('in the responseListener function, about to call highlightCell');
         highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
                 function(x){return x.subordinate == obj.subordinate;});
         var packet = ["clickedObj", obj.subordinate, obj.box,

@@ -24,7 +24,7 @@ var onMessage = function(client,message) {
   //Cut the message up into sub components
   var message_parts = message.split('.');
   // console.log('message_parts from inside onMessage');
-  // console.log(message_parts);
+  console.log(message_parts);
   // console.log(message_parts[1]);
   //The first is always the type of message
   var message_type = message_parts[0];
@@ -98,10 +98,9 @@ var writeData = function(client, type, message_parts) {
     var correct = intendedName == clickedName ? 1 : 0;
     var objBox = message_parts[2];
     line = [gc.id, Date.now(), roundNum, occurrence, intendedName, clickedName, objBox, correct];
-    break;
-
-
-  case "message" :
+    break;    
+ 
+  case "message" : // this will contain the stroke information from this trial
     var msg = message_parts[1].replace('~~~','.');
     var timeElapsed = message_parts[2];
     line = [gc.id, Date.now(), roundNum, occurrence, client.role, intendedName, timeElapsed, msg];
