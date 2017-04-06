@@ -162,7 +162,8 @@ Sketchpad.prototype.setupTool = function() {
   tool.onMouseDown = function(event) {
     globalGame.path = new Path({
       segments: [event.point],
-      strokeColor: 'black'
+      strokeColor: 'black',
+      strokeWidth: 5
     });
   };
 
