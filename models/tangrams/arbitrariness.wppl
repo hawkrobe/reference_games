@@ -21,23 +21,48 @@ var statePrior =  Categorical({vs: states, ps: [1/2, 1/2]});
 var utterances = ['label1', 'label2'];
 var utterancePrior = Categorical({vs: utterances, ps: [1/2, 1/2]});
 
-var params = {
-  alpha: 5,
-  beta: 1,
-  numSteps: 3
+// var params = {
+//   alpha: 5,
+//   beta: 1,
+//   numSteps: 3
+// };
+
+// If the param exists in the store, use it as prior; otherwise use initial prior
+var getBetaParam = function(paramName, uniqueID, roundNum) {
+  if(roundNum > 0) {
+    var label = [paramName, uniqueID, roundNum].join('_');
+    return T.toScalars(getParams()[label][0])[0];
+  } else if(paramName == 'mu') {
+    return 0;
+  } else if(paramName == 'sigma') {
+    return 1;
+  }
 };
 
-// takes a sample from a dirichlet distribution for each word,
+// takes a sample from a logit normal distribution for each word,
 // representing the extent to which that word describes each object
+// at an implementational level, we use the params from the previous
+// step as the prior for next step, so that we only condition on the most recent obs
 var lexiconPrior = function(){
   var meanings = map(function(utt) {
-    var uniqueID = [utt, globalStore.originAgent, globalStore.roundNum].join('_');
-    var newParams = {'a': param({name: ['beta', 'a', uniqueID].join('_')}),
-		     'b': param({name: ['beta', 'b', uniqueID].join('_')})};
-    var t1Prob = sample(Beta({a: softplus(globalStore.betaPriorA),
-			      b: softplus(globalStore.betaPriorB)}), {
-      guide () {return Beta({a: softplus(newParams.a), b: softplus(newParams.b)});}
-    });
+    var uniqueID = [utt, globalStore.originAgent].join('_');
+    var currRound = globalStore.roundNum;
+    var oldRound = currRound - 1;
+    
+    var betaGuide = function() {
+      return LogitNormal({
+	mu: param({name: ['mu', uniqueID, currRound].join('_')}),
+	sigma: softplus(param({name: ['sigma', uniqueID, currRound].join('_')})),
+	a: 0, b: 1
+      });
+    };
+    
+    var t1Prob = sample(LogitNormal({
+      mu: getBetaParam('mu', uniqueID, oldRound),
+      sigma: softplus(getBetaParam('sigma', uniqueID, oldRound)),
+      a: 0, b: 1
+    }), {guide: betaGuide});
+    
     return {'t1' : t1Prob, 't2' : 1-t1Prob};
   }, utterances);
   return _.zipObject(utterances, meanings);
@@ -61,8 +86,8 @@ var L0 = function(utt, lexicon) {
 var S1 = function(state, lexicon) {
   return Infer({method:"enumerate"}, function(){
     var utt = sample(utterancePrior);
-    factor(params.alpha * (L0(utt, lexicon).score(state))
-           - params.beta * uttCost(utt));
+    factor(params.alpha[0] * (L0(utt, lexicon).score(state))
+           - params.beta[0] * uttCost(utt));
     return utt;
   });
 };
@@ -78,75 +103,66 @@ var L1 = function(utt, lexicon) {
 
 var lexiconModel = function() {
   var lexicon = lexiconPrior();
-  mapData({data: globalStore.data}, function(datum){
-    if(globalStore.originAgent == 'L')
-      observe(S1(datum.response, lexicon), datum['utt']);
-    else if(globalStore.originAgent == 'S')
-      observe(L1(datum.utt, lexicon), datum['response']);
-  });
-  return lexicon;
-};
-
-var getBetaParam = function(paramName, utt, originAgent, roundNum) {
-  if(roundNum > 0) {
-    var label = ['beta', paramName, utt, originAgent, (roundNum - 1)].join('_');
-    return T.toScalars(getParams()[label][0])[0];
-  } else {
-    return 1;
+  if(globalStore.data.length > 0) {
+    mapData({data: globalStore.data}, function(datum){
+      if(globalStore.originAgent == 'L')
+	observe(S1(datum.response, lexicon), datum['utt']);
+      else if(globalStore.originAgent == 'S')
+	observe(L1(datum.utt, lexicon), datum['response']);
+    });
   }
+  return lexicon;
 };
 
 // compute lexicon posterior, taking into account some previous observations
 // speakers do this by assuming data came from knowledgable listener, and vice versa
-var marginalizedL1 = cache(function(originAgent, utt, data) {
+var updateBeliefs = function(originAgent, data) {
   // Only condition on most recent datapoint, since we're using learned params as prior
-  globalStore.data = _.isEmpty(data) ? [] : [_.last(data)];
+  globalStore.data = data;//_.isEmpty(data) ? [] : [_.last(data)];
   globalStore.originAgent = originAgent;
   globalStore.roundNum = data.length;
-  globalStore.betaPriorA = getBetaParam('a', utt, originAgent, globalStore.roundNum);
-  globalStore.betaPriorB = getBetaParam('b', utt, originAgent, globalStore.roundNum);
 
   Optimize({model: lexiconModel,
-	    method: 'optimize', steps: 2000, verbose: false,
-	    optMethod: {adam: {stepSize: .1}}});
+	    method: 'optimize', steps: 500, verbose: false,
+	    optMethod: {adam: {stepSize: .01}}});
+};
 
+// conventional listener (L1, marginalizing over lexicons)
+var L = cache(function(utt, data) {
+  updateBeliefs('L', data);
+  globalStore.data = [];
   return Infer({method: 'forward', samples: 250, guide: true, model: function() {
-    var dist = L1(utt, lexiconModel());
+    var dist = L1(utt, lexiconPrior());
     return sample(dist, {guide() {return dist;}});
   }});
 });
 
-// conventional listener (L1, marginalizing over lexicons)
-var L = cache(function(utt, data) {
-  return marginalizedL1('L', utt, data);
-});
-
 // conventional speaker (S1, reasoning about expected L1 behavior across lexicons)
-
-// Note: this calls marginalizedL1 for each utterance, which means it optimizes several times...
-// Should probably factor out the optimize call to happen outside the enumerate, then only do the forward
-// sampling inside enumerate...
+// Note: It'd be nice to not have to build the listener distribution explicitly...
 var S = cache(function(state, data) {
+  updateBeliefs('S', data);
+  globalStore.data = [];      
   return Infer({method: 'enumerate'}, function(){
     var utt = sample(utterancePrior);
-    var listener = marginalizedL1('S', utt, data);
-    factor(params.alpha * listener.score(state)
-           - params.beta * uttCost(utt));
+    var listener = Infer({method: 'forward', samples: 250, guide: true, model: function() {
+      var dist = L1(utt, lexiconPrior());
+      return sample(dist, {guide() {return dist;}});
+    }});
+    factor(params.alpha[0] * listener.score(state)
+           - params.beta[0] * uttCost(utt));
     return utt;
   });
 });
 
 var model = function() {
+  console.log('sample...');
   var step = function(data) {
-    if(data.length > params.numSteps) return getTrajectories(data);
+    if(data.length > params.numSteps[0]) return getTrajectories(data);
     var state = sample(statePrior);
     var utt = sample(S(state, data));
     var response = sample(L(utt, data));
     var newDatum = {utt, response, intended: state, acc: state == response};
-    console.log(newDatum);
     return step(data.concat(newDatum));
   };
   step([]);
 };
-
-Infer({method: 'forward', samples: 1, model: model});
