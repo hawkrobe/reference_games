@@ -47,50 +47,73 @@
       <center><img src="images/tangramBoard.png" alt="Example gameplay" style="width:600px;height:200px"></center>
     </p>
 <p>
-    You'll each have the same 12 images but the order they are in will be different. As a team, your goal is make your boards match. 
-
+    You'll each see the same 12 images but they will be scrambled into different locations.
 </p>
 
-<p>
-
-    One of you will be assigned the Director role and the other will be the Matcher. The goal here is for the matcher to move their images to the positions they are in on the director's board. The challenge is that neither of you can see each other's boards. So for the matcher to move their images to match the director's board, you'll both need to communicate. This is why you're given a chatbox where you can send messages back and forth to each other about where to move the images. 
-
+  <p>
+    One of you will be assigned the <b> Director </b> role and the
+    other will be the <b> Matcher</b>. On each round, the director is
+    shown a <b>black box</b> marking one of the twelve objects as the
+    target (see image below). Only the director can see which object
+    is the target. The task of the director is to tell the matcher
+    which one of the objects is the target. The matcher in turn needs
+    to select the right object based on this information. You'll both
+    get <b> a bonus of $0.01 for each correct response</b>, so pay
+    attention! Remember that it doesn't make sense to describe the
+    location of the target object, since the order of the images is
+    different for the director and the matcher.
 </p>
 
     <p>
-      <center><img src="images/chatBox.png" alt="Example gameplay" style="width:700px;height:400px"></center>
+      <center><img src="images/directorView.png" alt="Example gameplay" style="width:700px;height:413px"></center>
     </p>
 
-<p>
-    When you and your teammate think you have matched all the images you can, the matcher should click on the Submit Round button in the upper left hand corner. PLEASE DO NOT PRESS THIS BEFORE YOU ARE DONE WITH THE ROUND. 
-
-</p>
     <p>
-      <center><img src="images/button_example.png" alt="initial matcher's board" style="width:600px;height:75px"></center>
+      <i> <center> <small> Only the director can see the black square around the target object. </small> </center> </i>
     </p>
-
-<p>
     
-  You won't get feedback on how many images you have correct while you are playing the round, but after each round ends you will be told your score from the previous round. 
+<p>
+  Thus, the goal is for the matcher to identify the correct shape
+  based on what the director has said. In order to communicate,
+  you're given a chatbox where you can send messages back and forth
+  to each other. The director can say whatever they need to indicate
+  which object is the target (this isn't a game of "taboo"!), and the
+  matcher can respond or ask questions at any point. Some rounds
+  will be easier and some will be harder. </p>
+
+<p> Once the matcher clicks on the object they believe is the target,
+  based on conversation through the chat box, both players will be
+  given feedback (the director will see what the matcher clicked, and
+  the matcher will see the true target), and you will both be
+  automatically forwarded to the next round of objects. There are a
+  total of <b>72 rounds</b> with the same set of objects, so each one
+  will be the target several times. After the final round you will
+  fill out a quick 15 second survey and be on your way.
+</p>
+
+<p> A few final notes: First, since you are playing with another
+  turker, you may see this screen before the game begins:
+  <p>
+    <center><img src="images/waitScreen.png" alt="initial matcher's
+    board" style="width:700px;height:150px"></center>
+  </p>
+  Just hold tight. Another turker should join the game within the next
+  few minutes. If you're in the waiting room 15 minutes without
+  another player joining, your HIT will automatically be submitted and
+  accepted, out of gratitude for the time you spent waiting.
 </p>
 
 <p>
-  If this task isn't fun enough already (which we think it is) you and your teammate will individually be rewarded 1 cent for every correctly matching images you finish a round with. This means you and your partner each have the chance to earn up to 12 BONUS CENTS per round for each of the 6 rounds. 
+  Second, please be respectful of the turker you're playing with: do
+  not send inappropriate material through the chat box (including
+  screenshots of the shape you're trying to refer to), and try to be
+  as responsive as possible.
 </p>
 
-<p>
-    As mentioned above, there are a total of 6 rounds. At the start of each round, you and your teammates images  will be shuffled again. After the sixth round you will fill out a quick 15 second survey and be on your way. 
-</p>
-
-<p> Two final notes: Since you are playing with another turker, you may see this screen before the game begins. 
-      <p>
-      <center><img src="images/waitScreen.png" alt="initial matcher's board" style="width:700px;height:150px"></center>
-    </p>
-
-Just hold tight. Another turker should join the game within the next few minutes; if you're still waiting after 15 minutes have passed, your HIT will automatically submit and you will be compensated the full amount for your time.
-</p>
-
-<p> Finally, please DO NOT refresh the page at any point once you start the game (including the waiting page). If you refresh, you will not be able to rejoin the game you were in and you and your partner may not be able to submit the HIT. Thank you! 
+<p> Finally, please DO NOT refresh the page at any point once you
+start the game (including the waiting page). If you refresh, you will
+not be able to rejoin the game you were in and you and your partner
+may not be able to submit the HIT. Thank you!
 </p>
 
 <h4>
@@ -106,16 +129,15 @@ Just hold tight. Another turker should join the game within the next few minutes
      <div class="well" style="width:800px; margin: 0 auto">
  
   </br>
-  The director can move their images
-    </br>
-    <input type="radio" name="dgoal" value="yes"> False
+  The director can click on a color to end the round
     </br>
     <input type="radio" name="dgoal" value="no"> True 
     </br>
-
+    <input type="radio" name="dgoal" value="yes"> False
+    </br>
 
   </br>
-  The matcher wants their board to match the director's board
+  The matcher wants to click on the target that the director is describing
       </br>
       <input type="radio" name="mgoal" value="yes"> True
       </br>
@@ -124,35 +146,35 @@ Just hold tight. Another turker should join the game within the next few minutes
     
 
   </br> 
-  There are a total of 3 rounds
+  The target object is marked for the director with a black box
       </br>
-      <input type="radio" name="round" value="yes"> False
+      <input type="radio" name="round" value="yes"> True
       </br>
-      <input type="radio" name="round" value="no"> True
+      <input type="radio" name="round" value="no"> False
       </br>
 
   </br> 
   Only the director can send messages 
       </br>
-      <input type="radio" name="message" value="yes"> False
-      </br>
       <input type="radio" name="message" value="no"> True
+      </br>
+      <input type="radio" name="message" value="yes"> False
       </br>
 
   </br> 
-  At the end of a round
+  At the end of each round
        </br>
-       <input type="radio" name="comp" value="no"> All tangrams stay the same
+       <input type="radio" name="comp" value="no"> All tangrams stay in the same locations
        </br>
        <input type="radio" name="comp" value="yes"> The tangrams are shuffled
        </br>
-    
+       
   </br>
-  Have you participated in this study before? 
+  The locations of the 12 objects are the same for the director and the matcher
         </br>
-        <input type="radio" name="completed" value="no"> Yes
+        <input type="radio" name="completed" value="no"> True
         </br>
-        <input type="radio" name="completed" value="yes"> No
+        <input type="radio" name="completed" value="yes"> False
         </br>
 
   </br>

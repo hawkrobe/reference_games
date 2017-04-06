@@ -163,7 +163,7 @@ align(topWords.toPrint) <- paste0(c("|r||", rep('l|', 10)), collapse = "")
 print(topWords.toPrint, floating.environment = "table*", comment=F, table.placement = 't')
 ```
 
-```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=7, fig.height=1.17, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. From left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) proportion of utterances containing subordinate clauses, (4) proportion of utterances containing adjectival clauses. Error bars are bootstrapped 95\\% CIs.'}
+```{r replicationfig, cache = TRUE, fig.env = "figure*", fig.pos = "t!", fig.align='center', fig.width=7, fig.height=1.17, fig.show='hold', num.cols.cap=2, fig.cap='\\label{fig:replication} Reduction phenomena. From left: (1) mean message length in words per tangram, (2) mean number of listener messages, (3) proportion of utterances containing adjectival clauses, (4) proportion of utterances containing subordinate clauses. Error bars are bootstrapped 95\\% CIs.'}
 posTags <- read_csv('../../analysis/tangrams/posTagged.csv')
 
 lengthReduction = tangramCombined %>% 
@@ -297,6 +297,12 @@ trueEntropy <- mean((tangramCombined %>%
   group_by(gameid) %>%
   summarize(ent = entropy(getCounts(contents))) %>%
   ungroup())$ent)
+
+ggplot() + 
+  geom_histogram(aes(x = permutations), binwidth = .005) +
+  geom_vline(xintercept = trueEntropy, color = 'red') +
+  theme_few(9) +
+  xlab('entropy')
 ```
 
 We begin by examining signatures of *arbitrariness* and *stability* in our data. We operationalize these concepts using the information-theoretic measure of entropy: 
@@ -398,60 +404,51 @@ $$L(s | u, d) \propto \sum_\mathcal{L}P(\mathcal{L}|d)L_1(s|u,\mathcal{L})$$
 arbitrarinessModel <- function(alpha, beta) {
   res <- webppl(program_file = 'webpplModels/arbitrary.wppl',
                model_var = 'model',
-               inference_opts = list(method="forward", samples=10000),
+               inference_opts = list(method="forward", samples=5000),
                data = list(alpha = alpha, beta = beta, numSteps = 6),
-               data_var = 'params',
-               output_format = 'samples')
-  accuracyRes = res %>% 
-    mutate(sampleId = row_number()) %>%
-    gather(infotype, val, -sampleId ) %>%
-    separate(infotype, c('garbage', 'type', 'roundNum')) %>%
-    select(-garbage) %>%
-    spread(type, val) %>%
+               data_var = 'params')
+  accuracyRes = res %>%
+    separate(Parameter, c('type', 'roundNum')) %>%
     mutate(alpha = as.character(alpha),
            beta = as.character(beta))
   return(accuracyRes)
 }
 
-arbitrarinessResults <- complete(data.frame(
-  alpha=c(1,2,5,10),
-  beta =c(1)
-), alpha, beta) %>%
-  rowwise() %>%
-  do(arbitrarinessModel(.$alpha,.$beta))
+arbitrarinessRes <- arbitrarinessModel(10,1)
 ```
 
-```{r accuracyFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data. The rate of increase depends on the speaker optimality parameter $\\alpha$."}
-arbitrarinessResults %>%
-  group_by(roundNum, acc, alpha, beta) %>%
+```{r accuracyFig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelAcc} Accuracy rises as speaker and listener learn from the same data. The rate of increase depends on the speaker optimality parameter $\\alpha$."}
+arbitrarinessRes %>% 
+  filter(type == 'acc') %>%
+  group_by(roundNum, value) %>%
   tally() %>%   
-  group_by(roundNum, alpha, beta) %>%
+  group_by(roundNum) %>%
   mutate(prob = n / sum(n)) %>%
   ungroup() %>%
-  filter(acc == TRUE) %>%
+  filter(value == TRUE) %>%
   mutate(roundNum = as.numeric(roundNum)) %>%
-  ggplot(aes(x = roundNum, y = prob, color=alpha)) +
+  ggplot(aes(x = roundNum, y = prob)) +
     ylab('accuracy') +
     xlab('round #') +
     geom_line() +
     geom_hline(aes(yintercept=.5), linetype = 2) +
     ylim(0,1) +
-    theme_bw(9) +
+    theme_few(9) +
     theme( plot.margin=unit(x=c(0,0,0,0),units="mm"))
 ```
 
-```{r arbitrarinessFig, cache = T, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, that mapping is likely to persist (stability)."}
-arbitrarinessResults %>%
-  filter(alpha == 5) %>%
+```{r arbitrarinessFig, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelConvergence} Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, that mapping is likely to persist (stability)."}
+arbitrarinessRes %>%
+  spread(type, value) %>%
   unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
   unite(realPair, utt, response, sep = '<->', remove = F) %>% 
-  group_by(sampleId) %>% 
+  group_by(Iteration) %>% 
   mutate(firstPair = first(realPair)) %>%
   group_by(firstPair, roundNum, intendedPair) %>% 
   tally() %>%
   ungroup() %>%
   complete(firstPair, roundNum, intendedPair, fill = list(n = 0)) %>%  
-  group_by(firstPair, roundNum) %>%
+  group_by(intendedPair, roundNum) %>%
   mutate(prob = n/sum(n)) %>%
   filter(intendedPair == 't1<->label1') %>%
   filter(firstPair %in% c('label1<->t1', 'label1<->t2')) %>%
@@ -459,7 +456,8 @@ arbitrarinessResults %>%
              linetype =firstPair, color = firstPair)) +
     ylab("S(label1 | t1) (expected)") +
     geom_line() +
-    theme_bw(9) +
+    geom_point() + 
+    theme_few(9) +
     theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), 
            legend.margin=unit(0,"cm"),
            legend.position="top")
@@ -474,19 +472,20 @@ We observe several important qualitative effects in our simulations. First, the 
 ```{r modelReduction, cache=TRUE}
 conjunctionRes <- webppl(program_file = 'webpplModels/conjunction.wppl', 
              model_var = 'model',
-             inference_opts = list(method="forward", samples=1000),
+             inference_opts = list(method="forward", samples=100),
              data = list(numSteps=6, alpha=13, beta=1),
-             data_var = 'params', 
-             output_format = 'samples')
+             data_var = 'params')
+conjunctionRes
 ```
 
-```{r modelReductionPlot, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time"}
+```{r modelReductionPlot, fig.env = "figure", fig.pos = "t", fig.align='center', fig.width=3, fig.height=1.5, num.cols.cap=1, fig.cap = "\\label{fig:modelReduction} Utterances tend to get shorter over time."}
 reductionRes <- conjunctionRes %>% 
-  select(value.utt.0:value.acc.3) %>%
-  mutate(sampleId = row_number()) %>%
-  gather(infotype, val, -sampleId ) %>%
-  separate(infotype, c('garbage', 'type', 'roundNum')) %>%
-  spread(type, val) %>%
+  select(-Chain) %>%
+  mutate(Parameter = as.character(Parameter)) %>%
+  rowwise() %>%
+  filter(unlist(strsplit(Parameter, "[.]"))[1] == 'acc') %>%
+  separate(Parameter, c('type', 'roundNum')) %>%
+  spread(type, value) %>%
   mutate(numWords = str_count(utt, "\\S+")) %>%
   group_by(roundNum, garbage) %>%
   multi_boot_standard('numWords')
