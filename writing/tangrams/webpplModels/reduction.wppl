@@ -19,26 +19,13 @@ var getTrajectories = function(data) {
     return _.extend(_.zipObject(timeBasedKeys, vals), memo);
   }, [], keys);
 };
-
-// If the param exists in the store, use it as prior;
-// otherwise use initial prior (possibly biased)
-var getBetaParam = function(paramName, uniqueID, roundNum) {
-  if(roundNum > 0) {
-    var label = [paramName, uniqueID, roundNum].join('_');
-    return T.toScalars(getParams()[label][0])[0];
-  } else if(paramName == 'mu') {
-    return 0;
-  } else if(paramName == 'sigma') {
-    return 1;
-  }
-};
 ///
 
-// var params = {
-//   alpha: [12],
-//   beta: [1],
-//   numSteps: [3]
-// };
+var params = {
+  alpha: [5],
+  beta: [1],
+  numSteps: [1]
+};
 
 // possible states of the world
 var states = [{type: 0, color: 0}, 
@@ -59,16 +46,17 @@ var utterancePrior = Categorical({vs: utterances, ps: uniformPs(utterances)});
 var lexiconPrior = function(){
   var meanings = map(function(utt) {
     var uniqueID = [utt, globalStore.originAgent].join('_');
+    var aPrior = utt.split('_')[1] === 'a' ? 2 : 1;
+    var bPrior = utt.split('_')[1] === 'a' ? 1 : 2;
     
     var betaGuide = function() {
-      return LogitNormal({
-	mu: param({name: ['mu', uniqueID].join('_')}),
-	sigma: softplus(param({name: ['sigma', uniqueID].join('_')})),
-	a: 0, b: 1
+      return Beta({
+	a: softplus(param({name: ['a', uniqueID].join('_')})),
+	b: softplus(param({name: ['b', uniqueID].join('_')}))
       });
     };
     
-    return sample(LogitNormal({mu: 0, sigma: 1, a: 0, b: 1}), {guide: betaGuide});
+    return sample(Beta({a: aPrior, b: bPrior}), {guide: betaGuide});
   }, unconstrainedUtterances);
   return _.zipObject(unconstrainedUtterances, meanings);
 };
@@ -122,7 +110,7 @@ var lexiconModel = function() {
       if(globalStore.originAgent == 'L')
 	observe(S1(datum.response, lexicon), datum['utt']);
       else if(globalStore.originAgent == 'S')
-	observe(L1(datum.utt, lexicon), datum['response']);
+	observe(L0(datum.utt, lexicon), datum['response']);
     });
   }
   return lexicon;
@@ -137,14 +125,14 @@ var updateBeliefs = function(originAgent, data) {
   globalStore.roundNum = data.length;
 
   Optimize({model: lexiconModel,
-	    method: 'optimize', steps: 1500, verbose: false,
+	    method: 'optimize', steps: 5000, verbose: false,
 	    optMethod: {adam: {stepSize: .01}}});
 };
 
 // conventional listener (L1, marginalizing over lexicons)
 var L = cache(function(utt, data) {
   updateBeliefs('L', data);
-  return Infer({method: 'forward', samples: 250, guide: true, model: function() {
+  return Infer({method: 'forward', samples: 10000, guide: true, model: function() {
     var dist = L1(utt, lexiconPrior());
     return sample(dist, {guide() {return dist;}});
   }});
@@ -158,8 +146,8 @@ var S = cache(function(state, data) {
     var utt = sample(utterancePrior);
 
     var expectedUtility = expectation(Infer({
-      method: 'forward', samples: 100, guide: true, model: function() {
-	var listener = L1(utt, lexiconPrior());
+      method: 'forward', samples: 10000, guide: true, model: function() {
+	var listener = L0(utt, lexiconPrior());
 	return params.alpha[0]  * listener.score(state) - params.beta[0] * uttCost(utt);
       }
     }));
@@ -171,6 +159,7 @@ var S = cache(function(state, data) {
 });
 
 var model = function() {
+  setFreshParamsId();
   console.log('sample...');
   var step = function(data) {
     if(data.length > params.numSteps[0]) return getTrajectories(data);
@@ -182,3 +171,4 @@ var model = function() {
   };
   step([]);
 };
+
