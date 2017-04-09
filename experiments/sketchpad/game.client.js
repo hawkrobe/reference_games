@@ -202,11 +202,12 @@ var customSetup = function(game) {
   });
 
   // if partner sends a stroke, draw it
-  game.socket.on('stroke', function(data) {
-    // first, allow listener to respond    
-    game.messageSent = true;         
+  game.socket.on('stroke', function(jsonData) {
+    // first, allow listener to respond
+    game.messageSent = true;
+    
     var path = new Path();
-    path.importJSON(data.path);
+    path.importJSON(jsonData);
   });
 }; 
 
