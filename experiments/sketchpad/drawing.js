@@ -26,7 +26,7 @@ var drawGrid = function(game){
         game.ctx.moveTo(p, 0.5 + x + p);
         game.ctx.lineTo(bw + p, 0.5 + x + p);}
 
-    game.ctx.lineWidth = 1;
+    game.ctx.lineWidth = 5;
     game.ctx.strokeStyle = "#000000";
     game.ctx.stroke();
 };
@@ -162,7 +162,8 @@ Sketchpad.prototype.setupTool = function() {
   tool.onMouseDown = function(event) {
     globalGame.path = new Path({
       segments: [event.point],
-      strokeColor: 'black'
+      strokeColor: 'black',
+      strokeWidth: 5
     });
   };
 
