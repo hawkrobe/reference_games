@@ -21,12 +21,6 @@ var getTrajectories = function(data) {
 };
 ///
 
-var params = {
-  alpha: [5],
-  beta: [1],
-  numSteps: [1]
-};
-
 // possible states of the world
 var states = [{type: 0, color: 0}, 
               {type: 1, color: 1}];
@@ -125,7 +119,7 @@ var updateBeliefs = function(originAgent, data) {
   globalStore.roundNum = data.length;
 
   Optimize({model: lexiconModel,
-	    method: 'optimize', steps: 5000, verbose: false,
+	    method: 'optimize', steps: 10000, verbose: false,
 	    optMethod: {adam: {stepSize: .01}}});
 };
 
