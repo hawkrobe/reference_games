@@ -21,8 +21,9 @@ var utterancePrior = Categorical({vs: utterances, ps: [1/2, 1/2]});
 // representing the extent to which that word describes each object
 var lexiconPrior = Infer({method: 'enumerate'}, function(){
   var meanings = map(function(utt) {
-    var t1Prob = uniformDraw([0.01, .25, .5, .75, 0.99]);
-    return {'t1' : t1Prob, 't2' : 1-t1Prob};
+    var t1Prob = uniformDraw([0.01, .5, 0.99]);
+    var t2Prob = uniformDraw([0.01, .5, 0.99]);
+    return {'t1' : t1Prob, 't2' : t2Prob};
   }, utterances);
   return _.zipObject(utterances, meanings);
 });
