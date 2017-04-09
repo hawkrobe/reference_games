@@ -175,9 +175,10 @@ Sketchpad.prototype.setupTool = function() {
     // Simplify path to reduce data sent
     globalGame.path.simplify(10);
 
-    // Send stroke to listener's viewer
+    // Send stroke (in both svg & json forms) to server
     globalGame.socket.emit('stroke', {
-      path: globalGame.path.exportJSON({asString: true})
+      svgString: globalGame.path.exportSVG({asString: true}),
+      jsonString: globalGame.path.exportJSON({asString: true})
     });
   };
 };
