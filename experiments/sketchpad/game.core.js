@@ -334,45 +334,7 @@ var sampleTrial = function(roundNum,categoryList,_objectList,poseList) {
   var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
   var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
   var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==thisPose) ) })[0];
-  var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==thisPose) ) })[0];
-
-  // // make exception for basset (cluster 3, object 2), which rotates in opposite direction to the other objects  
-  basset_ind = _.indexOf(_.zip(theseCats,theseObjs), function(x) { return ((x[0]==3) && (x[1]==2))});    
-  if (basset_ind>-1) {
-      console.log('basset_ind:');
-      console.log(basset_ind);      
-  }
-  // console.log(basset_ind);
-  // switch(basset_ind) {
-  //   case 0 : var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 1 : var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 2 : var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 3 : var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  // }
-  // // make exception for blue cushion 'knob' chair (cluster 2, object 7), which rotates in opposite direction to the other objects  
-  knob_ind = _.indexOf(_.zip(theseCats,theseObjs), function(x) { return ((x[0]==2) && (x[1]==7))});    
-  if (knob_ind > -1) {
-    console.log('knob_ind:');
-    console.log(knob_ind);    
-  } 
-  // switch(knob_ind) {
-  //   case 0 : var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 1 : var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 2 : var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 3 : var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  // }
-  // // make exception for ornate 'inlay' chair (cluster 2, object 6), which rotates in opposite direction to the other objects  
-  inlay_ind = _.indexOf(_.zip(theseCats,theseObjs), function(x) { return ((x[0]==2) && (x[1]==6))});    
-  if (inlay_ind > -1) {
-    console.log('inlay_ind:');
-    console.log(inlay_ind);
-  }  
-  // switch(inlay_ind) {
-  //   case 0 : var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 1 : var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 2 : var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  //   case 3 : var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==this.numPoses-thisPose) ) })[0]; break;
-  // }  
+  var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==thisPose) ) })[0]; 
 
   var im_all = [im0,im1,im2,im3]; 
   var target = im_all[trialNum]; // actual target on this trial
