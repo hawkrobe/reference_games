@@ -276,8 +276,10 @@ function responseListener(evt) {
         globalGame.messageSent = false;
         highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
                       function(x){return x.subordinate == obj.subordinate;});
-        var packet = ["clickedObj", obj.subordinate, obj.box,
-		      Math.round(obj.trueX), Math.round(obj.trueY)];
+
+	// Send packet about trial to server
+	var dataURL = document.getElementById('sketchpad').toDataURL();
+        var packet = ["clickedObj", obj.subordinate, dataURL];
         globalGame.socket.send(packet.join('.'));
       }
     });
