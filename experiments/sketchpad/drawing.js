@@ -172,11 +172,15 @@ Sketchpad.prototype.setupTool = function() {
   };
 
   tool.onMouseUp = function(event) {
+    // Increment stroke num
+    globalGame.currStrokeNum += 1;
+
     // Simplify path to reduce data sent
     globalGame.path.simplify(10);
 
     // Send stroke (in both svg & json forms) to server
     globalGame.socket.emit('stroke', {
+      currStrokeNum: globalGame.currStrokeNum,
       svgString: globalGame.path.exportSVG({asString: true}),
       jsonString: globalGame.path.exportJSON({asString: true})
     });

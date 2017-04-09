@@ -191,6 +191,11 @@ var customSetup = function(game) {
   game.socket.on('newRoundUpdate', function(data){    
     // Reset sketchpad each round
     project.activeLayer.removeChildren();
+
+    // Reset stroke counter
+    globalGame.currStrokeNum = 0;
+
+    // Update display
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty()
@@ -201,11 +206,11 @@ var customSetup = function(game) {
     }
   });
 
-  // if partner sends a stroke, draw it
   game.socket.on('stroke', function(jsonData) {
     // first, allow listener to respond
     game.messageSent = true;
-    
+
+    // draw it
     var path = new Path();
     path.importJSON(jsonData);
   });
