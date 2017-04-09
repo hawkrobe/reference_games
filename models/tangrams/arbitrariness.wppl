@@ -123,14 +123,13 @@ var updateBeliefs = function(originAgent, data) {
   globalStore.roundNum = data.length;
 
   Optimize({model: lexiconModel,
-	    method: 'optimize', steps: 500, verbose: false,
+	    method: 'optimize', steps: 1000, verbose: false,
 	    optMethod: {adam: {stepSize: .01}}});
 };
 
 // conventional listener (L1, marginalizing over lexicons)
 var L = cache(function(utt, data) {
   updateBeliefs('L', data);
-  globalStore.data = [];
   return Infer({method: 'forward', samples: 250, guide: true, model: function() {
     var dist = L1(utt, lexiconPrior());
     return sample(dist, {guide() {return dist;}});
@@ -138,18 +137,19 @@ var L = cache(function(utt, data) {
 });
 
 // conventional speaker (S1, reasoning about expected L1 behavior across lexicons)
-// Note: It'd be nice to not have to build the listener distribution explicitly...
+// use importance sampling from optimized lexicon prior
 var S = cache(function(state, data) {
   updateBeliefs('S', data);
-  globalStore.data = [];      
   return Infer({method: 'enumerate'}, function(){
     var utt = sample(utterancePrior);
-    var listener = Infer({method: 'forward', samples: 250, guide: true, model: function() {
-      var dist = L1(utt, lexiconPrior());
-      return sample(dist, {guide() {return dist;}});
-    }});
-    factor(params.alpha[0] * listener.score(state)
-           - params.beta[0] * uttCost(utt));
+
+    var expectedUtility = expectation(Infer({method: 'forward', samples: 100, guide: true, model: function() {
+      var listener = L1(utt, lexiconPrior());
+      return params.alpha[0]  * listener.score(state) - params.beta[0] * uttCost(utt);
+    }}));
+    
+    factor(expectedUtility);
+
     return utt;
   });
 });
