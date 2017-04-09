@@ -8,24 +8,20 @@
     MIT Licensed.
 */
     var
-        fs    = require('fs'),
-        utils = require('../sharedUtils/sharedUtils.js');
-
-
-
+        fs     = require('fs'),
+        utils  = require('../sharedUtils/sharedUtils.js'),
+        parser = require('xmldom').DOMParser;
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
 // game. For example, if someone clicks on the map, they send a packet
-// to the server (check the client_on_click function in game.client.js)
-// with the coordinates of the click, which this function reads and
-// applies.
+// to the server with the coordinates of the click, which this
+// function reads and applies.
 var onMessage = function(client,message) {
   //Cut the message up into sub components
   var message_parts = message.split('.');
-  // console.log('message_parts from inside onMessage');
   console.log(message_parts);
-  // console.log(message_parts[1]);
+
   //The first is always the type of message
   var message_type = message_parts[0];
   
@@ -47,26 +43,8 @@ var onMessage = function(client,message) {
       });
       gc.newRound();
     }, 3000);
-    
     break; 
   
-  case 'playerTyping' :
-    _.map(others, function(p) {
-      p.player.instance.emit( 'playerTyping',
-			      {typing: message_parts[1]});
-    });
-    break;
-  
-  case 'chatMessage' :
-    if(client.game.player_count == 2 && !gc.paused) {
-      writeData(client, "message", message_parts);
-      // Update others
-      var msg = message_parts[1].replace(/~~~/g,'.');
-      _.map(all, function(p){
-	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
-    }
-    break;
-
   case 'h' : // Receive message when browser focus shifts
     target.visible = message_parts[1];
     break;
@@ -100,31 +78,22 @@ var writeData = function(client, type, message_parts) {
     line = [gc.id, Date.now(), roundNum, occurrence, intendedName, clickedName, objBox, correct];
     break;    
  
-  case "message" : // this will contain the stroke information from this trial
-    var msg = message_parts[1].replace('~~~','.');
-    var timeElapsed = message_parts[2];
-    line = [gc.id, Date.now(), roundNum, occurrence, client.role, intendedName, timeElapsed, msg];
+  case "stroke" : // this will contain the stroke information from this trial
+    console.log('message parts are...');
+    console.log(message_parts);
+    var svgStr = '';
+    line = [gc.id, Date.now(), roundNum, occurrence, client.role, intendedName, svgStr];
     break;
   }
   console.log(type + ":" + line.join(','));
   gc.streams[type].write(line.join(',') + "\n", function (err) {if(err) throw err;});
 };
 
-
-
-
-
-
-
-// /* 
-//    The following functions should not need to be modified for most purposes
-// */
-
 var startGame = function(game, player) {
   // Establish write streams
   var startTime = utils.getLongFormTime();
   var dataFileName = startTime + "_" + game.id + ".csv";
-  utils.establishStream(game, "message", dataFileName,
+  utils.establishStream(game, "stroke", dataFileName,
 			"gameid,time,roundNum,sender,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
 			"gameid,time,roundNum,condition," +
@@ -137,9 +106,15 @@ var startGame = function(game, player) {
 
 var setCustomEvents = function(socket) {
   socket.on('stroke', function(data) {
+    // save svg to file...
     var others = socket.game.get_others(socket.userid);
-    _.map(others, function(p) {                             
-      p.player.instance.emit( 'stroke', data);  
+    var xmlDoc = new parser().parseFromString(data.svgString);
+    var svgData = xmlDoc.documentElement.getAttribute('d');
+    writeData(socket, 'stroke', svgData);
+
+    // send json format to partner
+    _.map(others, function(p) {
+      p.player.instance.emit( 'stroke', data.jsonString);  
     });                                                     
   });
 };

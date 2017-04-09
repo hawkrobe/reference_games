@@ -58,54 +58,25 @@ var client_onserverupdate_received = function(data){
     });
   }
 
-  // //get names of objects sent from server and current objects 
-  // var dataNames = _.map(data.objects, function(e)
-  //     { return e.name;});
-  // var localNames = _.map(game.objects,function(e)
-  //      {return e.name;});
-
-
-  // if (globalGame.roundNum != data.roundNum) {
-  //   globalGame.currStim = _.map(data.trialInfo.currStim, function(obj) {
-  //     // Extract the coordinates matching your role
-  //     var customCoords = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
-		// 	  obj.speakerCoords : obj.listenerCoords);
-  //     // remove the speakerCoords and listenerCoords properties
-  //     var customObj = _.chain(obj)
-	 //    .omit('speakerCoords', 'listenerCoords')
-	 //    .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
-		// 	  gridX : customCoords.gridX, gridY : customCoords.gridY,
-		// 	  box : customCoords.box})
-	 //    .value();
-      
-  //     return customObj;
-  //   });
-  // };
-  
-
   // If your objects are out-of-date (i.e. if there's a new round), set up
   // machinery to draw them
   if (globalGame.roundNum != data.roundNum) {
     globalGame.objects = _.map(data.objects, function(obj) {
-      // console.log('inside of (globalGame.roundNum != data.roundNum) within game.client.js');
-      // console.log(obj);
       // Extract the coordinates matching your role    
       var customCoords = globalGame.my_role == "sketcher" ? obj.speakerCoords : obj.listenerCoords;
-      // console.log(customCoords);
       // remove the speakerCoords and listenerCoords properties
       var customObj = _.chain(obj)
-      .omit('speakerCoords', 'listenerCoords')
-      .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
-        gridX : customCoords.gridX, gridY : customCoords.gridY,
-        box : customCoords.box})
-      .value();
-      // console.log('customObj:');
-      // console.log(customObj);
+	    .omit('speakerCoords', 'listenerCoords')
+	    .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
+			  gridX : customCoords.gridX, gridY : customCoords.gridY,
+			  box : customCoords.box})
+	    .value();
+
       var imgObj = new Image(); //initialize object as an image (from HTML5)
       imgObj.src = customObj.url; // tell client where to find it
       imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)        
         globalGame.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
-        customObj.width, customObj.height);  
+				 customObj.width, customObj.height);  
         if (globalGame.my_role === globalGame.playerRoleNames.role1) {
           highlightCell(globalGame, '#d15619', function(x) {return x.target_status == 'target';});
         }
@@ -113,8 +84,8 @@ var client_onserverupdate_received = function(data){
       return _.extend(customObj, {img: imgObj});
     });
   };  
-
-
+  
+  
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
     $('#messages').empty();    
@@ -150,9 +121,6 @@ var client_onMessage = function(data) {
   var subcommand = commands[1] || null;
   var commanddata = commands[2] || null;
 
-  // console.log('commands: ');
-  // console.log(commands);
-
   switch(command) {
   case 's': //server message
     switch(subcommand) {    
@@ -168,23 +136,24 @@ var client_onMessage = function(data) {
       var clickedObjName = commanddata;
 
       // update local score
-      var target = _.filter(globalGame.objects,
-          function(x){return x.target_status == 'target';})[0];
+      var target = _.filter(globalGame.objects, function(x){
+	return x.target_status == 'target';
+      })[0];
       var scoreDiff = target.subordinate == clickedObjName ? 1 : 0;
       globalGame.data.subject_information.score += scoreDiff;
       
-      console.log('clickedObjName: ');
-      console.log(clickedObjName);
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-         highlightCell(globalGame, 'black',
-          function(x) {return x.subordinate == clickedObjName;});
+        highlightCell(globalGame, 'black', function(x) {
+	  return x.subordinate == clickedObjName;
+	});
       } else {
-          highlightCell(globalGame, 'black',
-          function(x) {return x.subordinate == clickedObjName;}); 
-          highlightCell(globalGame, 'green',
-          function(x) {return x.target_status == 'target';});
-         
+        highlightCell(globalGame, 'black', function(x) {
+	  return x.subordinate == clickedObjName;
+	}); 
+        highlightCell(globalGame, 'green', function(x) {
+	  return x.target_status == 'target';
+	});
       }
       break;
 
@@ -205,13 +174,9 @@ var client_onMessage = function(data) {
       }
       globalGame.players.push({id: commanddata, 
                  player: new game_player(globalGame)}); break;
-
     }
   } 
 }; 
-
-
-
 
 var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
@@ -219,33 +184,31 @@ var client_addnewround = function(game) {
 };
 
 var customSetup = function(game) {
-  // Set up new round on client's browsers after submit round button is pressed.
-  // This means clear the chatboxes, update round number, and update score on screen
-
   game.sketchpad = new Sketchpad();
 
+  // Set up new round on client's browsers after submit round button is pressed.
+  // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){    
     // Reset sketchpad each round
     project.activeLayer.removeChildren();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty()
-	                   .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+	.append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
     } else {
       $('#roundnumber').empty()
-	                     .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
+	.append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
     }
   });
 
-  game.socket.on('stroke', function(data) {
-    // Now that we've received data, allow listener to respond
+  // if partner sends a stroke, draw it
+  game.socket.on('stroke', function(jsonData) {
+    // first, allow listener to respond
     game.messageSent = true;
-
-    // draw stroke
+    
     var path = new Path();
-    path.importJSON(data.path);
+    path.importJSON(jsonData);
   });
-
 }; 
 
 var client_onjoingame = function(num_players, role) {
@@ -274,14 +237,14 @@ var client_onjoingame = function(num_players, role) {
   	this.submitted = true;
   	window.opener.turk.submit(this.data, true);
   	window.close(); 
-        } else {
+      } else {
   	console.log("would have submitted the following :");
   	console.log(this.data);
       }
     }, 1000 * 60 * 15);
 
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
-				      + 'Please do not refresh the page!'); 
+						       + 'Please do not refresh the page!'); 
   }
   // set mouse-tracking event handler
   if(role === globalGame.playerRoleNames.role2) {
@@ -300,22 +263,21 @@ function responseListener(evt) {
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
-  
+  // only allow to respond after message has been sent
   if (globalGame.messageSent) {
-    //find which shape was clicked
+    // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
-    if (hitTest(obj, mouseX, mouseY)) {
+      if (hitTest(obj, mouseX, mouseY)) {
         globalGame.messageSent = false;
-        // console.log('in the responseListener function, about to call highlightCell');
         highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
-                function(x){return x.subordinate == obj.subordinate;});
+                      function(x){return x.subordinate == obj.subordinate;});
         var packet = ["clickedObj", obj.subordinate, obj.box,
-                Math.round(obj.trueX), Math.round(obj.trueY)];
+		      Math.round(obj.trueX), Math.round(obj.trueY)];
         globalGame.socket.send(packet.join('.'));
-        }
+      }
     });
   }
-    return false;
+  return false;
 };
 
 function hitTest(shape,mx,my) {
