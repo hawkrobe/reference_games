@@ -20,7 +20,6 @@
 var onMessage = function(client,message) {
   //Cut the message up into sub components
   var message_parts = message.split('.');
-  console.log(message_parts);
 
   //The first is always the type of message
   var message_type = message_parts[0];
@@ -35,8 +34,9 @@ var onMessage = function(client,message) {
     
   case 'clickedObj' :
     writeData(client, "clickedObj", message_parts);
-    others[0].player.instance.send("s.feedback." + message_parts[1]); // used to be message_parts[2]
-    target.instance.send("s.feedback." + message_parts[1]); // used to be message_parts[2]
+    others[0].player.instance.send("s.feedback." + message_parts[1]); 
+    target.instance.send("s.feedback." + message_parts[1]);
+    
     setTimeout(function() {
       _.map(all, function(p){
         p.player.instance.emit( 'newRoundUpdate', {user: client.userid} );
@@ -54,39 +54,30 @@ var onMessage = function(client,message) {
 function getIntendedTargetName(objects) {
   return _.filter(objects, function(x){
     return x.target_status == 'target';
-  })[0]['name']; 
-}
-
-function getIntendedTargetOccurrence(objects) {
-  return _.filter(objects, function(x){
-    return x.target_status == 'target';
-  })[0]['occurrence']; 
+  })[0]['subordinate']; 
 }
 
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
-  var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var occurrence = getIntendedTargetOccurrence(gc.trialInfo.currStim);  
-  var roundNum = gc.state.roundNum + 1;
-  var id = gc.id.slice(0,6);
+  var trialNum = gc.state.roundNum + 1; 
+  var intendedName = getIntendedTargetName(gc.trialInfo.currStim);  
   switch(type) {
   case "clickedObj" :
     // parse the message
     var clickedName = message_parts[1];
     var correct = intendedName == clickedName ? 1 : 0;
-    var objBox = message_parts[2];
-    line = [gc.id, Date.now(), roundNum, occurrence, intendedName, clickedName, objBox, correct];
+    var pngString = message_parts[2];
+    line = [gc.id, Date.now(), trialNum, intendedName, clickedName, correct, pngString];
     break;    
  
-  case "stroke" : // this will contain the stroke information from this trial
-    console.log('message parts are...');
-    console.log(message_parts);
-    var svgStr = '';
-    line = [gc.id, Date.now(), roundNum, occurrence, client.role, intendedName, svgStr];
+  case "stroke" : 
+    var currStrokeNum = message_parts[0];
+    var svgStr = message_parts[1];
+    line = [gc.id, Date.now(), trialNum, currStrokeNum, intendedName, svgStr];
     break;
   }
-  console.log(type + ":" + line.join(','));
-  gc.streams[type].write(line.join(',') + "\n", function (err) {if(err) throw err;});
+  console.log(type + ":" + line.slice(0,-1).join('\t'));
+  gc.streams[type].write(line.join('\t') + "\n", function (err) {if(err) throw err;});
 };
 
 var startGame = function(game, player) {
@@ -94,13 +85,9 @@ var startGame = function(game, player) {
   var startTime = utils.getLongFormTime();
   var dataFileName = startTime + "_" + game.id + ".csv";
   utils.establishStream(game, "stroke", dataFileName,
-			"gameid,time,roundNum,sender,contents\n");
+			"gameid,time,trialNum,strokeNum,targetName,svg\n");
   utils.establishStream(game, "clickedObj", dataFileName,
-			"gameid,time,roundNum,condition," +
-			"clickStatus,clickColH,clickColS,clickColL,clickLocS,clickLocL"+
-			"alt1Status,alt1ColH,alt1ColS,alt1ColL,alt1LocS,alt1LocL" +
-			"alt2Status,alt2ColH,alt2ColS,alt2ColL,alt2LocS,alt2LocL" +
-			"targetD1Diff,targetD2Diff,D1D2Diff,outcome\n");
+			"gameid,time,trialNum,intendedTarget,clickedObject,outcome,png\n");
   game.newRound();
 };
 
@@ -110,7 +97,7 @@ var setCustomEvents = function(socket) {
     var others = socket.game.get_others(socket.userid);
     var xmlDoc = new parser().parseFromString(data.svgString);
     var svgData = xmlDoc.documentElement.getAttribute('d');
-    writeData(socket, 'stroke', svgData);
+    writeData(socket, 'stroke', [data.currStrokeNum, svgData]);
 
     // send json format to partner
     _.map(others, function(p) {

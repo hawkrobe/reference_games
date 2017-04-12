@@ -47,7 +47,10 @@ var game_core = function(options){
               + this.cellPadding)}; 
   
   // Number of total poses per object
-  this.numPoses = 40;            
+  this.numPoses = 40;          
+
+  // Which 
+  this.currStrokeNum = 0;  
 
   // Which round (a.k.a. "trial") are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
