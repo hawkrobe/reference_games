@@ -144,16 +144,18 @@ var client_onMessage = function(data) {
       
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+        // sketcher feedback
         highlightCell(globalGame, 'black', function(x) {
-	  return x.subordinate == clickedObjName;
-	});
+      	  return x.subordinate == clickedObjName;
+      	});
       } else {
+        // viewer feedback
         highlightCell(globalGame, 'black', function(x) {
-	  return x.subordinate == clickedObjName;
-	}); 
+      	  return x.subordinate == clickedObjName;
+      	}); 
         highlightCell(globalGame, 'green', function(x) {
-	  return x.target_status == 'target';
-	});
+      	  return x.target_status == 'target';
+      	});
       }
       break;
 
@@ -228,11 +230,13 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Make a sketch to show the viewer which object " + 
-			   "is the target.");
+    $('#instructs').append("Make a sketch of the target, outlined in orange, " +
+      "so that your partner knows which object is the target." +
+      "Your partner is viewing the same set of four objects.");
   } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Click on the target object that the sketcher " +
-			   "is referring to.");
+    $('#instructs').append("Your partner is trying to draw one of these four objects." +
+      "When they are done, click on the object you believe" +
+      "they sketched." );
   }
 
   if(num_players == 1) {
