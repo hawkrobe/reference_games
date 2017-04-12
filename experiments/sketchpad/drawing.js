@@ -98,11 +98,11 @@ var drawObjects = function(game, player) {
 //// almost same as copy above except instances of game replaced by globalGame
 var highlightCell = function(game, color, condition) {  
   var targetObjects = _.filter(globalGame.objects, condition);
-  console.log('got to highlightCell inside drawing.js ... targetObjects: ');  
-  if (targetObjects.length>0) {
-    console.log(targetObjects[0]['subordinate'], targetObjects[0]['basic'],targetObjects[0]['gridX']);
-    console.log(targetObjects[0]['url']);
-  };
+  // console.log('got to highlightCell inside drawing.js ... targetObjects: ');  
+  // if (targetObjects.length>0) {
+  //   console.log(targetObjects[0]['subordinate'], targetObjects[0]['basic'],targetObjects[0]['gridX']);
+  //   console.log(targetObjects[0]['url']);
+  // };
   var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
   for (var i = 0; i < targetObjects.length; i++){           
     var gridX = targetObjects[i][customCoords]['gridX'];
