@@ -32,6 +32,9 @@ var waiting;
 // we don't need the dragging.
 var selecting;
 
+// way of keeping track when both players are notified that sketcher is done drawing
+var doneDrawing = 0;
+
 /* 
  Note: If you add some new variable to your game that must be shared
  across server and client, add it both here and the server_send_update
@@ -148,6 +151,13 @@ var client_onMessage = function(data) {
         highlightCell(globalGame, 'black', function(x) {
       	  return x.subordinate == clickedObjName;
       	});
+        // textual feedback
+        crit = 'black'
+        if (scoreDiff==1) {
+          $('#feedback').html('Great job!! Your partner correctly identified the target.');
+        } else {
+          $('#feedback').html('Sorry... Your partner thought the target was the object outlined in ' + crit.bold() + '.');
+        }
       } else {
         // viewer feedback
         highlightCell(globalGame, 'black', function(x) {
@@ -156,6 +166,13 @@ var client_onMessage = function(data) {
         highlightCell(globalGame, 'green', function(x) {
       	  return x.target_status == 'target';
       	});
+        // textual feedback
+        crit = 'green'
+        if (scoreDiff==1) {
+          $('#feedback').html('Great job!! You correctly identified the target!');
+        } else {
+          $('#feedback').html('Sorry... Your partner was trying to sketch the object outlined in ' + crit.fontcolor("#1aff1a").bold() + '.');
+        }
       }
       break;
 
@@ -186,7 +203,15 @@ var client_addnewround = function(game) {
 };
 
 var customSetup = function(game) {
-  game.sketchpad = new Sketchpad();
+  game.sketchpad = new Sketchpad(); 
+
+  $(document).ready(function() {
+    $("#submitbutton").click(function(){
+      console.log('submit button clicked!');
+      var finished = ['doneDrawing',1];
+      globalGame.socket.send(finished.join('.')); 
+    });
+  });  
 
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
@@ -194,28 +219,43 @@ var customSetup = function(game) {
     // Reset sketchpad each round
     project.activeLayer.removeChildren();
 
+    // reset submitbutton status
+    globalGame.doneDrawing = 0;
+    doneDrawing = 0;
+    console.log('doneDrawing reset to 0!');
+
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
 
+    // clear feedback blurb
+    $('#feedback').html(" ");
+
     // Update display
-    if(game.roundNum + 2 > game.numRounds) {
+    if(game.roundNum + 2 > game.numRounds) {      
       $('#roundnumber').empty();
       $('#instructs').empty()
-	.append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
-    } else {
-      $('#roundnumber').empty()
-	.append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
-    }
+      	.append("Round\n" + (game.roundNum + 1) + " of " + game.numRounds);
+          } else {
+            $('#roundnumber').empty()
+      	.append("Round\n" + (game.roundNum + 2) + " of " + game.numRounds);
+          }
+
   });
 
   game.socket.on('stroke', function(jsonData) {
-    // first, allow listener to respond
+    // first, allow listener to respond    
     game.messageSent = true;
 
     // draw it
     var path = new Path();
     path.importJSON(jsonData);
   });
+
+  game.socket.on('mutualDoneDrawing', function() {
+    console.log('the doneness of drawing is mutual knowledge');
+    doneDrawing = 1;
+  });
+
 }; 
 
 var client_onjoingame = function(num_players, role) {
@@ -229,14 +269,14 @@ var client_onjoingame = function(num_players, role) {
   
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
-  if(role === globalGame.playerRoleNames.role1) {
+  if (role === globalGame.playerRoleNames.role1) {
     $('#instructs').append("Make a sketch of the target, outlined in orange, " +
-      "so that your partner knows which object is the target." +
-      "Your partner is viewing the same set of four objects.");
-  } else if(role === globalGame.playerRoleNames.role2) {
+      "so that your partner knows which object is the target. Your partner is viewing the " +
+      "same set of four objects. When you are done, click SUBMIT. ");
+      $("#submitbutton").show();
+  } else if (role === globalGame.playerRoleNames.role2) {
     $('#instructs').append("Your partner is trying to draw one of these four objects." +
-      "When they are done, click on the object you believe" +
-      "they sketched." );
+      "When they are done, click on the object they sketched.");
   }
 
   if(num_players == 1) {
@@ -260,6 +300,7 @@ var client_onjoingame = function(num_players, role) {
     globalGame.viewport.addEventListener("click", responseListener, false);
   } else {
     globalGame.sketchpad.setupTool();
+    // document.getElementById('submitbutton').addEventListener("click", doneDrawingListener, false);
   }
 };    
 
@@ -268,7 +309,7 @@ var client_onjoingame = function(num_players, role) {
  */
 
 function responseListener(evt) {
-  console.log('got to responseListener inside game.client.js');  
+  // console.log('got to responseListener inside game.client.js');  
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
@@ -276,23 +317,35 @@ function responseListener(evt) {
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
-      if (hitTest(obj, mouseX, mouseY)) {
+      if (hitTest(obj, mouseX, mouseY) && doneDrawing) {
         globalGame.messageSent = false;
-        highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
-                      function(x){return x.subordinate == obj.subordinate;});
+        // highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
+        //               function(x){return x.subordinate == obj.subordinate;});
 
-	// Send packet about trial to server
-	var dataURL = document.getElementById('sketchpad').toDataURL();
+        // Send packet about trial to server
+        var dataURL = document.getElementById('sketchpad').toDataURL();
+        dataURL = dataURL.replace('data:image/png;base64,','');
         var packet = ["clickedObj", obj.subordinate, dataURL];
         globalGame.socket.send(packet.join('.'));
+        console.log(dataURL.length);
       }
     });
   }
   return false;
 };
 
+// function doneDrawingListener() {
+//   if (globalGame.messageSent) {
+//     console.log('fired doneDrawingListener... send info to server!');
+//     var finished = ['doneDrawing',1];
+//     globalGame.socket.send(finished.join('.'));  
+//   }
+//   // return false;
+// }
+
 function hitTest(shape,mx,my) {
   var dx = mx - shape.trueX;
   var dy = my - shape.trueY;
   return (0 < dx) && (dx < shape.width) && (0 < dy) && (dy < shape.height);
 }
+

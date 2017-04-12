@@ -22,7 +22,7 @@ var onMessage = function(client,message) {
   var message_parts = message.split('.');
 
   //The first is always the type of message
-  var message_type = message_parts[0];
+  var message_type = message_parts[0];  
   
   //Extract important variables
   var gc = client.game;
@@ -39,7 +39,7 @@ var onMessage = function(client,message) {
     
     setTimeout(function() {
       _.map(all, function(p){
-        p.player.instance.emit( 'newRoundUpdate', {user: client.userid} );
+        p.player.instance.emit('newRoundUpdate', {user: client.userid} );
       });
       gc.newRound();
     }, 3000);
@@ -48,6 +48,15 @@ var onMessage = function(client,message) {
   case 'h' : // Receive message when browser focus shifts
     target.visible = message_parts[1];
     break;
+
+  case 'doneDrawing' : // sketcher has declared that drawing is finished
+    drawing_status = message_parts[1];
+    console.log('drawing_status in doneDrawing case in server');
+    console.log(drawing_status);
+      _.map(all, function(p){
+        p.player.instance.emit('mutualDoneDrawing', {user: client.userid} );
+      });
+
   }
 };
 
@@ -68,6 +77,7 @@ var writeData = function(client, type, message_parts) {
     var correct = intendedName == clickedName ? 1 : 0;
     var pngString = message_parts[2];
     line = [gc.id, Date.now(), trialNum, intendedName, clickedName, correct, pngString];
+    // console.log(pngString);
     break;    
  
   case "stroke" : 
@@ -104,6 +114,9 @@ var setCustomEvents = function(socket) {
       p.player.instance.emit( 'stroke', data.jsonString);  
     });                                                     
   });
+
+
+
 };
 
 module.exports = {
