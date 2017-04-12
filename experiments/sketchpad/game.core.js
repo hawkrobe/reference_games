@@ -243,8 +243,8 @@ game_core.prototype.getRandomizedConditions = function() {
                  object:object,                 
                  pose:pose,
                  target:target};
-  console.log('design dict');
-  console.log(design_dict);
+  // console.log('design dict');
+  // console.log(design_dict);
   return design_dict;  
 
   /////
