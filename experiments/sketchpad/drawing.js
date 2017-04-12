@@ -26,7 +26,7 @@ var drawGrid = function(game){
         game.ctx.moveTo(p, 0.5 + x + p);
         game.ctx.lineTo(bw + p, 0.5 + x + p);}
 
-    game.ctx.lineWidth = 5;
+    game.ctx.lineWidth = 0;
     game.ctx.strokeStyle = "#000000";
     game.ctx.stroke();
 };
