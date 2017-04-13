@@ -207,7 +207,7 @@ var customSetup = function(game) {
 
   $(document).ready(function() {
     $("#submitbutton").click(function(){
-      console.log('submit button clicked!');
+      // console.log('submit button clicked!');
       var finished = ['doneDrawing',1];
       globalGame.socket.send(finished.join('.')); 
     });
@@ -222,7 +222,7 @@ var customSetup = function(game) {
     // reset submitbutton status
     globalGame.doneDrawing = 0;
     doneDrawing = 0;
-    console.log('doneDrawing reset to 0!');
+    // console.log('doneDrawing reset to 0!');
 
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
@@ -252,7 +252,7 @@ var customSetup = function(game) {
   });
 
   game.socket.on('mutualDoneDrawing', function() {
-    console.log('the doneness of drawing is mutual knowledge');
+    // console.log('the doneness of drawing is mutual knowledge');
     doneDrawing = 1;
   });
 
@@ -270,9 +270,10 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if (role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Make a sketch of the target, outlined in orange, " +
-      "so that your partner knows which object is the target. Your partner is viewing the " +
-      "same set of four objects. When you are done, click SUBMIT. ");
+    txt = "target";
+    $('#instructs').append("Make a sketch of the target (outlined in orange)" +
+      " so that your partner can tell which it is. " +
+      "When you are done, click SUBMIT. ");
       $("#submitbutton").show();
   } else if (role === globalGame.playerRoleNames.role2) {
     $('#instructs').append("Your partner is trying to draw one of these four objects." +
