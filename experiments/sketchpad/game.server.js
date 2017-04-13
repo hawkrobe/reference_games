@@ -57,37 +57,56 @@ function getIntendedTargetName(objects) {
   })[0]['subordinate']; 
 }
 
+function getObjectLocs(objects) {
+  return _.flatten(_.map(objects, function(object) {
+    return [object.subordinate,
+	    object.speakerCoords.gridX,
+	    object.listenerCoords.gridX];
+  }));
+}
+
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
-  var intendedName = getIntendedTargetName(gc.trialInfo.currStim);  
+  var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
+  var line = [gc.id, Date.now(), trialNum];
+
   switch(type) {
   case "clickedObj" :
     // parse the message
     var clickedName = message_parts[1];
     var correct = intendedName == clickedName ? 1 : 0;
     var pngString = message_parts[2];
-    line = [gc.id, Date.now(), trialNum, intendedName, clickedName, correct, pngString];
-    break;    
+    var objectLocs = getObjectLocs(gc.trialInfo.currStim);
+    line = (line.concat([intendedName, clickedName, correct])
+	    .concat(objectLocs)
+	    .concat(pngString));
+    break;
  
   case "stroke" : 
     var currStrokeNum = message_parts[0];
     var svgStr = message_parts[1];
-    line = [gc.id, Date.now(), trialNum, currStrokeNum, intendedName, svgStr];
+    line = line.concat([currStrokeNum, intendedName, svgStr]);
     break;
   }
   console.log(type + ":" + line.slice(0,-1).join('\t'));
-  gc.streams[type].write(line.join('\t') + "\n", function (err) {if(err) throw err;});
+  gc.streams[type].write(line.join('\t') + "\n",
+			 function (err) {if(err) throw err;});
 };
 
 var startGame = function(game, player) {
   // Establish write streams
   var startTime = utils.getLongFormTime();
   var dataFileName = startTime + "_" + game.id + ".csv";
-  utils.establishStream(game, "stroke", dataFileName,
-			"gameid,time,trialNum,strokeNum,targetName,svg\n");
-  utils.establishStream(game, "clickedObj", dataFileName,
-			"gameid,time,trialNum,intendedTarget,clickedObject,outcome,png\n");
+  var baseCols = ["gameid","time","trialNum"].join('\t');
+  var objectLocHeader = utils.getObjectLocHeader();
+  var strokeHeader = [baseCols,"strokeNum","targetName","svg\n"].join('\t');
+  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject",
+			  "outcome", objectLocHeader, "png\n"].join('\t');
+
+  utils.establishStream(game, "stroke", dataFileName,strokeHeader);
+  utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
+
   game.newRound();
 };
 
