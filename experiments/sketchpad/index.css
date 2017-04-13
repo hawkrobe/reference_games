@@ -45,9 +45,21 @@ html , body {
 	font-size: 120%
 }
 
+#feedback {
+	height: 5%;
+	width: 20%;
+	text-align: center;
+	margin-left: 0;
+	margin-right: auto;
+	margin-bottom: auto;
+	left:5%; right:0; top:20%; bottom: 0;
+	position: absolute;
+	font-size: 150%
+}
+
 #roundnumber {
 	height: 2%;
-	width: 8%;
+	width: 12%;
 	text-align: center;
 	margin-left: 85%;
 	margin-top: 1%;
@@ -119,12 +131,12 @@ ALOT...don't understand how to adjust that.*/
     border: solid 1px #999;
 }
 
-#messages {
+/*#messages {
 	height:85%;
 	text-align: left;
 	font-size: 200%;
 	overflow-y: scroll;
-}
+}*/
 
 #chatarea form {
 	padding: 3px; 
@@ -145,6 +157,7 @@ ALOT...don't understand how to adjust that.*/
 	float: left;
 }
 
+
 #chatarea button {
 	width: 9%; 
 	height: 5vh;
@@ -155,7 +168,6 @@ ALOT...don't understand how to adjust that.*/
 	margin-left: .5%;
 	margin-right: .5%;
 }
-
 
 ::-webkit-scrollbar {
     -webkit-appearance: none;

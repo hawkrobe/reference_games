@@ -26,7 +26,7 @@ var drawGrid = function(game){
         game.ctx.moveTo(p, 0.5 + x + p);
         game.ctx.lineTo(bw + p, 0.5 + x + p);}
 
-    game.ctx.lineWidth = 5;
+    game.ctx.lineWidth = 0;
     game.ctx.strokeStyle = "#000000";
     game.ctx.stroke();
 };
@@ -48,61 +48,15 @@ var drawObjects = function(game, player) {
 };
 
 
-// var highlightCell = function(game, player) {
-//   // look through game.objects
-//   // find the one with targetStatus = "target"
-//   // set upperLeftX, upperLeftY to its X and Y
-//   //console.log("game.objects according to drawing" + game.objects);
-//   if (player.role == game.playerRoleNames.role1){
-//     var targetObjects = _.filter(game.objects, function(x){
-//       return x.target_status == "target";
-//     });
-//     for (var n = 0; n < targetObjects.length; n++){
-//       var upperLeftX = targetObjects[n].speakerCoords.gridPixelX;
-//       var upperLeftY = targetObjects[n].speakerCoords.gridPixelY;
-//       if (upperLeftX != null && upperLeftY != null) {
-//         game.ctx.beginPath();
-//         game.ctx.lineWidth="20";
-//         game.ctx.strokeStyle="green";
-//         game.ctx.rect(upperLeftX, upperLeftY,200,200); 
-//         game.ctx.stroke();
-//       }
-//     }
-//   }
-// };
-
-// ///// this version of highlightCell function edited from tangrams_sequential/drawing.js
-// var highlightCell = function(game, player, color, condition) {  
-//   var targetObjects = _.filter(globalGame.objects, condition);
-//   console.log('got to highlightCell inside drawing.js ... targetObjects: ');
-//   console.log(targetObjects);
-//   console.log(targetObjects[0]);
-//   var customCoords = game.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
-//   for (var i = 0; i < targetObjects.length; i++){
-//     var gridX = targetObjects[i][customCoords]['gridX'];
-//     var gridY = targetObjects[i][customCoords]['gridY'];
-//     var upperLeftX = game.getPixelFromCell(gridX, gridY).upperLeftX;
-//     var upperLeftY = game.getPixelFromCell(gridX, gridY).upperLeftY;
-//     game.ctx.globalCompositeOperation='source-over';
-//     if (upperLeftX != null && upperLeftY != null) {
-//       game.ctx.beginPath();
-//       game.ctx.lineWidth="10";
-//       game.ctx.strokeStyle=color;
-//       game.ctx.rect(upperLeftX + 5, upperLeftY + 5,game.cellDimensions.width-10,game.cellDimensions.height-10); 
-//       game.ctx.stroke();
-//     }
-//   }
-// };
-
 ///// this version of highlightCell function edited from tangrams_sequential/drawing.js
 //// almost same as copy above except instances of game replaced by globalGame
 var highlightCell = function(game, color, condition) {  
   var targetObjects = _.filter(globalGame.objects, condition);
-  console.log('got to highlightCell inside drawing.js ... targetObjects: ');  
-  if (targetObjects.length>0) {
-    console.log(targetObjects[0]['subordinate'], targetObjects[0]['basic'],targetObjects[0]['gridX']);
-    console.log(targetObjects[0]['url']);
-  };
+  // console.log('got to highlightCell inside drawing.js ... targetObjects: ');  
+  // if (targetObjects.length>0) {
+  //   console.log(targetObjects[0]['subordinate'], targetObjects[0]['basic'],targetObjects[0]['gridX']);
+  //   console.log(targetObjects[0]['url']);
+  // };
   var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
   for (var i = 0; i < targetObjects.length; i++){           
     var gridX = targetObjects[i][customCoords]['gridX'];
