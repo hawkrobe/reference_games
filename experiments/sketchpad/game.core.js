@@ -50,16 +50,13 @@ var game_core = function(options){
   this.numPoses = 40;          
 
   // Which 
-  this.currStrokeNum = 0;
-  
-  // Which round are we on (initialize at -1 so that first round is 0-indexed)
+  this.currStrokeNum = 0;  
+
+  // Which round (a.k.a. "trial") are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
 
-  // Which trial are we on (initialize at -1 so that first round is 0-indexed)
-  this.trialNum = -1;
-
   // How many rounds do we want people to complete?
-  this.numRounds = 40;
+  this.numRounds = 32;
 
   // How many objects per round (how many items in the menu)?
   this.numItemsPerRound = this.numHorizontalCells*this.numVerticalCells;
@@ -162,61 +159,145 @@ game_core.prototype.newRound = function() {
 };
 
 game_core.prototype.getRandomizedConditions = function() {  
-  var numCats = 4;
-  var numObjs = 8;  
-  var condition = _.shuffle(["closer","further"])[0]; // session-level variable
+  ///// April 8: implementing re-design
 
+  var condition = new Array; 
   var category = new Array;
   var object = new Array;
   var pose = new Array;
-  var tmp = _.shuffle(_.range(0,8)).slice(-4);
+  var target = new Array; // target assignment
 
-  if (condition=="closer") {
-    this_cat = _.shuffle(_.range(0,4))[0];
-    tmpc = []; for (k=0; k<this.numItemsPerRound; k++) {tmpc = tmpc.concat(this_cat);};
-    for (j=0; j<this.numRounds; j++) {
-      category.push(tmpc);
-      object.push(_.shuffle(tmp));
-    };
-  } else if (condition = "further") { 
-      category = category.concat(_.shuffle(_.range(0,4)));
-      object = object.concat(_.shuffle(tmp));
-      zipped = new Array; _zipped = new Array;  
-      _zipped = _.zip(category,object); // link category# & object# to ensure you are sampling same objects
-      for (j=0; j<this.numRounds; j++) {
-        zipped.push(_.shuffle(_zipped)); // zipped becomes numRounds x numItemsPerRound x 2(cat,obj)
-      };
-      catl = new Array; objl = new Array;  
-      for (a=0;a<this.numRounds;a++) {  
-        _catl = new Array;  _objl = new Array;      
-        for (b=0;b<this.numItemsPerRound;b++) {
-          _catl = _catl.concat(zipped[a][b][0]);
-          _objl = _objl.concat(zipped[a][b][1]);
-        };
-        catl.push(_catl);
-        objl.push(_objl);
-      };
-      category = catl;
-      object = objl;
-  }; 
-  // shuffle poses
-  multiples = Math.floor(this.numItemsxRounds/this.numPoses); // num times #poses
-  remainder =  this.numItemsxRounds % this.numPoses;
-  _pose = new Array;
-  for (k=0; k<multiples; k++) {
-    _pose = _pose.concat(_.shuffle(_.range(this.numPoses)));
-  }
-  _pose = _pose.concat(_.shuffle(_.range(this.numPoses).slice(0,remainder)));
-  for (r=0;r<this.numRounds;r++){
-    pose.push(_pose.slice( r*this.numItemsPerRound, (r+1)*this.numItemsPerRound  ))
+  var numCats = 4;
+  var numObjs = 8; 
+  // make randomization matrix: take 4x8 matrix with range(0,8) on the rows, and indpt shuffle within row  
+  var tmp = new Array;
+  for (i=0;i<numCats;i++) {
+    tmp.push(_.shuffle(_.range(0,8)));
   }
   
+  // So now we generate the 8 unique menus:
+  // First, take left 4x4 matrix and define each column to be 4 different "menus" 
+  var menuList = new Array;
+  for (i=0;i<numCats;i++) { 
+    _menu = new Array;
+    for (j=0;j<numCats;j++) { 
+      _menu.push(tmp[j][i])
+    } 
+    menuList.push(_menu);      
+  }
+  // Then, take right 4x4 matrix and define each row to be 4 different "menus"
+  // this way, each object is drawn exactly once, and objects always appear with the same distractors
+  for (i=0;i<numObjs-numCats;i++) {
+    menuList.push(tmp[i].slice(4,8));
+  }
+
+  // copy four times to get the object matrix 
+  _object = menuList.concat(menuList).concat(menuList).concat(menuList);
+
+  // now let's make the category matrix
+  arr = new Array;
+  _(4).times(function(n){arr.push(_.range(0,4))});
+  tmp = _.range(0,4);
+  for (i=0;i<tmp.length;i++) {
+    arr.push(_.times(4, function() { return tmp[i]; }));
+  }
+
+  // copy 4 times to get full category matrix
+  _category = arr.concat(arr).concat(arr).concat(arr);
+
+  // now make pose matrix (on each trial, all objects share same pose, )
+  _pose = _.shuffle(_.range(this.numPoses)).slice(0,32);  
+  // for (i=0;i<_poses.length;i++) {
+  //   pose.push(_.times(4, function() { return _poses[i]; }));
+  // }
+
+  // now make condition matrix
+  f = _.times(4,function() {return "further"});
+  c = _.times(4,function() {return "closer"});
+  tmp = f.concat(c);
+  _condition = tmp.concat(tmp).concat(tmp).concat(tmp);
+
+  // now create target vector
+  _target = new Array;
+  for (i=0;i<4;i++) {
+    _target = _target.concat(_.times(8,function() {return i}));
+  }
+  
+
+  // now shuffle the rows of condition & object matrices using same set of indices
+  var _zipped;
+  _zipped = _.shuffle(_.zip(_object,_category,_pose,_condition,_target));
+  
+  for (j=0;j<_zipped.length;j++) {
+    object.push(_zipped[j][0]);
+    category.push(_zipped[j][1]);
+    pose.push(_zipped[j][2]);
+    condition.push(_zipped[j][3]);
+    target.push(_zipped[j][4]);
+  }
+  // final output: design_dict contains category, object, pose matrices (each 32x4 [rounds by item])
+  // condition: 32x1 
+
   design_dict = {condition:condition,
                  category:category,
                  object:object,                 
-                 pose:pose};
+                 pose:pose,
+                 target:target};
+  // console.log('design dict');
+  // console.log(design_dict);
+  return design_dict;  
 
-  return design_dict;
+  /////
+
+
+  // var condition = _.shuffle(["closer","further"])[0]; // session-level variable
+  // var category = new Array;
+  // var object = new Array;
+  // var pose = new Array;
+  // var tmp = _.shuffle(_.range(0,8)).slice(-4);
+
+  // if (condition=="closer") {
+  //   this_cat = _.shuffle(_.range(0,4))[0];
+  //   tmpc = []; for (k=0; k<this.numItemsPerRound; k++) {tmpc = tmpc.concat(this_cat);};
+  //   for (j=0; j<this.numRounds; j++) {
+  //     category.push(tmpc);
+  //     object.push(_.shuffle(tmp));
+  //   };
+  // } else if (condition = "further") { 
+  //     category = category.concat(_.shuffle(_.range(0,4)));
+  //     object = object.concat(_.shuffle(tmp));
+  //     zipped = new Array; _zipped = new Array;  
+  //     _zipped = _.zip(category,object); // link category# & object# to ensure you are sampling same objects
+  //     for (j=0; j<this.numRounds; j++) {
+  //       zipped.push(_.shuffle(_zipped)); // zipped becomes numRounds x numItemsPerRound x 2(cat,obj)
+  //     };
+  //     catl = new Array; objl = new Array;  
+  //     for (a=0;a<this.numRounds;a++) {  
+  //       _catl = new Array;  _objl = new Array;      
+  //       for (b=0;b<this.numItemsPerRound;b++) {
+  //         _catl = _catl.concat(zipped[a][b][0]);
+  //         _objl = _objl.concat(zipped[a][b][1]);
+  //       };
+  //       catl.push(_catl);
+  //       objl.push(_objl);
+  //     };
+  //     category = catl;
+  //     object = objl;
+  // }; 
+
+  // // shuffle poses
+  // multiples = Math.floor(this.numRounds/this.numPoses); // num times #poses
+  // remainder =  this.numRounds % this.numPoses;
+  // _pose = new Array;
+  // for (k=0; k<multiples; k++) {
+  //   _pose = _pose.concat(_.shuffle(_.range(this.numPoses)));
+  // }
+  // _pose = _pose.concat(_.shuffle(_.range(this.numPoses).slice(0,remainder)));
+  // for (r=0;r<this.numRounds;r++){
+  //   pose.push(_pose.slice( r*this.numItemsPerRound, (r+1)*this.numItemsPerRound  ))
+  // }
+  
+
 };
 
 game_core.prototype.sampleStimulusLocs = function() {
@@ -237,6 +318,7 @@ game_core.prototype.makeTrialList = function () {
   var categoryList = design_dict['category'];
   var _objectList = design_dict['object'];
   var poseList = design_dict['pose'];
+  var targetList = design_dict['target'];
 
   var objList = new Array;
   var locs = new Array;
@@ -244,7 +326,7 @@ game_core.prototype.makeTrialList = function () {
   var trialList = [];
   for (var i = 0; i < categoryList.length; i++) { // "i" indexes round number    
     // sample four object images that are unique and follow the condition constraints
-    var objList = sampleTrial(i,categoryList,_objectList,poseList);  
+    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList);      
     // sample locations for those objects
     var locs = this.sampleStimulusLocs(); 
     // construct trial list (in sets of complete rounds)
@@ -296,7 +378,6 @@ game_core.prototype.server_send_update = function(){
     pc : this.player_count,
     dataObj  : this.data,
     roundNum : this.roundNum,
-    trialNum : this.trialNum,
     trialInfo: this.trialInfo,
     objects: this.objects
   };
@@ -327,12 +408,11 @@ var getRemainingTargets = function(earlierTargets) {
   });
 };
 
-var sampleTrial = function(roundNum,categoryList,_objectList,poseList) {
-  // // jefan 7PM 3/16/17 STILL have to vary pose number by trial in this round
-  trialNum = 0;
+var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList) {    
   theseCats = categoryList[roundNum];
   theseObjs = _objectList[roundNum];
-  thisPose = poseList[roundNum][trialNum];
+  thisPose = poseList[roundNum];
+  thisTarget = targetList[roundNum];
 
   var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
   var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
@@ -340,14 +420,15 @@ var sampleTrial = function(roundNum,categoryList,_objectList,poseList) {
   var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==thisPose) ) })[0]; 
 
   var im_all = [im0,im1,im2,im3]; 
-  var target = im_all[trialNum]; // actual target on this trial
-  var notTargs = _.filter(_.range(4), function(x) { return x!=trialNum});
+  var target = im_all[thisTarget]; // actual target on this trial
+  var notTargs = _.filter(_.range(4), function(x) { return x!=thisTarget});
   var firstDistractor = im_all[notTargs[0]]; 
   var secondDistractor = im_all[notTargs[1]];
   var thirdDistractor = im_all[notTargs[2]];
-  var target_status = ["target","distractor","distractor","distractor"];
+  _target_status = ["distractor","distractor","distractor","distractor"];
+  var target_status = _target_status[thisTarget] = "target"; 
   _.extend(target,{target_status: "target"});
-  _.extend(firstDistractor,{target_status: "distr1"}); // this will be the 2nd target in this round
+  _.extend(firstDistractor,{target_status: "distr1"}); 
   _.extend(secondDistractor,{target_status: "distr2"});
   _.extend(thirdDistractor,{target_status: "distr3"});
 
