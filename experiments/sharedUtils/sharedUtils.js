@@ -31,6 +31,14 @@ var establishStream = function(game, streamName, outputFileName, header) {
   game.streams[streamName] = stream;
 };
 
+var getObjectLocHeader = function() {
+  return _.map(_.range(1,5), function(i) {
+    return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], function(v) {
+      return 'object' + i + v;
+    }).join('\t');
+  }).join('\t');
+};
+
 var hsl2lab = function(hsl) {
   return converter.hsl.lab(hsl);
 };
@@ -165,6 +173,7 @@ module.exports = {
   UUID : UUID,
   getLongFormTime : getLongFormTime,
   establishStream: establishStream,
+  getObjectLocHeader: getObjectLocHeader,
   hsl2lab : hsl2lab,
   fillArray: fillArray,
   randomColor: randomColor,
