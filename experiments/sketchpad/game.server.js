@@ -51,7 +51,7 @@ var onMessage = function(client,message) {
 
   case 'doneDrawing' : // sketcher has declared that drawing is finished
     drawing_status = message_parts[1];
-    console.log('drawing_status in doneDrawing case in server');
+    // console.log('drawing_status in doneDrawing case in server');
     console.log(drawing_status);
       _.map(all, function(p){
         p.player.instance.emit('mutualDoneDrawing', {user: client.userid} );

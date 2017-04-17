@@ -49,8 +49,11 @@ var game_core = function(options){
   // Number of total poses per object
   this.numPoses = 40;          
 
-  // Which 
+  // Which stroke number are we on?  
   this.currStrokeNum = 0;  
+
+  // Is the sketcher done with their drawing?
+  this.doneDrawing = 0;
 
   // Which round (a.k.a. "trial") are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;

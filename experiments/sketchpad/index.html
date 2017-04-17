@@ -2,10 +2,10 @@
 <html>
   <head>
     <title> Guess My Sketch </title>
+
+    <script type="text/javascript" src="helpers.js"></script>
     <!-- Load style sheet -->
     <link href="index.css" media="screen" rel="stylesheet" type="text/css">
-    
-    <script type="text/javascript" src="helpers.js"></script>
 
     <!-- Notice the URL, this is handled by socket.io on the server automatically, via express -->
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
@@ -29,7 +29,7 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font: 13px Helvetica, Arial; }
+        /*body { font: 13px Helvetica, Arial; }*/
         #messages li { padding: 5px 10px; }
         /*#messages li:nth-child(odd) { background: #eee; }*/
     </style>
@@ -39,11 +39,13 @@
   <body>
     <div id='header'>
       <button id='submitbutton' style="display: none">SUBMIT</button>
+      <div id="loading" style="display: none"></div>
       <div id='textInfo'>
       	<h1 id='roleLabel'> You are the </h1> 
       	<p id='instructs'> </p>
       </div>
       <p style="color:white" id='feedback'> </p>
+      <p style="color:white" id='turnIndicator'> </p>
       <p style="color:white" id='roundnumber'>Round 1 of 32</p>
       <p style="color:white" id='score'> </p>
     </div>
