@@ -111,34 +111,40 @@ function Sketchpad() {
   view.viewSize = new Size(500, 500);
 }
 
-Sketchpad.prototype.setupTool = function() {
+Sketchpad.prototype.setupTool = function() {  
   var tool = new Tool();
   tool.onMouseDown = function(event) {
-    globalGame.path = new Path({
-      segments: [event.point],
-      strokeColor: 'black',
-      strokeWidth: 5
-    });
+    if (globalGame.doneDrawing==0) {
+      globalGame.path = new Path({
+        segments: [event.point],
+        strokeColor: 'black',
+        strokeWidth: 5
+      });
+    }
   };
 
   tool.onMouseDrag = function(event) {
-    globalGame.path.add(event.point);
+    if (globalGame.doneDrawing==0) {
+      globalGame.path.add(event.point);
+    }
   };
 
   tool.onMouseUp = function(event) {
-    // Increment stroke num
-    globalGame.currStrokeNum += 1;
+    if (globalGame.doneDrawing==0) {
+      // Increment stroke num
+      globalGame.currStrokeNum += 1;
 
-    // Simplify path to reduce data sent
-    globalGame.path.simplify(10);
+      // Simplify path to reduce data sent
+      globalGame.path.simplify(10);
 
-    // Send stroke (in both svg & json forms) to server
-    globalGame.socket.emit('stroke', {
-      currStrokeNum: globalGame.currStrokeNum,
-      svgString: globalGame.path.exportSVG({asString: true}),
-      jsonString: globalGame.path.exportJSON({asString: true})
-    });
-  };
+      // Send stroke (in both svg & json forms) to server
+      globalGame.socket.emit('stroke', {
+        currStrokeNum: globalGame.currStrokeNum,
+        svgString: globalGame.path.exportSVG({asString: true}),
+        jsonString: globalGame.path.exportJSON({asString: true})
+      });
+    };
+  }
 };
 
 // This is a helper function to write a text string onto the HTML5 canvas.

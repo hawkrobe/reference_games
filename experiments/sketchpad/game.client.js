@@ -144,7 +144,7 @@ var client_onMessage = function(data) {
       })[0];
       var scoreDiff = target.subordinate == clickedObjName ? 1 : 0;
       globalGame.data.subject_information.score += scoreDiff;
-      
+      fbdelay = 300;
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
         // sketcher feedback
@@ -152,11 +152,12 @@ var client_onMessage = function(data) {
       	  return x.subordinate == clickedObjName;
       	});
         // textual feedback
-        crit = 'black'
+        crit = 'black';
+        $('#turnIndicator').html(" ");
         if (scoreDiff==1) {
-          $('#feedback').html('Great job!! Your partner correctly identified the target.');
+          setTimeout(function(){$('#feedback').html('Great job! Your partner correctly identified the target.');},fbdelay);
         } else {
-          $('#feedback').html('Sorry... Your partner thought the target was the object outlined in ' + crit.bold() + '.');
+          setTimeout(function(){$('#feedback').html('Too bad... Your partner thought the target was the object outlined in ' + crit.bold() + '.');},fbdelay);
         }
       } else {
         // viewer feedback
@@ -168,10 +169,11 @@ var client_onMessage = function(data) {
       	});
         // textual feedback
         crit = 'green'
+        $('#turnIndicator').html(" ");
         if (scoreDiff==1) {
-          $('#feedback').html('Great job!! You correctly identified the target!');
+          setTimeout(function(){$('#feedback').html('Great job! You correctly identified the target!');},fbdelay);
         } else {
-          $('#feedback').html('Sorry... Your partner was trying to sketch the object outlined in ' + crit.fontcolor("#1aff1a").bold() + '.');
+          setTimeout(function(){$('#feedback').html('Sorry... The target was the object outlined in ' + crit.fontcolor("#1aff1a").bold() + '.');},fbdelay);
         }
       }
       break;
@@ -205,11 +207,15 @@ var client_addnewround = function(game) {
 var customSetup = function(game) {
   game.sketchpad = new Sketchpad(); 
 
-  $(document).ready(function() {
+  $(document).ready(function() {    
     $("#submitbutton").click(function(){
-      // console.log('submit button clicked!');
-      var finished = ['doneDrawing',1];
-      globalGame.socket.send(finished.join('.')); 
+      console.log('submit button clicked!');
+      if (globalGame.currStrokeNum>0) { // only allow submit button to be pressed if at least one stroke made
+        var finished = ['doneDrawing',1];
+        globalGame.socket.send(finished.join('.')); 
+      } else {
+        $('#feedback').html("Please make your sketch.");
+      }
     });
   });  
 
@@ -221,7 +227,7 @@ var customSetup = function(game) {
 
     // reset submitbutton status
     globalGame.doneDrawing = 0;
-    doneDrawing = 0;
+    doneDrawing = 0;    
     // console.log('doneDrawing reset to 0!');
 
     // Reset stroke counter
@@ -229,6 +235,7 @@ var customSetup = function(game) {
 
     // clear feedback blurb
     $('#feedback').html(" ");
+    $('#turnIndicator').html(" ");   
 
     // Update display
     if(game.roundNum + 2 > game.numRounds) {      
@@ -244,15 +251,24 @@ var customSetup = function(game) {
 
   game.socket.on('stroke', function(jsonData) {
     // first, allow listener to respond    
-    game.messageSent = true;
-
+    game.messageSent = true;        
     // draw it
     var path = new Path();
-    path.importJSON(jsonData);
+    path.importJSON(jsonData);    
+    
   });
 
-  game.socket.on('mutualDoneDrawing', function() {
-    // console.log('the doneness of drawing is mutual knowledge');
+  game.socket.on('mutualDoneDrawing', function(role) {
+    console.log('the doneness of drawing is mutual knowledge');    
+    globalGame.doneDrawing = 1;    
+    fbdelay = 300;
+    if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+      $('#feedback').html(" ");
+      setTimeout(function(){$('#turnIndicator').html("Your partner's turn to guess the target!");},fbdelay);
+    } else if (globalGame.my_role === globalGame.playerRoleNames.role2) {
+      $("#loading").fadeOut('fast');
+      setTimeout(function(){$('#turnIndicator').html('Your turn: Select the target!');},fbdelay);
+    }
     doneDrawing = 1;
   });
 
@@ -273,11 +289,12 @@ var client_onjoingame = function(num_players, role) {
     txt = "target";
     $('#instructs').append("Make a sketch of the target (outlined in orange)" +
       " so that your partner can tell which it is. " +
-      "When you are done, click SUBMIT. ");
+      " When you are done, click SUBMIT. ");
       $("#submitbutton").show();
   } else if (role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Your partner is trying to draw one of these four objects." +
-      "When they are done, click on the object they sketched.");
+    $('#instructs').append("Your partner is going to draw one of these four objects." +
+      " When they are done, click on the object they sketched.");
+    $("#loading").show();
   }
 
   if(num_players == 1) {
@@ -292,7 +309,6 @@ var client_onjoingame = function(num_players, role) {
   	console.log(this.data);
       }
     }, 1000 * 60 * 15);
-
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
 						       + 'Please do not refresh the page!'); 
   }
@@ -301,7 +317,6 @@ var client_onjoingame = function(num_players, role) {
     globalGame.viewport.addEventListener("click", responseListener, false);
   } else {
     globalGame.sketchpad.setupTool();
-    // document.getElementById('submitbutton').addEventListener("click", doneDrawingListener, false);
   }
 };    
 
@@ -320,6 +335,8 @@ function responseListener(evt) {
     _.forEach(globalGame.objects, function(obj) {
       if (hitTest(obj, mouseX, mouseY) && doneDrawing) {
         globalGame.messageSent = false;
+
+        
         // highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
         //               function(x){return x.subordinate == obj.subordinate;});
 
@@ -335,14 +352,6 @@ function responseListener(evt) {
   return false;
 };
 
-// function doneDrawingListener() {
-//   if (globalGame.messageSent) {
-//     console.log('fired doneDrawingListener... send info to server!');
-//     var finished = ['doneDrawing',1];
-//     globalGame.socket.send(finished.join('.'));  
-//   }
-//   // return false;
-// }
 
 function hitTest(shape,mx,my) {
   var dx = mx - shape.trueX;

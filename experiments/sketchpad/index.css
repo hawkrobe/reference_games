@@ -1,7 +1,8 @@
 html , body {
      background: #000000; 
-     color: #fff; 
-     font-family: Helvetica;
+     color: #fff;           
+     font: 18px Helvetica;
+     font-weight: lighter;
      margin: 0; 
      padding: 0;
 }
@@ -23,14 +24,16 @@ html , body {
 }
 
 #roleLabel {
-	height: 2%;
-	width: 50%;
+	height: 3.5%;
+	width: 100%;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:0; right:0; top:0; bottom: 0;
+	left:0; right:0; top:1%; bottom: 0;
 	position: absolute;
+	background:white;
+	color:black;	
 }
 
 #instructs {
@@ -40,9 +43,10 @@ html , body {
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:0; right:0; top:4%; bottom: 0;
+	left:0; right:0; top:5%; bottom: 0;
 	position: absolute;
-	font-size: 120%
+	font-size: 150%
+	font-weight:lighter;
 }
 
 #feedback {
@@ -52,22 +56,37 @@ html , body {
 	margin-left: 0;
 	margin-right: auto;
 	margin-bottom: auto;
-	left:5%; right:0; top:20%; bottom: 0;
+	left:auto; right:1%; top:35%; bottom: 0;
 	position: absolute;
-	font-size: 150%
+	font-size: 150%;
+	font-weight:lighter;
+}
+
+#turnIndicator {
+	height: 5%;
+	width: 20%;
+	text-align: center;
+	margin-left: 0;
+	margin-right: auto;
+	margin-bottom: auto;
+	left:auto; right:1%; top:25%; bottom: 0;
+	position: absolute;
+	font-size: 150%;
+	font-weight:lighter;
 }
 
 #roundnumber {
 	height: 2%;
-	width: 12%;
-	text-align: center;
+	width: 15%;
+	text-align: right;
 	margin-left: 85%;
 	margin-top: 1%;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:0; right:0; top:20%; bottom: 0;
+	left:auto; right:1%; top:auto; bottom: 3%;
 	position: absolute;
-	font-size: 150%
+	font-size: 120%;
+  	font-weight:lighter;
 }
 
 #score {
@@ -81,20 +100,50 @@ html , body {
 	left:0; right:0; top:20%; bottom: 0;
 	position: absolute;
 	font-size: 150%;
+	font-weight:lighter;
 }
 
 #submitbutton {
+	z-index: 10;
     height: 6%;
-    width: 5%;
+    width: 9%;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
+	right: 6%; top: 10%;
+	position: absolute;
     background: rgb(255,255,255);
     border: none;
     padding: 5px;
+	font-size: 150%;
+	font-weight: normal;
+	border-radius: 40%;
+	border: none;
+
 
 /*trying to change around attributes of click button reduces the clickable area
 ALOT...don't understand how to adjust that.*/
+}
+
+
+#submitbutton:active {
+	z-index: 10;
+    height: 6%;
+    width: 9%;
+    float: left;
+    margin-left: 10%;
+    margin-top: 2%;
+	right: 6%; top: 10%;
+	position: absolute;
+    background: rgb(255,255,255);
+    border: none;
+    padding: 5px;
+	font-size: 150%;
+	font-weight: normal;
+	border-radius: 40%;
+	border: none;	
+	box-shadow: 0 5px #666;
+  	transform: translateY(2px);
 }
 
 #main {
@@ -112,8 +161,8 @@ ALOT...don't understand how to adjust that.*/
 #viewport {
     float: bottom;
     border:solid 1px #333;
-    height: 40vh;
-    width: 120vh;
+    height: 25vh;
+    width: 100vh;
     margin: center;    
     /*margin-right: 2.5%;*/
     background: #383838;
@@ -167,6 +216,45 @@ ALOT...don't understand how to adjust that.*/
 	padding: 5px;
 	margin-left: .5%;
 	margin-right: .5%;
+}
+
+#loading {
+	color:black;
+	z-index: 10;
+    height: 10%;
+    width: 8%;
+    float: left;
+	right: 6%; top: 10%;
+	position: absolute;
+    background: rgb(255,255,255);
+    border: none;
+    padding: 5px;
+	font-size: 300%;
+	font-weight: normal;
+	border-radius: 50%;
+	border: none;
+}
+
+#loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4,end) 900ms infinite;      
+  animation: ellipsis steps(4,end) 900ms infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 1.25em;    
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 1.25em;    
+  }
 }
 
 ::-webkit-scrollbar {
