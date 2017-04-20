@@ -119,6 +119,8 @@ Sketchpad.prototype.setupTool = function() {
   };
 
   tool.onMouseDrag = function(event) {
+    globalGame.currMouseX = event.point.x;
+    globalGame.currMouseY = event.point.y;
     if (globalGame.drawingAllowed) {
       globalGame.path.add(event.point);
     }
