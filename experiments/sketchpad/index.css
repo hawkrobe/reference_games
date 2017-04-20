@@ -159,15 +159,27 @@ ALOT...don't understand how to adjust that.*/
 
 /*height and width originally 80vh*/
 #viewport {
-    float: bottom;
+    float: middle;		
     border:solid 1px #333;
     height: 25vh;
     width: 100vh;
-    margin: center;    
-    /*margin-right: 2.5%;*/
+    margin: auto;    
+	top: 56vh; bottom: auto; left:0; right: 0;
     background: #383838;
-    /*opacity: .5;*/
+    position: absolute;
 
+}
+
+#occluder {
+    float: middle;		
+    border:solid 1px #333;
+    height: 25vh;
+    width: 100vh;
+    margin: auto;    
+	top: 56vh; bottom: auto; left:0; right: 0;
+    background: #808080;
+    position: absolute;
+    z-index: 10;
 }
 
 #sketchpad {
