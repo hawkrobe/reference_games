@@ -104,7 +104,6 @@ var drawScreen = function(game, player) {
   }
 };
 
-
 // Make sketchpad class using global 'paper' functions
 function Sketchpad() {
   paper.setup('sketchpad');
@@ -113,14 +112,19 @@ function Sketchpad() {
 
 Sketchpad.prototype.setupTool = function() {  
   var tool = new Tool();
+
+  tool.onMouseMove = function(event) {
+    globalGame.currMouseX = event.point.x;
+    globalGame.currMouseY = event.point.y;
+    if(globalGame.penDown) {
+      if (globalGame.doneDrawing==0) {
+        globalGame.path.add(event.point);
+      }
+    };
+  }
+
   tool.onMouseDown = function(event) {
-    if (globalGame.doneDrawing==0) {
-      globalGame.path = new Path({
-        segments: [event.point],
-        strokeColor: 'black',
-        strokeWidth: 5
-      });
-    }
+    startStroke(event);
   };
 
   tool.onMouseDrag = function(event) {
@@ -130,22 +134,38 @@ Sketchpad.prototype.setupTool = function() {
   };
 
   tool.onMouseUp = function(event) {
-    if (globalGame.doneDrawing==0) {
-      // Increment stroke num
-      globalGame.currStrokeNum += 1;
-
-      // Simplify path to reduce data sent
-      globalGame.path.simplify(10);
-
-      // Send stroke (in both svg & json forms) to server
-      globalGame.socket.emit('stroke', {
-        currStrokeNum: globalGame.currStrokeNum,
-        svgString: globalGame.path.exportSVG({asString: true}),
-        jsonString: globalGame.path.exportJSON({asString: true})
-      });
-    };
+    endStroke(event);
   }
 };
+
+function startStroke(event) {
+  var point = event ? event.point : {x: globalGame.currMouseX, y: globalGame.currMouseY};
+  console.log(point);
+  if (globalGame.doneDrawing==0) {
+    globalGame.path = new Path({
+      segments: [point],
+      strokeColor: 'black',
+      strokeWidth: 5
+    });
+  }
+};
+
+function endStroke(event) {
+  if (globalGame.doneDrawing==0) {
+    // Increment stroke num
+    globalGame.currStrokeNum += 1;
+
+    // Simplify path to reduce data sent
+    globalGame.path.simplify(10);
+
+    // Send stroke (in both svg & json forms) to server
+    globalGame.socket.emit('stroke', {
+      currStrokeNum: globalGame.currStrokeNum,
+      svgString: globalGame.path.exportSVG({asString: true}),
+      jsonString: globalGame.path.exportJSON({asString: true})
+    });
+  };
+}
 
 // This is a helper function to write a text string onto the HTML5 canvas.
 // It automatically figures out how to break the text into lines that will fit
