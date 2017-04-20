@@ -11,11 +11,6 @@
 
 //     MIT Licensed.
 
-
-// /* 
-//    THE FOLLOWING FUNCTIONS MAY NEED TO BE CHANGED
-// */
-
 // A window global for our game root variable.
 var globalGame = {};
 
@@ -334,6 +329,14 @@ var client_onjoingame = function(num_players, role) {
 /*
  MOUSE EVENT LISTENERS
  */
+
+keyboardJS.bind('shift', function(e) {
+  startStroke();
+  globalGame.penDown = true;
+}, function(e) {
+  globalGame.penDown = false;
+  endStroke();
+});
 
 function responseListener(evt) {
   // console.log('got to responseListener inside game.client.js');  
