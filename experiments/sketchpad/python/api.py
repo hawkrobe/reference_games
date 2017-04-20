@@ -32,10 +32,10 @@ import zmq
 
 define("port", default=9919, help="run on the given port", type=int)
 
-FEATURE_PORT = 38675
-SOCKET_CONTEXT = zmq.Context()
-FEATURE_SOCKET = SOCKET_CONTEXT.socket(zmq.PAIR)
-FEATURE_SOCKET.bind("tcp://*:%d" % FEATURE_PORT)
+#FEATURE_PORT = 38675
+#SOCKET_CONTEXT = zmq.Context()
+#FEATURE_SOCKET = SOCKET_CONTEXT.socket(zmq.PAIR)
+#FEATURE_SOCKET.bind("tcp://*:%d" % FEATURE_PORT)
 print('ready to connect')
 
 #REGRESSORS = cPickle.load(open('/om/user/yamins/morph_regressors.pkl'))
@@ -77,6 +77,8 @@ class BaseHandler(tornado.web.RequestHandler):
 PERM = None
 PORT = int(os.environ.get('SKETCHLOOP_MONGO_PORT', 29101))
 CONN = pm.MongoClient(port=PORT)
+print(PORT,CONN)
+print(CONN.database_names())
 DB_DICT = {}
 FS_DICT = {}
       
@@ -228,18 +230,18 @@ def save_decision_only(handler,args):
     print("imhash", imhash)
     filestr = 'filestr'
     global CONN
-    print args
+    print("args",args)
     dbname = args['dbname']
     colname = args['colname']
     global DB_DICT
     if dbname not in DB_DICT:
         DB_DICT[dbname] = CONN[dbname]
     db = DB_DICT[dbname]
+    print("db",db)
     global FS_DICT
     if (dbname, colname) not in FS_DICT:
         FS_DICT[(dbname, colname)] = gridfs.GridFS(db, colname)
     fs = FS_DICT[(dbname, colname)]    
-    print args
     _id = fs.put(filestr, **args) # actually put file in db
 
 
