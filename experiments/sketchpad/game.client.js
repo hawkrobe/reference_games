@@ -137,37 +137,11 @@ var client_onMessage = function(data) {
       })[0];
       var scoreDiff = target.subordinate == clickedObjName ? 1 : 0;
       globalGame.data.subject_information.score += scoreDiff;
-      fbdelay = 300;
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-        // sketcher feedback
-        highlightCell(globalGame, 'black', function(x) {
-      	  return x.subordinate == clickedObjName;
-      	});
-        // textual feedback
-        crit = 'black';
-        $('#turnIndicator').html(" ");
-        if (scoreDiff==1) {
-          setTimeout(function(){$('#feedback').html('Great job! Your partner correctly identified the target.');},fbdelay);
-        } else {
-          setTimeout(function(){$('#feedback').html('Too bad... Your partner thought the target was the object outlined in ' + crit.bold() + '.');},fbdelay);
-        }
+	drawSketcherFeedback(globalGame, scoreDiff, clickedObjName);
       } else {
-        // viewer feedback
-        highlightCell(globalGame, 'black', function(x) {
-      	  return x.subordinate == clickedObjName;
-      	}); 
-        highlightCell(globalGame, 'green', function(x) {
-      	  return x.target_status == 'target';
-      	});
-        // textual feedback
-        crit = 'green'
-        $('#turnIndicator').html(" ");
-        if (scoreDiff==1) {
-          setTimeout(function(){$('#feedback').html('Great job! You correctly identified the target!');},fbdelay);
-        } else {
-          setTimeout(function(){$('#feedback').html('Sorry... The target was the object outlined in ' + crit.fontcolor("#1aff1a").bold() + '.');},fbdelay);
-        }
+	drawViewerFeedback(globalGame, scoreDiff, clickedObjName);
       }
       break;
 
@@ -259,13 +233,12 @@ var customSetup = function(game) {
     console.log('the doneness of drawing is mutual knowledge');    
     globalGame.doneDrawing = true;    
     globalGame.drawingAllowed = false;    
-    fbdelay = 300;
     if (globalGame.my_role === globalGame.playerRoleNames.role1) {
       $('#feedback').html(" ");
-      setTimeout(function(){$('#turnIndicator').html("Your partner's turn to guess the target!");},fbdelay);
+      setTimeout(function(){$('#turnIndicator').html("Your partner's turn to guess the target!");},globalGame.feedbackDelay);
     } else if (globalGame.my_role === globalGame.playerRoleNames.role2) {
       $("#loading").fadeOut('fast');
-      setTimeout(function(){$('#turnIndicator').html('Your turn: Select the target!');},fbdelay);
+      setTimeout(function(){$('#turnIndicator').html('Your turn: Select the target!');},globalGame.feedbackDelay);
     }
   });
 

@@ -58,6 +58,9 @@ var game_core = function(options){
   // Is the sketcher allowed to draw?
   this.drawingAllowed = false;
 
+  // time (in ms) to wait before giving feedback
+  this.feedbackDelay = 300;
+
   // Which round (a.k.a. "trial") are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
 
