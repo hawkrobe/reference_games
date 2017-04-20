@@ -34,7 +34,6 @@ var drawGrid = function(game){
 // Loop through the object list and draw each one in its specified location
 var drawObjects = function(game, player) {
     _.map(globalGame.objects, function(obj) { 
-      //console.log("game.objects according to drawing.drawObjects" + game.objects);
       // game.ctx.globalCompositeOperation='destination-over';  // draw under highlight
       var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
       var trueX = obj[customCoords]['trueX'];
@@ -52,18 +51,12 @@ var drawObjects = function(game, player) {
 //// almost same as copy above except instances of game replaced by globalGame
 var highlightCell = function(game, color, condition) {  
   var targetObjects = _.filter(globalGame.objects, condition);
-  // console.log('got to highlightCell inside drawing.js ... targetObjects: ');  
-  // if (targetObjects.length>0) {
-  //   console.log(targetObjects[0]['subordinate'], targetObjects[0]['basic'],targetObjects[0]['gridX']);
-  //   console.log(targetObjects[0]['url']);
-  // };
   var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
   for (var i = 0; i < targetObjects.length; i++){           
     var gridX = targetObjects[i][customCoords]['gridX'];
     var gridY = targetObjects[i][customCoords]['gridY'];
     var upperLeftX = globalGame.getPixelFromCell(gridX, gridY).upperLeftX;
     var upperLeftY = globalGame.getPixelFromCell(gridX, gridY).upperLeftY;
-    console.log(gridX,gridY,upperLeftX,upperLeftY);
     globalGame.ctx.globalCompositeOperation='source-over';
     if (upperLeftX != null && upperLeftY != null) {
       globalGame.ctx.beginPath();
@@ -116,10 +109,8 @@ Sketchpad.prototype.setupTool = function() {
   tool.onMouseMove = function(event) {
     globalGame.currMouseX = event.point.x;
     globalGame.currMouseY = event.point.y;
-    if(globalGame.penDown) {
-      if (globalGame.doneDrawing==0) {
-        globalGame.path.add(event.point);
-      }
+    if(globalGame.penDown && globalGame.drawingAllowed) {
+      globalGame.path.add(event.point);
     };
   }
 
@@ -128,7 +119,7 @@ Sketchpad.prototype.setupTool = function() {
   };
 
   tool.onMouseDrag = function(event) {
-    if (globalGame.doneDrawing==0) {
+    if (globalGame.drawingAllowed) {
       globalGame.path.add(event.point);
     }
   };
@@ -140,8 +131,7 @@ Sketchpad.prototype.setupTool = function() {
 
 function startStroke(event) {
   var point = event ? event.point : {x: globalGame.currMouseX, y: globalGame.currMouseY};
-  console.log(point);
-  if (globalGame.doneDrawing==0) {
+  if (globalGame.drawingAllowed) {
     globalGame.path = new Path({
       segments: [point],
       strokeColor: 'black',
@@ -151,7 +141,7 @@ function startStroke(event) {
 };
 
 function endStroke(event) {
-  if (globalGame.doneDrawing==0) {
+  if (globalGame.drawingAllowed) {
     // Increment stroke num
     globalGame.currStrokeNum += 1;
 

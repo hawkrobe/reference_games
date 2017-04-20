@@ -27,9 +27,6 @@ var waiting;
 // we don't need the dragging.
 var selecting;
 
-// way of keeping track when both players are notified that sketcher is done drawing
-var doneDrawing = 0;
-
 /* 
  Note: If you add some new variable to your game that must be shared
  across server and client, add it both here and the server_send_update
@@ -84,9 +81,10 @@ var client_onserverupdate_received = function(data){
   };  
   
   
-  // Get rid of "waiting" screen if there are multiple players
+  // Get rid of "waiting" screen and allow drawing if there are multiple players
   if(data.players.length > 1) {
     $('#messages').empty();    
+    globalGame.drawingAllowed = true;
     globalGame.get_player(globalGame.my_id).message = "";
   }
   
@@ -204,8 +202,7 @@ var customSetup = function(game) {
 
   $(document).ready(function() {    
     $("#submitbutton").click(function(){
-      console.log('submit button clicked!');
-      if (globalGame.currStrokeNum>0) { // only allow submit button to be pressed if at least one stroke made
+      if (globalGame.currStrokeNum > 0) { // only allow submit button to be pressed if at least one stroke made
         var finished = ['doneDrawing',1];
         globalGame.socket.send(finished.join('.')); 
       } else {
@@ -222,8 +219,6 @@ var customSetup = function(game) {
 
     // reset submitbutton status
     globalGame.doneDrawing = 0;
-    doneDrawing = 0;    
-    // console.log('doneDrawing reset to 0!');
 
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
@@ -262,7 +257,8 @@ var customSetup = function(game) {
 
   game.socket.on('mutualDoneDrawing', function(role) {
     console.log('the doneness of drawing is mutual knowledge');    
-    globalGame.doneDrawing = 1;    
+    globalGame.doneDrawing = true;    
+    globalGame.drawingAllowed = false;    
     fbdelay = 300;
     if (globalGame.my_role === globalGame.playerRoleNames.role1) {
       $('#feedback').html(" ");
@@ -271,7 +267,6 @@ var customSetup = function(game) {
       $("#loading").fadeOut('fast');
       setTimeout(function(){$('#turnIndicator').html('Your turn: Select the target!');},fbdelay);
     }
-    doneDrawing = 1;
   });
 
 }; 
@@ -315,6 +310,7 @@ var client_onjoingame = function(num_players, role) {
   	console.log(this.data);
       }
     }, 1000 * 60 * 15);
+
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
 						       + 'Please do not refresh the page!'); 
   }
@@ -347,7 +343,7 @@ function responseListener(evt) {
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
-      if (hitTest(obj, mouseX, mouseY) && doneDrawing) {
+      if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
         globalGame.messageSent = false;
 
         
@@ -359,7 +355,6 @@ function responseListener(evt) {
         dataURL = dataURL.replace('data:image/png;base64,','');
         var packet = ["clickedObj", obj.subordinate, dataURL];
         globalGame.socket.send(packet.join('.'));
-        console.log(dataURL.length);
       }
     });
   }
