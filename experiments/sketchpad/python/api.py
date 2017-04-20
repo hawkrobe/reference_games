@@ -13,7 +13,6 @@ import numpy as np
 import bson.json_util as json_util
 from bson.objectid import ObjectId
 import cPickle
-import tabular as tb
 from PIL import Image
 
 import tornado.web
@@ -54,7 +53,7 @@ class App(tornado.web.Application):
 
 
 class BaseHandler(tornado.web.RequestHandler):
-    def get(self):
+    def get(self):        
         args = self.request.arguments
         for k in args.keys():
             args[k] = args[k][0]
@@ -74,7 +73,7 @@ class BaseHandler(tornado.web.RequestHandler):
   
   
 PERM = None
-PORT = int(os.environ.get('SKETCHLOOP_MONGO_PORT', 20809))
+PORT = int(os.environ.get('SKETCHLOOP_MONGO_PORT', 29101))
 CONN = pm.MongoClient(port=PORT)
 DB_DICT = {}
 FS_DICT = {}
@@ -87,7 +86,6 @@ def isstring(x):
         return False
     else:
         return True
-        
         
 class DBQueryHandler(BaseHandler):
 
@@ -140,86 +138,11 @@ class DBQueryHandler(BaseHandler):
             result = obj
         resp = {"result": result}
         return resp
-
-
-class SaveImageHandler(BaseHandler):  
-    def get_response(self, args):
-        return save_response(self, args)
-
+ 
+    
 class SaveDecisionHandler(BaseHandler):  
     def get_response(self,args):
         return save_decision_only(self,args)
-
-class SaveImageNoFeatCompHandler(BaseHandler):
-    def get_response(self, args):
-        return save_response_nofeat(self,args)
-
-def save_response(handler, args):
-    imhash = hashlib.sha1(json.dumps(args)).hexdigest()
-    final_path = 'sketch_test_' + imhash + '.png'
-    filestr = base64.b64decode(args["imgData"])
-    args['filename'] = final_path
-    #args['trialNum'] = int(args['trialNum'])
-    print("imhash", imhash)
-    global CONN
-    dbname = args['dbname']
-    colname = args['colname']
-    global DB_DICT
-    if dbname not in DB_DICT:
-        DB_DICT[dbname] = CONN[dbname]
-    db = DB_DICT[dbname]
-    global FS_DICT
-    if (dbname, colname) not in FS_DICT:
-        FS_DICT[(dbname, colname)] = gridfs.GridFS(db, colname)
-    fs = FS_DICT[(dbname, colname)]
-    
-    print('sending')
-    FEATURE_SOCKET.send(filestr)   
-    resp = cPickle.loads(FEATURE_SOCKET.recv())
-    print('received')
-    
-    resp = SONify(resp)
-    args['response'] = resp
-    _id = fs.put(filestr, **args) 
-
-    response = {'response': resp,
-            '_id': _id,
-            'filename': final_path}
-
-    return response    
-
-def save_response_nofeat(handler,args): # "no feat" = "no feature computation"
-    imhash = hashlib.sha1(json.dumps(args)).hexdigest()
-    final_path = 'sketch_test_' + imhash + '.png'
-    filestr = base64.b64decode(args["imgData"])
-    args['filename'] = final_path
-    #args['trialNum'] = int(args['trialNum'])
-    print("imhash", imhash)
-    global CONN
-    dbname = args['dbname']
-    colname = args['colname']
-    global DB_DICT
-    if dbname not in DB_DICT:
-        DB_DICT[dbname] = CONN[dbname]
-    db = DB_DICT[dbname]
-    global FS_DICT
-    if (dbname, colname) not in FS_DICT:
-        FS_DICT[(dbname, colname)] = gridfs.GridFS(db, colname)
-    fs = FS_DICT[(dbname, colname)]
-    
-    # print('sending')
-    # FEATURE_SOCKET.send(filestr)   
-    # resp = cPickle.loads(FEATURE_SOCKET.recv())
-    # print('received')
-    
-    # resp = SONify(resp)
-    # args['response'] = resp
-    _id = fs.put(filestr, **args) 
-
-    response = {'_id': _id,
-            'filename': final_path}
-
-    return response
 
 
 def save_decision_only(handler,args):
