@@ -192,7 +192,7 @@ var customSetup = function(game) {
     project.activeLayer.removeChildren();
 
     // reset submitbutton status
-    globalGame.doneDrawing = 0;
+    globalGame.doneDrawing = false;
 
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
@@ -207,17 +207,19 @@ var customSetup = function(game) {
     // clear feedback blurb
     $('#feedback').html(" ");
     $('#turnIndicator').html(" ");   
-
+    
     // Update display
+    var score = game.data.subject_information.score;
     if(game.roundNum + 2 > game.numRounds) {      
       $('#roundnumber').empty();
       $('#instructs').empty()
       	.append("Round\n" + (game.roundNum + 1) + " of " + game.numRounds);
-          } else {
-            $('#roundnumber').empty()
-      	.append("Round\n" + (game.roundNum + 2) + " of " + game.numRounds);
-          }
-
+    } else {
+      $('#roundnumber').empty()
+        .append("Round\n" + (game.roundNum + 2) + " of " + game.numRounds);
+    }
+    $('#score').empty().append(score + ' of ' + (game.roundNum + 1) + ' correct for a bonus of $'
+			       + ((score * 3)/100).toFixed(2));
   });
 
   game.socket.on('stroke', function(jsonData) {
