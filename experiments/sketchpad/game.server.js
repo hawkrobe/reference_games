@@ -11,6 +11,7 @@
         fs     = require('fs'),
         utils  = require('../sharedUtils/sharedUtils.js'),
         parser = require('xmldom').DOMParser;
+        var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
@@ -90,17 +91,52 @@ var writeData = function(client, type, message_parts) {
     line = (line.concat([intendedName, clickedName, correct])
 	    .concat(objectLocs)
 	    .concat(pngString));
+
+    dbline = {responseType: 'clickedObj',
+              intendedName: intendedName,
+              clickedName: clickedName,
+              correct: correct,
+              objectLocs: objectLocs,
+              pngString: pngString,
+              dbname:'visual_pragmatics',
+              colname:'test'};    
     break;
  
   case "stroke" : 
     var currStrokeNum = message_parts[0];
     var svgStr = message_parts[1];
     line = line.concat([currStrokeNum, intendedName, svgStr]);
+
+    dbline = {responseType: 'stroke',
+              intendedName: intendedName,
+              currStrokeNum: currStrokeNum,
+              svgStr: svgStr,
+              dbname:'visual_pragmatics',
+              colname:'test'};   
+
     break;
   }
   console.log(type + ":" + line.slice(0,-1).join('\t'));
   gc.streams[type].write(line.join('\t') + "\n",
 			 function (err) {if(err) throw err;});
+
+  // console.log(dbline);
+  // upload dbline data to remote db
+  var request = new XMLHttpRequest();
+  request.open('GET', 
+              'http://10.102.2.155:9919/savedecision' + 
+              JSON.stringify(dbline), true);
+  request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+  request.onerror = function() { 
+    console.log('connection error of some sort')
+  };
+  request.onreadystatechange = function() {//Call a function when the state changes.
+      if(request.readyState == XMLHttpRequest.DONE && request.status == 200) {
+          // Request finished. Do processing here.
+      }
+  }
+  request.send();
+
 };
 
 var startGame = function(game, player) {
