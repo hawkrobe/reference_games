@@ -159,6 +159,44 @@ function endStroke(event) {
   };
 }
 
+function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
+  // visual feedback
+  highlightCell(globalGame, 'black', function(x) {
+    return x.subordinate == clickedObjName;
+  });
+  // textual feedback
+  $('#turnIndicator').html(" ");
+  if (scoreDiff==1) {
+    setTimeout(function(){
+      $('#feedback').html('Great job! Your partner correctly identified the target.');
+    }, globalGame.feedbackDelay);
+  } else {
+    setTimeout(function(){
+      $('#feedback').html('Too bad... Your partner thought the target was the object outlined in ' + 'black'.bold() + '.');
+    }, globalGame.feedbackDelay);
+  }
+};
+
+function drawViewerFeedback(globalGame, scoreDiff, clickedObjName) {
+  // viewer feedback
+  highlightCell(globalGame, 'black', function(x) {
+    return x.subordinate == clickedObjName;
+  }); 
+  highlightCell(globalGame, 'green', function(x) {
+    return x.target_status == 'target';
+  });
+  // textual feedback
+  $('#turnIndicator').html(" ");
+  if (scoreDiff==1) {
+      setTimeout(function(){
+        $('#feedback').html('Great job! You correctly identified the target!');
+      }, globalGame.feedbackDelay);
+  } else {
+      setTimeout(function(){
+        $('#feedback').html('Sorry... The target was the object outlined in ' + 'green'.fontcolor("#1aff1a").bold() + '.');
+      }, globalGame.feedbackDelay);
+  }
+};
 // This is a helper function to write a text string onto the HTML5 canvas.
 // It automatically figures out how to break the text into lines that will fit
 // Input:
