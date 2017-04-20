@@ -180,7 +180,7 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
   var cars = text.split("\n");
   game.ctx.fillStyle = 'white';
   game.ctx.fillRect(0, 0, game.viewport.width, game.viewport.height);
-  // game.ctx.fillStyle = 'red';
+  game.ctx.fillStyle = 'red';
 
   for (var ii = 0; ii < cars.length; ii++) {
 
