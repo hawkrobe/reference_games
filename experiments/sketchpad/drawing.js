@@ -34,7 +34,6 @@ var drawGrid = function(game){
 // Loop through the object list and draw each one in its specified location
 var drawObjects = function(game, player) {
     _.map(globalGame.objects, function(obj) { 
-      //console.log("game.objects according to drawing.drawObjects" + game.objects);
       // game.ctx.globalCompositeOperation='destination-over';  // draw under highlight
       var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
       var trueX = obj[customCoords]['trueX'];
@@ -52,18 +51,12 @@ var drawObjects = function(game, player) {
 //// almost same as copy above except instances of game replaced by globalGame
 var highlightCell = function(game, color, condition) {  
   var targetObjects = _.filter(globalGame.objects, condition);
-  // console.log('got to highlightCell inside drawing.js ... targetObjects: ');  
-  // if (targetObjects.length>0) {
-  //   console.log(targetObjects[0]['subordinate'], targetObjects[0]['basic'],targetObjects[0]['gridX']);
-  //   console.log(targetObjects[0]['url']);
-  // };
   var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
   for (var i = 0; i < targetObjects.length; i++){           
     var gridX = targetObjects[i][customCoords]['gridX'];
     var gridY = targetObjects[i][customCoords]['gridY'];
     var upperLeftX = globalGame.getPixelFromCell(gridX, gridY).upperLeftX;
     var upperLeftY = globalGame.getPixelFromCell(gridX, gridY).upperLeftY;
-    console.log(gridX,gridY,upperLeftX,upperLeftY);
     globalGame.ctx.globalCompositeOperation='source-over';
     if (upperLeftX != null && upperLeftY != null) {
       globalGame.ctx.beginPath();
@@ -116,10 +109,8 @@ Sketchpad.prototype.setupTool = function() {
   tool.onMouseMove = function(event) {
     globalGame.currMouseX = event.point.x;
     globalGame.currMouseY = event.point.y;
-    if(globalGame.penDown) {
-      if (globalGame.doneDrawing==0) {
-        globalGame.path.add(event.point);
-      }
+    if(globalGame.penDown && globalGame.drawingAllowed) {
+      globalGame.path.add(event.point);
     };
   }
 
@@ -128,7 +119,9 @@ Sketchpad.prototype.setupTool = function() {
   };
 
   tool.onMouseDrag = function(event) {
-    if (globalGame.doneDrawing==0) {
+    globalGame.currMouseX = event.point.x;
+    globalGame.currMouseY = event.point.y;
+    if (globalGame.drawingAllowed) {
       globalGame.path.add(event.point);
     }
   };
@@ -140,8 +133,7 @@ Sketchpad.prototype.setupTool = function() {
 
 function startStroke(event) {
   var point = event ? event.point : {x: globalGame.currMouseX, y: globalGame.currMouseY};
-  console.log(point);
-  if (globalGame.doneDrawing==0) {
+  if (globalGame.drawingAllowed) {
     globalGame.path = new Path({
       segments: [point],
       strokeColor: 'black',
@@ -151,7 +143,7 @@ function startStroke(event) {
 };
 
 function endStroke(event) {
-  if (globalGame.doneDrawing==0) {
+  if (globalGame.drawingAllowed) {
     // Increment stroke num
     globalGame.currStrokeNum += 1;
 
@@ -167,6 +159,44 @@ function endStroke(event) {
   };
 }
 
+function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
+  // visual feedback
+  highlightCell(globalGame, 'black', function(x) {
+    return x.subordinate == clickedObjName;
+  });
+  // textual feedback
+  $('#turnIndicator').html(" ");
+  if (scoreDiff==1) {
+    setTimeout(function(){
+      $('#feedback').html('Great job! Your partner correctly identified the target.');
+    }, globalGame.feedbackDelay);
+  } else {
+    setTimeout(function(){
+      $('#feedback').html('Too bad... Your partner thought the target was the object outlined in ' + 'black'.bold() + '.');
+    }, globalGame.feedbackDelay);
+  }
+};
+
+function drawViewerFeedback(globalGame, scoreDiff, clickedObjName) {
+  // viewer feedback
+  highlightCell(globalGame, 'black', function(x) {
+    return x.subordinate == clickedObjName;
+  }); 
+  highlightCell(globalGame, 'green', function(x) {
+    return x.target_status == 'target';
+  });
+  // textual feedback
+  $('#turnIndicator').html(" ");
+  if (scoreDiff==1) {
+      setTimeout(function(){
+        $('#feedback').html('Great job! You correctly identified the target!');
+      }, globalGame.feedbackDelay);
+  } else {
+      setTimeout(function(){
+        $('#feedback').html('Sorry... The target was the object outlined in ' + 'green'.fontcolor("#1aff1a").bold() + '.');
+      }, globalGame.feedbackDelay);
+  }
+};
 // This is a helper function to write a text string onto the HTML5 canvas.
 // It automatically figures out how to break the text into lines that will fit
 // Input:
@@ -180,7 +210,7 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
   var cars = text.split("\n");
   game.ctx.fillStyle = 'white';
   game.ctx.fillRect(0, 0, game.viewport.width, game.viewport.height);
-  // game.ctx.fillStyle = 'red';
+  game.ctx.fillStyle = 'red';
 
   for (var ii = 0; ii < cars.length; ii++) {
 
