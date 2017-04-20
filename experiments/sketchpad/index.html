@@ -13,6 +13,10 @@
     <!-- Include some extra functional programming tools -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.2/underscore-min.js"> </script>
 
+    <!-- Detect browser and zoom -->
+    <script type="text/javascript" src="https://s3.amazonaws.com/dlcommon/js/browserdetect-0.0.1.js"></script>
+    <script type="text/javascript" src="https://s3.amazonaws.com/dlcommon/js/detect-zoom-20120627.js"></script>    
+
     <!-- Load jQuery, which lets us handle mouse events -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>    
 
@@ -54,6 +58,8 @@
       <span>
 	   <canvas id="sketchpad" width="500px" height="500px"></canvas>
         <canvas id="viewport"> </canvas>
+
+     <div id='occluder' style="display: none"> </div>
 
     <!-- include chatarea/chatbox below just in case-->
     <div id="chatarea" style="display: none">

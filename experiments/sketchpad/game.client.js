@@ -233,6 +233,13 @@ var customSetup = function(game) {
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
 
+    // fade in occluder box, wait a beat, then fade it out
+    $("#occluder").show(0).delay(3000).hide(0);
+
+    if (globalGame.my_role === globalGame.playerRoleNames.role2) {
+      $("#loading").fadeIn('fast');
+    }    
+
     // clear feedback blurb
     $('#feedback').html(" ");
     $('#turnIndicator').html(" ");   
@@ -278,6 +285,10 @@ var client_onjoingame = function(num_players, role) {
   // set role locally
   globalGame.my_role = role;
   globalGame.get_player(globalGame.my_id).role = globalGame.my_role;
+
+  // this.browser = BrowserDetect.browser;
+  // this.version = BrowserDetect.version;
+  // this.OpSys = BrowserDetect.OS;
 
   _.map(_.range(num_players - 1), function(i){
     globalGame.players.unshift({id: null, player: new game_player(globalGame)});
