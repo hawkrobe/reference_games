@@ -33,7 +33,7 @@ html , body {
 	left:0; right:0; top:1%; bottom: 0;
 	position: absolute;
 	background:white;
-	font-size:3.8vh;
+	font-size:3.5vh;
 	color:black;	
 }
 
@@ -186,7 +186,6 @@ ALOT...don't understand how to adjust that.*/
 #sketchpad {
     height: 55vh/*500px*/;
     width: 55vh/*500px*/;
-    
     top: 10vh;    
     float: top;
     margin: auto;
