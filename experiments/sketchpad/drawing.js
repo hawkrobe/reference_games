@@ -158,42 +158,48 @@ function endStroke(event) {
       jsonString: globalGame.path.exportJSON({asString: true})
     });
 
-    var currStrokeNum = globalGame.currStrokeNum;
-    var svgString = globalGame.path.exportSVG({asString: true});
-    var jsonString = globalGame.path.exportJSON({asString: true});
-    var trialNum = globalGame.roundNum + 1;
-    var gameID = globalGame['data']['id'];
-    var timestamp = Date.now();  
-    var intendedName = getIntendedTargetName(globalGame.objects);
+    // only send to remote db if you are the sketcher
+    if (globalGame.my_role == "sketcher") {
+      // prep to send stroke info to remote db (see also writeData in game.server)
+      var currStrokeNum = globalGame.currStrokeNum;
+      var svgString = globalGame.path.exportSVG({asString: true});
+      var jsonString = globalGame.path.exportJSON({asString: true});
+      var trialNum = globalGame.roundNum + 1;
+      var gameID = globalGame['data']['id'];
+      var timestamp = Date.now();  
+      var intendedName = getIntendedTargetName(globalGame.objects);
+      var allObjects = globalGame.objects;
+      console.log('intendedName', intendedName);
 
-    // send stroke info to remote db (see also writeData in game.server)
-    dbline = {role: globalGame.my_role,
-              gameID: gameID,
-              playerID: globalGame.my_id,
-              trialNum: trialNum,
-              timestamp: timestamp,
-              responseType: 'stroke',
-              intendedName: intendedName, 
-              currStrokeNum: currStrokeNum,
-              svgString: svgString,
-              jsonString: jsonString,
-              dbname: 'visual_pragmatics',
-              colname: 'test'};
+      // send stroke info to remote db (see also writeData in game.server)
+      dbline = {role: globalGame.my_role,
+                gameID: gameID,
+                playerID: globalGame.my_id,
+                trialNum: trialNum,
+                timestamp: timestamp,
+                responseType: 'stroke',
+                intendedName: intendedName, 
+                allObjects: allObjects,
+                currStrokeNum: currStrokeNum,
+                svgString: svgString,
+                jsonString: jsonString,
+                dbname: globalGame.dbname,
+                colname: globalGame.colname};
 
-    // console.log(dbline);
-    $.ajax({
-     type: 'GET',
-     url: 'http://10.102.2.155:9919/savedecision',
-     dataType: 'jsonp',
-     traditional: true,
-     contentType: 'application/json; charset=utf-8',
-     data: dbline,
-     success: function(msg) {
-                console.log('click response: upload success!');
-              }
+      // console.log(dbline);
+      $.ajax({
+       type: 'GET',
+       url: 'http://10.102.2.155:9919/savedecision',
+       dataType: 'jsonp',
+       traditional: true,
+       contentType: 'application/json; charset=utf-8',
+       data: dbline,
+       success: function(msg) {
+                  console.log('stroke response: upload success!');
+                }
     });
 
-
+    }
   };
 }
 
