@@ -92,14 +92,14 @@ var writeData = function(client, type, message_parts) {
 	    .concat(objectLocs)
 	    .concat(pngString));
 
-    dbline = {responseType: 'clickedObj',
-              intendedName: intendedName,
-              clickedName: clickedName,
-              correct: correct,
-              objectLocs: objectLocs,
-              pngString: pngString,
-              dbname:'visual_pragmatics',
-              colname:'test'};    
+    // dbline = {responseType: 'clickedObj',
+    //           intendedName: intendedName,
+    //           clickedName: clickedName,
+    //           correct: correct,
+    //           objectLocs: objectLocs,
+    //           pngString: pngString,
+    //           dbname:'visual_pragmatics',
+    //           colname:'test'};                  
     break;
  
   case "stroke" : 
@@ -107,12 +107,12 @@ var writeData = function(client, type, message_parts) {
     var svgStr = message_parts[1];
     line = line.concat([currStrokeNum, intendedName, svgStr]);
 
-    dbline = {responseType: 'stroke',
-              intendedName: intendedName,
-              currStrokeNum: currStrokeNum,
-              svgStr: svgStr,
-              dbname:'visual_pragmatics',
-              colname:'test'};   
+    // dbline = {responseType: 'stroke',
+    //           intendedName: intendedName,
+    //           currStrokeNum: currStrokeNum,
+    //           svgStr: svgStr,
+    //           dbname:'visual_pragmatics',
+    //           colname:'test'};   
 
     break;
   }
@@ -122,20 +122,58 @@ var writeData = function(client, type, message_parts) {
 
   // console.log(dbline);
   // upload dbline data to remote db
-  var request = new XMLHttpRequest();
-  request.open('GET', 
-              'http://10.102.2.155:9919/savedecision' + 
-              JSON.stringify(dbline), true);
-  request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-  request.onerror = function() { 
-    console.log('connection error of some sort')
-  };
-  request.onreadystatechange = function() {//Call a function when the state changes.
-      if(request.readyState == XMLHttpRequest.DONE && request.status == 200) {
-          // Request finished. Do processing here.
-      }
-  }
-  request.send();
+
+  // var Ajax = {
+  //     xhr : null,
+  //     request : function (url, method, data,success,failure){
+  //         if (!this.xhr){
+  //             this.xhr = window.ActiveX ? new ActiveXObject("Microsoft.XMLHTTP"): new XMLHttpRequest();
+  //         }
+  //         var self = this.xhr;
+
+  //         self.onreadystatechange = function () {
+  //             if (self.readyState === 4 && self.status === 200){
+  //                 // the request is complete, parse data and call callback
+  //                 var response = JSON.parse(self.responseText);
+  //                 console.log(response);
+  //                 success(response);
+  //             } else if (self.readyState === 4) { // something went wrong but complete
+  //                 console.log('general kind of failure, readyState=4')
+  //                 failure();
+
+  //             } else if (self.readyState === 404) {
+  //                  console.log('404 error');
+  //             }
+  //         };
+  //         this.xhr.open(method,url,true);
+  //         this.xhr.send();
+  //     },
+  // };
+  // Ajax.request('http://10.102.2.155:9919/savedecision',
+  //             "GET",null,function(dbline){
+  //     console.log("Success");
+  // },function(){
+  //     console.log("failed");
+  // });
+
+
+  // var request = new XMLHttpRequest();
+  // request.open('GET', 
+  //             'http://10.102.2.155:9919/savedecision' + 
+  //             JSON.stringify(dbline), true);
+  // request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+  // request.onerror = function() { 
+  //   console.log('connection error of some sort')
+  // };
+  // request.onreadystatechange = function() {//Call a function when the state changes.
+  //     if(request.readyState == XMLHttpRequest.DONE && request.status == 200) {
+  //         // Request finished. Do processing here.
+  //         var resp  = JSON.parse(this.responseText);
+  //         console.log(resp);
+  //         this.send();
+  //     }
+  // }
+  // request.send();
 
 };
 
