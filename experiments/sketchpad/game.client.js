@@ -352,8 +352,8 @@ function responseListener(evt) {
                   correct: correct,
                   objectLocs: objectLocs,
                   pngString: pngString,
-                  dbname:'visual_pragmatics',
-                  colname:'test'};  
+                  dbname:globalGame.dbname,
+                  colname:globalGame.colname};  
 
         // console.log(dbline);
         $.ajax({
