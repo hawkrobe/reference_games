@@ -55,7 +55,9 @@ var client_onserverupdate_received = function(data){
 
   // If your objects are out-of-date (i.e. if there's a new round), set up
   // machinery to draw them
-  if (globalGame.roundNum != data.roundNum) {
+  if (globalGame.roundNum != data.roundNum) {  
+    var alreadyLoaded = 0; $('#occluder').show();
+    console.log('show occluder');
     globalGame.objects = _.map(data.objects, function(obj) {
       // Extract the coordinates matching your role    
       var customCoords = globalGame.my_role == "sketcher" ? obj.speakerCoords : obj.listenerCoords;
@@ -71,11 +73,18 @@ var client_onserverupdate_received = function(data){
       imgObj.src = customObj.url; // tell client where to find it
       imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)        
         globalGame.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
-				 customObj.width, customObj.height);  
-        if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-          highlightCell(globalGame, '#d15619', function(x) {return x.target_status == 'target';});
-        }
-      };
+				  customObj.width, customObj.height);  
+          if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+            highlightCell(globalGame, '#d15619', function(x) {return x.target_status == 'target';});            
+          }
+          alreadyLoaded += 1
+          console.log("alreadyLoaded",alreadyLoaded);
+          if (alreadyLoaded == 4) {
+            setTimeout(function() {$('#occluder').hide();},750);
+            console.log('hide occluder');
+            globalGame.drawingAllowed = true;            
+          }
+      };        
       return _.extend(customObj, {img: imgObj});
     });
   };  
@@ -83,8 +92,7 @@ var client_onserverupdate_received = function(data){
   
   // Get rid of "waiting" screen and allow drawing if there are multiple players
   if(data.players.length > 1) {
-    $('#messages').empty();    
-    globalGame.drawingAllowed = true;
+    $('#messages').empty();        
     globalGame.get_player(globalGame.my_id).message = "";
   }
   
@@ -139,9 +147,9 @@ var client_onMessage = function(data) {
       globalGame.data.subject_information.score += scoreDiff;
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-	drawSketcherFeedback(globalGame, scoreDiff, clickedObjName);
+	       drawSketcherFeedback(globalGame, scoreDiff, clickedObjName);
       } else {
-	drawViewerFeedback(globalGame, scoreDiff, clickedObjName);
+	       drawViewerFeedback(globalGame, scoreDiff, clickedObjName);
       }
       break;
 
@@ -178,7 +186,7 @@ var customSetup = function(game) {
     $("#submitbutton").click(function(){
       if (globalGame.currStrokeNum > 0) { // only allow submit button to be pressed if at least one stroke made
         var finished = ['doneDrawing',1];
-        globalGame.socket.send(finished.join('.')); 
+        globalGame.socket.send(finished.join('.'));         
       } else {
         $('#feedback').html("Please make your sketch.");
       }
@@ -186,19 +194,25 @@ var customSetup = function(game) {
   });  
 
   // Set up new round on client's browsers after submit round button is pressed.
-  // This means clear the chatboxes, update round number, and update score on screen
+  // This means clear the canvas, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){    
     // Reset sketchpad each round
     project.activeLayer.removeChildren();
 
     // reset submitbutton status
     globalGame.doneDrawing = false;
+    globalGame.drawingAllowed = true; 
 
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
 
-    // fade in occluder box, wait a beat, then fade it out
-    $("#occluder").show(0).delay(3000).hide(0);
+    // occluder box animation now controlled within client_onserverupdate_received
+    // // fade in occluder box, wait a beat, then fade it out (then allow drawing)
+    // $("#occluder").show(0)
+    //               .delay(3000)
+    //               .hide(0, function() {
+    //                 globalGame.drawingAllowed = true; 
+    //               });
 
     if (globalGame.my_role === globalGame.playerRoleNames.role2) {
       $("#loading").fadeIn('fast');
@@ -259,7 +273,7 @@ var client_onjoingame = function(num_players, role) {
     globalGame.players.unshift({id: null, player: new game_player(globalGame)});
   });
   
-  // Update w/ role (can only move stuff if agent)
+  // Update w/ role
   $('#roleLabel').append(role + '.');
   if (role === globalGame.playerRoleNames.role1) {
     txt = "target";
@@ -289,6 +303,9 @@ var client_onjoingame = function(num_players, role) {
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
 						       + 'Please do not refresh the page!'); 
   }
+
+
+
   // set mouse-tracking event handler
   if(role === globalGame.playerRoleNames.role2) {
     globalGame.viewport.addEventListener("click", responseListener, false);
@@ -318,55 +335,60 @@ function responseListener(evt) {
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
+      console.log('responseListener: globalGame.doneDrawing',globalGame.doneDrawing);
       if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
         globalGame.messageSent = false;
 
         
         // highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
         //               function(x){return x.subordinate == obj.subordinate;});
-
+        
+      
         // Send packet about trial to server
         var dataURL = document.getElementById('sketchpad').toDataURL();
         dataURL = dataURL.replace('data:image/png;base64,','');
         var packet = ["clickedObj", obj.subordinate, dataURL];
         globalGame.socket.send(packet.join('.'));
 
-        var clickedName = packet[1];
-        var intendedName = getIntendedTargetName(obj);
-        var correct = intendedName == clickedName ? 1 : 0;
-        var pngString = packet[2];
-        var objectLocs = getObjectLocs(obj);
-        var trialNum = globalGame.roundNum + 1;
-        var gameID = globalGame['data']['id'];
-        var timestamp = Date.now();        
+        if (globalGame.my_role == "viewer") {
+          var clickedName = packet[1];
+          var intendedName = getIntendedTargetName(globalGame.objects);
+          var correct = intendedName == clickedName ? 1 : 0;
+          var pngString = packet[2];
+          var objectLocs = getObjectLocs(globalGame.objects);
+          var trialNum = globalGame.roundNum + 1;
+          var gameID = globalGame['data']['id'];
+          var timestamp = Date.now();        
 
-        // send data to mongodb (also see writeData:clickedObj in game.server)
-        dbline = {role: globalGame.my_role,
-                  playerID: globalGame.my_id,
-                  gameID: gameID,
-                  timestamp: timestamp,
-                  trialNum: trialNum,                  
-                  responseType: 'clickedObj',
-                  intendedName: intendedName,
-                  clickedName: clickedName,
-                  correct: correct,
-                  objectLocs: objectLocs,
-                  pngString: pngString,
-                  dbname:globalGame.dbname,
-                  colname:globalGame.colname};  
+          // send data to mongodb (also see writeData:clickedObj in game.server)
+          dbline = {role: globalGame.my_role,
+                    playerID: globalGame.my_id,
+                    gameID: gameID,
+                    timestamp: timestamp,
+                    trialNum: trialNum,                  
+                    responseType: 'clickedObj',
+                    intendedName: intendedName,
+                    clickedName: clickedName,
+                    correct: correct,
+                    objectLocs: objectLocs,
+                    pngString: pngString,
+                    dbname:globalGame.dbname,
+                    colname:globalGame.colname};  
 
-        // console.log(dbline);
-        $.ajax({
-         type: 'GET',
-         url: 'http://10.102.2.155:9919/savedecision',
-         dataType: 'jsonp',
-         traditional: true,
-         contentType: 'application/json; charset=utf-8',
-         data: dbline,
-         success: function(msg) {
-                    console.log('stroke response: upload success!');
-                  }
-        });
+          // console.log(dbline);
+          $.ajax({
+           type: 'GET',
+           url: 'http://10.102.2.155:9919/savedecision',
+           dataType: 'jsonp',
+           traditional: true,
+           contentType: 'application/json; charset=utf-8',
+           data: dbline,
+           success: function(msg) {
+                      console.log('clickObj response: upload success!');
+                    }
+          });
+
+        }; //
 
       }
     });
