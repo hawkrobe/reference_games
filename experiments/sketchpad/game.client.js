@@ -330,12 +330,63 @@ function responseListener(evt) {
         dataURL = dataURL.replace('data:image/png;base64,','');
         var packet = ["clickedObj", obj.subordinate, dataURL];
         globalGame.socket.send(packet.join('.'));
+
+        var clickedName = packet[1];
+        var intendedName = getIntendedTargetName(obj);
+        var correct = intendedName == clickedName ? 1 : 0;
+        var pngString = packet[2];
+        var objectLocs = getObjectLocs(obj);
+        var trialNum = globalGame.roundNum + 1;
+        var gameID = globalGame['data']['id'];
+        var timestamp = Date.now();        
+
+        // send data to mongodb (also see writeData:clickedObj in game.server)
+        dbline = {role: globalGame.my_role,
+                  playerID: globalGame.my_id,
+                  gameID: gameID,
+                  timestamp: timestamp,
+                  trialNum: trialNum,                  
+                  responseType: 'clickedObj',
+                  intendedName: intendedName,
+                  clickedName: clickedName,
+                  correct: correct,
+                  objectLocs: objectLocs,
+                  pngString: pngString,
+                  dbname:'visual_pragmatics',
+                  colname:'test'};  
+
+        // console.log(dbline);
+        $.ajax({
+         type: 'GET',
+         url: 'http://10.102.2.155:9919/savedecision',
+         dataType: 'jsonp',
+         traditional: true,
+         contentType: 'application/json; charset=utf-8',
+         data: dbline,
+         success: function(msg) {
+                    console.log('stroke response: upload success!');
+                  }
+        });
+
       }
     });
   }
   return false;
 };
 
+function getObjectLocs(objects) {
+  return _.flatten(_.map(objects, function(object) {
+    return [object.subordinate,
+      object.speakerCoords.gridX,
+      object.listenerCoords.gridX];
+  }));
+}
+
+function getIntendedTargetName(objects) {
+  return _.filter(objects, function(x){
+    return x.target_status == 'target';
+  })[0]['subordinate']; 
+}
 
 function hitTest(shape,mx,my) {
   var dx = mx - shape.trueX;
