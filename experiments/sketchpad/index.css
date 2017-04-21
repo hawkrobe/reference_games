@@ -33,19 +33,20 @@ html , body {
 	left:0; right:0; top:1%; bottom: 0;
 	position: absolute;
 	background:white;
+	font-size:3.8vh;
 	color:black;	
 }
 
 #instructs {
 	height: 2%;
-	width: 50%;
+	width: 100%;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:0; right:0; top:5%; bottom: 0;
+	left:0; right:0; top:5.5%; bottom: 0;
 	position: absolute;
-	font-size: 150%
+	font-size: 3.5vh;
 	font-weight:lighter;
 }
 
@@ -105,8 +106,8 @@ html , body {
 
 #submitbutton {
 	z-index: 10;
-    height: 6%;
-    width: 9%;
+    height: 10vh;
+    width: 20vh;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
@@ -114,10 +115,10 @@ html , body {
 	position: absolute;
     background: rgb(255,255,255);
     border: none;
-    padding: 5px;
-	font-size: 150%;
+    padding: .5vh;
+	font-size: 4vh;
 	font-weight: normal;
-	border-radius: 40%;
+	border-radius: 100%;
 	border: none;
 
 
@@ -138,7 +139,7 @@ ALOT...don't understand how to adjust that.*/
     background: rgb(255,255,255);
     border: none;
     padding: 5px;
-	font-size: 150%;
+	font-size: 1vh;
 	font-weight: normal;
 	border-radius: 40%;
 	border: none;	
@@ -183,8 +184,9 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #sketchpad {
-    height: 500px;
-    width: 500px;
+    height: 55vh/*500px*/;
+    width: 55vh/*500px*/;
+    
     top: 10vh;    
     float: top;
     margin: auto;
