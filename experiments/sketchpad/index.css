@@ -106,8 +106,8 @@ html , body {
 
 #submitbutton {
 	z-index: 10;
-    height: 10vh;
-    width: 20vw;
+    height: 6vh;
+    width: 12vw;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
@@ -184,7 +184,7 @@ ALOT...don't understand how to adjust that.*/
 
 #sketchpad {
     height: 55vh/*300px*/;
-    width: 55vw/*300px*/;
+    width: 55vh/*300px*/;
     top: 10vh;    
     float: top;
     margin: auto;

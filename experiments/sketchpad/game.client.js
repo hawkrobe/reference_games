@@ -57,7 +57,6 @@ var client_onserverupdate_received = function(data){
   // machinery to draw them
   if (globalGame.roundNum != data.roundNum) {  
     var alreadyLoaded = 0; $('#occluder').show();
-    console.log('show occluder');
     globalGame.objects = _.map(data.objects, function(obj) {
       // Extract the coordinates matching your role    
       var customCoords = globalGame.my_role == "sketcher" ? obj.speakerCoords : obj.listenerCoords;
@@ -77,11 +76,9 @@ var client_onserverupdate_received = function(data){
           if (globalGame.my_role === globalGame.playerRoleNames.role1) {
             highlightCell(globalGame, '#d15619', function(x) {return x.target_status == 'target';});            
           }
-          alreadyLoaded += 1
-          console.log("alreadyLoaded",alreadyLoaded);
+          alreadyLoaded += 1          
           if (alreadyLoaded == 4) {
             setTimeout(function() {$('#occluder').hide();},750);
-            console.log('hide occluder');
             globalGame.drawingAllowed = true;            
           }
       };        
