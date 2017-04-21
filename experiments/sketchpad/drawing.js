@@ -156,7 +156,50 @@ function endStroke(event) {
       svgString: globalGame.path.exportSVG({asString: true}),
       jsonString: globalGame.path.exportJSON({asString: true})
     });
+
+    var currStrokeNum = globalGame.currStrokeNum;
+    var svgString = globalGame.path.exportSVG({asString: true});
+    var jsonString = globalGame.path.exportJSON({asString: true});
+    var trialNum = globalGame.roundNum + 1;
+    var gameID = globalGame['data']['id'];
+    var timestamp = Date.now();  
+    var intendedName = getIntendedTargetName(globalGame.objects);
+
+    // send stroke info to remote db (see also writeData in game.server)
+    dbline = {role: globalGame.my_role,
+              gameID: gameID,
+              playerID: globalGame.my_id,
+              trialNum: trialNum,
+              timestamp: timestamp,
+              responseType: 'stroke',
+              intendedName: intendedName, 
+              currStrokeNum: currStrokeNum,
+              svgString: svgString,
+              jsonString: jsonString,
+              dbname: 'visual_pragmatics',
+              colname: 'test'};
+
+    // console.log(dbline);
+    $.ajax({
+     type: 'GET',
+     url: 'http://10.102.2.155:9919/savedecision',
+     dataType: 'jsonp',
+     traditional: true,
+     contentType: 'application/json; charset=utf-8',
+     data: dbline,
+     success: function(msg) {
+                console.log('click response: upload success!');
+              }
+    });
+
+
   };
+}
+
+function getIntendedTargetName(objects) {
+  return _.filter(objects, function(x){
+    return x.target_status == 'target';
+  })[0]['subordinate']; 
 }
 
 function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {

@@ -11,6 +11,7 @@
         fs     = require('fs'),
         utils  = require('../sharedUtils/sharedUtils.js'),
         parser = require('xmldom').DOMParser;
+        var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
@@ -90,17 +91,20 @@ var writeData = function(client, type, message_parts) {
     line = (line.concat([intendedName, clickedName, correct])
 	    .concat(objectLocs)
 	    .concat(pngString));
+               
     break;
  
   case "stroke" : 
     var currStrokeNum = message_parts[0];
     var svgStr = message_parts[1];
     line = line.concat([currStrokeNum, intendedName, svgStr]);
+
     break;
   }
   console.log(type + ":" + line.slice(0,-1).join('\t'));
   gc.streams[type].write(line.join('\t') + "\n",
 			 function (err) {if(err) throw err;});
+
 };
 
 var startGame = function(game, player) {
