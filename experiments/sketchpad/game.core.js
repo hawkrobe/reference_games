@@ -46,6 +46,10 @@ var game_core = function(options){
               width : (this.cellDimensions.width * this.numHorizontalCells
               + this.cellPadding)}; 
   
+  // define dbname and colname
+  this.dbname = 'visual_pragmatics';
+  this.colname = 'test';
+
   // Number of total poses per object
   this.numPoses = 40;          
 
@@ -385,7 +389,8 @@ game_core.prototype.server_send_update = function(){
     dataObj  : this.data,
     roundNum : this.roundNum,
     trialInfo: this.trialInfo,
-    objects: this.objects
+    objects: this.objects,
+    gameID: this.id
   };
 
   _.extend(state, {players: player_packet});
