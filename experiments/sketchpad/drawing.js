@@ -100,7 +100,7 @@ var drawScreen = function(game, player) {
 // Make sketchpad class using global 'paper' functions
 function Sketchpad() {
   paper.setup('sketchpad');
-  view.viewSize = new Size(500, 500);
+  view.viewSize = new Size(300, 300);
 }
 
 Sketchpad.prototype.setupTool = function() {  
@@ -168,7 +168,8 @@ function endStroke(event) {
       var timestamp = Date.now();  
       var intendedName = getIntendedTargetName(globalGame.objects);
       var allObjects = globalGame.objects;
-      console.log('intendedName', intendedName);
+      var sketchpadWidthActual = paper.view.size._width;
+      var sketchpadHeightActual = paper.view.size._height;      
 
       // send stroke info to remote db (see also writeData in game.server)
       dbline = {role: globalGame.my_role,
