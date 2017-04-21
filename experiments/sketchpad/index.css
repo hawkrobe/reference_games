@@ -184,8 +184,8 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #sketchpad {
-    height: 55vh/*500px*/;
-    width: 55vh/*500px*/;
+    height: 55vh;/*300px;/*500px*/;
+    width: 55vh;/*300px;/*500px*/;
     top: 10vh;    
     float: top;
     margin: auto;
