@@ -45,9 +45,7 @@ class App(tornado.web.Application):
         Tornado app which serves the API.
     """
     def __init__(self):
-        handlers = [(r"/saveimage", SaveImageHandler),
-                    (r"/savedecision",SaveDecisionHandler),
-                    (r"/saveimage_nofeat",SaveImageNoFeatCompHandler),
+        handlers = [ (r"/savedecision",SaveDecisionHandler),
                     (r"/dbquery", DBQueryHandler)]
         settings = dict(debug=True)
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -150,7 +148,7 @@ class SaveDecisionHandler(BaseHandler):
 
 def save_decision_only(handler,args):
     imhash = hashlib.sha1(json.dumps(args)).hexdigest()
-    print("imhash", imhash)
+    #print("imhash", imhash)
     filestr = 'filestr'
     global CONN
     print("args",args)
@@ -160,7 +158,7 @@ def save_decision_only(handler,args):
     if dbname not in DB_DICT:
         DB_DICT[dbname] = CONN[dbname]
     db = DB_DICT[dbname]
-    print("db",db)
+    #print("db",db)
     global FS_DICT
     if (dbname, colname) not in FS_DICT:
         FS_DICT[(dbname, colname)] = gridfs.GridFS(db, colname)
