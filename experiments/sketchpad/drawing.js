@@ -176,8 +176,8 @@ function endStroke(event) {
               currStrokeNum: currStrokeNum,
               svgString: svgString,
               jsonString: jsonString,
-              dbname: 'visual_pragmatics',
-              colname: 'test'};
+              dbname: globalGame.dbname,
+              colname: globalGame.colname};
 
     // console.log(dbline);
     $.ajax({
