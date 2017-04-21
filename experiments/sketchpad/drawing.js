@@ -165,7 +165,7 @@ function endStroke(event) {
     var timestamp = Date.now();  
     var intendedName = getIntendedTargetName(globalGame.objects);
 
-    // send stroke info to remote db 
+    // send stroke info to remote db (see also writeData in game.server)
     dbline = {role: globalGame.my_role,
               gameID: gameID,
               playerID: globalGame.my_id,
