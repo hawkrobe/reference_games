@@ -13,7 +13,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="../../lib/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -24,7 +24,7 @@
   </head>
 
   <body role="document">
-    
+
     <div class="container theme-showcase" role="main">
 
       </br>
@@ -35,12 +35,12 @@
       <div class="page-header">
         <h1>Instructions</h1>
       </div>
-      
+
       <div class="well" style="width:800px; margin: 0 auto">
 
 <h2><center>Guess My Sketch!</center>  </h2>
 
-	<p> 
+	<p>
 
 	  In this experiment you will play a fun communication game with
 	  another player on MTurk! In each round both of you are going to be shown a set of objects like this:
@@ -60,7 +60,7 @@
     other will be the <b> Viewer </b>. On each round, one of the four
     objects is the <b>target</b>, which is outlined in orange. Only the
     Sketcher can see which object is
-    the target. 
+    the target.
 
 
 
@@ -68,12 +68,12 @@
 
 <p>
 
-    The goal of the Sketcher is to make a sketch of the target so 
+    The goal of the Sketcher is to make a sketch of the target so
     that the Viewer can figure out which object it is. You'll both
     get <b> a bonus of $0.05 for each correct response</b>, so pay
     attention! If you are the Sketcher, please do your best to make a sketch of
     each target from the perspective that is shown in the picture. Please
-    do not draw text labels. 
+    do not draw text labels.
 
 </p>
 
@@ -86,9 +86,9 @@
 </p> -->
 <p>
     The goal is for the Viewer to identify the target
-    based on what the Sketcher has drawn. If you are the Viewer, 
+    based on what the Sketcher has drawn. If you are the Viewer,
     you will first need to wait until the Sketcher has finished
-    their sketch before making your selection. 
+    their sketch before making your selection.
 </p>
 
     <p> Once the Viewer clicks on
@@ -96,9 +96,9 @@
     feedback. So, the Sketcher will see what the Viewer clicked, and the
     Viewer will see the true target. Then you will both automatically advance to the next round of objects. There are a
     total of <b>32 rounds</b>. After the final round you will fill out a quick
-    15 second survey and be on your way. 
+    15 second survey and be on your way.
 </p>
-    
+
 <p> A few final notes: First, since you are playing with another
   player, you may see this screen before the game begins:
   <p>
@@ -125,27 +125,27 @@
 
 <h4>
     Please fill out this short quiz below before getting started.
-    Good luck and have fun! 
+    Good luck and have fun!
 </h4>
 
 
 
 
 
-	
+
       </div>
       <div class="page-header">
         <h3>Comprehension Quiz</h3>
       </div>
 
      <div class="well" style="width:800px; margin: 0 auto">
- 
+
   </br>
   The Sketcher can click on an object to end the round.
     </br>
     <input type="radio" name="dgoal" value="yes"> False
     </br>
-    <input type="radio" name="dgoal" value="no"> True 
+    <input type="radio" name="dgoal" value="no"> True
     </br>
 
 
@@ -156,9 +156,9 @@
       </br>
       <input type="radio" name="mgoal" value="yes"> True
       </br>
-    
 
-  </br> 
+
+  </br>
   The target is the object which has the blue box around it.
       </br>
       <input type="radio" name="round" value="yes"> True
@@ -166,7 +166,7 @@
       <input type="radio" name="round" value="no"> False
       </br>
 
-  </br> 
+  </br>
   Only the Sketcher can make drawings.
       </br>
       <input type="radio" name="message" value="yes"> False
@@ -174,7 +174,7 @@
       <input type="radio" name="message" value="no"> True
       </br>
 
-  </br> 
+  </br>
   There are a total of 200 rounds.
       </br>
       <input type="radio" name="comp" value="no"> True
@@ -182,16 +182,16 @@
       <input type="radio" name="comp" value="yes"> False
       </br>
 
-  </br> 
+  </br>
   The locations of the four objects are the same for the Sketcher and the Viewer.
       </br>
       <input type="radio" name="location" value="no"> True
       </br>
       <input type="radio" name="location" value="yes"> False
       </br>
-    
+
   </br>
-    <input id="quiz_submit" type="submit" value="Submit"> 
+    <input id="quiz_submit" type="submit" value="Submit">
       </br>
       </br>
   <div class="error" style="display:none"> Ooops! Looks like you made a mistake. You have one more try. </div>
@@ -209,7 +209,7 @@
       urlParams = {};
       while (match = search.exec(query))
       urlParams[decode(match[1])] = decode(match[2]);
-      
+
       console.log(urlParams)
 
       var counter = 0;
@@ -221,8 +221,8 @@
         var ans5 = $('input[name="comp"]:checked').val();
         var ans6 = $('input[name="location"]:checked').val();
 
-        if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" && 
-           ans4 == "yes" && ans5 == "yes" && ans6 == "yes") { 
+        if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" &&
+           ans4 == "yes" && ans5 == "yes" && ans6 == "yes") {
            var workerId = urlParams.workerId;
            var assignmentId = urlParams.assignmentId;
            var hitId = urlParams.hitId;
@@ -238,7 +238,7 @@
         }
       };
     </script>
-    
+
     <script src="./validate-form.js"></script>
 
     <!-- Bootstrap core JavaScript
