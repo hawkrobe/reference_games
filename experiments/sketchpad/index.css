@@ -184,8 +184,8 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #sketchpad {
-    height: 50vh/*300px*/;
-    width: 50vh/*300px*/;
+    height: 300px;
+    width: 300px;
     position: absolute;
     top: 4vh;
     right:0;left:0;
