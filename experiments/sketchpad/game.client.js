@@ -198,7 +198,7 @@ var customSetup = function(game) {
 
     // reset submitbutton status
     globalGame.doneDrawing = false;
-    globalGame.drawingAllowed = true;
+    // globalGame.drawingAllowed = true;
 
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
