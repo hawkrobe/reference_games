@@ -298,7 +298,7 @@ var client_onjoingame = function(num_players, role) {
       }
     }, 1000 * 60 * 15);
 
-    globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
+    globalGame.get_player(globalGame.my_id).message = ('Drawing will begin \n after another player connects... \n '
 						       + 'Please do not refresh the page!');
   }
 
