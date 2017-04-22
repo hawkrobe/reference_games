@@ -99,10 +99,10 @@ var drawScreen = function(game, player) {
 
 function Sketchpad() {
   paper.setup('sketchpad');
-  var actual_height = $('#sketchpad').innerHeight();
-  var actual_width = $('#sketchpad').innerWidth()    
-  view.viewSize = new Size(actual_height, actual_width); 
-  //  view.setViewSize = new Size(view.element.width,view.element.height)
+  // var actual_height = $('#sketchpad').innerHeight();
+  // var actual_width = $('#sketchpad').innerWidth()    
+  // view.viewSize = new Size(actual_height, actual_width); 
+//  view.viewSize = new Size(view.element.width,view.element.height)
 }
 
 Sketchpad.prototype.setupTool = function() {
@@ -189,17 +189,19 @@ function endStroke(event) {
                 colname: globalGame.colname};
 
       // console.log(dbline);
-      $.ajax({
-       type: 'GET',
-       url: 'http://10.102.2.155:9919/savedecision',
-       dataType: 'jsonp',
-       traditional: true,
-       contentType: 'application/json; charset=utf-8',
-       data: dbline,
-       success: function(msg) {
-                  console.log('stroke response: upload success!');
-                }
-    });
+      // jef 4/22/17: do NOT send data to mongo db until SSL certificate
+      // in place
+    //   $.ajax({
+    //    type: 'GET',
+    //    url: 'https://10.102.2.155:9919/savedecision',
+    //    dataType: 'jsonp',
+    //    traditional: true,
+    //    contentType: 'application/json; charset=utf-8',
+    //    data: dbline,
+    //    success: function(msg) {
+    //               console.log('stroke response: upload success!');
+    //             }
+    // });
 
     }
   };
