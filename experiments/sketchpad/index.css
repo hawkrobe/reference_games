@@ -38,13 +38,13 @@ html , body {
 }
 
 #instructs {
-	height: 2%;
-	width: 100%;
+	height: 2vh;
+	width: 110vh;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:0; right:0; top:5.5%; bottom: 0;
+	left:0; right:0; top:5.2vh; bottom: 0;
 	position: absolute;
 	font-size: 2.2vh;
 	font-weight:lighter;
@@ -59,7 +59,7 @@ html , body {
 	margin-bottom: auto;
 	left:auto; right:1%; top:35%; bottom: 0;
 	position: absolute;
-	font-size: 150%;
+	font-size: 2.2vh;
 	font-weight:lighter;
 }
 
@@ -72,22 +72,22 @@ html , body {
 	margin-bottom: auto;
 	left:auto; right:1%; top:25%; bottom: 0;
 	position: absolute;
-	font-size: 150%;
+	font-size: 2.2vh;
 	font-weight:lighter;
 }
 
 #roundnumber {
-	height: 2%;
-	width: 15%;
+  height: 2vh;
+	width: 20vh;
 	text-align: right;
 	margin-left: 85%;
 	margin-top: 1%;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:auto; right:1%; top:auto; bottom: 3%;
+	left:auto; right:3vh; top:auto; bottom: 3vh;
 	position: absolute;
-	font-size: 120%;
-  	font-weight:lighter;
+	font-size: 2.5vh;
+  font-weight:lighter;
 }
 
 #score {
@@ -100,18 +100,18 @@ html , body {
 	margin-bottom: auto ;
 	left:0; right:0; top:20%; bottom: 0;
 	position: absolute;
-	font-size: 150%;
+	font-size: 2vh;
 	font-weight:lighter;
 }
 
 #submitbutton {
 	z-index: 10;
     height: 10vh;
-    width: 20vw;
+    width: 14vw;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
-	right: 6%; top: 10%;
+	right: 2vh; top: 10vh;
 	position: absolute;
     background: rgb(255,255,255);
     border: none;
@@ -129,11 +129,11 @@ ALOT...don't understand how to adjust that.*/
 #submitbutton:active {
   z-index: 10;
     height: 10vh;
-    width: 20vw;
+    width: 14vw;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
-	right: 6%; top: 10%;
+	right: 2vh; top: 10vh;
 	position: absolute;
     background: rgb(255,255,255);
     border: none;
@@ -164,7 +164,7 @@ ALOT...don't understand how to adjust that.*/
     height: 25vh;
     width: 100vh;
     margin: auto;
-	top: 56vh; bottom: auto; left:0; right: 0;
+	  top: 56vh; bottom: auto; left:0; right: 0;
     background: #383838;
     position: absolute;
 
@@ -184,8 +184,8 @@ ALOT...don't understand how to adjust that.*/
 
 #sketchpad {
     height: 55vh/*300px*/;
-    width: 55vw/*300px*/;
-    top: 10vh;
+    width: 55vh/*300px*/;
+    top: 12vh;
     float: top;
     margin: auto;
     background: #ffffff;
@@ -241,7 +241,7 @@ ALOT...don't understand how to adjust that.*/
     background: rgb(255,255,255);
     border: none;
     padding: 5px;
-	font-size: 300%;
+	font-size: 6vh;
 	font-weight: normal;
 	border-radius: 50%;
 	border: none;
