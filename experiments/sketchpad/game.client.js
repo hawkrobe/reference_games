@@ -225,6 +225,7 @@ var customSetup = function(game) {
     var score = game.data.subject_information.score;
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
+      $('#sketchpad').hide();
       $('#instructs').empty()
       	.append("Round\n" + (game.roundNum + 1) + " of " + game.numRounds);
     } else {
