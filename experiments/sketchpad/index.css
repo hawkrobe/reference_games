@@ -1,9 +1,9 @@
 html , body {
-     background: #000000; 
-     color: #fff;           
+     background: #000000;
+     color: #fff;
      font: 18px Helvetica;
      font-weight: lighter;
-     margin: 0; 
+     margin: 0;
      padding: 0;
 }
 
@@ -34,7 +34,7 @@ html , body {
 	position: absolute;
 	background:white;
 	font-size:3.5vh;
-	color:black;	
+	color:black;
 }
 
 #instructs {
@@ -127,9 +127,9 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #submitbutton:active {
-	z-index: 10;
+  z-index: 10;
     height: 10vh;
-    width: 20vh;
+    width: 20vw;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
@@ -159,11 +159,11 @@ ALOT...don't understand how to adjust that.*/
 
 /*height and width originally 80vh*/
 #viewport {
-    float: middle;		
+    float: middle;
     border:solid 1px #333;
     height: 25vh;
     width: 100vh;
-    margin: auto;    
+    margin: auto;
 	top: 56vh; bottom: auto; left:0; right: 0;
     background: #383838;
     position: absolute;
@@ -171,11 +171,11 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #occluder {
-    float: middle;		
+    float: middle;
     border:solid 1px #333;
     height: 25vh;
     width: 100vh;
-    margin: auto;    
+    margin: auto;
 	top: 56vh; bottom: auto; left:0; right: 0;
     background: #808080;
     position: absolute;
@@ -185,7 +185,7 @@ ALOT...don't understand how to adjust that.*/
 #sketchpad {
     height: 55vh/*300px*/;
     width: 55vw/*300px*/;
-    top: 10vh;    
+    top: 10vh;
     float: top;
     margin: auto;
     background: #ffffff;
@@ -200,16 +200,16 @@ ALOT...don't understand how to adjust that.*/
 }*/
 
 #chatarea form {
-	padding: 3px; 
+	padding: 3px;
 	height: 5vh;
-	width: 100vh; 
+	width: 100vh;
 }
 
 #chatarea input {
-	border: 0; 
+	border: 0;
 	height: 99%;
 	font-size: 125%;
-	width: 89%; 
+	width: 89%;
 	margin-left: .5%;
 	margin-right: .5%;
 	margin-top: .5%;
@@ -220,11 +220,11 @@ ALOT...don't understand how to adjust that.*/
 
 
 #chatarea button {
-	width: 9%; 
+	width: 9%;
 	height: 5vh;
 	font-size: 150%;
-	background: rgb(130, 224, 255); 
-	border: none; 
+	background: rgb(130, 224, 255);
+	border: none;
 	padding: 5px;
 	margin-left: .5%;
 	margin-right: .5%;
@@ -251,7 +251,7 @@ ALOT...don't understand how to adjust that.*/
   overflow: hidden;
   display: inline-block;
   vertical-align: bottom;
-  -webkit-animation: ellipsis steps(4,end) 900ms infinite;      
+  -webkit-animation: ellipsis steps(4,end) 900ms infinite;
   animation: ellipsis steps(4,end) 900ms infinite;
   content: "\2026"; /* ascii code for the ellipsis character */
   width: 0px;
@@ -259,13 +259,13 @@ ALOT...don't understand how to adjust that.*/
 
 @keyframes ellipsis {
   to {
-    width: 1.25em;    
+    width: 1.25em;
   }
 }
 
 @-webkit-keyframes ellipsis {
   to {
-    width: 1.25em;    
+    width: 1.25em;
   }
 }
 
