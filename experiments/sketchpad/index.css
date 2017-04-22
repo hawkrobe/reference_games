@@ -5,6 +5,7 @@ html , body {
      font-weight: lighter;
      margin: 0;
      padding: 0;
+     display: inline !important;
 }
 
 .alignleft {
@@ -182,7 +183,7 @@ ALOT...don't understand how to adjust that.*/
     z-index: 10;
 }
 
-#sketchpad {
+#sketchpad {	
     height: 55vh/*300px*/;
     width: 55vh/*300px*/;
     top: 12vh;
@@ -269,7 +270,7 @@ ALOT...don't understand how to adjust that.*/
   }
 }
 
-::-webkit-scrollbar {
+/*::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
 }
@@ -279,3 +280,4 @@ ALOT...don't understand how to adjust that.*/
     background-color: rgba(255,255,255,.5);
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
+*/
