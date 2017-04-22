@@ -97,11 +97,12 @@ var drawScreen = function(game, player) {
   }
 };
 
-// Make sketchpad class using global 'paper' functions
 function Sketchpad() {
   paper.setup('sketchpad');
-  view.setViewSize = new Size(view.element.width,view.element.height)
-  console.log(view.viewSize);
+  var actual_height = $('#sketchpad').innerHeight();
+  var actual_width = $('#sketchpad').innerWidth()    
+  view.viewSize = new Size(actual_height, actual_width); 
+  //  view.setViewSize = new Size(view.element.width,view.element.height)
 }
 
 Sketchpad.prototype.setupTool = function() {
