@@ -78,8 +78,10 @@ var client_onserverupdate_received = function(data){
           }
           alreadyLoaded += 1
           if (alreadyLoaded == 4) {
-            setTimeout(function() {$('#occluder').hide();},750);
-            globalGame.drawingAllowed = true;
+            setTimeout(function() {
+              $('#occluder').hide();
+              globalGame.drawingAllowed = true;
+            },750);
           }
       };
       return _.extend(customObj, {img: imgObj});
@@ -198,7 +200,7 @@ var customSetup = function(game) {
 
     // reset submitbutton status
     globalGame.doneDrawing = false;
-    globalGame.drawingAllowed = true;
+    // globalGame.drawingAllowed = true;
 
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
@@ -274,14 +276,16 @@ var client_onjoingame = function(num_players, role) {
   $('#roleLabel').append(role + '.');
   if (role === globalGame.playerRoleNames.role1) {
     txt = "target";
-    $('#instructs').append("Make a sketch of the target (orange)" +
+    $('#instructs').html("<p>Make a sketch of the target (orange)" +
       " so that your partner can tell which it is. " +
-      " When you are done, click SUBMIT. " +
-      " To draw: Click & drag on canvas OR hold down Shift key while moving cursor.");
+      " When you are done, click SUBMIT. </p>" +
+      "<p> To draw: Click & drag on canvas OR hold down Shift key while moving cursor. </p>" +
+      "<p> Important: Please do NOT resize browser window or change zoom during the game.</p>".bold());
       $("#submitbutton").show();
   } else if (role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Your partner is going to draw one of these four objects." +
-      " When they are done, click on the object they sketched.");
+    $('#instructs').html("<p>Your partner is going to draw one of these four objects." +
+      " When they are done, click on the object they sketched. </p>" +
+      " <p> Important: Please do NOT resize browser window or change zoom during the game.</p>".bold());
     $("#loading").show();
   }
 

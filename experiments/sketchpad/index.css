@@ -129,8 +129,8 @@ ALOT...don't understand how to adjust that.*/
 
 #submitbutton:active {
   z-index: 10;
-    height: 10vh;
-    width: 14vw;
+    height: 6vh;
+    width: 12vw;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
@@ -183,10 +183,12 @@ ALOT...don't understand how to adjust that.*/
     z-index: 10;
 }
 
-#sketchpad {	
-    height: 55vh/*300px*/;
-    width: 55vh/*300px*/;
-    top: 12vh;
+#sketchpad {
+    height: 50vh/*300px*/;
+    width: 50vh/*300px*/;
+    position: absolute;
+    top: 4vh;
+    right:0;left:0;
     float: top;
     margin: auto;
     background: #ffffff;
