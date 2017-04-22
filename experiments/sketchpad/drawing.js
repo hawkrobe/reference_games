@@ -101,9 +101,7 @@ var drawScreen = function(game, player) {
 function Sketchpad() {
   paper.setup('sketchpad');
   view.setViewSize = new Size(view.element.width,view.element.height)
-  // view.viewSize = new Size(300, 300);
   console.log(view.viewSize);
-
 }
 
 Sketchpad.prototype.setupTool = function() {
