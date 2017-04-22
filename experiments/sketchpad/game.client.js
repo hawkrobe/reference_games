@@ -379,17 +379,19 @@ function responseListener(evt) {
                     colname:globalGame.colname};
 
           // console.log(dbline);
-          $.ajax({
-           type: 'GET',
-           url: 'http://10.102.2.155:9919/savedecision',
-           dataType: 'jsonp',
-           traditional: true,
-           contentType: 'application/json; charset=utf-8',
-           data: dbline,
-           success: function(msg) {
-                      console.log('clickObj response: upload success!');
-                    }
-          });
+          // jef 4/22/17: do NOT send data to mongo db until SSL certificate
+          // in place
+          // $.ajax({
+          //  type: 'GET',
+          //  url: 'http://10.102.2.155:9919/savedecision',
+          //  dataType: 'jsonp',
+          //  traditional: true,
+          //  contentType: 'application/json; charset=utf-8',
+          //  data: dbline,
+          //  success: function(msg) {
+          //             console.log('clickObj response: upload success!');
+          //           }
+          // });
 
         }; //
 
