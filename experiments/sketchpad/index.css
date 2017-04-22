@@ -128,8 +128,8 @@ ALOT...don't understand how to adjust that.*/
 
 #submitbutton:active {
   z-index: 10;
-    height: 10vh;
-    width: 14vw;
+    height: 6vh;
+    width: 12vw;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
