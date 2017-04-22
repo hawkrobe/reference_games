@@ -78,8 +78,10 @@ var client_onserverupdate_received = function(data){
           }
           alreadyLoaded += 1
           if (alreadyLoaded == 4) {
-            setTimeout(function() {$('#occluder').hide();},750);
-            globalGame.drawingAllowed = true;
+            setTimeout(function() {
+              $('#occluder').hide();
+              globalGame.drawingAllowed = true;
+            },750);
           }
       };
       return _.extend(customObj, {img: imgObj});
