@@ -56,7 +56,9 @@ var client_onserverupdate_received = function(data){
   // If your objects are out-of-date (i.e. if there's a new round), set up
   // machinery to draw them
   if (globalGame.roundNum != data.roundNum) {
-    var alreadyLoaded = 0; $('#occluder').show();
+    var alreadyLoaded = 0; 
+    $('#occluder').show();
+    // globalGame.drawingAllowed = false;
     globalGame.objects = _.map(data.objects, function(obj) {
       // Extract the coordinates matching your role
       var customCoords = globalGame.my_role == "sketcher" ? obj.speakerCoords : obj.listenerCoords;
@@ -131,6 +133,7 @@ var client_onMessage = function(data) {
       // Redirect to exit survey
       ondisconnect();
       console.log("received end message...");
+      $('#sketchpad').hide();
       break;
 
     case 'feedback' :
