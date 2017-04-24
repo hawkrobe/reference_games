@@ -40,7 +40,7 @@ var drawObjects = function(game, player) {
       var trueY = obj[customCoords]['trueY'];
       var gridX = obj[customCoords]['gridX'];
       var gridY = obj[customCoords]['gridY'];
-      console.log(obj['subordinate'],customCoords,gridX,gridY,trueX,trueY);
+      // console.log(obj['subordinate'],customCoords,gridX,gridY,trueX,trueY);
       globalGame.ctx.drawImage(obj.img, trueX, trueY,obj.width, obj.height);
     });
 
