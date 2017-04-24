@@ -37,3 +37,4 @@ experiments/sketchpad/python/photos/*
 experiments/sketchpad/python/.ipynb_checkpoints
 experiments/sketchpad/_*
 experiments/sketchpad/compensation_driver.py
+experiments/sketchpad/approve-work.py
