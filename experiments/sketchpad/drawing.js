@@ -99,11 +99,11 @@ var drawScreen = function(game, player) {
 
 function Sketchpad() {
   paper.setup('sketchpad');
-  var actual_height = $('#sketchpad').innerHeight();
-  var actual_width = $('#sketchpad').innerWidth()    
-  view.viewSize = new Size(actual_height, actual_width); 
+  // var actual_height = $('#sketchpad').innerHeight();
+  // var actual_width = $('#sketchpad').innerWidth()    
+  // view.viewSize = new Size(actual_height, actual_width); 
    // view.viewSize = new Size(view.element.width,view.element.height)
-  // view.viewSize = new Size(300,300)//view.element.width, view.element.height); 
+  view.viewSize = new Size(300,300)//view.element.width, view.element.height); 
   //  view.setViewSize = new Size(view.element.width,view.element.height)
 }
 
