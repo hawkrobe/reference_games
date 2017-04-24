@@ -229,8 +229,10 @@ var customSetup = function(game) {
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#sketchpad').hide();
-      $('#instructs').empty()
-      	.append("Round\n" + (game.roundNum + 1) + " of " + game.numRounds);
+      $('#instructs').html('Thanks for participating in our experiment! ' +
+        "Before you submit your HIT, we'd like to ask you a few questions.");
+      $('#roundnumber').empty()	
+        .append("Round\n" + (game.roundNum + 1) + " of " + game.numRounds);
     } else {
       $('#roundnumber').empty()
         .append("Round\n" + (game.roundNum + 2) + " of " + game.numRounds);
