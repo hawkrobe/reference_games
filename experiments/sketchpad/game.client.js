@@ -201,10 +201,10 @@ var customSetup = function(game) {
     // Reset sketchpad each round
     project.activeLayer.removeChildren();
 
-    // reset submitbutton status
+    // reset drawing stuff
     globalGame.doneDrawing = false;
-    // globalGame.drawingAllowed = true;
-
+    globalGame.path = [];
+    
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
 
