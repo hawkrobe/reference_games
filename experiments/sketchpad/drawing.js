@@ -111,33 +111,36 @@ Sketchpad.prototype.setupTool = function() {
   var tool = new Tool();
 
   tool.onMouseMove = function(event) {
-    globalGame.currMouseX = event.point.x;
-    globalGame.currMouseY = event.point.y;
-    if(globalGame.penDown && globalGame.drawingAllowed) {
-      globalGame.path.add(event.point);
-    };
-  }
+    if(globalGame.drawingAllowed) {
+      globalGame.currMouseX = event.point.x;
+      globalGame.currMouseY = event.point.y;
+      if(globalGame.penDown) {
+	globalGame.path.add(event.point);
+      }
+    }
+  };
 
   tool.onMouseDown = function(event) {
     startStroke(event);
   };
 
   tool.onMouseDrag = function(event) {
-    globalGame.currMouseX = event.point.x;
-    globalGame.currMouseY = event.point.y;
     if (globalGame.drawingAllowed) {
+      globalGame.currMouseX = event.point.x;
+      globalGame.currMouseY = event.point.y;
       globalGame.path.add(event.point);
     }
   };
 
   tool.onMouseUp = function(event) {
     endStroke(event);
-  }
+  };
 };
 
 function startStroke(event) {
-  var point = event ? event.point : {x: globalGame.currMouseX, y: globalGame.currMouseY};
   if (globalGame.drawingAllowed) {
+    var point = event ? event.point : {x: globalGame.currMouseX, y: globalGame.currMouseY};
+    console.log('starting new stroke at point' + JSON.stringify(point));
     globalGame.path = new Path({
       segments: [point],
       strokeColor: 'black',
@@ -147,7 +150,8 @@ function startStroke(event) {
 };
 
 function endStroke(event) {
-  if (globalGame.drawingAllowed) {
+  if (globalGame.drawingAllowed && globalGame.path) {
+    console.log('ending stroke');
     // Increment stroke num
     globalGame.currStrokeNum += 1;
 
