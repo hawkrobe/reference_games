@@ -23,6 +23,8 @@ var ondisconnect = function(data) {
   $('#roleLabel').hide();
   $('#score').hide();
   $('#exit_survey').show();
+  $('#sketchpad').hide(); // this is from sketchpad experiment (jefan 4/23/17)
+  $('#instructs').hide(); // this is from sketchpad experiment (jefan 4/23/17)
 };
 
 var onconnect = function(data) {
