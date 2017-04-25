@@ -104,7 +104,6 @@ print('...')
 #### Next, communicate with AMT to actually bonus  #######
 #### these workers                                 ######
 ####===============================================#######
-
 mtc = MTurkConnection(aws_access_key_id=ACCESS_ID,
                       aws_secret_access_key=SECRET_KEY,
                       host=HOST)
@@ -128,7 +127,7 @@ for hit in hits:
         if key in d :
             bonus = Price(d[key]) if key in d else 0
             print 'Now bonusing ' + str(key[0]) + ' ' + str(key[1]) + ' ' + str(bonus)
-            handle_assignment(mtc, assignment, bonus, message)
+            ### handle_assignment(mtc, assignment, bonus, message)
             
 ## Read in master bonused list and concatenate newly bonused workers and save out
 if os.path.exists(bonused):
