@@ -36,9 +36,10 @@ experiments/sketchpad/test_stim/*
 experiments/sketchpad/python/photos/*
 experiments/sketchpad/python/.ipynb_checkpoints
 experiments/sketchpad/_*
-data/sketchpad/compensation_driver.py
-data/sketchpad/credentials.py
-data/sketchpad/auth.json
-*/credentials.py
-*/crednetials.pyc
-*/auth.json
+data/sketchpad/mturk/compensation_driver.py
+data/sketchpad/mturk/credentials.py
+data/sketchpad/mturk/auth.json
+compensation_driver.py
+credentials.py
+crednetials.pyc
+auth.json
