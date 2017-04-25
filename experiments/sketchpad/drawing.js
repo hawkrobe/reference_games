@@ -203,7 +203,23 @@ function endStroke(event) {
     //    dataType: 'jsonp',
     //    traditional: true,
     //    contentType: 'application/json; charset=utf-8',
+    //    timeout: 2000,
+    //    retryLimit: 3,
     //    data: dbline,
+          // error: function(x, t, m) {
+          //   if(t==="timeout") {
+          //     console.log("got timeout, press on anyway...");
+          //     this.retryLimit--;
+          //     $.ajax(this);
+          //     return;
+
+          //   } else {
+          //       console.log(t);
+          //       this.retryLimit--;
+          //       $.ajax(this);    
+          //       return;                      
+          //   }
+          // },
     //    success: function(msg) {
     //               console.log('stroke response: upload success!');
     //             }
