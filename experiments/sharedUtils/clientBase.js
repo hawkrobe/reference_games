@@ -25,9 +25,8 @@ var ondisconnect = function(data) {
   else {
       $('#instructs').html('Oops! It looks like your partner lost their connection.' +
       ' Completing this survey will submit your HIT so you will still receive ' +
-      'full compensation. If you experience any problems, please email sketchloop@gmail.com.'); // this is from sketchpad experiment (jefan 4/23/17)
+      'full compensation. If you experience any problems, please email us (sketchloop@gmail.com).'); // this is from sketchpad experiment (jefan 4/23/17)
   }
-
   $('#message_panel').hide();
   $('#submitbutton').hide();
   $('#roleLabel').hide();

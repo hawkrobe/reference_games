@@ -232,7 +232,6 @@ game_core.prototype.getRandomizedConditions = function() {
   for (i=0;i<4;i++) {
     _target = _target.concat(_.times(8,function() {return i}));
   }
-  
 
   // now shuffle the rows of condition & object matrices using same set of indices
   var _zipped;
@@ -253,60 +252,8 @@ game_core.prototype.getRandomizedConditions = function() {
                  object:object,                 
                  pose:pose,
                  target:target};
-  // console.log('design dict');
-  // console.log(design_dict);
   return design_dict;  
 
-  /////
-
-
-  // var condition = _.shuffle(["closer","further"])[0]; // session-level variable
-  // var category = new Array;
-  // var object = new Array;
-  // var pose = new Array;
-  // var tmp = _.shuffle(_.range(0,8)).slice(-4);
-
-  // if (condition=="closer") {
-  //   this_cat = _.shuffle(_.range(0,4))[0];
-  //   tmpc = []; for (k=0; k<this.numItemsPerRound; k++) {tmpc = tmpc.concat(this_cat);};
-  //   for (j=0; j<this.numRounds; j++) {
-  //     category.push(tmpc);
-  //     object.push(_.shuffle(tmp));
-  //   };
-  // } else if (condition = "further") { 
-  //     category = category.concat(_.shuffle(_.range(0,4)));
-  //     object = object.concat(_.shuffle(tmp));
-  //     zipped = new Array; _zipped = new Array;  
-  //     _zipped = _.zip(category,object); // link category# & object# to ensure you are sampling same objects
-  //     for (j=0; j<this.numRounds; j++) {
-  //       zipped.push(_.shuffle(_zipped)); // zipped becomes numRounds x numItemsPerRound x 2(cat,obj)
-  //     };
-  //     catl = new Array; objl = new Array;  
-  //     for (a=0;a<this.numRounds;a++) {  
-  //       _catl = new Array;  _objl = new Array;      
-  //       for (b=0;b<this.numItemsPerRound;b++) {
-  //         _catl = _catl.concat(zipped[a][b][0]);
-  //         _objl = _objl.concat(zipped[a][b][1]);
-  //       };
-  //       catl.push(_catl);
-  //       objl.push(_objl);
-  //     };
-  //     category = catl;
-  //     object = objl;
-  // }; 
-
-  // // shuffle poses
-  // multiples = Math.floor(this.numRounds/this.numPoses); // num times #poses
-  // remainder =  this.numRounds % this.numPoses;
-  // _pose = new Array;
-  // for (k=0; k<multiples; k++) {
-  //   _pose = _pose.concat(_.shuffle(_.range(this.numPoses)));
-  // }
-  // _pose = _pose.concat(_.shuffle(_.range(this.numPoses).slice(0,remainder)));
-  // for (r=0;r<this.numRounds;r++){
-  //   pose.push(_pose.slice( r*this.numItemsPerRound, (r+1)*this.numItemsPerRound  ))
-  // }
-  
 
 };
 

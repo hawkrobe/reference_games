@@ -90,7 +90,7 @@ module.exports = function(expName) {
     var thegame = this.games[gameid];
     if(thegame) {
       _.map(thegame.get_others(userid),function(p) {
-	p.player.instance.send('s.end');
+	       p.player.instance.send('s.end');
       });
       delete this.games[gameid];
       this.game_count--;
