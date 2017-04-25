@@ -41,5 +41,5 @@ data/sketchpad/mturk/credentials.py
 data/sketchpad/mturk/auth.json
 compensation_driver.py
 credentials.py
-crednetials.pyc
+credentials.pyc
 auth.json
