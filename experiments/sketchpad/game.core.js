@@ -46,6 +46,10 @@ var game_core = function(options){
               width : (this.cellDimensions.width * this.numHorizontalCells
               + this.cellPadding)}; 
   
+
+  // track shift key drawing tool use 
+  this.shiftKeyUsed = 0; // "1" on trials where used, "0" otherwise
+
   // define dbname and colname
   this.dbname = 'visual_pragmatics';
   this.colname = 'test';
@@ -91,9 +95,9 @@ var game_core = function(options){
     this.data = {
       id : this.id.slice(0,6),
       trials : [],
-      catch_trials : [], system : {}, 
+      catch_trials : [], system : {},
       subject_information : {
-        gameID: this.id.slice(0,6),
+	gameID: this.id.slice(0,6),
 	score: 0
       }
     };
@@ -232,7 +236,6 @@ game_core.prototype.getRandomizedConditions = function() {
   for (i=0;i<4;i++) {
     _target = _target.concat(_.times(8,function() {return i}));
   }
-  
 
   // now shuffle the rows of condition & object matrices using same set of indices
   var _zipped;
@@ -253,60 +256,10 @@ game_core.prototype.getRandomizedConditions = function() {
                  object:object,                 
                  pose:pose,
                  target:target};
-  // console.log('design dict');
+
+
   // console.log(design_dict);
   return design_dict;  
-
-  /////
-
-
-  // var condition = _.shuffle(["closer","further"])[0]; // session-level variable
-  // var category = new Array;
-  // var object = new Array;
-  // var pose = new Array;
-  // var tmp = _.shuffle(_.range(0,8)).slice(-4);
-
-  // if (condition=="closer") {
-  //   this_cat = _.shuffle(_.range(0,4))[0];
-  //   tmpc = []; for (k=0; k<this.numItemsPerRound; k++) {tmpc = tmpc.concat(this_cat);};
-  //   for (j=0; j<this.numRounds; j++) {
-  //     category.push(tmpc);
-  //     object.push(_.shuffle(tmp));
-  //   };
-  // } else if (condition = "further") { 
-  //     category = category.concat(_.shuffle(_.range(0,4)));
-  //     object = object.concat(_.shuffle(tmp));
-  //     zipped = new Array; _zipped = new Array;  
-  //     _zipped = _.zip(category,object); // link category# & object# to ensure you are sampling same objects
-  //     for (j=0; j<this.numRounds; j++) {
-  //       zipped.push(_.shuffle(_zipped)); // zipped becomes numRounds x numItemsPerRound x 2(cat,obj)
-  //     };
-  //     catl = new Array; objl = new Array;  
-  //     for (a=0;a<this.numRounds;a++) {  
-  //       _catl = new Array;  _objl = new Array;      
-  //       for (b=0;b<this.numItemsPerRound;b++) {
-  //         _catl = _catl.concat(zipped[a][b][0]);
-  //         _objl = _objl.concat(zipped[a][b][1]);
-  //       };
-  //       catl.push(_catl);
-  //       objl.push(_objl);
-  //     };
-  //     category = catl;
-  //     object = objl;
-  // }; 
-
-  // // shuffle poses
-  // multiples = Math.floor(this.numRounds/this.numPoses); // num times #poses
-  // remainder =  this.numRounds % this.numPoses;
-  // _pose = new Array;
-  // for (k=0; k<multiples; k++) {
-  //   _pose = _pose.concat(_.shuffle(_.range(this.numPoses)));
-  // }
-  // _pose = _pose.concat(_.shuffle(_.range(this.numPoses).slice(0,remainder)));
-  // for (r=0;r<this.numRounds;r++){
-  //   pose.push(_pose.slice( r*this.numItemsPerRound, (r+1)*this.numItemsPerRound  ))
-  // }
-  
 
 };
 
@@ -324,7 +277,7 @@ game_core.prototype.sampleStimulusLocs = function() {
 game_core.prototype.makeTrialList = function () { 
   var local_this = this;
   var design_dict = this.getRandomizedConditions();
-  var condition = design_dict['condition'];
+  var conditionList = design_dict['condition'];
   var categoryList = design_dict['category'];
   var _objectList = design_dict['object'];
   var poseList = design_dict['pose'];
@@ -336,7 +289,7 @@ game_core.prototype.makeTrialList = function () {
   var trialList = [];
   for (var i = 0; i < categoryList.length; i++) { // "i" indexes round number    
     // sample four object images that are unique and follow the condition constraints
-    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList);      
+    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList,conditionList);      
     // sample locations for those objects
     var locs = this.sampleStimulusLocs(); 
     // construct trial list (in sets of complete rounds)
@@ -419,11 +372,15 @@ var getRemainingTargets = function(earlierTargets) {
   });
 };
 
-var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList) {    
+
+
+
+var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList,conditionList) {    
   theseCats = categoryList[roundNum];
   theseObjs = _objectList[roundNum];
   thisPose = poseList[roundNum];
   thisTarget = targetList[roundNum];
+  thisCondition = conditionList[roundNum];
 
   var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
   var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
@@ -438,11 +395,10 @@ var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList
   var thirdDistractor = im_all[notTargs[2]];
   _target_status = ["distractor","distractor","distractor","distractor"];
   var target_status = _target_status[thisTarget] = "target"; 
-  _.extend(target,{target_status: "target"});
-  _.extend(firstDistractor,{target_status: "distr1"}); 
-  _.extend(secondDistractor,{target_status: "distr2"});
-  _.extend(thirdDistractor,{target_status: "distr3"});
-
+  _.extend(target,{target_status: "target", condition: thisCondition});
+  _.extend(firstDistractor,{target_status: "distr1", condition: thisCondition}); 
+  _.extend(secondDistractor,{target_status: "distr2", condition: thisCondition});
+  _.extend(thirdDistractor,{target_status: "distr3", condition: thisCondition});
   return [target, firstDistractor, secondDistractor, thirdDistractor];
 
 };

@@ -1,4 +1,4 @@
-stimList = [{"filename": "birds_01_crow_0000.png" , "basic": "birds", "subordinate": "crow" , "cluster": 0, "object": 0, "pose": 0},
+[{"filename": "birds_01_crow_0000.png" , "basic": "birds", "subordinate": "crow" , "cluster": 0, "object": 0, "pose": 0},
 {"filename": "birds_01_crow_0001.png" , "basic": "birds", "subordinate": "crow" , "cluster": 0, "object": 0, "pose": 1},
 {"filename": "birds_01_crow_0002.png" , "basic": "birds", "subordinate": "crow" , "cluster": 0, "object": 0, "pose": 2},
 {"filename": "birds_01_crow_0003.png" , "basic": "birds", "subordinate": "crow" , "cluster": 0, "object": 0, "pose": 3},

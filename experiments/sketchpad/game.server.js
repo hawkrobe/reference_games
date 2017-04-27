@@ -53,7 +53,7 @@ var onMessage = function(client,message) {
   case 'doneDrawing' : // sketcher has declared that drawing is finished
     drawing_status = message_parts[1];
     // console.log('drawing_status in doneDrawing case in server');
-    console.log(drawing_status);
+    console.log('drawing submitted: ', drawing_status);
       _.map(all, function(p){
         p.player.instance.emit('mutualDoneDrawing', {user: client.userid} );
       });
@@ -87,18 +87,20 @@ var writeData = function(client, type, message_parts) {
     var clickedName = message_parts[1];
     var correct = intendedName == clickedName ? 1 : 0;
     var pngString = message_parts[2];
+    var pose = parseInt(message_parts[3]);
+    var condition = message_parts[4];
     var objectLocs = getObjectLocs(gc.trialInfo.currStim);
-    line = (line.concat([intendedName, clickedName, correct])
+    line = (line.concat([intendedName, clickedName, correct, pose, condition])
 	    .concat(objectLocs)
 	    .concat(pngString));
-               
+        
     break;
  
   case "stroke" : 
     var currStrokeNum = message_parts[0];
     var svgStr = message_parts[1];
-    line = line.concat([currStrokeNum, intendedName, svgStr]);
-
+    var shiftKeyUsed = message_parts[2];
+    line = line.concat([currStrokeNum, intendedName, shiftKeyUsed, svgStr]);
     break;
   }
   console.log(type + ":" + line.slice(0,-1).join('\t'));
@@ -113,9 +115,9 @@ var startGame = function(game, player) {
   var dataFileName = startTime + "_" + game.id + ".csv";
   var baseCols = ["gameid","time","trialNum"].join('\t');
   var objectLocHeader = utils.getObjectLocHeader();
-  var strokeHeader = [baseCols,"strokeNum","targetName","svg\n"].join('\t');
-  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject",
-			  "outcome", objectLocHeader, "png\n"].join('\t');
+  var strokeHeader = [baseCols,"strokeNum","targetName", "shiftKeyUsed","svg\n"].join('\t');
+  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", 
+			  "outcome", "pose", "condition", objectLocHeader, "png\n"].join('\t');
 
   utils.establishStream(game, "stroke", dataFileName,strokeHeader);
   utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
@@ -129,7 +131,8 @@ var setCustomEvents = function(socket) {
     var others = socket.game.get_others(socket.userid);
     var xmlDoc = new parser().parseFromString(data.svgString);
     var svgData = xmlDoc.documentElement.getAttribute('d');
-    writeData(socket, 'stroke', [data.currStrokeNum, svgData]);
+    var shiftKeyUsed = data.shiftKeyUsed;
+    writeData(socket, 'stroke', [data.currStrokeNum, svgData, shiftKeyUsed]);
 
     // send json format to partner
     _.map(others, function(p) {
