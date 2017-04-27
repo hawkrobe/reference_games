@@ -140,7 +140,7 @@ Sketchpad.prototype.setupTool = function() {
 function startStroke(event) {
   if (globalGame.drawingAllowed) {
     var point = event ? event.point : {x: globalGame.currMouseX, y: globalGame.currMouseY};
-    console.log('starting new stroke at point' + JSON.stringify(point));
+    // console.log('starting new stroke at point' + JSON.stringify(point));
     globalGame.path = new Path({
       segments: [point],
       strokeColor: 'black',
@@ -151,9 +151,9 @@ function startStroke(event) {
 
 function endStroke(event) {
   if (globalGame.drawingAllowed && globalGame.path) {
-    console.log('ending stroke');
+    // console.log('ending stroke');
     // Increment stroke num
-    globalGame.currStrokeNum += 1;
+    globalGame.currStrokeNum += 1;  
 
     // Simplify path to reduce data sent
     globalGame.path.simplify(10);
@@ -162,7 +162,8 @@ function endStroke(event) {
     globalGame.socket.emit('stroke', {
       currStrokeNum: globalGame.currStrokeNum,
       svgString: globalGame.path.exportSVG({asString: true}),
-      jsonString: globalGame.path.exportJSON({asString: true})
+      jsonString: globalGame.path.exportJSON({asString: true}),
+      shiftKeyUsed: globalGame.shiftKeyUsed
     });
 
     // only send to remote db if you are the sketcher
@@ -224,6 +225,9 @@ function endStroke(event) {
     //               console.log('stroke response: upload success!');
     //             }
     // });
+
+    // reset shift key use variable
+    globalGame.shiftKeyUsed = 0;  
 
     }
   };

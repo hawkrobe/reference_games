@@ -208,9 +208,6 @@ var customSetup = function(game) {
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
 
-    // reset shift key use variable
-    globalGame.shiftKeyUsed = 0;
-
     // occluder box animation now controlled within client_onserverupdate_received
     // // fade in occluder box, wait a beat, then fade it out (then allow drawing)
     // $("#occluder").show(0)
@@ -254,7 +251,7 @@ var customSetup = function(game) {
   });
 
   game.socket.on('mutualDoneDrawing', function(role) {
-    console.log('the doneness of drawing is mutual knowledge');
+    // console.log('the doneness of drawing is mutual knowledge');
     globalGame.doneDrawing = true;
     globalGame.drawingAllowed = false;
     if (globalGame.my_role === globalGame.playerRoleNames.role1) {
@@ -347,7 +344,7 @@ function responseListener(evt) {
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
-      console.log('responseListener: globalGame.doneDrawing',globalGame.doneDrawing);
+      // console.log('responseListener: globalGame.doneDrawing',globalGame.doneDrawing);
       if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
         globalGame.messageSent = false;
 
@@ -360,8 +357,9 @@ function responseListener(evt) {
         var dataURL = document.getElementById('sketchpad').toDataURL();
         dataURL = dataURL.replace('data:image/png;base64,','');
         var currPose = globalGame.objects[0]['pose'];  
-        var currCondition = globalGame.objects[0]['condition'];      
+        var currCondition = globalGame.objects[0]['condition']; 
         var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition];
+        // console.log(packet);
         globalGame.socket.send(packet.join('.'));
 
         if (globalGame.my_role == "viewer") {
