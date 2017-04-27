@@ -251,7 +251,7 @@ var customSetup = function(game) {
   });
 
   game.socket.on('mutualDoneDrawing', function(role) {
-    console.log('the doneness of drawing is mutual knowledge');
+    // console.log('the doneness of drawing is mutual knowledge');
     globalGame.doneDrawing = true;
     globalGame.drawingAllowed = false;
     if (globalGame.my_role === globalGame.playerRoleNames.role1) {
@@ -329,6 +329,7 @@ var client_onjoingame = function(num_players, role) {
 keyboardJS.bind('shift', function(e) {
   startStroke();
   globalGame.penDown = true;
+  globalGame.shiftKeyUsed = 1;
 }, function(e) {
   globalGame.penDown = false;
   endStroke();
@@ -343,7 +344,7 @@ function responseListener(evt) {
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
-      console.log('responseListener: globalGame.doneDrawing',globalGame.doneDrawing);
+      // console.log('responseListener: globalGame.doneDrawing',globalGame.doneDrawing);
       if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
         globalGame.messageSent = false;
 
@@ -355,7 +356,10 @@ function responseListener(evt) {
         // Send packet about trial to server
         var dataURL = document.getElementById('sketchpad').toDataURL();
         dataURL = dataURL.replace('data:image/png;base64,','');
-        var packet = ["clickedObj", obj.subordinate, dataURL];
+        var currPose = globalGame.objects[0]['pose'];  
+        var currCondition = globalGame.objects[0]['condition']; 
+        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition];
+        // console.log(packet);
         globalGame.socket.send(packet.join('.'));
 
         if (globalGame.my_role == "viewer") {
@@ -393,6 +397,23 @@ function responseListener(evt) {
           //  traditional: true,
           //  contentType: 'application/json; charset=utf-8',
           //  data: dbline,
+          //  timeout: 2000,
+          //  retryLimit: 3,
+          //  data: dbline,
+          //  error: function(x, t, m) {
+          //   if(t==="timeout") {
+          //     console.log("got timeout, press on anyway...");
+          //     this.retryLimit--;
+          //     $.ajax(this);
+          //     return;
+
+          //   } else {
+          //       console.log(t);
+          //       this.retryLimit--;
+          //       $.ajax(this);    
+          //       return;                      
+          //   }
+          // },
           //  success: function(msg) {
           //             console.log('clickObj response: upload success!');
           //           }
