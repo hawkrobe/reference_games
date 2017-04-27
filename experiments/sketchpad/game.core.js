@@ -46,6 +46,9 @@ var game_core = function(options){
               width : (this.cellDimensions.width * this.numHorizontalCells
               + this.cellPadding)}; 
   
+  // track shift key drawing tool use 
+  this.shiftKeyUsed = 0; // "1" on trials where used, "0" otherwise
+
   // define dbname and colname
   this.dbname = 'visual_pragmatics';
   this.colname = 'test';
@@ -89,12 +92,12 @@ var game_core = function(options){
     this.player_count = options.player_count;
     this.trialList = this.makeTrialList();
     this.data = {
-      id : this.id.slice(0,6),
-      trials : [],
-      catch_trials : [], system : {}, 
-      subject_information : {
+        id : this.id.slice(0,6),
+        trials : [],
+        catch_trials : [], system : {}, 
+        subject_information : {
         gameID: this.id.slice(0,6),
-	score: 0
+        score: 0
       }
     };
     this.players = [{
@@ -254,7 +257,6 @@ game_core.prototype.getRandomizedConditions = function() {
                  target:target};
   return design_dict;  
 
-
 };
 
 game_core.prototype.sampleStimulusLocs = function() {
@@ -271,7 +273,7 @@ game_core.prototype.sampleStimulusLocs = function() {
 game_core.prototype.makeTrialList = function () { 
   var local_this = this;
   var design_dict = this.getRandomizedConditions();
-  var condition = design_dict['condition'];
+  var conditionList = design_dict['condition'];
   var categoryList = design_dict['category'];
   var _objectList = design_dict['object'];
   var poseList = design_dict['pose'];
@@ -283,7 +285,7 @@ game_core.prototype.makeTrialList = function () {
   var trialList = [];
   for (var i = 0; i < categoryList.length; i++) { // "i" indexes round number    
     // sample four object images that are unique and follow the condition constraints
-    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList);      
+    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList,conditionList);      
     // sample locations for those objects
     var locs = this.sampleStimulusLocs(); 
     // construct trial list (in sets of complete rounds)
@@ -366,11 +368,12 @@ var getRemainingTargets = function(earlierTargets) {
   });
 };
 
-var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList) {    
+var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList,conditionList) {    
   theseCats = categoryList[roundNum];
   theseObjs = _objectList[roundNum];
   thisPose = poseList[roundNum];
   thisTarget = targetList[roundNum];
+  thisCondition = conditionList[roundNum];
 
   var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
   var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
@@ -385,10 +388,10 @@ var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList
   var thirdDistractor = im_all[notTargs[2]];
   _target_status = ["distractor","distractor","distractor","distractor"];
   var target_status = _target_status[thisTarget] = "target"; 
-  _.extend(target,{target_status: "target"});
-  _.extend(firstDistractor,{target_status: "distr1"}); 
-  _.extend(secondDistractor,{target_status: "distr2"});
-  _.extend(thirdDistractor,{target_status: "distr3"});
+  _.extend(target,{target_status: "target", condition: thisCondition});
+  _.extend(firstDistractor,{target_status: "distr1", condition: thisCondition}); 
+  _.extend(secondDistractor,{target_status: "distr2", condition: thisCondition});
+  _.extend(thirdDistractor,{target_status: "distr3", condition: thisCondition});
 
   return [target, firstDistractor, secondDistractor, thirdDistractor];
 

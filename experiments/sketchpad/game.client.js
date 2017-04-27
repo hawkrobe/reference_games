@@ -208,6 +208,9 @@ var customSetup = function(game) {
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
 
+    // reset shift key use variable
+    globalGame.shiftKeyUsed = 0;
+
     // occluder box animation now controlled within client_onserverupdate_received
     // // fade in occluder box, wait a beat, then fade it out (then allow drawing)
     // $("#occluder").show(0)
@@ -329,6 +332,7 @@ var client_onjoingame = function(num_players, role) {
 keyboardJS.bind('shift', function(e) {
   startStroke();
   globalGame.penDown = true;
+  globalGame.shiftKeyUsed = 1;
 }, function(e) {
   globalGame.penDown = false;
   endStroke();
@@ -355,7 +359,9 @@ function responseListener(evt) {
         // Send packet about trial to server
         var dataURL = document.getElementById('sketchpad').toDataURL();
         dataURL = dataURL.replace('data:image/png;base64,','');
-        var packet = ["clickedObj", obj.subordinate, dataURL];
+        var currPose = globalGame.objects[0]['pose'];  
+        var currCondition = globalGame.objects[0]['condition'];      
+        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition];
         globalGame.socket.send(packet.join('.'));
 
         if (globalGame.my_role == "viewer") {

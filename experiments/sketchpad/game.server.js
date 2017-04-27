@@ -87,11 +87,13 @@ var writeData = function(client, type, message_parts) {
     var clickedName = message_parts[1];
     var correct = intendedName == clickedName ? 1 : 0;
     var pngString = message_parts[2];
+    var pose = parseInt(message_parts[3]);
+    var condition = message_parts[4];
     var objectLocs = getObjectLocs(gc.trialInfo.currStim);
-    line = (line.concat([intendedName, clickedName, correct])
+    line = (line.concat([intendedName, clickedName, correct, pose, condition])
 	    .concat(objectLocs)
 	    .concat(pngString));
-               
+    console.log(line);        
     break;
  
   case "stroke" : 
@@ -114,8 +116,8 @@ var startGame = function(game, player) {
   var baseCols = ["gameid","time","trialNum"].join('\t');
   var objectLocHeader = utils.getObjectLocHeader();
   var strokeHeader = [baseCols,"strokeNum","targetName","svg\n"].join('\t');
-  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject",
-			  "outcome", objectLocHeader, "png\n"].join('\t');
+  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", 
+			  "outcome", "pose", "condition", objectLocHeader, "png\n"].join('\t');
 
   utils.establishStream(game, "stroke", dataFileName,strokeHeader);
   utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
