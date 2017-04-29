@@ -30,28 +30,18 @@ tangramsManuscript.pdf
 /writing/cogsci/figs/*
 packrat/lib*/
 packrat/src/
-<<<<<<< HEAD
-=======
 localdump/
->>>>>>> 4cc26737c44081939a8727f555dfd2e876e710a4
 experiments/sketchpad/test_stim/*
 experiments/sketchpad/python/photos/*
 experiments/sketchpad/python/.ipynb_checkpoints
 experiments/sketchpad/_*
-<<<<<<< HEAD
 experiments/sketchpad/compensation_driver.py
 production_results/
 auth.json
 credentials.py
 credentials.pyc
-localdump/
-=======
-data/sketchpad/mturk/compensation_driver.py
 data/sketchpad/mturk/credentials.py
 data/sketchpad/mturk/auth.json
 compensation_driver.py
-credentials.py
-credentials.pyc
 auth.json
 production_results/
->>>>>>> 4cc26737c44081939a8727f555dfd2e876e710a4
