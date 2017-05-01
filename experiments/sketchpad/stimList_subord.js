@@ -806,7 +806,7 @@
 {"filename": "chairs_05_woven_0005.png" , "basic": "chairs", "subordinate": "woven" , "cluster": 2, "object": 4, "pose": 5},
 {"filename": "chairs_05_woven_0006.png" , "basic": "chairs", "subordinate": "woven" , "cluster": 2, "object": 4, "pose": 6},
 {"filename": "chairs_05_woven_0007.png" , "basic": "chairs", "subordinate": "woven" , "cluster": 2, "object": 4, "pose": 7},
-{"filename": "chorphairs_05_woven_0008.png" , "basic": "chairs", "subordinate": "woven" , "cluster": 2, "object": 4, "pose": 8},
+{"filename": "chairs_05_woven_0008.png" , "basic": "chairs", "subordinate": "woven" , "cluster": 2, "object": 4, "pose": 8},
 {"filename": "chairs_05_woven_0009.png" , "basic": "chairs", "subordinate": "woven" , "cluster": 2, "object": 4, "pose": 9},
 {"filename": "chairs_05_woven_0010.png" , "basic": "chairs", "subordinate": "woven" , "cluster": 2, "object": 4, "pose": 10},
 {"filename": "chairs_05_woven_0011.png" , "basic": "chairs", "subordinate": "woven" , "cluster": 2, "object": 4, "pose": 11},
