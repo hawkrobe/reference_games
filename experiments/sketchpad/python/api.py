@@ -72,10 +72,9 @@ class BaseHandler(tornado.web.RequestHandler):
   
   
 PERM = None
-PORT = int(os.environ.get('SKETCHLOOP_MONGO_PORT', 29101))
+PORT = int(os.environ.get('SKETCHLOOP_MONGO_PORT', 29202))
 CONN = pm.MongoClient(port=PORT)
-print(PORT,CONN)
-print(CONN.database_names())
+
 DB_DICT = {}
 FS_DICT = {}
       
