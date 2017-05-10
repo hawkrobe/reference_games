@@ -1,7 +1,7 @@
 // drawing.js
 // This file contains functions to draw on the HTML5 canvas
 
-// Draws a grid of cells on the canvas (evenly divided 
+// Draws a grid of cells on the canvas (evenly divided
 var drawGrid = function(game){
     //size of canvas
     var cw = game.viewport.width;
@@ -13,7 +13,7 @@ var drawGrid = function(game){
     //grid width and height
     var bw = cw - (p*2) ;
     var bh = ch - (p*2) ;
-    
+
     game.ctx.beginPath();
 
     // vertical lines
@@ -26,96 +26,43 @@ var drawGrid = function(game){
         game.ctx.moveTo(p, 0.5 + x + p);
         game.ctx.lineTo(bw + p, 0.5 + x + p);}
 
-    game.ctx.lineWidth = 1;
+    game.ctx.lineWidth = 0;
     game.ctx.strokeStyle = "#000000";
     game.ctx.stroke();
 };
 
 // Loop through the object list and draw each one in its specified location
 var drawObjects = function(game, player) {
-    _.map(globalGame.objects, function(obj) { 
-      //console.log("game.objects according to drawing.drawObjects" + game.objects);
+    _.map(globalGame.objects, function(obj) {
       // game.ctx.globalCompositeOperation='destination-over';  // draw under highlight
       var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
       var trueX = obj[customCoords]['trueX'];
       var trueY = obj[customCoords]['trueY'];
       var gridX = obj[customCoords]['gridX'];
-      var gridY = obj[customCoords]['gridY'];      
-      console.log(obj['subordinate'],customCoords,gridX,gridY,trueX,trueY);
+      var gridY = obj[customCoords]['gridY'];
+      // console.log(obj['subordinate'],customCoords,gridX,gridY,trueX,trueY);
       globalGame.ctx.drawImage(obj.img, trueX, trueY,obj.width, obj.height);
     });
 
 };
 
 
-// var highlightCell = function(game, player) {
-//   // look through game.objects
-//   // find the one with targetStatus = "target"
-//   // set upperLeftX, upperLeftY to its X and Y
-//   //console.log("game.objects according to drawing" + game.objects);
-//   if (player.role == game.playerRoleNames.role1){
-//     var targetObjects = _.filter(game.objects, function(x){
-//       return x.target_status == "target";
-//     });
-//     for (var n = 0; n < targetObjects.length; n++){
-//       var upperLeftX = targetObjects[n].speakerCoords.gridPixelX;
-//       var upperLeftY = targetObjects[n].speakerCoords.gridPixelY;
-//       if (upperLeftX != null && upperLeftY != null) {
-//         game.ctx.beginPath();
-//         game.ctx.lineWidth="20";
-//         game.ctx.strokeStyle="green";
-//         game.ctx.rect(upperLeftX, upperLeftY,200,200); 
-//         game.ctx.stroke();
-//       }
-//     }
-//   }
-// };
-
-// ///// this version of highlightCell function edited from tangrams_sequential/drawing.js
-// var highlightCell = function(game, player, color, condition) {  
-//   var targetObjects = _.filter(globalGame.objects, condition);
-//   console.log('got to highlightCell inside drawing.js ... targetObjects: ');
-//   console.log(targetObjects);
-//   console.log(targetObjects[0]);
-//   var customCoords = game.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
-//   for (var i = 0; i < targetObjects.length; i++){
-//     var gridX = targetObjects[i][customCoords]['gridX'];
-//     var gridY = targetObjects[i][customCoords]['gridY'];
-//     var upperLeftX = game.getPixelFromCell(gridX, gridY).upperLeftX;
-//     var upperLeftY = game.getPixelFromCell(gridX, gridY).upperLeftY;
-//     game.ctx.globalCompositeOperation='source-over';
-//     if (upperLeftX != null && upperLeftY != null) {
-//       game.ctx.beginPath();
-//       game.ctx.lineWidth="10";
-//       game.ctx.strokeStyle=color;
-//       game.ctx.rect(upperLeftX + 5, upperLeftY + 5,game.cellDimensions.width-10,game.cellDimensions.height-10); 
-//       game.ctx.stroke();
-//     }
-//   }
-// };
-
 ///// this version of highlightCell function edited from tangrams_sequential/drawing.js
 //// almost same as copy above except instances of game replaced by globalGame
-var highlightCell = function(game, color, condition) {  
+var highlightCell = function(game, color, condition) {
   var targetObjects = _.filter(globalGame.objects, condition);
-  console.log('got to highlightCell inside drawing.js ... targetObjects: ');  
-  if (targetObjects.length>0) {
-    console.log(targetObjects[0]['subordinate'], targetObjects[0]['basic'],targetObjects[0]['gridX']);
-    console.log(targetObjects[0]['url']);
-  };
   var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
-  for (var i = 0; i < targetObjects.length; i++){           
+  for (var i = 0; i < targetObjects.length; i++){
     var gridX = targetObjects[i][customCoords]['gridX'];
     var gridY = targetObjects[i][customCoords]['gridY'];
     var upperLeftX = globalGame.getPixelFromCell(gridX, gridY).upperLeftX;
     var upperLeftY = globalGame.getPixelFromCell(gridX, gridY).upperLeftY;
-    console.log(gridX,gridY,upperLeftX,upperLeftY);
     globalGame.ctx.globalCompositeOperation='source-over';
     if (upperLeftX != null && upperLeftY != null) {
       globalGame.ctx.beginPath();
       globalGame.ctx.lineWidth="10";
       globalGame.ctx.strokeStyle=color;
-      globalGame.ctx.rect(upperLeftX +5 , upperLeftY +5 ,globalGame.cellDimensions.width-10,globalGame.cellDimensions.height-10); 
+      globalGame.ctx.rect(upperLeftX +5 , upperLeftY +5 ,globalGame.cellDimensions.width-10,globalGame.cellDimensions.height-10);
       globalGame.ctx.stroke();
     }
   }
@@ -127,60 +74,209 @@ var drawScreen = function(game, player) {
   // console.log('got to drawScreen!')
   // draw background
   game.ctx.strokeStyle = "#FFFFFF";
-  game.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";  
+  game.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
-  
+
   // Draw message in center (for countdown, e.g.)
   if (player.message) {
     game.ctx.font = "bold 23pt Helvetica";
     game.ctx.fillStyle = 'blue';
     game.ctx.textAlign = 'center';
-    wrapText(game, player.message, 
+    wrapText(game, player.message,
              game.world.width/2, game.world.height/4,
              game.world.width*4/5,
              25);
   }
-  else {   
-    drawGrid(globalGame); 
-    drawObjects(globalGame, player);  
+  else {
+    drawGrid(globalGame);
+    drawObjects(globalGame, player);
     // if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-    //     highlightCell(globalGame, player, '#d15619', 
+    //     highlightCell(globalGame, player, '#d15619',
     //     function(x) {return x.target_status == 'target';});
     // }
   }
 };
 
-
-// Make sketchpad class using global 'paper' functions
 function Sketchpad() {
   paper.setup('sketchpad');
-  view.viewSize = new Size(500, 500);
+  // var actual_height = $('#sketchpad').innerHeight();
+  // var actual_width = $('#sketchpad').innerWidth()    
+  // view.viewSize = new Size(actual_height, actual_width); 
+   // view.viewSize = new Size(view.element.width,view.element.height)
+  view.viewSize = new Size(300,300)//view.element.width, view.element.height); 
+  //  view.setViewSize = new Size(view.element.width,view.element.height)
 }
 
 Sketchpad.prototype.setupTool = function() {
   var tool = new Tool();
+
+  tool.onMouseMove = function(event) {
+    if(globalGame.drawingAllowed) {
+      globalGame.currMouseX = event.point.x;
+      globalGame.currMouseY = event.point.y;
+      if(globalGame.penDown) {
+	globalGame.path.add(event.point);
+      }
+    }
+  };
+
   tool.onMouseDown = function(event) {
-    globalGame.path = new Path({
-      segments: [event.point],
-      strokeColor: 'black'
-    });
+    startStroke(event);
   };
 
   tool.onMouseDrag = function(event) {
-    globalGame.path.add(event.point);
+    if (globalGame.drawingAllowed) {
+      globalGame.currMouseX = event.point.x;
+      globalGame.currMouseY = event.point.y;
+      globalGame.path.add(event.point);
+    }
   };
 
   tool.onMouseUp = function(event) {
-    // Simplify path to reduce data sent
-    globalGame.path.simplify(10);
-
-    // Send stroke to listener's viewer
-    globalGame.socket.emit('stroke', {
-      path: globalGame.path.exportJSON({asString: true})
-    });
+    endStroke(event);
   };
 };
 
+function startStroke(event) {
+  if (globalGame.drawingAllowed) {
+    var point = event ? event.point : {x: globalGame.currMouseX, y: globalGame.currMouseY};
+    //console.log('starting new stroke at point' + JSON.stringify(point));
+    globalGame.path = new Path({
+      segments: [point],
+      strokeColor: 'black',
+      strokeWidth: 5
+    });
+  }
+};
+
+function endStroke(event) {
+  if (globalGame.drawingAllowed && globalGame.path) {    
+    // Increment stroke num
+    globalGame.currStrokeNum += 1;
+    // console.log('ending stroke');
+
+    // Simplify path to reduce data sent
+    globalGame.path.simplify(10);
+
+    // Send stroke (in both svg & json forms) to server
+    globalGame.socket.emit('stroke', {
+      currStrokeNum: globalGame.currStrokeNum,
+      svgString: globalGame.path.exportSVG({asString: true}),
+      jsonString: globalGame.path.exportJSON({asString: true}),
+      shiftKeyUsed: globalGame.shiftKeyUsed
+    });
+
+    // only send to remote db if you are the sketcher
+    if (globalGame.my_role == "sketcher") {
+      // prep to send stroke info to remote db (see also writeData in game.server)
+      var currStrokeNum = globalGame.currStrokeNum;
+      var svgString = globalGame.path.exportSVG({asString: true});
+      var jsonString = globalGame.path.exportJSON({asString: true});
+      var trialNum = globalGame.roundNum + 1;
+      var gameID = globalGame['data']['id'];
+      var timestamp = Date.now();
+      var intendedName = getIntendedTargetName(globalGame.objects);
+      var allObjects = globalGame.objects;
+      var sketchpadWidthActual = paper.view.size._width;
+      var sketchpadHeightActual = paper.view.size._height;
+
+      // send stroke info to remote db (see also writeData in game.server)
+      dbline = {role: globalGame.my_role,
+                gameID: gameID,
+                playerID: globalGame.my_id,
+                trialNum: trialNum,
+                timestamp: timestamp,
+                responseType: 'stroke',
+                intendedName: intendedName,
+                allObjects: allObjects,
+                currStrokeNum: currStrokeNum,
+                svgString: svgString,
+                jsonString: jsonString,
+                dbname: globalGame.dbname,
+                colname: globalGame.colname};
+
+      // console.log(dbline);
+      // jef 4/22/17: do NOT send data to mongo db until SSL certificate
+      // in place
+    //   $.ajax({
+    //    type: 'GET',
+    //    url: 'https://10.102.2.155:9919/savedecision',
+    //    dataType: 'jsonp',
+    //    traditional: true,
+    //    contentType: 'application/json; charset=utf-8',
+    //    data: dbline,
+    //    timeout: 2000,
+    //    retryLimit: 3,
+    //    data: dbline,
+          // error: function(x, t, m) {
+          //   if(t==="timeout") {
+          //     console.log("got timeout, press on anyway...");
+          //     this.retryLimit--;
+          //     $.ajax(this);
+          //     return;
+
+          //   } else {
+          //       console.log(t);
+          //       this.retryLimit--;
+          //       $.ajax(this);    
+          //       return;                      
+          //   }
+          // },
+    //    success: function(msg) {
+    //               console.log('stroke response: upload success!');
+    //             }
+    // });
+    // reset shift key use variable
+    globalGame.shiftKeyUsed = 0;  
+
+    }
+  };
+}
+
+function getIntendedTargetName(objects) {
+  return _.filter(objects, function(x){
+    return x.target_status == 'target';
+  })[0]['subordinate'];
+}
+
+function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
+  // visual feedback
+  highlightCell(globalGame, 'black', function(x) {
+    return x.subordinate == clickedObjName;
+  });
+  // textual feedback
+  $('#turnIndicator').html(" ");
+  if (scoreDiff==1) {
+    setTimeout(function(){
+      $('#feedback').html('Great job! Your partner correctly identified the target.');
+    }, globalGame.feedbackDelay);
+  } else {
+    setTimeout(function(){
+      $('#feedback').html('Too bad... Your partner thought the target was the object outlined in ' + 'black'.bold() + '.');
+    }, globalGame.feedbackDelay);
+  }
+};
+
+function drawViewerFeedback(globalGame, scoreDiff, clickedObjName) {
+  // viewer feedback
+  highlightCell(globalGame, 'black', function(x) {
+    return x.subordinate == clickedObjName;
+  });
+  highlightCell(globalGame, 'green', function(x) {
+    return x.target_status == 'target';
+  });
+  // textual feedback
+  $('#turnIndicator').html(" ");
+  if (scoreDiff==1) {
+      setTimeout(function(){
+        $('#feedback').html('Great job! You correctly identified the target!');
+      }, globalGame.feedbackDelay);
+  } else {
+      setTimeout(function(){
+        $('#feedback').html('Sorry... The target was the object outlined in ' + 'green'.fontcolor("#1aff1a").bold() + '.');
+      }, globalGame.feedbackDelay);
+  }
+};
 // This is a helper function to write a text string onto the HTML5 canvas.
 // It automatically figures out how to break the text into lines that will fit
 // Input:
@@ -194,7 +290,7 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
   var cars = text.split("\n");
   game.ctx.fillStyle = 'white';
   game.ctx.fillRect(0, 0, game.viewport.width, game.viewport.height);
-  // game.ctx.fillStyle = 'red';
+  game.ctx.fillStyle = 'red';
 
   for (var ii = 0; ii < cars.length; ii++) {
 
@@ -219,5 +315,3 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
     y += lineHeight;
   }
 }
-
-

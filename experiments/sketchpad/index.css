@@ -1,9 +1,11 @@
 html , body {
-     background: #000000; 
-     color: #fff; 
-     font-family: Helvetica;
-     margin: 0; 
+     background: #000000;
+     color: #fff;
+     font: 18px Helvetica;
+     font-weight: lighter;
+     margin: 0;
      padding: 0;
+     display: inline !important;
 }
 
 .alignleft {
@@ -23,39 +25,70 @@ html , body {
 }
 
 #roleLabel {
-	height: 2%;
-	width: 50%;
+	height: 3.5%;
+	width: 100%;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:0; right:0; top:0; bottom: 0;
+	left:0; right:0; top:1%; bottom: 0;
 	position: absolute;
+	background:white;
+	font-size:3.5vh;
+	color:black;
 }
 
 #instructs {
-	height: 2%;
-	width: 50%;
+	height: 2vh;
+	width: 110vh;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:0; right:0; top:4%; bottom: 0;
+	left:0; right:0; top:5.2vh; bottom: 0;
 	position: absolute;
-	font-size: 120%
+	font-size: 2.2vh;
+	font-weight:lighter;
+}
+
+#feedback {
+	height: 5%;
+	width: 20%;
+	text-align: center;
+	margin-left: 0;
+	margin-right: auto;
+	margin-bottom: auto;
+	left:auto; right:1%; top:35%; bottom: 0;
+	position: absolute;
+	font-size: 2.2vh;
+	font-weight:lighter;
+}
+
+#turnIndicator {
+	height: 5%;
+	width: 20%;
+	text-align: center;
+	margin-left: 0;
+	margin-right: auto;
+	margin-bottom: auto;
+	left:auto; right:1%; top:25%; bottom: 0;
+	position: absolute;
+	font-size: 2.2vh;
+	font-weight:lighter;
 }
 
 #roundnumber {
-	height: 2%;
-	width: 8%;
-	text-align: center;
+  height: 2vh;
+	width: 20vh;
+	text-align: right;
 	margin-left: 85%;
 	margin-top: 1%;
 	margin-right: auto;
 	margin-bottom: auto ;
-	left:0; right:0; top:20%; bottom: 0;
+	left:auto; right:3vh; top:auto; bottom: 3vh;
 	position: absolute;
-	font-size: 150%
+	font-size: 2.5vh;
+  font-weight:lighter;
 }
 
 #score {
@@ -68,21 +101,50 @@ html , body {
 	margin-bottom: auto ;
 	left:0; right:0; top:20%; bottom: 0;
 	position: absolute;
-	font-size: 150%;
+	font-size: 2vh;
+	font-weight:lighter;
 }
 
 #submitbutton {
-    height: 6%;
-    width: 5%;
+	z-index: 10;
+    height: 6vh;
+    width: 12vw;
     float: left;
     margin-left: 10%;
     margin-top: 2%;
+	right: 2vh; top: 10vh;
+	position: absolute;
     background: rgb(255,255,255);
     border: none;
-    padding: 5px;
+    padding: .5vh;
+	font-size: 4vh;
+	font-weight: normal;
+	border-radius: 100%;
+	border: none;
+
 
 /*trying to change around attributes of click button reduces the clickable area
 ALOT...don't understand how to adjust that.*/
+}
+
+#submitbutton:active {
+  z-index: 10;
+    height: 6vh;
+    width: 12vw;
+    float: left;
+    margin-left: 10%;
+    margin-top: 2%;
+	right: 2vh; top: 10vh;
+	position: absolute;
+    background: rgb(255,255,255);
+    border: none;
+    padding: .5vh;
+	font-size: 4vh;
+	font-weight: normal;
+	border-radius: 100%;
+	border: none;
+	box-shadow: 0 5px #666;
+  	transform: translateY(1vh);
 }
 
 #main {
@@ -98,45 +160,59 @@ ALOT...don't understand how to adjust that.*/
 
 /*height and width originally 80vh*/
 #viewport {
-    float: bottom;
+    float: middle;
     border:solid 1px #333;
-    height: 40vh;
-    width: 120vh;
-    margin: center;    
-    /*margin-right: 2.5%;*/
+    height: 25vh;
+    width: 100vh;
+    margin: auto;
+	  top: 56vh; bottom: auto; left:0; right: 0;
     background: #383838;
-    /*opacity: .5;*/
+    position: absolute;
 
 }
 
+#occluder {
+    float: middle;
+    border:solid 1px #333;
+    height: 25vh;
+    width: 100vh;
+    margin: auto;
+	top: 56vh; bottom: auto; left:0; right: 0;
+    background: #808080;
+    position: absolute;
+    z-index: 10;
+}
+
 #sketchpad {
-    height: 500px;
-    width: 500px;
-    top: 10vh;    
+    height: 300px;
+    width: 300px;
+    position: absolute;
+    top: 4vh;
+    right:0;left:0;
     float: top;
     margin: auto;
     background: #ffffff;
     border: solid 1px #999;
 }
 
-#messages {
+/*#messages {
 	height:85%;
 	text-align: left;
 	font-size: 200%;
 	overflow-y: scroll;
-}
+}*/
 
 #chatarea form {
-	padding: 3px; 
+	padding: 3px;
 	height: 5vh;
-	width: 100vh; 
+	width: 100vh;
 }
 
 #chatarea input {
-	border: 0; 
+	border: 0;
 	height: 99%;
 	font-size: 125%;
-	width: 89%; 
+	width: 89%;
 	margin-left: .5%;
 	margin-right: .5%;
 	margin-top: .5%;
@@ -145,19 +221,58 @@ ALOT...don't understand how to adjust that.*/
 	float: left;
 }
 
+
 #chatarea button {
-	width: 9%; 
+	width: 9%;
 	height: 5vh;
 	font-size: 150%;
-	background: rgb(130, 224, 255); 
-	border: none; 
+	background: rgb(130, 224, 255);
+	border: none;
 	padding: 5px;
 	margin-left: .5%;
 	margin-right: .5%;
 }
 
+#loading {
+	color:black;
+	z-index: 10;
+    height: 10%;
+    width: 8%;
+    float: left;
+	right: 6%; top: 10%;
+	position: absolute;
+    background: rgb(255,255,255);
+    border: none;
+    padding: 5px;
+	font-size: 6vh;
+	font-weight: normal;
+	border-radius: 50%;
+	border: none;
+}
 
-::-webkit-scrollbar {
+#loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4,end) 900ms infinite;
+  animation: ellipsis steps(4,end) 900ms infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 1.25em;
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 1.25em;
+  }
+}
+
+/*::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
 }
@@ -167,3 +282,4 @@ ALOT...don't understand how to adjust that.*/
     background-color: rgba(255,255,255,.5);
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
+*/

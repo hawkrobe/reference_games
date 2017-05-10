@@ -18,11 +18,22 @@ var ondisconnect = function(data) {
   // Redirect to exit survey
   console.log("server booted");
   this.viewport.style.display="none";
+  if(globalGame.roundNum + 2 > globalGame.numRounds) { 
+      $('#instructs').html('Thanks for participating in our experiment! ' +
+        "Before you submit your HIT, we'd like to ask you a few questions.");    
+  }
+  else {
+      $('#instructs').html('Oops! It looks like your partner lost their connection.' +
+      ' Completing this survey will submit your HIT so you will still receive ' +
+      'full compensation. If you experience any problems, please email us (sketchloop@gmail.com).'); // this is from sketchpad experiment (jefan 4/23/17)
+  }
   $('#message_panel').hide();
   $('#submitbutton').hide();
   $('#roleLabel').hide();
   $('#score').hide();
   $('#exit_survey').show();
+  $('#sketchpad').hide(); // this is from sketchpad experiment (jefan 4/23/17)
+  $('#loading').hide(); // this is from sketchpad experiment (jefan 4/23/17)
 };
 
 var onconnect = function(data) {
