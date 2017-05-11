@@ -147,11 +147,22 @@ game_core.prototype.makeTrialList = function () {
   var local_this = this;
   var conditionList = getRandomizedConditions();
   var trialList = [];
-  var previousTargets = [];
+
+  // Note: We want to use the same targets across
+  // the conditions, as we want atypical objects
+  // to appear in all trials.
+  var previousTargets = {};
+
   for (var i = 0; i < conditionList.length; i++) {
     var condition = conditionList[i];
+    var condPrevTargets = [];
+    if (_.has(previousTargets, condition)) {
+      condPrevTargets = previousTargets[condition]; // Load prevTargets for condition
+    }
+
     var objList = sampleObjects(condition, previousTargets); // Sample three objects 
-    previousTargets.push(objList[0].name); // Keep track of targets seen
+    condPrevTargets.push(objList[0].name); // Keep track of targets seen
+    previousTargets[condition] = condPrevTargets;
     var locs = sampleStimulusLocs(); // Sample locations for those objects
     trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
       var object = _.clone(tuple[0]);  
@@ -229,22 +240,29 @@ game_core.prototype.server_send_update = function(){
 
 var sampleObjects = function(condition, earlierTargets) {
   var samplingInfo = {
-    1 : {class: getObjectSubset("distrClass1"),
-	 selector: firstClassSelector},
-    2 : {class: getObjectSubset("distrClass2"),
-	 selector: secondClassSelector},
-    3 : {class: getObjectSubset("distrClass2"),
-	 selector: thirdClassSelector}
+    1 : {class: getObjectSubset(1),
+	      selector: atypicalSelector},
+    2 : {class: getObjectSubset(2),
+	      selector: parentSelector},
+    3: {class: getObjectSubset(3),
+       selector: parentSelector},
+    4: {class: getObjectSubset(2).concat(getObjectSubset(3)),
+	     selector: randomObjSelector}
   };
   
-  var conditionParams = condition.slice(-2).split("");    
-  var firstDistrInfo = samplingInfo[conditionParams[0]];
-  var secondDistrInfo = samplingInfo[conditionParams[1]];
-  var remainingTargets = getRemainingTargets(earlierTargets);
+  var conditionParams = condition.split("_"); 
+  var distrParams = conditionParams[0].slice(-2).split("");
+  var targParam = conditionParams[1].slice(-1).split("");
+
+  var firstDistrInfo = samplingInfo[distrParams[0]];
+  var secondDistrInfo = samplingInfo[distrParams[1]];
+  var remainingTargets = getRemainingTargets(earlierTargets, targParam);
   
   var target = _.sample(remainingTargets);
+  target.targetStatus = "target";
   var firstDistractor = firstDistrInfo.selector(target, firstDistrInfo.class);
   var secondDistractor = secondDistrInfo.selector(target, secondDistrInfo.class);
+
   if(checkItem(condition,target,firstDistractor,secondDistractor)) {
     // attach "condition" to each stimulus object
     return _.map([target, firstDistractor, secondDistractor], function(x) {
@@ -257,30 +275,38 @@ var sampleObjects = function(condition, earlierTargets) {
 
 var checkItem = function(condition, target, firstDistractor, secondDistractor) {
   var diffName = firstDistractor.name != secondDistractor.name;
-  if(condition === "distr23") {
-    var diffSuper = firstDistractor.superdomain != secondDistractor.superdomain;
-    return diffName && diffSuper;
-  } else if (condition === "distr33") {
-    var diffTarget = (firstDistractor.superdomain != target.superdomain
-		      && secondDistractor.superdomain != target.superdomain);
-    return diffName && diffTarget;
-  } else {
+  if(condition === "distr24_targ1" || condition === "distr34_targ1") {
+    var diffChildren = (_.intersection(firstDistractor.parent_class_of, secondDistractor.parent_class_of).length == 0);
+    return diffName && diffChildren;
+  } else if (condition === "distr14_targ2") {
+    // var targ = target.class_1 == firstDistractor.
+    return diffName;
+  } else if (condition === "distr14_targ3") {
+    return diffName;
+  }
+   else {
     return diffName;
   }
 };
 
-var getRemainingTargets = function(earlierTargets) {
-  var criticalObjs = getObjectSubset("target");
+var getRemainingTargets = function(earlierTargets, targParam) {
+  var criticalObjs = getObjectSubset(targParam);
   return _.filter(criticalObjs, function(x) {
-    return !_.contains(earlierTargets, x.name );
+    return !_.has(earlierTargets, x.name);
   });
 };
 
 var getRandomizedConditions = function() {
-  var conditions = [].concat(utils.fillArray("distr12", 9),
-			     utils.fillArray("distr22", 9),
-			     utils.fillArray("distr23", 9),
-			     utils.fillArray("distr33", 9));
+  // Conditions:
+  // 1) Atypical, Parent Class A, Random Image Not Parent of Atypical -> Target: Atypical
+  // 2) Atypical, Random Image Not Parent of Atypical, Parent Class B -> Target: Atypical
+  // 2) Atypical, Parent Class A, Random Image Not Parent of Atypical -> Target: Parent Class A
+  // 3) Atypical, Random Image Not Parent of Atypical, Parent Class B -> Target: Parent Class B
+  var conditions = [].concat(
+      utils.fillArray("distr24_targ1", 6),
+      utils.fillArray("distr34_targ1", 6),
+      utils.fillArray("distr14_targ2", 6),
+      utils.fillArray("distr14_targ3", 6));
   return _.shuffle(conditions);
 };
 
@@ -290,26 +316,81 @@ var sampleStimulusLocs = function() {
   return {listener : listenerLocs, speaker : speakerLocs};
 };
 
-var getObjectSubset = function(targetStatus) {
+var getObjectSubset = function(target) {
   return _.map(_.shuffle(_.filter(objectList, function(x){
-    return x.targetStatus == targetStatus;
+    return x.target == target;
   })), _.clone);
 };
 
-var firstClassSelector = function(target, list) {
+var atypicalSelector = function(target, list) {
   return _.sample(_.filter(list, function(x) {
-    return target.basiclevel === x.basiclevel;
+    // Sample atypical examples who have list the target as a parent
+    if (x.is_parent == false) {
+      if (target.distr === "parent_class_1") {
+        return target.class_1 === x.class_1;
+      } else if (target.distr === "parent_class_2") {
+        return target.class_2 === x.class_2;
+      }
+    } else {
+      return false;
+    }
   }));
 };
 
-var secondClassSelector = function(target, list) {
+var parentSelector = function(target, list) {
   return _.sample(_.filter(list, function(x) {
-    return target.superdomain === x.superdomain;
+    if (x.is_parent == true) {
+      if (x.distr == "parent_class_1") {
+        return target.class_1 == x.class_1;
+      } else if (x.distr == "parent_class_2") {
+        return target.class_2 == x.class_2;
+      }
+    } else {
+      return false;
+    }
   }));
 };
 
-var thirdClassSelector = function(target, list) {
-  return _.extend(_.sample(list),{targetStatus : "distrClass3"});
+var randomObjSelector = function(target, list) {
+  return _.sample(_.filter(list, function(x) {
+    if (target.distr === "parent_class_1") {
+      if (x.distr === "parent_class_1") {
+        // Don't belong to same class
+        return x.class_1 !== target.class_1;
+      } else if (x.distr === "parent_class_2") {
+        // Not a parent of the same atypical object
+        return _.intersection(x.parent_class_of, target.parent_class_of).length == 0;
+      } else {
+        // Catch All
+        return false;
+      }
+    } else if (target.distr === "parent_class_2") {
+      if (x.distr === "parent_class_1") {
+        // Not a parent of the same atypical object
+        return _.intersection(x.parent_class_of, target.parent_class_of).length == 0;
+      } else if (x.distr === "parent_class_2") {
+        // Don't belong to the same class
+        return x.class_2 !== target.class_2;
+      } else {
+        // Catch All
+        return false;
+      }
+    } else if (target.distr === "atypical") {
+      if (x.distr == "parent_class_1") {
+        // Not a parent of the atypical object
+        return x.class_1 !== target.class_1;
+      } else if (x.distr === "parent_class_2") {
+        // Not a parent of the atypical object
+        return x.class_2 !== target.class_2;
+      } else {
+        // Catch All
+        return false;
+      }
+    } else {
+      // Catch All
+      return false;
+    }
+  }));
 };
 
 // maps a grid location to the exact pixel coordinates
