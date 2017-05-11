@@ -326,46 +326,46 @@ While this finding suggests that speakers might just be adopting a shorthand usi
 
 We explicitly examined this hypothesis by running the Stanford constituency parser [@SchusterManning16], tagging the occurrence of subordinate/adverbial clauses ('sitting *facing left*') and adjectival clauses ('angel *that is praying*') ^[Specifically, we used the Universal Dependencies tags \texttt{csubj, ccomp, xcomp}, and \texttt{advcl} for subordinate clauses and \texttt{acl} for adjectival clauses [@SchusterManning16]]. We found that both were reduced over the course of the game (see Fig. \ref{fig:replication}), lending additional support for the hypothesis that meaningful details are increasingly omitted. Initial phrases pile on multiple ambiguous, partially redundant modifiers and descriptors: as the game progresses and ambiguity of reference decreases, these additional meaningful units become less useful and can be dropped.
 
-### Listener feedback
+<!-- ### Listener feedback -->
 
-```{r turntakinglm, cache = TRUE}
-listenerMsg_lm = summary(lmer(matcher ~ roundNum + (1 | gameid), data = listenerMsgs))
-```
+<!-- ```{r turntakinglm, cache = TRUE} -->
+<!-- listenerMsg_lm = summary(lmer(matcher ~ roundNum + (1 | gameid), data = listenerMsgs)) -->
+<!-- ``` -->
 
-```{r, cache= T}
-turnTaking <- listenerMsgs %>%
-  filter(roundNum %in% c(1)) %>%
-  group_by(gameid) %>%
-  summarize(numListenerMsgs = mean(matcher)) %>%
-  filter(numListenerMsgs < mean(numListenerMsgs) + 3*sd(numListenerMsgs)) %>%
-  select(gameid, numListenerMsgs)
+<!-- ```{r, cache= T} -->
+<!-- turnTaking <- listenerMsgs %>% -->
+<!--   filter(roundNum %in% c(1)) %>% -->
+<!--   group_by(gameid) %>% -->
+<!--   summarize(numListenerMsgs = mean(matcher)) %>% -->
+<!--   filter(numListenerMsgs < mean(numListenerMsgs) + 3*sd(numListenerMsgs)) %>% -->
+<!--   select(gameid, numListenerMsgs) -->
 
-efficiency <- tangramCombined %>%
-   filter(role == "director") %>%
-   group_by(gameid, roundNum) %>%
-   summarize(individualM = sum(numRawWords)/12) %>%
-  rowwise() %>%
-  mutate(id = row_number()) %>%
-  mutate(roundNum = paste0('round', roundNum, collapse = '')) %>%
-  spread(roundNum, individualM) %>%
-  mutate(diffPct = (round1 - round6)/round1) %>%
-  filter(diffPct >= 0) %>% # Filter out handful of people who skipped first round...
-  select(gameid, diffPct)
+<!-- efficiency <- tangramCombined %>% -->
+<!--    filter(role == "director") %>% -->
+<!--    group_by(gameid, roundNum) %>% -->
+<!--    summarize(individualM = sum(numRawWords)/12) %>% -->
+<!--   rowwise() %>% -->
+<!--   mutate(id = row_number()) %>% -->
+<!--   mutate(roundNum = paste0('round', roundNum, collapse = '')) %>% -->
+<!--   spread(roundNum, individualM) %>% -->
+<!--   mutate(diffPct = (round1 - round6)/round1) %>% -->
+<!--   filter(diffPct >= 0) %>% # Filter out handful of people who skipped first round... -->
+<!--   select(gameid, diffPct) -->
 
-turnTakingEfficiencyPlot <- ggplot(turnTaking %>% left_join(efficiency), aes(x = numListenerMsgs, y = diffPct)) +
-  geom_point() +
-  geom_smooth(method = 'lm') +
-  theme_bw(9) +
-  ylab("% reduction") +
-  xlab("# listener messages on 1st round")
+<!-- turnTakingEfficiencyPlot <- ggplot(turnTaking %>% left_join(efficiency), aes(x = numListenerMsgs, y = diffPct)) + -->
+<!--   geom_point() + -->
+<!--   geom_smooth(method = 'lm') + -->
+<!--   theme_bw(9) + -->
+<!--   ylab("% reduction") + -->
+<!--   xlab("# listener messages on 1st round") -->
 
-turnTakingEfficiency_lm <- summary(lm(diffPct ~ numListenerMsgs, data = efficiency %>% left_join(turnTaking)))
-turnTakingdf <- turnTakingEfficiency_lm$df[1]
-turnTakingCoefs <- turnTakingEfficiency_lm$coefficients[2,]
-turnTakingResult <- paste0("t(", turnTakingdf, ") = ", round(turnTakingCoefs[3],2), ", p = ", round(turnTakingCoefs[4],2))
-```
+<!-- turnTakingEfficiency_lm <- summary(lm(diffPct ~ numListenerMsgs, data = efficiency %>% left_join(turnTaking))) -->
+<!-- turnTakingdf <- turnTakingEfficiency_lm$df[1] -->
+<!-- turnTakingCoefs <- turnTakingEfficiency_lm$coefficients[2,] -->
+<!-- turnTakingResult <- paste0("t(", turnTakingdf, ") = ", round(turnTakingCoefs[3],2), ", p = ", round(turnTakingCoefs[4],2)) -->
+<!-- ``` -->
 
-Finally, the theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argues that lexical conventions are established through a collaborative process requiring both speaker and listener input. This predicts that (1) listener feedback should be highest on the first round and drop off once meanings are agreed upon, and (2) dyads with more initial listener feedback should converge on more efficient conventions. We find correlational evidence of both patterns in our data. The number of listener messages decreases significantly over the game ($t = -13.23$, see Fig. \ref{fig:replication}), and there is a weak but significant effect of initial listener messages on overall reduction (`r turnTakingResult`).
+<!-- Finally, the theory proposed by @ClarkWilkesGibbs86_ReferringCollaborative argues that lexical conventions are established through a collaborative process requiring both speaker and listener input. This predicts that (1) listener feedback should be highest on the first round and drop off once meanings are agreed upon, and (2) dyads with more initial listener feedback should converge on more efficient conventions. We find correlational evidence of both patterns in our data. The number of listener messages decreases significantly over the game ($t = -13.23$, see Fig. \ref{fig:replication}), and there is a weak but significant effect of initial listener messages on overall reduction (`r turnTakingResult`). -->
 
 # Model
 
