@@ -49,7 +49,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 36;
+  this.numRounds = 6;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
@@ -187,6 +187,7 @@ game_core.prototype.makeTrialList = function () {
       return object;
     }));
   };
+
   return(trialList);
 };
 
@@ -247,7 +248,9 @@ var sampleObjects = function(condition, earlierTargets) {
     3: {class: getObjectSubset(3),
        selector: parentSelector},
     4: {class: getObjectSubset(2).concat(getObjectSubset(3)),
-	     selector: randomObjSelector}
+	     selector: diffClassSelector},
+    5: {class: objectList, 
+        selector: randomObjSelector}
   };
   
   var conditionParams = condition.split("_"); 
@@ -303,10 +306,12 @@ var getRandomizedConditions = function() {
   // 2) Atypical, Parent Class A, Random Image Not Parent of Atypical -> Target: Parent Class A
   // 3) Atypical, Random Image Not Parent of Atypical, Parent Class B -> Target: Parent Class B
   var conditions = [].concat(
-      utils.fillArray("distr24_targ1", 6),
-      utils.fillArray("distr34_targ1", 6),
-      utils.fillArray("distr14_targ2", 6),
-      utils.fillArray("distr14_targ3", 6));
+      utils.fillArray("distr24_targ1", 6));
+      // utils.fillArray("distr34_targ1", 6),
+      // utils.fillArray("distr14_targ2", 6),
+      // utils.fillArray("distr14_targ3", 6));
+      // utils.fillArray("distr55_targ2", 6),
+      // utils.fillArray("distr55_targ3", 6));
   return _.shuffle(conditions);
 };
 
@@ -351,7 +356,7 @@ var parentSelector = function(target, list) {
   }));
 };
 
-var randomObjSelector = function(target, list) {
+var diffClassSelector = function(target, list) {
   return _.sample(_.filter(list, function(x) {
     if (target.distr === "parent_class_1") {
       if (x.distr === "parent_class_1") {
@@ -391,6 +396,12 @@ var randomObjSelector = function(target, list) {
       return false;
     }
   }));
+};
+
+var randomObjSelector = function(target, list) {
+  return _.map(_.shuffle(_.filter(objectList, function(x){
+    return x.name != target.name;
+  })), _.clone);
 };
 
 // maps a grid location to the exact pixel coordinates
