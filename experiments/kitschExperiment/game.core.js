@@ -266,8 +266,6 @@ var sampleObjects = function(condition, earlierTargets) {
   var firstDistrInfo = samplingInfo[distrParams[0]];
   var secondDistrInfo = samplingInfo[distrParams[1]];
   var remainingTargets = getRemainingTargets(earlierTargets, targParam);
-  console.log("Remaining Targets");
-  console.log(remainingTargets);
 
   var target = _.sample(remainingTargets);
   target.targetStatus = "target";
@@ -301,14 +299,8 @@ var checkItem = function(condition, target, firstDistractor, secondDistractor) {
 };
 
 var getRemainingTargets = function(earlierTargets, targParam) {
-  console.log("Earlier Targets");
-  console.log(earlierTargets);
-  console.log('----------');
-
   var criticalObjs = getObjectSubset(targParam);
   return _.filter(criticalObjs, function(x) {
-    console.log(x);
-    console.log(_.indexOf(earlierTargets, x.name));
     return _.indexOf(earlierTargets, x.name) == -1;_
   });
 };
