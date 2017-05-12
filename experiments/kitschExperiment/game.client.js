@@ -432,12 +432,12 @@ function mouseClickListener(evt) {
         var alternative2 = _.sample(_.without(game.objects, obj, alternative1));
         console.log("alt1Name: " + alternative1.name);
         console.log("alt2Name: " + alternative2.name);
-        game.socket.send("clickedObj." + obj.condition + "." + obj.name + "." + obj.targetStatus 
-          + "." + obj.speakerCoords.gridX + "." + obj.listenerCoords.gridX  + "." + obj.basiclevel + "." + obj.superdomain
-          + "." + alternative1.name + "." + alternative1.targetStatus + "." + alternative1.speakerCoords.gridX 
-          + "." + alternative1.listenerCoords.gridX + "." + alternative1.basiclevel + "." + alternative1.superdomain 
-          + "." + alternative2.name + "." + alternative2.targetStatus + "." + alternative2.speakerCoords.gridX 
-          + "." + alternative2.listenerCoords.gridX + "." + alternative2.basiclevel + "." + alternative2.superdomain);
+        game.socket.send("clickedObj." + obj.condition + "." + obj.name + "." + obj.target 
+          + "." + obj.speakerCoords.gridX + "." + obj.listenerCoords.gridX  + "." + obj.class_1 + "." + obj.class_2
+          + "." + alternative1.name + "." + alternative1.target + "." + alternative1.speakerCoords.gridX 
+          + "." + alternative1.listenerCoords.gridX + "." + alternative1.class_1 + "." + alternative1.class_2 
+          + "." + alternative2.name + "." + alternative2.target + "." + alternative2.speakerCoords.gridX 
+          + "." + alternative2.listenerCoords.gridX + "." + alternative2.class_1 + "." + alternative2.class_2);
 
         //highlight the object that was clicked:
         var upperLeftXListener = obj.listenerCoords.gridPixelX;

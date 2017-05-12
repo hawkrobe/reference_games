@@ -80,30 +80,30 @@ var writeData = function(client, type, message_parts) {
     var clickedObjTargetStatus = message_parts[3];
     var clickedObjSpeakerLocs = message_parts[4];
     var clickedObjListenerLocs = message_parts[5];
-    var clickedObjBasiclevel = message_parts[6];
-    var clickedObjSuperdomain = message_parts[7];
+    var clickedObjParentClass1 = message_parts[6];
+    var clickedObjPaentClass2 = message_parts[7];
 
       var alternative1Name = message_parts[8]; 
       var alternative1TargetStatus = message_parts[9];
       var alternative1SpeakerLocs = message_parts[10];
       var alternative1ListenerLocs = message_parts[11];
-      var alternative1Basiclevel = message_parts[12];
-      var alternative1Superdomain = message_parts[13];
+      var alternativeParentClass1 = message_parts[12];
+      var alternativeParentClass2 = message_parts[13];
 
       var alternative2Name = message_parts[14]; 
       var alternative2TargetStatus = message_parts[15];
       var alternative2SpeakerLocs = message_parts[16];
       var alternative2ListenerLocs = message_parts[17];
-      var alternative2Basiclevel = message_parts[18];
-      var alternative2Superdomain = message_parts[19];
+      var alternative2ParentClass1 = message_parts[18];
+      var alternative2ParentClass2 = message_parts[19];
       
       var line = (id + ',' + Date.now() + ',' + roundNum  + ',' + clickedObjCondition 
         + "," + clickedObjName + "," + clickedObjTargetStatus + "," + clickedObjSpeakerLocs 
-        + "," + clickedObjListenerLocs + ',' + clickedObjBasiclevel + ',' + clickedObjSuperdomain 
+        + "," + clickedObjListenerLocs + ',' + clickedObjParentClass1 + ',' + clickedObjPaentClass2 
         + "," + alternative1Name + "," + alternative1TargetStatus + "," + alternative1SpeakerLocs 
-        + "," + alternative1ListenerLocs + ',' + alternative1Basiclevel + ',' + alternative1Superdomain 
+        + "," + alternative1ListenerLocs + ',' + alternativeParentClass1 + ',' + alternativeParentClass2 
         + "," + alternative2Name + "," + alternative2TargetStatus + "," + alternative2SpeakerLocs 
-        + "," + alternative2ListenerLocs + ',' + alternative2Basiclevel + ',' + alternative2Superdomain  + '\n');
+        + "," + alternative2ListenerLocs + ',' + alternative2ParentClass1 + ',' + alternative2ParentClass2  + '\n');
     console.log("clickedObj: " + line);
 
     break;
@@ -140,16 +140,13 @@ var startGame = function(game, player) {
   utils.establishStream(game, "message", dataFileName,
 			"gameid,time,roundNum,sender,contents\n");
   utils.establishStream(game, "clickedObj", dataFileName,
-			"gameid, time, roundNum, trialType, condition," +
+			"gameid, time, roundNum, condition," +
 			"nameClickedObj, targetStatusClickedObj, spLocsClickedObj, " +
-			"lisLocsClickedObj, basiclevelClickedObj, " +
-			"superdomainClickedObj, alt1Name, alt1TargetStatus, " +
-			"alt1SpLocs, alt1LisLocs, alt1Basiclevel, alt1superdomain, " +
+			"lisLocsClickedObj, class1ClickedObj, " +
+			"class2ClickedObj, alt1Name, alt1TargetStatus, " +
+			"alt1SpLocs, alt1LisLocs, alt1Class1, alt1Class2, " +
 			"alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, " +
-			"alt2Basiclevel, alt2superdomain, alt3Name, alt3TargetStatus, "+
-			"alt3SpLocs, alt3LisLocs, alt3Basiclevel, alt3superdomain, "+
-			"alt4Name, alt4TargetStatus, alt4SpLocs, " +
-			"alt4LisLocs, alt4Basiclevel, alt4superdomain\n");
+			"alt2Class1, alt2Class2\n");
   game.newRound();
 };
 

@@ -160,29 +160,35 @@ game_core.prototype.makeTrialList = function () {
       condPrevTargets = previousTargets[condition]; // Load prevTargets for condition
     }
 
-    var objList = sampleObjects(condition, previousTargets); // Sample three objects 
+    var objList = sampleObjects(condition, condPrevTargets); // Sample three objects
+
+    var conditionParams = condition.split("_"); 
+    var distrParams = conditionParams[0].slice(-2).split("");
+    var targParam = conditionParams[1].slice(-1).split("");
+
     condPrevTargets.push(objList[0].name); // Keep track of targets seen
     previousTargets[condition] = condPrevTargets;
+
     var locs = sampleStimulusLocs(); // Sample locations for those objects
     trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
       var object = _.clone(tuple[0]);  
       var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
       var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);
       object.speakerCoords = {
-	gridX : tuple[1][0],
-	gridY : tuple[1][1],
-	trueX : speakerGridCell.centerX - object.width/2,
-	trueY : speakerGridCell.centerY - object.height/2,
-	gridPixelX: speakerGridCell.centerX - 150,
-	gridPixelY: speakerGridCell.centerY - 150
+      	gridX : tuple[1][0],
+      	gridY : tuple[1][1],
+      	trueX : speakerGridCell.centerX - object.width/2,
+      	trueY : speakerGridCell.centerY - object.height/2,
+      	gridPixelX: speakerGridCell.centerX - 150,
+      	gridPixelY: speakerGridCell.centerY - 150
       };
       object.listenerCoords = {
-	gridX : tuple[2][0],
-	gridY : tuple[2][1],
-	trueX : listenerGridCell.centerX - object.width/2,
-	trueY : listenerGridCell.centerY - object.height/2,
-	gridPixelX: listenerGridCell.centerX - 150,
-	gridPixelY: listenerGridCell.centerY - 150
+      	gridX : tuple[2][0],
+      	gridY : tuple[2][1],
+      	trueX : listenerGridCell.centerX - object.width/2,
+      	trueY : listenerGridCell.centerY - object.height/2,
+      	gridPixelX: listenerGridCell.centerX - 150,
+      	gridPixelY: listenerGridCell.centerY - 150
       };
       return object;
     }));
@@ -260,7 +266,9 @@ var sampleObjects = function(condition, earlierTargets) {
   var firstDistrInfo = samplingInfo[distrParams[0]];
   var secondDistrInfo = samplingInfo[distrParams[1]];
   var remainingTargets = getRemainingTargets(earlierTargets, targParam);
-  
+  console.log("Remaining Targets");
+  console.log(remainingTargets);
+
   var target = _.sample(remainingTargets);
   target.targetStatus = "target";
   var firstDistractor = firstDistrInfo.selector(target, firstDistrInfo.class);
@@ -293,9 +301,15 @@ var checkItem = function(condition, target, firstDistractor, secondDistractor) {
 };
 
 var getRemainingTargets = function(earlierTargets, targParam) {
+  console.log("Earlier Targets");
+  console.log(earlierTargets);
+  console.log('----------');
+
   var criticalObjs = getObjectSubset(targParam);
   return _.filter(criticalObjs, function(x) {
-    return !_.has(earlierTargets, x.name);
+    console.log(x);
+    console.log(_.indexOf(earlierTargets, x.name));
+    return _.indexOf(earlierTargets, x.name) == -1;_
   });
 };
 
@@ -306,12 +320,12 @@ var getRandomizedConditions = function() {
   // 2) Atypical, Parent Class A, Random Image Not Parent of Atypical -> Target: Parent Class A
   // 3) Atypical, Random Image Not Parent of Atypical, Parent Class B -> Target: Parent Class B
   var conditions = [].concat(
-      utils.fillArray("distr24_targ1", 6));
-      // utils.fillArray("distr34_targ1", 6),
-      // utils.fillArray("distr14_targ2", 6),
-      // utils.fillArray("distr14_targ3", 6));
-      // utils.fillArray("distr55_targ2", 6),
-      // utils.fillArray("distr55_targ3", 6));
+      utils.fillArray("distr24_targ1", 6),
+      utils.fillArray("distr34_targ1", 6),
+      utils.fillArray("distr14_targ2", 6),
+      utils.fillArray("distr14_targ3", 6),
+      utils.fillArray("distr55_targ2", 6),
+      utils.fillArray("distr55_targ3", 6));
   return _.shuffle(conditions);
 };
 
@@ -399,9 +413,9 @@ var diffClassSelector = function(target, list) {
 };
 
 var randomObjSelector = function(target, list) {
-  return _.map(_.shuffle(_.filter(objectList, function(x){
+  return _.sample(_.filter(list, function(x) {
     return x.name != target.name;
-  })), _.clone);
+  }));
 };
 
 // maps a grid location to the exact pixel coordinates
