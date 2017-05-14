@@ -44,6 +44,7 @@ library(rwebppl)
 library(langcog)
 library(ggthemes)
 library(cowplot)
+library(latex2exp)
 ```
 
 # Introduction
@@ -380,19 +381,19 @@ $$L_0(s | u, \mathcal{L}) \propto \mathcal{L}(u, s)\cdot P(s)$$
 <!-- -->
 \indent As in several other recent applications of RSA [@GrafEtAl16_BasicLevel], we use a graded semantics, where utterances are better or worse descriptions of particular referents. For instance, the utterance "dancer" may initially be expected to apply to a photorealistic image of a ballerina ($\mathcal{L}(\textrm{'dancer'}, \textit{ballerina}) = 0.99$) more than an abstract image of one ($\mathcal{L}(\textrm{'dancer'}, \textit{abstract ballerina}) =0.6$), but apply to both better than a non-category member like an image of a dog ($\mathcal{L}(\textrm{'dancer'}, \textit{dog}) = 0.05$).
 
-Our approach to convention-formation begins with the additional assumption of *lexical uncertainty* [@SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS;@BergenLevyGoodman16_LexicalUncertainty]. In other words, we assume that instead of having perfect knowledge of $\mathcal{L}$, the listener has uncertainty over the exact meanings of lexical items in the current context (i.e. it is initially unclear which of the ambiguous tangram shapes "the dancer" might refer to). They begin with some prior $P(\mathcal{L})$ over their partner's true lexicon, which may be initially biased toward certain meanings. By conditioning on repeated observations of their partner's behavior, they use Bayes rule to infer this true lexicon:
+Our approach to convention-formation begins with the additional assumption of *lexical uncertainty* [@SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS;@BergenLevyGoodman16_LexicalUncertainty]. In other words, we assume that instead of having perfect knowledge of $\mathcal{L}$, the listener has uncertainty over the exact meanings of lexical items in the current context (i.e. it is initially unclear which of the ambiguous tangram shapes "the dancer" might refer to). They begin with some prior $P(\mathcal{L})$ about the identity their partner's true lexicon, which may be initially biased toward certain meanings. By conditioning on repeated observations of their partner's behavior, they use Bayes rule to infer this true lexicon:
 <!-- -->
 $$P_{L_n}(\mathcal{L} | d) \propto P(\mathcal{L})\prod_i S_n(s_i|u_i, \mathcal{L})$$
 <!-- -->
-where $d = \{s_i, u_i\}$ is a set of observations of $s_i$ and $u_i$ coming from previous exchanges^[There is a broader debate over the timescales at which lexicons and lexicon learning mechanisms operate; here, we assume a discourse-level structure to the lexicon, where there is uncertainty over how words are used *in the given conversation*. See @FrankGoodmanTenenbaum09_Wurwur for a related approach at the scale of cross-situational word learning.]. The listener marginalizes over this lexicon posterior when interpreting the speaker's utterance:
+where $d = \{s_i, u_i\}$ is a set of observations of $s_i$ and $u_i$ coming from previous exchanges^[There is a broader debate over the timescales at which lexicons and lexicon learning mechanisms operate; here, we assume a discourse-level structure to the lexicon, where there is uncertainty over how words are used *in the given conversation*. See @FrankGoodmanTenenbaum09_Wurwur for a related approach at the scale of cross-situational word learning.]. The listener marginalizes over this posterior when interpreting the speaker's utterance:
 <!-- -->
-$$L(s | u, d) \propto \sum_\mathcal{L}P_{L_1}(\mathcal{L}|d)L_1(s|u,\mathcal{L})$$
+$$L_n(s | u, d) \propto \sum_\mathcal{L}P_{L_n}(\mathcal{L}|d)L_n(s|u,\mathcal{L})$$
 <!-- -->
 The speaker, in turn, considers what utterances would be most informative for such a listener:
 <!-- -->
-$$S(u | s, d) \propto \exp( \alpha\log\left(\sum_{\mathcal{L}} P_{S_n}(\mathcal{L} | d) L_1(s | u, \mathcal{L})\right) - \textrm{cost}(u) )$$
+$$S_n(u | s, d) \propto \exp( \alpha\log\left(\sum_{\mathcal{L}} P_{S_n}(\mathcal{L} | d) L_{n-1}(s | u, \mathcal{L})\right) - \textrm{cost}(u) )$$
 <!-- -->
-where the posterior over lexica $P_{S_n}(\mathcal{L} | d)$, uses the listener likelihood $L_{n-1}$.
+where the posterior over lexica $P_{S_n}(\mathcal{L} | d)$, uses the listener likelihood $L_{n-1}$. For the purposes of this paper, we fix the depth of recursion at $n = 2$.
 This model is implemented in the probabilistic programming language WebPPL [@GoodmanStuhlmuller14_DIPPL] ^[All results can be reproduced running our code in the browser at \url{http://forestdb.org/models/conventions.html}]. Following  @SmithGoodmanFrank13_RecursivePragmaticReasoningNIPS, we begin by showing how a random initial choice is taken to be evidence for a particular lexicon and becomes the base for successful communication even though neither party knows its meaning at the outset.
 
 ## Results
@@ -403,7 +404,7 @@ This model is implemented in the probabilistic programming language WebPPL [@Goo
 arbitrarinessModel <- function(alpha, beta) {
   res <- webppl(program_file = 'webpplModels/arbitrary.wppl',
                model_var = 'model',
-               inference_opts = list(method="forward", samples=5000),
+               inference_opts = list(method="forward", samples=1000),
                data = list(alpha = alpha, beta = beta, numSteps = 6),
                data_var = 'params')
   accuracyRes = res %>%
@@ -414,14 +415,14 @@ arbitrarinessModel <- function(alpha, beta) {
 }
 
 arbitrarinessRes <- complete(data.frame(
-    alpha=c(1,2,10),		
+    alpha=c(1,2,5),		
     beta =c(1)		
  ), alpha, beta) %>%		
    rowwise() %>%		
    do(arbitrarinessModel(.$alpha,.$beta))
 ```
 
-```{r, cache = T}
+```{r}
 plot.accuracy <- arbitrarinessRes %>% 
   filter(type == 'acc') %>%
   group_by(roundNum, value, alpha, beta) %>%
@@ -442,6 +443,9 @@ plot.accuracy <- arbitrarinessRes %>%
            legend.spacing=unit(0,"cm"),
            legend.position="top")
 
+mylabels = c(expression(paste(u[1], ',', s[1])),
+             expression(paste(u[1], ',', s[2])))
+
 plot.arbitrariness <- arbitrarinessRes %>%
   spread(type, value) %>%
   unite(intendedPair, intended, utt, sep = '<->', remove = F) %>% 
@@ -458,22 +462,22 @@ plot.arbitrariness <- arbitrarinessRes %>%
   complete(firstSystem, roundNum, chosenSystem, alpha, fill = list(n = 0)) %>%  
   group_by(roundNum, chosenSystem, alpha) %>%
   mutate(prob = n/sum(n)) %>%
+  ungroup() %>%
   filter(chosenSystem == 'system1') %>%
   ggplot(aes(x = roundNum, y = prob, group=interaction(alpha,firstSystem),linetype =firstSystem, color = alpha)) +
-    ylab("P(system1 | initial system)") +
+    ylab(TeX("$P(u_1, s_1)")) +
+    xlab("round #") +
     geom_line() +
     geom_point() + 
     theme_few(9) +
+    scale_linetype_discrete(name='initial', 
+                            breaks=c('system1', 'system2'), 
+                            labels = mylabels) +
     theme( plot.margin=unit(x=c(0,0,0,0),units="mm"), 
            legend.spacing=unit(0,"cm"),
-           legend.position="top")
+           legend.position="top") +
+    guides(color=FALSE)
 ```
-
-Consider an environment with two abstract shapes ($\{s_1, s_2\}$), where the speaker must choose between two utterances ($\{u_1, u_2\}$) incurring equal cost. Their prior $P(\mathcal{L})$ over the meaning of each utterance is given by a Beta distribution^[In our implementation, we enumerate over coarse-grained bins; preliminary experiments using variational inference on the full continuous distribution give similar results.], so on the first round both utterances are equally likely to apply to either shape. If the speaker was trying to get their partner to pick $s_1$, then, since each utterance is equally (un)informative, they would randomly sample one (say, $u_1$), and observe the listener's selection of a shape (say, $s_1$). On the next round, the speaker uses the observed pair $\{u_1, s_1\}$ to update their beliefs about their partner's true lexicon, uses these beliefs to generate a new utterance, and so on. To examine expected dynamics over multiple rounds, we forward sample many possible trajectories.
-
-We observe several important qualitative effects in our simulations. First, the fact that a knowledgeable listener responds to utterance $u$ with $s$ provides evidence for lexicons in which $u$ is a good fit for $s$, hence the likelihood of the speaker using $u$ to refer to $s$ increases on subsequent rounds (see Fig.\ref{fig:modelResults}A). In other words, the initial symmetry between the meanings can be broken by initial random choices, leading to completely *arbitrary but stable mappings* in future rounds. Second, because the listener is also learning the lexicon from these observations under the same set of assumptions, they converge on a shared set of meanings; hence, expected *accuracy* rises on future rounds (see Fig. \ref{fig:modelResults}B). Third, because one's partner is assumed to be pragmatic, agents can also learn about *unheard* utterances. Observing $d = \{u_1, s_1\}$ also provides evidence that $u_2$ is *not* a good fit for $s_1$ by Gricean maxims [@Grice75_LogicConversation]: if $u_2$ were a better fit for $s_1$, the speaker would have used it instead. Finally, *failed references* lead to conventions just as effectively as successful references: if the speaker intends $s_1$ and says $u_1$, but then the listener incorrectly picks $s_2$, the speaker will take this as evidence that $u_1$ actually means $s_2$ in their partner's lexicon and become increasingly likely to use it that way on subsequent rounds.
-
-### Reduction in utterance length
 
 ```{r modelReduction, cache=TRUE}
 conjunctionModel <- function(alpha, beta) {
@@ -491,42 +495,47 @@ conjunctionModel <- function(alpha, beta) {
 }
 
 conjunctionRes <- complete(data.frame(
-    alpha=c(1,2,10),		
+    alpha=c(10),		
     beta =c(1)		
  ), alpha, beta) %>%		
    rowwise() %>%		
    do(conjunctionModel(.$alpha,.$beta))
 ```
 
-```{r arbitrarinessFig, fig.env = "figure*", fig.pos = "t", fig.align='center', fig.width=7, fig.height=2, num.cols.cap=2, fig.cap = "\\label{fig:modelResults} Accuracy rises as speaker and listener learn from the same data. The rate of increase depends on the speaker optimality parameter $\\alpha$. Players are initially ambivalent between the two labels (arbitrariness). Once a particular mapping is established on the first round, that mapping is likely to persist (stability). When conjunctions are introduced into the model, utterances also get shorter over time (reduction)"}
+```{r arbitrarinessFig, fig.env = "figure*", fig.pos = "t", fig.align='center', fig.width=7, fig.height=1.83, num.cols.cap=2, fig.cap = "\\label{fig:modelResults} (A) Probability of speaker using $u_1$ to refer to $s_1$, broken out by initial observation: while players are initially ambivalent between the two labels (arbitrariness), the initial mapping is likely to persist (stability). (B) Accuracy rises as speaker and listener align. (C) When conjunctions are introduced into the grammar, utterances get shorter over time (reduction)."}
 
 reductionRes <- conjunctionRes %>% 
   spread(type, value) %>%
   mutate(numWords = str_count(utt, "\\S+")) %>%
-  group_by(roundNum, alpha) %>%
+  group_by(roundNum) %>%
   multi_boot_standard('numWords')
 
-plot.reduction <- ggplot(reductionRes, aes(x = roundNum, y = mean, group = alpha, color = alpha)) +
-  ylab('mean utterance length') +
+plot.reduction <- ggplot(reductionRes, aes(x = roundNum, y = mean, group=1)) +
+  ylab('mean # words') +
+  xlab('round #') +
   geom_line() +
   geom_errorbar(aes(ymax = ci_upper, ymin = ci_lower), width = .1) +  
   theme_bw(9) +
-  ylim(1,NA) +
+  ylim(1,1.4) +
   theme_few(9) +  
-  theme(plot.margin=unit(x=c(0,0,0,0),units="mm"))
+  theme(plot.margin=unit(x=c(1,0,0,0),units="mm"))
 
-plot_grid(plot.arbitrariness, plot.accuracy, plot.reduction, labels = c('A', 'B', 'C'), ncol = 3, align = 'v')
+plot_grid(plot.arbitrariness, plot.accuracy, plot.reduction, labels = c('A', 'B', 'C'), ncol = 3, align = 'vh')
 ```
 
-Finally, we show how our model explains reduction of utterance length over multiple interactions. For utterances to be reduced, of course, they must vary in length. Motivated by our empirical observation that meaningful clauses are the primary unit of reduction, we extend our grammar to include *conjunctions*. This is one of the simplest ways to constructing longer utterances compositionally from lexical primitives, using the product rule^[Future work ]: 
+Consider an environment with two abstract shapes ($\{s_1, s_2\}$), where the speaker must choose between two utterances ($\{u_1, u_2\}$) incurring equal cost. Their prior $P(\mathcal{L})$ over the meaning of each utterance is given by a Beta distribution^[In our implementation, we enumerate over coarse-grained bins; preliminary experiments using variational inference on the full continuous distribution give similar results.], so on the first round both utterances are equally likely to apply to either shape. If the speaker was trying to get their partner to pick $s_1$, then, since each utterance is equally (un)informative, they would randomly sample one (say, $u_1$), and observe the listener's selection of a shape (say, $s_1$). On the next round, the speaker uses the observed pair $\{u_1, s_1\}$ to update their beliefs about their partner's true lexicon, uses these beliefs to generate a new utterance, and so on. To examine expected dynamics over multiple rounds, we forward sample many possible trajectories.
 
+We observe several important qualitative effects in our simulations. First, the fact that a knowledgeable listener responds to utterance $u$ with $s$ provides evidence for lexicons in which $u$ is a good fit for $s$, hence the likelihood of the speaker using $u$ to refer to $s$ increases on subsequent rounds (see Fig.\ref{fig:modelResults}A). In other words, the initial symmetry between the meanings can be broken by initial random choices, leading to completely *arbitrary but stable mappings* in future rounds. Second, because the listener is also learning the lexicon from these observations under the same set of assumptions, they converge on a shared set of meanings; hence, expected *accuracy* rises on future rounds (see Fig. \ref{fig:modelResults}B). Third, because one's partner is assumed to be pragmatic, agents can also learn about *unheard* utterances. Observing $d = \{u_1, s_1\}$ also provides evidence that $u_2$ is *not* a good fit for $s_1$ by Gricean maxims: if $u_2$ were a better fit for $s_1$, the speaker would have used it instead [@Grice75_LogicConversation]. Finally, *failed references* lead to conventions just as effectively as successful references: if the speaker intends $s_1$ and says $u_1$, but then the listener incorrectly picks $s_2$, the speaker will take this as evidence that $u_1$ actually means $s_2$ in their partner's lexicon and become increasingly likely to use it that way on subsequent rounds.
+
+### Reduction in utterance length
+
+Finally, we show how our model explains reduction of utterance length over multiple interactions. For utterances to be reduced, of course, they must vary in length. Motivated by our empirical observation that meaningful clauses are the primary unit of reduction, we extend our grammar to include *conjunctions*. This is one of the simplest ways to constructing longer utterances compositionally from lexical primitives, using the product rule:
 $$\mathcal{L}(u_i \textrm{ and } u_j, o) = \mathcal{L}(u_i, o) \times \mathcal{L}(u_j, o)$$
-
-Analogous to our tangram stimuli, which have many ambiguous features and figurative perspectives that may be evoked in speaker descriptions, we consider a simplified scenario where speakers can refer to two different features of the two objects $\{o_1, o_2\}$. The speaker has four primitive words at their disposal -- two words for shape ($\{u_{s1}, u_{s2}\}$) and two for color $\{u_{c1}, u_{c2}\}$ -- and has uncertainty over the initial meanings of all four.
+\indent Analogous to our tangram stimuli, which have many ambiguous features and figurative perspectives that may be evoked in speaker descriptions, we consider a simplified scenario where speakers can refer to two different features of the two objects $\{o_1, o_2\}$. The speaker has four primitive words at their disposal -- two words for shape ($\{u_{s1}, u_{s2}\}$) and two for color $\{u_{c1}, u_{c2}\}$ -- and has uncertainty over the initial meanings of all four.
 
 While we established in the previous section that conventions can emerge over a reference game in the complete absence of initial preferences, players often bring such preferences to the table. A player who hears 'ice skater' on the first round of our tangrams task is more likely to select some objects more than others, even though they still have some uncertainty over its meaning in the context. To show that our model can accommodate this fact, we allow the speaker's initial prior meanings to be slightly biased. $u_{s1}$ and $u_{c1}$ are more likely to mean $o_1$; $u_{s2}$ and $u_{c2}$ are more likely to mean $o_2$.
 
-We ran 1000 forward samples of 6 rounds of speaker-listener interaction, and averaged over the utterance length at each round ^[In our simulations, we used $\alpha = 13$ and found the basic reduction effect over a range of different biases, with different intercepts and slopes]. Our results are shown in Figure \ref{fig:modelResults}C: the expected utterance length decreases systematically over each round. To illustrate in more detail how this dynamic is driven by an initial rational preference for redundancy relaxing as reference becomes more reliable, we walk step-by-step through a single trajectory. 
+We ran 1000 forward samples of 6 rounds of speaker-listener interaction, and averaged over the utterance length at each round ^[In our simulations, we used $\alpha = 10$ and found the basic reduction effect over a range of different biases]. Our results are shown in Figure \ref{fig:modelResults}C: the expected utterance length decreases systematically over each round. To illustrate in more detail how this dynamic is driven by an initial rational preference for redundancy relaxing as reference becomes more reliable, we walk step-by-step through a single trajectory. 
 
 Consider a speaker who wants to refer to object $o_1$. They believe their knowledgeable partner is slightly more likely to interpret their language using a lexicon in which $u_{s1}$ and $u_{c1}$ apply to this object, due to their initial bias. However, there is still a reasonable chance that one or the other alone actually refers strongly to $o_2$ in the true lexicon. Thus, it is useful to produce the conjunction "$u_{s1}$ and $u_{c1}$" to hedge against this possibility, despite its higher cost. Upon observing the listener's response (say, $o_1$), the evidence is indeterminate about the separate meanings of $u_{s1}$ and $u_{c1}$ but both become increasingly likely to refer to $o_1$. In the trade-off between informativity and cost, the shorter utterances remain probable options. Once the speaker chooses one of them, the symmetry collapses and that utterance remains most probable in future rounds. In this way, meaningful sub-phrases are omitted over time as the speaker becomes more confident about the true lexicon. 
 
