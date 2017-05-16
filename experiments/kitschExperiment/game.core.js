@@ -49,7 +49,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 6;
+  this.numRounds = 48;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
@@ -256,7 +256,7 @@ var sampleObjects = function(condition, earlierTargets) {
     4: {class: getObjectSubset(2).concat(getObjectSubset(3)),
 	     selector: diffClassSelector},
     5: {class: objectList, 
-        selector: randomObjSelector}
+        selector: randomObjSelector},
   };
   
   var conditionParams = condition.split("_"); 
@@ -309,15 +309,21 @@ var getRandomizedConditions = function() {
   // Conditions:
   // 1) Atypical, Parent Class A, Random Image Not Parent of Atypical -> Target: Atypical
   // 2) Atypical, Random Image Not Parent of Atypical, Parent Class B -> Target: Atypical
-  // 2) Atypical, Parent Class A, Random Image Not Parent of Atypical -> Target: Parent Class A
-  // 3) Atypical, Random Image Not Parent of Atypical, Parent Class B -> Target: Parent Class B
+  // 3) Atypical, Parent Class A, Random Image Not Parent of Atypical -> Target: Parent Class A
+  // 4) Atypical, Random Image Not Parent of Atypical, Parent Class B -> Target: Parent Class B
+  // 5) Random Item, Random Item, Parent Class A -> Target: Parent Class A
+  // 6) Random Item, Random Item, Parent Class B -> Target: Parent Class B
+  // 7) Random Item, Random Item, Atypical -> Target: Atypical
+  // 8) Atypical, Parent Class A, Parent Class B -> Target: Atypical
   var conditions = [].concat(
       utils.fillArray("distr24_targ1", 6),
       utils.fillArray("distr34_targ1", 6),
       utils.fillArray("distr14_targ2", 6),
       utils.fillArray("distr14_targ3", 6),
       utils.fillArray("distr55_targ2", 6),
-      utils.fillArray("distr55_targ3", 6));
+      utils.fillArray("distr55_targ3", 6),
+      utils.fillArray("distr55_targ1", 6),
+      utils.fillArray("distr23_targ1", 6));
   return _.shuffle(conditions);
 };
 
