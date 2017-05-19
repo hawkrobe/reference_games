@@ -49,7 +49,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 48;
+  this.numRounds = 18;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
@@ -146,21 +146,15 @@ game_core.prototype.newRound = function() {
 game_core.prototype.makeTrialList = function () {
   var local_this = this;
   var conditionList = getRandomizedConditions();
+  conditionList = conditionList.concat(getRandomizedConditions().slice(1,3));
+  console.log(conditionList.length);
   var trialList = [];
 
-  // Note: We want to use the same targets across
-  // the conditions, as we want atypical objects
-  // to appear in all trials.
-  var previousTargets = {};
+  var previousTargets = [];
 
   for (var i = 0; i < conditionList.length; i++) {
     var condition = conditionList[i];
-    var condPrevTargets = [];
-    if (_.has(previousTargets, condition)) {
-      condPrevTargets = previousTargets[condition]; // Load prevTargets for condition
-    }
-
-    var objList = sampleObjects(condition, condPrevTargets); // Sample three objects
+    var objList = sampleObjects(condition, previousTargets); // Sample three objects
 
     var conditionParams = condition.split("_"); 
     var distrParams = conditionParams[0].slice(-2).split("");
@@ -316,14 +310,14 @@ var getRandomizedConditions = function() {
   // 7) Random Item, Random Item, Atypical -> Target: Atypical
   // 8) Atypical, Parent Class A, Parent Class B -> Target: Atypical
   var conditions = [].concat(
-      utils.fillArray("distr24_targ1", 6),
-      utils.fillArray("distr34_targ1", 6),
-      utils.fillArray("distr14_targ2", 6),
-      utils.fillArray("distr14_targ3", 6),
-      utils.fillArray("distr55_targ2", 6),
-      utils.fillArray("distr55_targ3", 6),
-      utils.fillArray("distr55_targ1", 6),
-      utils.fillArray("distr23_targ1", 6));
+      utils.fillArray("distr24_targ1", 2),
+      utils.fillArray("distr34_targ1", 2),
+      utils.fillArray("distr14_targ2", 2),
+      utils.fillArray("distr14_targ3", 2),
+      utils.fillArray("distr55_targ2", 2),
+      utils.fillArray("distr55_targ3", 2),
+      utils.fillArray("distr55_targ1", 2),
+      utils.fillArray("distr23_targ1", 2));
   return _.shuffle(conditions);
 };
 
