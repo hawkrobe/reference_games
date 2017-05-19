@@ -137,7 +137,6 @@ game_core.prototype.newRound = function() {
   } else {
     // Otherwise, get the preset list of tangrams for the new round
     this.roundNum += 1;
-    console.log("now on round " + (this.roundNum + 1));
     this.objects = this.trialList[this.roundNum];
     this.server_send_update();
   }
@@ -146,8 +145,6 @@ game_core.prototype.newRound = function() {
 game_core.prototype.makeTrialList = function () {
   var local_this = this;
   var conditionList = getRandomizedConditions();
-  conditionList = conditionList.concat(getRandomizedConditions().slice(1,3));
-  console.log(conditionList.length);
   var trialList = [];
 
   var previousTargets = [];
@@ -159,9 +156,7 @@ game_core.prototype.makeTrialList = function () {
     var conditionParams = condition.split("_"); 
     var distrParams = conditionParams[0].slice(-2).split("");
     var targParam = conditionParams[1].slice(-1).split("");
-
-    condPrevTargets.push(objList[0].name); // Keep track of targets seen
-    previousTargets[condition] = condPrevTargets;
+    previousTargets.push(objList[0].name); // Keep track of targets seen
 
     var locs = sampleStimulusLocs(); // Sample locations for those objects
     trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
@@ -312,12 +307,12 @@ var getRandomizedConditions = function() {
   var conditions = [].concat(
       utils.fillArray("distr24_targ1", 2),
       utils.fillArray("distr34_targ1", 2),
-      utils.fillArray("distr14_targ2", 2),
-      utils.fillArray("distr14_targ3", 2),
-      utils.fillArray("distr55_targ2", 2),
-      utils.fillArray("distr55_targ3", 2),
-      utils.fillArray("distr55_targ1", 2),
-      utils.fillArray("distr23_targ1", 2));
+      utils.fillArray("distr14_targ2", 3),
+      utils.fillArray("distr14_targ3", 3),
+      utils.fillArray("distr55_targ2", 3),
+      utils.fillArray("distr55_targ3", 3),
+      utils.fillArray("distr55_targ1", 1),
+      utils.fillArray("distr23_targ1", 1));
   return _.shuffle(conditions);
 };
 
