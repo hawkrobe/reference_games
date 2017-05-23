@@ -1,3 +1,0 @@
-gameid, time, roundNum, condition,nameClickedObj, targetStatusClickedObj, spLocsClickedObj, lisLocsClickedObj, class1ClickedObj, class2ClickedObj, alt1Name, alt1TargetStatus, alt1SpLocs, alt1LisLocs, alt1Class1, alt1Class2, alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, alt2Class1, alt2Class2
-4762-c,1495575282560,1,distr55_targ2,apple,2,3,1,apple,null,panda_backpack,1,1,2,panda,backpack,backpack,3,2,3,null,backpack
-4762-c,1495575289333,2,distr34_targ1,apple_chair,1,1,1,apple,chair,frog,2,3,3,frog,null,chair,3,2,2,null,chair

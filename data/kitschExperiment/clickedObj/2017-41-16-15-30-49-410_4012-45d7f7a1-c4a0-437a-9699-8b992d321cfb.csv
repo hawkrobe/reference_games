@@ -1,7 +1,0 @@
-gameid, time, roundNum, condition,nameClickedObj, targetStatusClickedObj, spLocsClickedObj, lisLocsClickedObj, class1ClickedObj, class2ClickedObj, alt1Name, alt1TargetStatus, alt1SpLocs, alt1LisLocs, alt1Class1, alt1Class2, alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, alt2Class1, alt2Class2
-4012-4,1494948662448,1,distr24_targ1,frog_teapot,1,2,2,frog,teapot,basketball_hoop,2,1,3,basketball_hoop,null,frog,2,3,1,frog,null
-4012-4,1494948675077,2,distr14_targ3,teapot,3,2,3,null,teapot,frog_teapot,1,1,1,frog,teapot,backpack,3,3,2,null,backpack
-4012-4,1494948701888,3,distr55_targ3,charm,3,3,1,null,charm,frog,2,2,2,frog,null,backpack,3,1,3,null,backpack
-4012-4,1494948707198,4,distr55_targ3,backpack,3,3,2,null,backpack,panda,2,2,1,panda,null,apple,2,1,3,apple,null
-4012-4,1494948716021,5,distr34_targ1,frog_teapot,1,2,3,frog,teapot,teapot,3,1,1,null,teapot,swan,2,3,2,swan,null
-4012-4,1494948722162,6,distr55_targ2,panda,2,2,3,panda,null,frog_teapot,1,1,1,frog,teapot,backpack,3,3,2,null,backpack
