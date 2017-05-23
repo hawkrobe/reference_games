@@ -49,7 +49,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 2;
+  this.numRounds = 18;
 
   // How much bonus has been accumulated so far?
   this.bonus = 0.0;
