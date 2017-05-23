@@ -109,8 +109,9 @@ var client_onserverupdate_received = function(data){
   game.players_threshold = data.pt;
   game.player_count = data.pc;
   game.roundNum = data.roundNum;
+  game.bonus = data.bonus;
   game.data = data.dataObj;
-  
+
   // Draw all this new stuff
   drawScreen(game, game.get_player(my_id));
 }; 
@@ -282,10 +283,6 @@ window.onload = function(){
 
 };
 
-var client_addnewround = function(game) {
-  $('#roundnumber').append(game.roundNum);
-};
-
 var called = false; // global variable called checks whether a chatmessage was sent. initially set to false
 
 // Associates callback functions corresponding to different socket messages
@@ -350,6 +347,8 @@ var client_connect_to_server = function(game) {
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
     $('#messages').empty();
+    // Update bonus
+    $('#bonus').empty().append("Bonus:\n" + data.bonus.toString());
     if(game.roundNum+2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty().append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);

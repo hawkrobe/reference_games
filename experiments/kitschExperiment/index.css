@@ -58,6 +58,19 @@ html , body {
 	font-size: 150%
 }
 
+#bonus {
+    height: 10%;
+    width: 20%;
+    text-align: center;
+    margin-left: 85%;
+    margin-top: 1%;
+    margin-right: auto;
+    margin-bottom: auto ;
+    left:0; right:0; top:20%; bottom: 0;
+    position: absolute;
+    font-size: 150%
+}
+
 #score {
 	height: 10%;
 	width: 20%;

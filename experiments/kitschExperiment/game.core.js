@@ -49,7 +49,10 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 18;
+  this.numRounds = 2;
+
+  // How much bonus has been accumulated so far?
+  this.bonus = 0.0;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
@@ -142,6 +145,19 @@ game_core.prototype.newRound = function() {
   }
 };
 
+game_core.prototype.incrementBonus = function(clickedObjName) {
+  var target_name = '';
+  for (var i = 0; i < this.trialList[this.roundNum].length; i++) {
+    var item = this.trialList[this.roundNum][i];
+    if (item.targetStatus == 'target') {
+      target_name = item.name;
+    }
+  }
+  if (clickedObjName == target_name) {
+      this.bonus += .03;
+  }
+}
+
 game_core.prototype.makeTrialList = function () {
   var local_this = this;
   var conditionList = getRandomizedConditions();
@@ -186,7 +202,6 @@ game_core.prototype.makeTrialList = function () {
   return(trialList);
 };
 
-
 //scores the number of incorrect tangram matches between listener and speaker
 //returns the correct score out of total tangrams
 game_core.prototype.game_score = function(game_objects) {
@@ -219,6 +234,7 @@ game_core.prototype.server_send_update = function(){
     pc : this.player_count,
     dataObj  : this.data,
     roundNum : this.roundNum,
+    bonus: this.bonus,
     objects: this.objects
   };
 

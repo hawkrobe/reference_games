@@ -33,12 +33,13 @@ var onMessage = function(client,message) {
   switch(message_type) {
     
   case 'clickedObj' :
+    gc.incrementBonus(message_parts[2]);
     writeData(client, "clickedObj", message_parts);
     others[0].player.instance.send("s.highlightObjSpeaker." + message_parts[3]);
     target.instance.send("s.highlightObjListener." + message_parts[3]);
     setTimeout(function() {
       _.map(all, function(p){
-        p.player.instance.emit( 'newRoundUpdate', {user: client.userid} );
+        p.player.instance.emit( 'newRoundUpdate', {user: client.userid, bonus: gc.bonus} );
       });
       gc.newRound();
     }, 1000);
@@ -83,27 +84,27 @@ var writeData = function(client, type, message_parts) {
     var clickedObjParentClass1 = message_parts[6];
     var clickedObjPaentClass2 = message_parts[7];
 
-      var alternative1Name = message_parts[8]; 
-      var alternative1TargetStatus = message_parts[9];
-      var alternative1SpeakerLocs = message_parts[10];
-      var alternative1ListenerLocs = message_parts[11];
-      var alternativeParentClass1 = message_parts[12];
-      var alternativeParentClass2 = message_parts[13];
+    var alternative1Name = message_parts[8]; 
+    var alternative1TargetStatus = message_parts[9];
+    var alternative1SpeakerLocs = message_parts[10];
+    var alternative1ListenerLocs = message_parts[11];
+    var alternativeParentClass1 = message_parts[12];
+    var alternativeParentClass2 = message_parts[13];
 
-      var alternative2Name = message_parts[14]; 
-      var alternative2TargetStatus = message_parts[15];
-      var alternative2SpeakerLocs = message_parts[16];
-      var alternative2ListenerLocs = message_parts[17];
-      var alternative2ParentClass1 = message_parts[18];
-      var alternative2ParentClass2 = message_parts[19];
-      
-      var line = (id + ',' + Date.now() + ',' + roundNum  + ',' + clickedObjCondition 
-        + "," + clickedObjName + "," + clickedObjTargetStatus + "," + clickedObjSpeakerLocs 
-        + "," + clickedObjListenerLocs + ',' + clickedObjParentClass1 + ',' + clickedObjPaentClass2 
-        + "," + alternative1Name + "," + alternative1TargetStatus + "," + alternative1SpeakerLocs 
-        + "," + alternative1ListenerLocs + ',' + alternativeParentClass1 + ',' + alternativeParentClass2 
-        + "," + alternative2Name + "," + alternative2TargetStatus + "," + alternative2SpeakerLocs 
-        + "," + alternative2ListenerLocs + ',' + alternative2ParentClass1 + ',' + alternative2ParentClass2  + '\n');
+    var alternative2Name = message_parts[14]; 
+    var alternative2TargetStatus = message_parts[15];
+    var alternative2SpeakerLocs = message_parts[16];
+    var alternative2ListenerLocs = message_parts[17];
+    var alternative2ParentClass1 = message_parts[18];
+    var alternative2ParentClass2 = message_parts[19];
+    
+    var line = (id + ',' + Date.now() + ',' + roundNum  + ',' + clickedObjCondition 
+      + "," + clickedObjName + "," + clickedObjTargetStatus + "," + clickedObjSpeakerLocs 
+      + "," + clickedObjListenerLocs + ',' + clickedObjParentClass1 + ',' + clickedObjPaentClass2 
+      + "," + alternative1Name + "," + alternative1TargetStatus + "," + alternative1SpeakerLocs 
+      + "," + alternative1ListenerLocs + ',' + alternativeParentClass1 + ',' + alternativeParentClass2 
+      + "," + alternative2Name + "," + alternative2TargetStatus + "," + alternative2SpeakerLocs 
+      + "," + alternative2ListenerLocs + ',' + alternative2ParentClass1 + ',' + alternative2ParentClass2 +  ',' +  gc.bonus + '\n');
     console.log("clickedObj: " + line);
 
     break;
@@ -146,7 +147,7 @@ var startGame = function(game, player) {
 			"class2ClickedObj, alt1Name, alt1TargetStatus, " +
 			"alt1SpLocs, alt1LisLocs, alt1Class1, alt1Class2, " +
 			"alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, " +
-			"alt2Class1, alt2Class2\n");
+			"alt2Class1, alt2Class2, bonus\n");
   game.newRound();
 };
 
