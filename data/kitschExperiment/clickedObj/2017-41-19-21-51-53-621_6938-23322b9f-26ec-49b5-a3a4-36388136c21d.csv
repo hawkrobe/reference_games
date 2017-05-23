@@ -1,0 +1,24 @@
+gameid, time, roundNum, condition,nameClickedObj, targetStatusClickedObj, spLocsClickedObj, lisLocsClickedObj, class1ClickedObj, class2ClickedObj, alt1Name, alt1TargetStatus, alt1SpLocs, alt1LisLocs, alt1Class1, alt1Class2, alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, alt2Class1, alt2Class2
+6938-2,1495230721406,1,distr24_targ1,panda_backpack,1,1,1,panda,backpack,panda,2,2,2,panda,null,apple,2,3,3,apple,null
+6938-2,1495230730568,2,distr23_targ1,lightouse_lamp,1,2,3,lighthouse,lamp,lamp,3,1,1,null,lamp,lighthouse,2,3,2,lighthouse,null
+6938-2,1495230737877,3,distr14_targ3,panda_backpack,1,2,3,panda,backpack,backpack,3,3,1,null,backpack,lamp,3,1,2,null,lamp
+6938-2,1495230748434,4,distr14_targ3,chair,3,2,2,null,chair,apple_chair,1,1,3,apple,chair,basketball_hoop,2,3,1,basketball_hoop,null
+6938-2,1495230752357,5,distr55_targ2,apple,2,3,1,apple,null,panda,2,2,2,panda,null,chair,3,1,3,null,chair
+6938-2,1495230759900,6,distr14_targ3,teapot,3,1,1,null,teapot,lamp,3,3,3,null,lamp,frog_teapot,1,2,2,frog,teapot
+6938-2,1495230766991,7,distr55_targ3,teapot,3,1,1,null,teapot,charm,3,3,3,null,charm,swan_measuring_cup,1,2,2,swan,measuring_cup
+6938-2,1495230790107,8,distr14_targ2,swan,2,1,1,swan,null,chair,3,2,2,null,chair,swan_measuring_cup,1,3,3,swan,measuring_cup
+6938-2,1495230800160,9,distr14_targ2,apple,2,1,1,apple,null,basketball_hoop,2,3,3,basketball_hoop,null,apple_chair,1,2,2,apple,chair
+6938-2,1495230805525,10,distr55_targ1,panda_backpack,1,3,2,panda,backpack,basketball_hoop,2,1,1,basketball_hoop,null,frog,2,2,3,frog,null
+6938-2,1495230810228,11,distr55_targ1,apple_chair,1,1,2,apple,chair,chair,3,2,3,null,chair,backpack,3,3,1,null,backpack
+6938-2,1495230814024,12,distr55_targ2,panda,2,1,1,panda,null,lamp,3,2,3,null,lamp,frog_teapot,1,3,2,frog,teapot
+6938-2,1495230820898,13,distr14_targ2,panda,2,2,3,panda,null,frog,2,1,1,frog,null,panda_backpack,1,3,2,panda,backpack
+6938-2,1495230842280,14,distr55_targ2,lighthouse,2,1,2,lighthouse,null,lamp,3,3,3,null,lamp,frog,2,2,1,frog,null
+6938-2,1495230850224,15,distr23_targ1,swan_measuring_cup,1,3,3,swan,measuring_cup,measuring_cup,3,2,2,null,measuring_cup,swan,2,1,1,swan,null
+6938-2,1495230861293,16,distr23_targ1,panda_backpack,1,1,2,panda,backpack,panda,2,2,1,panda,null,backpack,3,3,3,null,backpack
+6938-2,1495230879915,17,distr34_targ1,basketball_hoop_charm,1,1,1,basketball_hoop,charm,charm,3,2,2,null,charm,swan,2,3,3,swan,null
+6938-2,1495230891042,18,distr14_targ2,lightouse_lamp,1,1,2,lighthouse,lamp,frog,2,3,1,frog,null,lighthouse,2,2,3,lighthouse,null
+6938-2,1495231030182,19,distr55_targ1,frog_teapot,1,1,3,frog,teapot,apple,2,2,1,apple,null,teapot,3,3,2,null,teapot
+6938-2,1495231078052,20,distr14_targ3,measuring_cup,3,3,3,null,measuring_cup,lamp,3,1,1,null,lamp,swan_measuring_cup,1,2,2,swan,measuring_cup
+6938-2,1495231118634,21,distr24_targ1,lightouse_lamp,1,1,2,lighthouse,lamp,lighthouse,2,3,3,lighthouse,null,backpack,3,2,1,null,backpack
+6938-2,1495231137375,22,distr14_targ2,basketball_hoop,2,3,2,basketball_hoop,null,basketball_hoop_charm,1,1,3,basketball_hoop,charm,chair,3,2,1,null,chair
+6938-2,1495231143770,23,distr34_targ1,apple_chair,1,2,1,apple,chair,lamp,3,3,2,null,lamp,chair,3,1,3,null,chair

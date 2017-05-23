@@ -1,0 +1,19 @@
+gameid, time, roundNum, condition,nameClickedObj, targetStatusClickedObj, spLocsClickedObj, lisLocsClickedObj, class1ClickedObj, class2ClickedObj, alt1Name, alt1TargetStatus, alt1SpLocs, alt1LisLocs, alt1Class1, alt1Class2, alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, alt2Class1, alt2Class2, bonus
+4042-4,1495582292188,1,distr34_targ1,lightouse_lamp,1,3,3,lighthouse,lamp,frog,2,2,1,frog,null,lamp,3,1,2,null,lamp,0.03
+4042-4,1495582296106,2,distr14_targ2,swan,2,1,1,swan,null,swan_measuring_cup,1,3,2,swan,measuring_cup,teapot,3,2,3,null,teapot,0.06
+4042-4,1495582303989,3,distr23_targ1,apple_chair,1,1,2,apple,chair,chair,3,2,1,null,chair,apple,2,3,3,apple,null,0.09
+4042-4,1495582309301,4,distr14_targ3,backpack,3,3,2,null,backpack,panda_backpack,1,1,1,panda,backpack,lamp,3,2,3,null,lamp,0.12
+4042-4,1495582315317,5,distr55_targ1,frog_teapot,1,1,2,frog,teapot,teapot,3,3,3,null,teapot,measuring_cup,3,2,1,null,measuring_cup,0.15
+4042-4,1495582321750,6,distr55_targ2,basketball_hoop,2,2,3,basketball_hoop,null,swan_measuring_cup,1,3,1,swan,measuring_cup,chair,3,1,2,null,chair,0.18
+4042-4,1495582329584,7,distr14_targ3,chair,3,2,2,null,chair,apple_chair,1,1,3,apple,chair,teapot,3,3,1,null,teapot,0.21
+4042-4,1495582334469,8,distr55_targ2,panda,2,2,3,panda,null,measuring_cup,3,3,1,null,measuring_cup,basketball_hoop,2,1,2,basketball_hoop,null,0.24
+4042-4,1495582341214,9,distr34_targ1,basketball_hoop_charm,1,1,2,basketball_hoop,charm,backpack,3,2,3,null,backpack,charm,3,3,1,null,charm,0.27
+4042-4,1495582344875,10,distr14_targ2,frog,2,2,3,frog,null,basketball_hoop,2,3,2,basketball_hoop,null,frog_teapot,1,1,1,frog,teapot,0.30000000000000004
+4042-4,1495582349903,11,distr55_targ2,lighthouse,2,3,2,lighthouse,null,lightouse_lamp,1,2,3,lighthouse,lamp,basketball_hoop,2,1,1,basketball_hoop,null,0.33000000000000007
+4042-4,1495582358264,12,distr55_targ3,teapot,3,2,1,null,teapot,lighthouse,2,1,2,lighthouse,null,backpack,3,3,3,null,backpack,0.3600000000000001
+4042-4,1495582366207,13,distr14_targ2,apple,2,2,2,apple,null,apple_chair,1,3,3,apple,chair,measuring_cup,3,1,1,null,measuring_cup,0.3900000000000001
+4042-4,1495582373062,14,distr24_targ1,panda_backpack,1,1,3,panda,backpack,panda,2,3,2,panda,null,teapot,3,2,1,null,teapot,0.42000000000000015
+4042-4,1495582381057,15,distr24_targ1,swan_measuring_cup,1,2,1,swan,measuring_cup,lighthouse,2,3,3,lighthouse,null,swan,2,1,2,swan,null,0.4500000000000002
+4042-4,1495582388909,16,distr55_targ3,measuring_cup,3,2,3,null,measuring_cup,lamp,3,3,1,null,lamp,chair,3,1,2,null,chair,0.4800000000000002
+4042-4,1495582397232,17,distr14_targ3,charm,3,2,1,null,charm,basketball_hoop_charm,1,3,3,basketball_hoop,charm,frog,2,1,2,frog,null,0.5100000000000002
+4042-4,1495582401465,18,distr55_targ3,lamp,3,1,2,null,lamp,backpack,3,3,3,null,backpack,basketball_hoop,2,2,1,basketball_hoop,null,0.5400000000000003

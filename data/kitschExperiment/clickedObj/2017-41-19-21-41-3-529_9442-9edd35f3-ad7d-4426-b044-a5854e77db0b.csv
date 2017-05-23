@@ -1,0 +1,3 @@
+gameid, time, roundNum, condition,nameClickedObj, targetStatusClickedObj, spLocsClickedObj, lisLocsClickedObj, class1ClickedObj, class2ClickedObj, alt1Name, alt1TargetStatus, alt1SpLocs, alt1LisLocs, alt1Class1, alt1Class2, alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, alt2Class1, alt2Class2
+9442-9,1495230093308,1,distr34_targ1,lightouse_lamp,1,3,2,lighthouse,lamp,teapot,3,2,1,null,teapot,lamp,3,1,3,null,lamp
+9442-9,1495230101856,2,distr55_targ1,basketball_hoop_charm,1,1,3,basketball_hoop,charm,backpack,3,2,1,null,backpack,basketball_hoop,2,3,2,basketball_hoop,null

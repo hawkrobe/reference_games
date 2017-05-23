@@ -1,0 +1,3 @@
+gameid, time, roundNum, condition,nameClickedObj, targetStatusClickedObj, spLocsClickedObj, lisLocsClickedObj, class1ClickedObj, class2ClickedObj, alt1Name, alt1TargetStatus, alt1SpLocs, alt1LisLocs, alt1Class1, alt1Class2, alt2Name, alt2TargetStatus, alt2SpLocs, alt2LisLocs, alt2Class1, alt2Class2
+2986-0,1495581978852,1,distr14_targ2,swan,2,1,1,swan,null,lamp,3,2,3,null,lamp,swan_measuring_cup,1,3,2,swan,measuring_cup
+2986-0,1495581986064,2,distr14_targ3,chair,3,1,3,null,chair,lamp,3,2,2,null,lamp,apple_chair,1,3,1,apple,chair
