@@ -370,7 +370,7 @@ function responseListener(evt) {
           var objectLocs = getObjectLocs(globalGame.objects);
           var trialNum = globalGame.roundNum + 1;
           var gameID = globalGame['data']['id'];
-          var timestamp = Date.now();
+          var timestamp = Date.now();          
 
           // send data to mongodb (also see writeData:clickedObj in game.server)
           dbline = {role: globalGame.my_role,
@@ -384,15 +384,17 @@ function responseListener(evt) {
                     correct: correct,
                     objectLocs: objectLocs,
                     pngString: pngString,
+                    currPose: currPose,
+                    currCondition: currCondition,
                     dbname:globalGame.dbname,
                     colname:globalGame.colname};
 
           // console.log(dbline);
           // jef 4/22/17: do NOT send data to mongo db until SSL certificate
-          // in place
+          // in place 
           // $.ajax({
           //  type: 'GET',
-          //  url: 'http://10.102.2.155:9919/savedecision',
+          //  url: 'http://138.197.213.237:9919/savedecision',
           //  dataType: 'jsonp',
           //  traditional: true,
           //  contentType: 'application/json; charset=utf-8',
