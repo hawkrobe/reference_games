@@ -179,6 +179,7 @@ function endStroke(event) {
       var allObjects = globalGame.objects;
       var sketchpadWidthActual = paper.view.size._width;
       var sketchpadHeightActual = paper.view.size._height;
+      var shiftKeyUsed = globalGame.shiftKeyUsed;
 
       // send stroke info to remote db (see also writeData in game.server)
       dbline = {role: globalGame.my_role,
@@ -192,15 +193,17 @@ function endStroke(event) {
                 currStrokeNum: currStrokeNum,
                 svgString: svgString,
                 jsonString: jsonString,
+                shiftKeyUsed: shiftKeyUsed,
                 dbname: globalGame.dbname,
                 colname: globalGame.colname};
 
       // console.log(dbline);
       // jef 4/22/17: do NOT send data to mongo db until SSL certificate
       // in place
+
     //   $.ajax({
     //    type: 'GET',
-    //    url: 'https://10.102.2.155:9919/savedecision',
+    //    url: 'http://138.197.213.237:9919/savedecision',
     //    dataType: 'jsonp',
     //    traditional: true,
     //    contentType: 'application/json; charset=utf-8',
@@ -208,20 +211,20 @@ function endStroke(event) {
     //    timeout: 2000,
     //    retryLimit: 3,
     //    data: dbline,
-          // error: function(x, t, m) {
-          //   if(t==="timeout") {
-          //     console.log("got timeout, press on anyway...");
-          //     this.retryLimit--;
-          //     $.ajax(this);
-          //     return;
+    //       error: function(x, t, m) {
+    //         if(t==="timeout") {
+    //           console.log("got timeout, press on anyway...");
+    //           this.retryLimit--;
+    //           $.ajax(this);
+    //           return;
 
-          //   } else {
-          //       console.log(t);
-          //       this.retryLimit--;
-          //       $.ajax(this);    
-          //       return;                      
-          //   }
-          // },
+    //         } else {
+    //             console.log(t);
+    //             this.retryLimit--;
+    //             $.ajax(this);    
+    //             return;                      
+    //         }
+    //       },
     //    success: function(msg) {
     //               console.log('stroke response: upload success!');
     //             }
