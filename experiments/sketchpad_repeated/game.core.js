@@ -323,7 +323,7 @@ game_core.prototype.getRandomizedConditions = function() {
                  epoch:epoch};
 
 
-  console.log(design_dict);
+  // console.log(design_dict);
   return design_dict;  
 
 };
@@ -462,10 +462,10 @@ var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList
   var thirdDistractor = im_all[notTargs[2]];
   _target_status = ["distractor","distractor","distractor","distractor"];
   var target_status = _target_status[thisTarget] = "target"; 
-  _.extend(target,{target_status: "target", condition: thisCondition});
-  _.extend(firstDistractor,{target_status: "distr1", condition: thisCondition}); 
-  _.extend(secondDistractor,{target_status: "distr2", condition: thisCondition});
-  _.extend(thirdDistractor,{target_status: "distr3", condition: thisCondition});
+  _.extend(target,{target_status: "target", condition: thisCondition, epoch: thisEpoch});
+  _.extend(firstDistractor,{target_status: "distr1", condition: thisCondition, epoch: thisEpoch}); 
+  _.extend(secondDistractor,{target_status: "distr2", condition: thisCondition, epoch: thisEpoch});
+  _.extend(thirdDistractor,{target_status: "distr3", condition: thisCondition, epoch: thisEpoch});
   return [target, firstDistractor, secondDistractor, thirdDistractor];
 
 };
