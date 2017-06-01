@@ -175,7 +175,6 @@ game_core.prototype.newRound = function() {
 game_core.prototype.getRandomizedConditions = function() {  
   ///// May 31: implementing re-design (see README.md)
 
-
   var numCats = 4;
   var numObjs = 8; 
   // make randomization matrix: take 4x8 matrix with range(0,8) on the rows, and indpt shuffle within row  
@@ -271,21 +270,21 @@ game_core.prototype.getRandomizedConditions = function() {
     curr_epoch = new Array;
     // append the further repeat trials
     for (i=0;i<f_inds.length;i++) {
-      curr_epoch.push(zipped[f_inds[i]]);
+      curr_epoch.push(zipped[f_inds[i]].concat(j)); // j is concated to capture 'epoch number'
     }
     // // append the closer repeat trials
     for (i=0;i<c_inds.length;i++) {
-      curr_epoch.push(zipped[c_inds[i]]);
+      curr_epoch.push(zipped[c_inds[i]].concat(j));
     }
     filler_range = _.range(j*3,j*3+3);
     console.log(filler_range);
     // grab the next 3 further filler (once) trials and append
     for (i=0;i<filler_range.length;i++) {
-      curr_epoch.push(zipped[filler_f_inds[filler_range[i]]]);
+      curr_epoch.push(zipped[filler_f_inds[filler_range[i]]].concat(j));
     }    
     // // grab the next 3 closer filler (once) trials and append
     for (i=0;i<filler_range.length;i++) {
-      curr_epoch.push(zipped[filler_c_inds[filler_range[i]]]);
+      curr_epoch.push(zipped[filler_c_inds[filler_range[i]]].concat(j));
     } 
     // shuffle curr_epoch before appending to all_epoch list
     curr_epoch_shuffled = _.shuffle(curr_epoch);
@@ -303,13 +302,15 @@ game_core.prototype.getRandomizedConditions = function() {
   var object = new Array;
   var pose = new Array;
   var target = new Array; // target assignment
-    
+  var epoch = new Array;
+
   for (j=0;j<all_epochs.length;j++) {
     object.push(all_epochs[j][0]);
     category.push(all_epochs[j][1]);
     pose.push(all_epochs[j][2]);
     condition.push(all_epochs[j][3]);
     target.push(all_epochs[j][4]);
+    epoch.push(all_epochs[j][5]);
   }
   // final output: design_dict contains category, object, pose matrices (each 56x4 [rounds by item])
   // condition: 56x1 
@@ -318,7 +319,8 @@ game_core.prototype.getRandomizedConditions = function() {
                  category:category,
                  object:object,                 
                  pose:pose,
-                 target:target};
+                 target:target,
+                 epoch:epoch};
 
 
   console.log(design_dict);
@@ -340,11 +342,12 @@ game_core.prototype.sampleStimulusLocs = function() {
 game_core.prototype.makeTrialList = function () { 
   var local_this = this;
   var design_dict = this.getRandomizedConditions();
-  var conditionList = design_dict['condition'];
   var categoryList = design_dict['category'];
   var _objectList = design_dict['object'];
   var poseList = design_dict['pose'];
   var targetList = design_dict['target'];
+  var conditionList = design_dict['condition'];
+  var epochList = design_dict['epoch'];
 
   var objList = new Array;
   var locs = new Array;
@@ -352,7 +355,7 @@ game_core.prototype.makeTrialList = function () {
   var trialList = [];
   for (var i = 0; i < categoryList.length; i++) { // "i" indexes round number    
     // sample four object images that are unique and follow the condition constraints
-    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList,conditionList);      
+    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList,conditionList,epochList);      
     // sample locations for those objects
     var locs = this.sampleStimulusLocs(); 
     // construct trial list (in sets of complete rounds)
@@ -438,12 +441,13 @@ var getRemainingTargets = function(earlierTargets) {
 
 
 
-var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList,conditionList) {    
+var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList,conditionList,epochList) {    
   theseCats = categoryList[roundNum];
   theseObjs = _objectList[roundNum];
   thisPose = poseList[roundNum];
   thisTarget = targetList[roundNum];
   thisCondition = conditionList[roundNum];
+  thisEpoch = epochList[roundNum];
 
   var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
   var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
