@@ -11,7 +11,7 @@ const colors = require('colors/safe');
 
 const app = express();
 const MongoClient = mongodb.MongoClient;
-const port = 8888;
+const port = 4000;
 const mongoURL = 'mongodb://localhost:27017/';
 const handlers = {};
 
