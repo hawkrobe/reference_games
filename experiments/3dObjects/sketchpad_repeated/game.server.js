@@ -80,7 +80,7 @@ var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = {gameid: gc.id, time: Date.now(), trialNum: trialNum};
+  var line = {expid: 'testing', gameid: gc.id, time: Date.now(), trialNum: trialNum};
 
   switch(type) {
   case "clickedObj" :
@@ -88,6 +88,7 @@ var writeData = function(client, type, message_parts) {
     _.extend(line, {
       intendedName,
       clickedName,
+      dataType: 'clickedObj',
       correct: intendedName == clickedName ? 1 : 0,
       pngString: message_parts[2],
       pose : parseInt(message_parts[3]),
@@ -99,6 +100,7 @@ var writeData = function(client, type, message_parts) {
   case "stroke" :
     _.extend(line, {
       intendedName,
+      dataType: 'stroke',
       currStrokeNum: message_parts[0],
       svgStr: message_parts[1],
       shiftKeyUsed: message_parts[2]
@@ -106,19 +108,18 @@ var writeData = function(client, type, message_parts) {
     break;
   }
   writeDataToCSV(gc, type, _.values(line));
-  writeDataToMongo(type, line); 
+  writeDataToMongo(line); 
 };
 
 var writeDataToCSV = function(gc, type, line) {
-  console.log(type + ":" + line.slice(0,-1).join('\t'));
   gc.streams[type].write(line.join('\t') + "\n",
 			 function (err) {if(err) throw err;});
 };
 
-var writeDataToMongo = function(type, line) {
+var writeDataToMongo = function(line) {
   var postData = _.extend({
-    dbname: 'sketchloop',
-    colname: type
+    dbname: '3dObjects',
+    colname: 'sketchpad_repeated'
   }, line);
   sendPostRequest(
     'http://localhost:4000/db/insert',
