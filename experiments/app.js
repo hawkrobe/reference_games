@@ -15,14 +15,23 @@ var
     https         = require('https'),
     fs            = require('fs'),
     app           = require('express')(),
-    _             = require('underscore'),
-    gameport      = argv.gameport ? argv.gameport : 8888;
+    _             = require('underscore');
+
+var gameport;
+
+if(argv.gameport) {
+  gameport = argv.gameport;
+  console.log('using port ' + gameport): 8888;
+} else {
+  gameport = 8888;
+  console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
+}
 
 if(argv.expname) {
   var exp = argv.expname;
   var gameServer = require('./sharedUtils/serverBase.js')(exp);  
 } else {
-  throw "no experiment supplied";
+  throw "no experiment supplied; use --expname flag\nnode app.js --expname spatial";
 }
 
 try {
