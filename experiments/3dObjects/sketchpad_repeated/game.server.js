@@ -104,10 +104,34 @@ var writeData = function(client, type, message_parts) {
     line = line.concat([currStrokeNum, intendedName, shiftKeyUsed, svgStr]);
     break;
   }
+  writeDataToCSV(gc, type, line);
+  writeDataToMongo(line);  
+};
+
+var writeDataToCSV = function(gc, type, line) {
   console.log(type + ":" + line.slice(0,-1).join('\t'));
   gc.streams[type].write(line.join('\t') + "\n",
 			 function (err) {if(err) throw err;});
+};
 
+var writeDataToMongo = function(line) {
+  var postData = _.assign({}, request.body, {
+    colname: 'sketchloop',
+    dbname: 'repeated', 
+    message: 'hi',
+    time: Date.now()
+  });
+  sendPostRequest(
+    'http://localhost:4000/db/insert',
+    { json: postData },
+    (error, res, body) => {
+      if (!error && res.statusCode === 200) {
+	return success(response, `sent data to store: ${JSON.stringify(postData)}`);
+      } else {
+	return failure(response, `error sending data to store: ${error} ${body}`);
+      }
+    }
+  );
 };
 
 var startGame = function(game, player) {
