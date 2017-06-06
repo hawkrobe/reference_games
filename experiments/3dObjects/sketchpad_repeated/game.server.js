@@ -14,7 +14,6 @@
         XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest,
         sendPostRequest = require('request').post;
 
-
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
 // game. For example, if someone clicks on the map, they send a packet

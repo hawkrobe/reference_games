@@ -348,10 +348,8 @@ function responseListener(evt) {
       if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
         globalGame.messageSent = false;
 
-
         // highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
         //               function(x){return x.subordinate == obj.subordinate;});
-
 
         // Send packet about trial to server
         var dataURL = document.getElementById('sketchpad').toDataURL();
