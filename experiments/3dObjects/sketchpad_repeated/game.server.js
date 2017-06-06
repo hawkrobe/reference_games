@@ -9,9 +9,10 @@
 */
     var
         fs     = require('fs'),
-        utils  = require('../../sharedUtils/sharedUtils.js'),
-        parser = require('xmldom').DOMParser;
-        var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+        utils  = require(__base + 'sharedUtils/sharedUtils.js'),
+        parser = require('xmldom').DOMParser,
+        XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest,
+        sendPostRequest = require('request').post;
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
@@ -104,10 +105,34 @@ var writeData = function(client, type, message_parts) {
     line = line.concat([currStrokeNum, intendedName, shiftKeyUsed, svgStr]);
     break;
   }
+  writeDataToCSV(gc, type, line);
+  writeDataToMongo(line);  
+};
+
+var writeDataToCSV = function(gc, type, line) {
   console.log(type + ":" + line.slice(0,-1).join('\t'));
   gc.streams[type].write(line.join('\t') + "\n",
 			 function (err) {if(err) throw err;});
+};
 
+var writeDataToMongo = function(line) {
+  var postData = {
+    colname: 'sketchloop',
+    dbname: 'repeated', 
+    message: 'hi',
+    time: Date.now()
+  };
+  sendPostRequest(
+    'http://localhost:4000/db/insert',
+    { json: postData },
+    (error, res, body) => {
+      if (!error && res.statusCode === 200) {
+	console.log(`sent data to store: ${JSON.stringify(postData)}`);
+      } else {
+	console.log(`error sending data to store: ${error} ${body}`);
+      }
+    }
+  );
 };
 
 var startGame = function(game, player) {

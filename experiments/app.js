@@ -7,6 +7,8 @@
     MIT Licensed.
 */
 
+global.__base = __dirname + '/';
+
 var 
     use_https     = true,
     argv          = require('minimist')(process.argv.slice(2));
