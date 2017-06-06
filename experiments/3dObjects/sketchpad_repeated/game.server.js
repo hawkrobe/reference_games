@@ -10,8 +10,9 @@
     var
         fs     = require('fs'),
         utils  = require(__base + 'sharedUtils/sharedUtils.js'),
-        parser = require('xmldom').DOMParser;
-        var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+        parser = require('xmldom').DOMParser,
+        XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest,
+        sendPostRequest = require('request').post;
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
@@ -115,12 +116,12 @@ var writeDataToCSV = function(gc, type, line) {
 };
 
 var writeDataToMongo = function(line) {
-  var postData = _.assign({}, request.body, {
+  var postData = {
     colname: 'sketchloop',
     dbname: 'repeated', 
     message: 'hi',
     time: Date.now()
-  });
+  };
   sendPostRequest(
     'http://localhost:4000/db/insert',
     { json: postData },
