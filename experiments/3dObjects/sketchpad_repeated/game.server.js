@@ -14,6 +14,7 @@
         XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest,
         sendPostRequest = require('request').post;
 
+
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
 // game. For example, if someone clicks on the map, they send a packet
@@ -127,9 +128,9 @@ var writeDataToMongo = function(line) {
     { json: postData },
     (error, res, body) => {
       if (!error && res.statusCode === 200) {
-	return success(response, `sent data to store: ${JSON.stringify(postData)}`);
+	console.log(`sent data to store: ${JSON.stringify(postData)}`);
       } else {
-	return failure(response, `error sending data to store: ${error} ${body}`);
+	console.log(`error sending data to store: ${error} ${body}`);
       }
     }
   );
