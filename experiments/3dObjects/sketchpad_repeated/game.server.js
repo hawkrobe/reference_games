@@ -9,7 +9,7 @@
 */
     var
         fs     = require('fs'),
-        utils  = require('../sharedUtils/sharedUtils.js'),
+        utils  = require('../../sharedUtils/sharedUtils.js'),
         parser = require('xmldom').DOMParser;
         var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
