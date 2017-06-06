@@ -80,33 +80,33 @@ var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = {gameid: gc.id, timestamp: Date.now(), trialNum: trialNum};
+  var line = {gameid: gc.id, time: Date.now(), trialNum: trialNum};
 
   switch(type) {
   case "clickedObj" :
-    // parse the message
     var clickedName = message_parts[1];
-    var correct = intendedName == clickedName ? 1 : 0;
-    var pngString = message_parts[2];
-    var pose = parseInt(message_parts[3]);
-    var condition = message_parts[4];
-    var epoch = message_parts[5];
-    var objectLocs = getObjectLocs(gc.trialInfo.currStim);
-    line = (line.concat([intendedName, clickedName, correct, pose, condition, epoch])
-	    .concat(objectLocs)
-	    .concat(pngString));
-        
+    _.extend(line, {
+      intendedName,
+      clickedName,
+      correct: intendedName == clickedName ? 1 : 0,
+      pngString: message_parts[2],
+      pose : parseInt(message_parts[3]),
+      condition : message_parts[4],
+      epoch : message_parts[5]
+    }, _.object(utils.getObjectLocHeader, getObjectLocs(gc.trialInfo.currStim)));
     break;
  
-  case "stroke" : 
-    var currStrokeNum = message_parts[0];
-    var svgStr = message_parts[1];
-    var shiftKeyUsed = message_parts[2];
-    line = line.concat([currStrokeNum, intendedName, shiftKeyUsed, svgStr]);
+  case "stroke" :
+    _.extend(line, {
+      intendedName,
+      currStrokeNum: message_parts[0],
+      svgStr: message_parts[1],
+      shiftKeyUsed: message_parts[2]
+    });
     break;
   }
-  writeDataToCSV(gc, type, line);
-  writeDataToMongo(line);  
+  writeDataToCSV(gc, type, _.values(line));
+  writeDataToMongo(type, line); 
 };
 
 var writeDataToCSV = function(gc, type, line) {
@@ -116,12 +116,10 @@ var writeDataToCSV = function(gc, type, line) {
 };
 
 var writeDataToMongo = function(type, line) {
-  var postData = {
-    colname: 'repeated',
-    dbname: 'sketchloop', 
-    message: 'hi',
-    time: Date.now()
-  };
+  var postData = _.extend({
+    dbname: 'sketchloop',
+    colname: type
+  }, line);
   sendPostRequest(
     'http://localhost:4000/db/insert',
     { json: postData },
