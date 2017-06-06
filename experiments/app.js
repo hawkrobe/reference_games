@@ -8,12 +8,20 @@
 */
 
 var 
-    use_https       = true,
-    gameport        = 8888,
-    https           = require('https'),
-    fs              = require('fs'),
-    app             = require('express')(),
-    _               = require('underscore');
+    use_https     = true,
+    argv          = require('minimist')(process.argv.slice(2));
+    https         = require('https'),
+    fs            = require('fs'),
+    app           = require('express')(),
+    _             = require('underscore'),
+    gameport      = argv.gameport ? argv.gameport : 8888;
+
+if(argv.expname) {
+  var exp = argv.expname;
+  var gameServer = require('./sharedUtils/serverBase.js')(exp);  
+} else {
+  throw "no experiment supplied";
+}
 
 try {
   var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
@@ -26,13 +34,6 @@ try {
   console.log("cannot find SSL certificates; falling back to http");
   var server      = app.listen(gameport),
       io          = require('socket.io')(server);
-}
-
-if (process.argv[2]) {
-  var exp = process.argv[2];
-  var gameServer = require('./sharedUtils/serverBase.js')(exp);  
-} else {
-  throw "no experiment supplied";
 }
 
 var utils = require('./sharedUtils/sharedUtils.js');
