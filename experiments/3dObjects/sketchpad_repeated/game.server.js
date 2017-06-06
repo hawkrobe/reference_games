@@ -81,7 +81,7 @@ var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = [gc.id, Date.now(), trialNum];
+  var line = {gameid: gc.id, timestamp: Date.now(), trialNum: trialNum};
 
   switch(type) {
   case "clickedObj" :
@@ -116,10 +116,10 @@ var writeDataToCSV = function(gc, type, line) {
 			 function (err) {if(err) throw err;});
 };
 
-var writeDataToMongo = function(line) {
+var writeDataToMongo = function(type, line) {
   var postData = {
-    colname: 'sketchloop',
-    dbname: 'repeated', 
+    colname: 'repeated',
+    dbname: 'sketchloop', 
     message: 'hi',
     time: Date.now()
   };
