@@ -277,7 +277,7 @@ game_core.prototype.getRandomizedConditions = function() {
       curr_epoch.push(zipped[c_inds[i]].concat(j).concat('repeated'));
     }
     filler_range = _.range(j*3,j*3+3);
-    console.log(filler_range);
+    // console.log(filler_range);
     // grab the next 3 further filler (once) trials and append
     for (i=0;i<filler_range.length;i++) {
       curr_epoch.push(zipped[filler_f_inds[filler_range[i]]].concat(j).concat('once'));
