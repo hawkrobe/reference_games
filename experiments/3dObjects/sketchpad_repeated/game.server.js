@@ -93,7 +93,8 @@ var writeData = function(client, type, message_parts) {
       pngString: message_parts[2],
       pose : parseInt(message_parts[3]),
       condition : message_parts[4],
-      epoch : message_parts[5]
+      epoch : message_parts[5],
+      repeated : message_parts[6]
     }, _.object(utils.getObjectLocHeader, getObjectLocs(gc.trialInfo.currStim)));
     break;
  
@@ -142,7 +143,7 @@ var startGame = function(game, player) {
   var objectLocHeader = utils.getObjectLocHeader();
   var strokeHeader = [baseCols,"strokeNum","targetName", "shiftKeyUsed","svg\n"].join('\t');
   var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", 
-			  "outcome", "pose", "condition", "epoch", objectLocHeader, "png\n"].join('\t');
+			  "outcome", "pose", "condition", "epoch", "repeated", objectLocHeader, "png\n"].join('\t');
 
   utils.establishStream(game, "stroke", dataFileName,strokeHeader);
   utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
