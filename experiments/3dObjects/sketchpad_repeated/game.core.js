@@ -270,21 +270,21 @@ game_core.prototype.getRandomizedConditions = function() {
     curr_epoch = new Array;
     // append the further repeat trials
     for (i=0;i<f_inds.length;i++) {
-      curr_epoch.push(zipped[f_inds[i]].concat(j)); // j is concated to capture 'epoch number'
+      curr_epoch.push(zipped[f_inds[i]].concat(j).concat('repeated')); // j is concated to capture 'epoch number'
     }
     // // append the closer repeat trials
     for (i=0;i<c_inds.length;i++) {
-      curr_epoch.push(zipped[c_inds[i]].concat(j));
+      curr_epoch.push(zipped[c_inds[i]].concat(j).concat('repeated'));
     }
     filler_range = _.range(j*3,j*3+3);
     console.log(filler_range);
     // grab the next 3 further filler (once) trials and append
     for (i=0;i<filler_range.length;i++) {
-      curr_epoch.push(zipped[filler_f_inds[filler_range[i]]].concat(j));
+      curr_epoch.push(zipped[filler_f_inds[filler_range[i]]].concat(j).concat('once'));
     }    
     // // grab the next 3 closer filler (once) trials and append
     for (i=0;i<filler_range.length;i++) {
-      curr_epoch.push(zipped[filler_c_inds[filler_range[i]]].concat(j));
+      curr_epoch.push(zipped[filler_c_inds[filler_range[i]]].concat(j).concat('once'));
     } 
     // shuffle curr_epoch before appending to all_epoch list
     curr_epoch_shuffled = _.shuffle(curr_epoch);
@@ -296,13 +296,13 @@ game_core.prototype.getRandomizedConditions = function() {
   // var _zipped;
   // _zipped = _.shuffle(_.zip(_object,_category,_pose,_condition,_target));
 
-
   var condition = new Array; 
   var category = new Array;
   var object = new Array;
   var pose = new Array;
   var target = new Array; // target assignment
   var epoch = new Array;
+  var repeated = new Array;
 
   for (j=0;j<all_epochs.length;j++) {
     object.push(all_epochs[j][0]);
@@ -311,6 +311,7 @@ game_core.prototype.getRandomizedConditions = function() {
     condition.push(all_epochs[j][3]);
     target.push(all_epochs[j][4]);
     epoch.push(all_epochs[j][5]);
+    repeated.push(all_epochs[j][6]);
   }
   // final output: design_dict contains category, object, pose matrices (each 56x4 [rounds by item])
   // condition: 56x1 
@@ -320,7 +321,8 @@ game_core.prototype.getRandomizedConditions = function() {
                  object:object,                 
                  pose:pose,
                  target:target,
-                 epoch:epoch};
+                 epoch:epoch,
+                 repeated:repeated};
 
 
   // console.log(design_dict);
@@ -348,6 +350,7 @@ game_core.prototype.makeTrialList = function () {
   var targetList = design_dict['target'];
   var conditionList = design_dict['condition'];
   var epochList = design_dict['epoch'];
+  var repeatedList = design_dict['repeated'];
 
   var objList = new Array;
   var locs = new Array;
@@ -355,7 +358,7 @@ game_core.prototype.makeTrialList = function () {
   var trialList = [];
   for (var i = 0; i < categoryList.length; i++) { // "i" indexes round number    
     // sample four object images that are unique and follow the condition constraints
-    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList,conditionList,epochList);      
+    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList,conditionList,epochList,repeatedList);      
     // sample locations for those objects
     var locs = this.sampleStimulusLocs(); 
     // construct trial list (in sets of complete rounds)
@@ -441,13 +444,14 @@ var getRemainingTargets = function(earlierTargets) {
 
 
 
-var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList,conditionList,epochList) {    
+var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList,conditionList,epochList,repeatedList) {    
   theseCats = categoryList[roundNum];
   theseObjs = _objectList[roundNum];
   thisPose = poseList[roundNum];
   thisTarget = targetList[roundNum];
   thisCondition = conditionList[roundNum];
   thisEpoch = epochList[roundNum];
+  thisRepeated = repeatedList[roundNum]
 
   var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
   var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
@@ -462,10 +466,10 @@ var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList
   var thirdDistractor = im_all[notTargs[2]];
   _target_status = ["distractor","distractor","distractor","distractor"];
   var target_status = _target_status[thisTarget] = "target"; 
-  _.extend(target,{target_status: "target", condition: thisCondition, epoch: thisEpoch});
-  _.extend(firstDistractor,{target_status: "distr1", condition: thisCondition, epoch: thisEpoch}); 
-  _.extend(secondDistractor,{target_status: "distr2", condition: thisCondition, epoch: thisEpoch});
-  _.extend(thirdDistractor,{target_status: "distr3", condition: thisCondition, epoch: thisEpoch});
+  _.extend(target,{target_status: "target", condition: thisCondition, epoch: thisEpoch, repeated: thisRepeated});
+  _.extend(firstDistractor,{target_status: "distr1", condition: thisCondition, epoch: thisEpoch, repeated: thisRepeated}); 
+  _.extend(secondDistractor,{target_status: "distr2", condition: thisCondition, epoch: thisEpoch, repeated: thisRepeated});
+  _.extend(thirdDistractor,{target_status: "distr3", condition: thisCondition, epoch: thisEpoch, repeated: thisRepeated});
   return [target, firstDistractor, secondDistractor, thirdDistractor];
 
 };

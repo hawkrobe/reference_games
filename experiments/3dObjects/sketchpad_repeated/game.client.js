@@ -357,7 +357,8 @@ function responseListener(evt) {
         var currPose = globalGame.objects[0]['pose'];  
         var currCondition = globalGame.objects[0]['condition']; 
         var currEpoch = globalGame.objects[0]['epoch']; 
-        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currEpoch];
+        var currRepeated = globalGame.objects[0]['repeated']; 
+        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currEpoch, currRepeated];
         // console.log(packet);
         globalGame.socket.send(packet.join('.'));
 
@@ -370,56 +371,6 @@ function responseListener(evt) {
           var trialNum = globalGame.roundNum + 1;
           var gameID = globalGame['data']['id'];
           var timestamp = Date.now();          
-
-          // send data to mongodb (also see writeData:clickedObj in game.server)
-          dbline = {role: globalGame.my_role,
-                    playerID: globalGame.my_id,
-                    gameID: gameID,
-                    timestamp: timestamp,
-                    trialNum: trialNum,
-                    responseType: 'clickedObj',
-                    intendedName: intendedName,
-                    clickedName: clickedName,
-                    correct: correct,
-                    objectLocs: objectLocs,
-                    pngString: pngString,
-                    currPose: currPose,
-                    currCondition: currCondition,
-                    dbname:globalGame.dbname,
-                    colname:globalGame.colname};
-
-          // console.log(dbline);
-          // jef 4/22/17: do NOT send data to mongo db until SSL certificate
-          // in place 
-          // $.ajax({
-          //  type: 'GET',
-          //  url: 'http://138.197.213.237:9919/savedecision',
-          //  dataType: 'jsonp',
-          //  traditional: true,
-          //  contentType: 'application/json; charset=utf-8',
-          //  data: dbline,
-          //  timeout: 2000,
-          //  retryLimit: 3,
-          //  data: dbline,
-          //  error: function(x, t, m) {
-          //   if(t==="timeout") {
-          //     console.log("got timeout, press on anyway...");
-          //     this.retryLimit--;
-          //     $.ajax(this);
-          //     return;
-
-          //   } else {
-          //       console.log(t);
-          //       this.retryLimit--;
-          //       $.ajax(this);    
-          //       return;                      
-          //   }
-          // },
-          //  success: function(msg) {
-          //             console.log('clickObj response: upload success!');
-          //           }
-          // });
-
         }; //
 
       }
