@@ -259,9 +259,9 @@ game_core.prototype.getRandomizedConditions = function() {
     filler_f_inds = filler_f_inds.concat(_.map(filler_further, function(num){ return num + period[i]; }));
     filler_c_inds = filler_c_inds.concat(_.map(filler_closer, function(num){ return num + period[i]; }));
   }
-  // shuffle filler_f_inds -- actually *don't* do this
-  // filler_f_inds = _.shuffle(filler_f_inds);
-  // filler_c_inds = _.shuffle(filler_c_inds);
+  // shuffle filler_f_inds
+  filler_f_inds = _.shuffle(filler_f_inds);
+  filler_c_inds = _.shuffle(filler_c_inds);
 
   // now construct your four epochs of 14 trials each (4 repeated-further, 4 repeated-closer, 3 once-further, 3 once-closer)
   num_epochs = 4;
