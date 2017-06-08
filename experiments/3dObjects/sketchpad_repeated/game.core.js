@@ -288,7 +288,7 @@ game_core.prototype.getRandomizedConditions = function() {
     } 
     // shuffle curr_epoch before appending to all_epoch list
     curr_epoch_shuffled = _.shuffle(curr_epoch);
-    all_epochs = all_epochs.concat(curr_epoch);     
+    all_epochs = all_epochs.concat(curr_epoch_shuffled);     
   }
 
   // this block deprecated for repeated reference experiment
