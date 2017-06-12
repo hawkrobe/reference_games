@@ -22,7 +22,7 @@ var onMessage = function(client,message) {
   
   //Extract important variables
   var gc = client.game;
-  var id = gc.id.slice(0,6);
+  var id = gc.id;
   var all = gc.get_active_players();
   var target = gc.get_player(client.userid);
   var others = gc.get_others(client.userid);
@@ -100,7 +100,7 @@ var onMessage = function(client,message) {
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var roundNum = gc.state.roundNum + 1;
-  var id = gc.id.slice(0,6);
+  var id = gc.id;
   var score = gc.game_score(gc.trialInfo.currStim);  
   var line;
   switch(type) {

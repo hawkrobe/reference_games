@@ -28,7 +28,7 @@ var onMessage = function(client,message) {
   
   //Extract important variables
   var gc = client.game;
-  var id = gc.id.slice(0,6);
+  var id = gc.id;
   var all = gc.get_active_players();
   var target = gc.get_player(client.userid);
   var others = gc.get_others(client.userid);  
