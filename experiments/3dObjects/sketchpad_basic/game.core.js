@@ -19,7 +19,7 @@ var has_require = typeof require !== 'undefined';
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
     _ = require('underscore');
-    utils  = require('../sharedUtils/sharedUtils.js');
+    utils  = require(__base + 'sharedUtils/sharedUtils.js');
   }
   else throw 'mymodule requires underscore, see http://underscorejs.org';
 }
@@ -93,11 +93,11 @@ var game_core = function(options){
     this.player_count = options.player_count;
     this.trialList = this.makeTrialList();
     this.data = {
-      id : this.id.slice(0,6),
+      id : this.id,
       trials : [],
       catch_trials : [], system : {},
       subject_information : {
-	gameID: this.id.slice(0,6),
+	gameID: this.id,
 	score: 0
       }
     };
