@@ -51,8 +51,8 @@ var game_core = function(options){
   this.shiftKeyUsed = 0; // "1" on trials where used, "0" otherwise
 
   // define dbname and colname
-  this.dbname = 'visual_pragmatics';
-  this.colname = 'test';
+  this.dbname = '3dObjects';
+  this.colname = 'sketchpad_repeated';
 
   // Number of total poses per object
   this.numPoses = 40;          
@@ -83,6 +83,21 @@ var game_core = function(options){
 
   // This will be populated with the set of objects
   this.trialInfo = {};
+
+  // get workerId from URL
+  var urlParams;
+  var match,
+      pl     = /\+/g,  // Regex for replacing addition symbol with a space
+      search = /([^&=]+)=?([^&]*)/g,
+      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+      query  = location.search.substring(1);
+
+  urlParams = {};
+  while (match = search.exec(query))
+  urlParams[decode(match[1])] = decode(match[2]);  
+  this.workerId = urlParams.workerId;
+  this.assignmentId = urlParams.assignmentId;
+  this.hitId = urlParams.hitId;
   
   if(this.server) {
     console.log('sent server update bc satisfied this.server')
