@@ -326,15 +326,6 @@ var client_onjoingame = function(num_players, role) {
  MOUSE EVENT LISTENERS
  */
 
-keyboardJS.bind('shift', function(e) {
-  startStroke();
-  globalGame.penDown = true;
-  globalGame.shiftKeyUsed = 1;
-}, function(e) {
-  globalGame.penDown = false;
-  endStroke();
-});
-
 function responseListener(evt) {
   // console.log('got to responseListener inside game.client.js');
   var bRect = globalGame.viewport.getBoundingClientRect();
