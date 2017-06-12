@@ -59,10 +59,10 @@ app.get( '/*' , function( req, res ) {
   var id = req.query.workerId;
   if(!id) {
     // If no worker id supplied (e.g. for demo), allow to continue
-    utils.serveFile(req, res);
+    return utils.serveFile(req, res);
   } else if(!valid_id(id)) {
     // If invalid id, block them    
-    utils.handleInvalidID(req, res);
+    return utils.handleInvalidID(req, res);
   } else {
     // If the database shows they've already participated, block them
     utils.checkPreviousParticipant(id, (exists) => {
