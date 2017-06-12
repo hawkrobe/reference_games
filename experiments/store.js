@@ -40,7 +40,6 @@ function success(response, text) {
   return response.send(message);
 }
 
-
 function mongoConnectWithRetry(delayInMilliseconds, callback) {
   MongoClient.connect(mongoURL, (err, connection) => {
     if (err) {
@@ -53,67 +52,58 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
   });
 }
 
-
-function addFixtures(db) {
-  const fixturePath = path.join(__dirname, 'fixtures.json');
-  const fixtures = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
-  _.forEach(fixtures, (entries, collectionName) => {
-    const collection = db.collection(collectionName);
-    collection.count((err, count) => {
-      if (!err && count === 0) {
-	log(`inserting fixtures into ${collectionName}`);
-	collection.insertMany(entries);
-      }
-    });
-  });
-}
-
-
 function serve() {
 
   mongoConnectWithRetry(2000, (connection) => {
 
-
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    app.post('/db/findOne', (request, response) => {
+    app.post('/db/exists', (request, response) => {
       if (!request.body) {
-	return failure(response, '/db/findOne needs post request body');
+	return failure(response, '/db/exists needs post request body');
       }
-      const databaseName = request.body.dbname
+      const databaseName = request.body.dbname;
       const collectionName = request.body.colname;
       if (!collectionName) {
-	return failure(response, '/db/findOne needs collection');
+	return failure(response, '/db/exists needs collection');
       }
-      const query = request.body.query || {};
+      if (!databaseName) {
+	return failure(response, '/db/exist needs database');
+      }
+
+      const database = connection.db(databaseName);
+      console.log(request.body);
+      const query = request.body.query;
       const projection = request.body.projection;
       const collection = database.collection(collectionName);
+
       log(`got request to findOne in ${collectionName} with` +
 	  ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
-      collection.findOne(query, projection).then((data) => {
-	response.json(data);
+      collection.find(query, projection).limit(1).toArray((err, items) => {
+	console.log('got items ' + JSON.stringify(items));
+	response.json(!_.isEmpty(items));
       });
     });
 
-    app.post('/db/find', (request, response) => {
-      if (!request.body) {
-	return failure(response, '/db/find needs post request body');
-      }
-      const databaseName = request.body.dbname
-      const collectionName = request.body.colname;
-      if (!collectionName) {
-	return failure(response, '/db/find needs collection');
-      }
-      const query = request.body.query || {};
-      const projection = request.body.projection;
-      const collection = database.collection(collectionName);
-      log(`got request to find in ${collectionName} with` +
-	  ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
-      collection.find(query, projection).toArray().then((data) => {
-	response.json(data);
-      });
-    });
+    // app.post('/db/find', (request, response) => {
+    //   if (!request.body) {
+    // 	return failure(response, '/db/find needs post request body');
+    //   }
+    //   const databaseName = request.body.dbname
+    //   const collectionName = request.body.colname;
+    //   if (!collectionName) {
+    // 	return failure(response, '/db/find needs collection');
+    //   }
+    //   const query = request.body.query || {};
+    //   const projection = request.body.projection;
+    //   const collection = database.collection(collectionName);
+    //   log(`got request to find in ${collectionName} with` +
+    // 	  ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
+    //   collection.find(query, projection).toArray().then((data) => {
+    // 	response.json(data);
+    //   });
+    // });
 
     app.post('/db/insert', (request, response) => {
       if (!request.body) {
@@ -139,7 +129,7 @@ function serve() {
       }
 
       const collection = database.collection(collectionName);
-      console.log(collection);
+
       const data = _.omit(request.body, ['colname', 'dbname']);
       log(`inserting data: ${JSON.stringify(data)}`);
       collection.insert(data, (err, result) => {
@@ -154,9 +144,9 @@ function serve() {
     app.listen(port, () => {
       log(`running at http://localhost:${port}`);
     });
-
+    
   });
-
+  
 }
 
 serve();
