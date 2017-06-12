@@ -135,6 +135,15 @@ Sketchpad.prototype.setupTool = function() {
   tool.onMouseUp = function(event) {
     endStroke(event);
   };
+
+  keyboardJS.bind('shift', function(e) {
+    startStroke();
+    globalGame.penDown = true;
+    globalGame.shiftKeyUsed = 1;
+  }, function(e) {
+    globalGame.penDown = false;
+    endStroke();
+  });
 };
 
 function startStroke(event) {

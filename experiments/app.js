@@ -11,7 +11,7 @@ global.__base = __dirname + '/';
 
 var 
     use_https     = true,
-    argv          = require('minimist')(process.argv.slice(2));
+    argv          = require('minimist')(process.argv.slice(2)),
     https         = require('https'),
     fs            = require('fs'),
     app           = require('express')(),
@@ -55,22 +55,19 @@ var global_player_set = {};
 console.log("info  - socket.io started");
 console.log('\t :: Express :: Listening on port ' + gameport );
 
-//  This handler will listen for requests on /*, any file from the
-//  root of our server. See expressjs documentation for more info 
 app.get( '/*' , function( req, res ) {
-  if(req.query.workerId && !valid_id(req.query.workerId)) {
-    console.log("invalid id: blocking request");
-    return res.redirect('https://rxdhawkins.me:8888/sharedUtils/invalid.html');
-  } else if(req.query.workerId && req.query.workerId in global_player_set) {
-    console.log("duplicate id: blocking request");
-    return res.redirect('https://rxdhawkins.me:8888/sharedUtils/duplicate.html');
+  var id = req.query.workerId;
+  if(!id) {
+    // If no worker id supplied (e.g. for demo), allow to continue
+    utils.serveFile(req, res);
+  } else if(!valid_id(id)) {
+    // If invalid id, block them    
+    utils.handleInvalidID(req, res);
   } else {
-    var fileName = req.params[0];
-    console.log('\t :: Express :: file requested: ' + fileName);
-    if(req.query.workerId) {
-      console.log(" by workerID " + req.query.workerId);
-    }
-    return res.sendFile(fileName, {root: __dirname}); 
+    // If the database shows they've already participated, block them
+    utils.checkPreviousParticipant(id, (exists) => {
+      return exists ? utils.handleDuplicate(req, res) : utils.serveFile(req, res);
+    });
   }
 }); 
 

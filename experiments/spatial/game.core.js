@@ -71,13 +71,13 @@ var game_core = function(options){
     this.player_count = options.player_count;
     this.trialList = _.shuffle(TRIALS_OBJECT_FROM_JSON);
     this.data = {
-      id : this.id.slice(0,6),
+      id : this.id,
       trials : [],
       catch_trials : [],
       totalScore: 0,
       system : {},
       subject_information : {
-        gameID: this.id.slice(0,6)
+        gameID: this.id
       }
     };
     this.players = [{
