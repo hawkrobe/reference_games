@@ -312,8 +312,6 @@ var client_onjoingame = function(num_players, role) {
 						       + 'Please do not refresh the page!');
   }
 
-
-
   // set mouse-tracking event handler
   if(role === globalGame.playerRoleNames.role2) {
     globalGame.viewport.addEventListener("click", responseListener, false);
