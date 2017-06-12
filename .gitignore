@@ -45,3 +45,4 @@ data/sketchpad/mturk/auth.json
 compensation_driver.py
 auth.json
 production_results/
+data/3dObjects/sketchpad/clickedObj/*.js
