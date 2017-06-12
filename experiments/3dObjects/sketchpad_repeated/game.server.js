@@ -127,9 +127,9 @@ var writeDataToMongo = function(line) {
     { json: postData },
     (error, res, body) => {
       if (!error && res.statusCode === 200) {
-	console.log(`sent data to store: ${JSON.stringify(postData)}`);
+	      console.log(`sent data to store: ${JSON.stringify(postData)}`);
       } else {
-	console.log(`error sending data to store: ${error} ${body}`);
+	      console.log(`error sending data to store: ${error} ${body}`);
       }
     }
   );
