@@ -51,8 +51,8 @@ var game_core = function(options){
   this.shiftKeyUsed = 0; // "1" on trials where used, "0" otherwise
 
   // define dbname and colname
-  this.dbname = 'visual_pragmatics';
-  this.colname = 'test';
+  this.dbname = '3dObjects';
+  this.colname = 'sketchpad_repeated';
 
   // Number of total poses per object
   this.numPoses = 40;          
