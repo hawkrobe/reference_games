@@ -99,6 +99,7 @@ var drawScreen = function(game, player) {
 
 function Sketchpad() {
   paper.setup('sketchpad');
+		   
   // var actual_height = $('#sketchpad').innerHeight();
   // var actual_width = $('#sketchpad').innerWidth()    
   // view.viewSize = new Size(actual_height, actual_width); 
@@ -108,13 +109,29 @@ function Sketchpad() {
 }
 
 Sketchpad.prototype.setupTool = function() {
+  globalGame.path = [];
   var tool = new Tool();
+  
+  tool.onKeyDown = function(event) {
+    if(event.key === 'shift') {
+      globalGame.penDown = true;
+      globalGame.shiftKeyUsed = 1;      
+      startStroke();
+    }
+  };
 
+  tool.onKeyUp = function(event) {
+    if(event.key === 'shift') {
+      globalGame.penDown = false;      
+      endStroke();
+    }
+  };
+  
   tool.onMouseMove = function(event) {
     if(globalGame.drawingAllowed) {
       globalGame.currMouseX = event.point.x;
       globalGame.currMouseY = event.point.y;
-      if(globalGame.penDown) {
+      if(event.modifiers.shift & !_.isEmpty(globalGame.path)) {
 	globalGame.path.add(event.point);
       }
     }
@@ -125,7 +142,7 @@ Sketchpad.prototype.setupTool = function() {
   };
 
   tool.onMouseDrag = function(event) {
-    if (globalGame.drawingAllowed) {
+    if (globalGame.drawingAllowed && !_.isEmpty(globalGame.path)) {
       globalGame.currMouseX = event.point.x;
       globalGame.currMouseY = event.point.y;
       globalGame.path.add(event.point);
@@ -136,22 +153,21 @@ Sketchpad.prototype.setupTool = function() {
     endStroke(event);
   };
 
-  keyboardJS.bind('shift', function(e) {
-    startStroke();
-    globalGame.penDown = true;
-    globalGame.shiftKeyUsed = 1;
-  }, function(e) {
-    globalGame.penDown = false;
-    endStroke();
-  });
   
-
 };
 
 function startStroke(event) {
+  console.log('starting stroke with path: ' + JSON.stringify(globalGame.path));
+
   if (globalGame.drawingAllowed) {
-    var point = event ? event.point : {x: globalGame.currMouseX, y: globalGame.currMouseY};
-    //console.log('starting new stroke at point' + JSON.stringify(point));
+
+    // If a path is ongoing, send it along before starting this new one 
+    if(!_.isEmpty(globalGame.path)) {
+      endStroke(event);
+    }
+
+    var point = (event ? event.point :
+		 {x: globalGame.currMouseX, y: globalGame.currMouseY});
     globalGame.path = new Path({
       segments: [point],
       strokeColor: 'black',
@@ -161,10 +177,11 @@ function startStroke(event) {
 };
 
 function endStroke(event) {
-  if (globalGame.drawingAllowed && globalGame.path) {    
+  console.log('ending stroke with path: ' + JSON.stringify(globalGame.path));
+  // Only send stroke if actual line (single points don't get rendered)
+  if (globalGame.drawingAllowed && globalGame.path.length > 1) {    
     // Increment stroke num
     globalGame.currStrokeNum += 1;
-    // console.log('ending stroke');
 
     // Simplify path to reduce data sent
     globalGame.path.simplify(10);
@@ -176,75 +193,11 @@ function endStroke(event) {
       jsonString: globalGame.path.exportJSON({asString: true}),
       shiftKeyUsed: globalGame.shiftKeyUsed
     });
-
-    // only send to remote db if you are the sketcher
-    if (globalGame.my_role == "sketcher") {
-      // prep to send stroke info to remote db (see also writeData in game.server)
-      var currStrokeNum = globalGame.currStrokeNum;
-      var svgString = globalGame.path.exportSVG({asString: true});
-      var jsonString = globalGame.path.exportJSON({asString: true});
-      var trialNum = globalGame.roundNum + 1;
-      var gameID = globalGame['data']['id'];
-      var timestamp = Date.now();
-      var intendedName = getIntendedTargetName(globalGame.objects);
-      var allObjects = globalGame.objects;
-      var sketchpadWidthActual = paper.view.size._width;
-      var sketchpadHeightActual = paper.view.size._height;
-      var shiftKeyUsed = globalGame.shiftKeyUsed;
-
-      // send stroke info to remote db (see also writeData in game.server)
-      dbline = {role: globalGame.my_role,
-                gameID: gameID,
-                playerID: globalGame.my_id,
-                trialNum: trialNum,
-                timestamp: timestamp,
-                responseType: 'stroke',
-                intendedName: intendedName,
-                allObjects: allObjects,
-                currStrokeNum: currStrokeNum,
-                svgString: svgString,
-                jsonString: jsonString,
-                shiftKeyUsed: shiftKeyUsed,
-                dbname: globalGame.dbname,
-                colname: globalGame.colname};
-
-      // console.log(dbline);
-      // jef 4/22/17: do NOT send data to mongo db until SSL certificate
-      // in place
-
-    //   $.ajax({
-    //    type: 'GET',
-    //    url: 'http://138.197.213.237:9919/savedecision',
-    //    dataType: 'jsonp',
-    //    traditional: true,
-    //    contentType: 'application/json; charset=utf-8',
-    //    data: dbline,
-    //    timeout: 2000,
-    //    retryLimit: 3,
-    //    data: dbline,
-    //       error: function(x, t, m) {
-    //         if(t==="timeout") {
-    //           console.log("got timeout, press on anyway...");
-    //           this.retryLimit--;
-    //           $.ajax(this);
-    //           return;
-
-    //         } else {
-    //             console.log(t);
-    //             this.retryLimit--;
-    //             $.ajax(this);    
-    //             return;                      
-    //         }
-    //       },
-    //    success: function(msg) {
-    //               console.log('stroke response: upload success!');
-    //             }
-    // });
-    // reset shift key use variable
-    globalGame.shiftKeyUsed = 0;  
-
-    }
   };
+
+  // reset variables
+  globalGame.shiftKeyUsed = 0;
+  globalGame.path = [];
 }
 
 function getIntendedTargetName(objects) {
