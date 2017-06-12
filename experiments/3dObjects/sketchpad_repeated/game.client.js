@@ -171,15 +171,34 @@ var client_onMessage = function(data) {
         flashTitle("GO!");
       }
       globalGame.players.push({id: commanddata,
-                 player: new game_player(globalGame)}); break;
+                 player: new game_player(globalGame)}); break;    
+
     }
   }
 };
+
+
+// get workerId, etc. from URL
+var urlParams;
+var match,
+    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+    search = /([^&=]+)=?([^&]*)/g,
+    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+    query  = window.location.search.substring(1);
+
+urlParams = {};
+while (match = search.exec(query))
+urlParams[decode(match[1])] = decode(match[2]);  
+globalGame.workerId = urlParams.workerId;
+globalGame.assignmentId = urlParams.assignmentId;
+globalGame.hitId = urlParams.hitId;
 
 var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
   document.getElementById('sketchpad').focus();
 };
+
+
 
 var customSetup = function(game) {
   game.sketchpad = new Sketchpad();
