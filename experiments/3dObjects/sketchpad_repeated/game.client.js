@@ -211,7 +211,7 @@ var customSetup = function(game) {
     globalGame.workerId = urlParams.workerId;
     globalGame.assignmentId = urlParams.assignmentId;
     globalGame.hitId = urlParams.hitId;
-    
+
   });
 
   // Set up new round on client's browsers after submit round button is pressed.
@@ -368,7 +368,9 @@ function responseListener(evt) {
         var currCondition = globalGame.objects[0]['condition']; 
         var currEpoch = globalGame.objects[0]['epoch']; 
         var currRepeated = globalGame.objects[0]['repeated']; 
-        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currEpoch, currRepeated];
+        var workerId = globalGame.workerId;
+        var assignmentId = globalGame.assignmentId;
+        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currEpoch, currRepeated, workerId, assignmentId];
         // console.log(packet);
         globalGame.socket.send(packet.join('.'));
 
