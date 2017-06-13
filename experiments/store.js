@@ -78,6 +78,9 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
 //     });
 // }
 
+
+
+
 function serve() {
 
   mongoConnectWithRetry(2000, (connection) => {
@@ -98,21 +101,35 @@ function serve() {
 
       var collectionList = ['sketchpad','sketchpad_repeated']; // hardcoded for now
       var hits = 0; // how many hits in the database
-      for (var i=0;i<collectionList.length;i++) {
-        const collection = database.collection(collectionList[i]);
-        const collectionName = collectionList[i];
-        log(`got request to findOne in ${collectionName} with` +
-          ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
 
+      function checkCollectionForHits(collection, query, projection, hits, callback) {
         collection.find(query, projection).limit(1).toArray((err, items) => {
-          console.log('got items ' + JSON.stringify(items));
-          hits += !_.isEmpty(items) ? 1: 0;
-          console.log(collectionName);
-          console.log(hits);
-        });
+          // hits += !_.isEmpty(items) ? 1: 0;
+          callback(!_.isEmpty(items));
+          });  
       }
-      	console.log(!_.isEmpty(hits));
-      	response.json(!_.isEmpty(hits));
+
+      function checkEach(collectionList, checkCollectionForHits, cb) {
+          var doneCounter = 0,
+              results = [];
+          collectionList.forEach(function (item, query, projection, hits) {
+              checkCollectionForHits(item, query, projection, hits, function (res) {
+              log(`got request to findOne in ${collectionName} with` +
+                ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);          
+                  doneCounter += 1;
+                  results+=res;
+                  if (doneCounter === collectionList.length) {
+                      cb(results);
+                  }
+              });
+          });
+      }
+      function evaluateTally(hits) {
+        response.json(hits>0);
+      }
+      
+      checkEach(collectionList, checkCollectionForHits, evaluateTally);
+
     });
 
 
