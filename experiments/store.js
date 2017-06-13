@@ -97,14 +97,14 @@ function serve() {
       const database = connection.db(databaseName);
       const query = request.body.query;
       const projection = request.body.projection;
-      console.log(request.body.query);
+      console.log("query (outside): ", request.body.query);
 
       var collectionList = ['sketchpad','sketchpad_repeated']; // hardcoded for now
       var hits = 0; // how many hits in the database
 
       function checkCollectionForHits(collectionName, query, projection, hits, callback) {
         const collection = database.collection(collectionName);
-        console.log("query: ", query);        
+        console.log("query (inside): ", query);
         collection.find(query, projection).limit(1).toArray((err, items) => {
           // hits += !_.isEmpty(items) ? 1: 0;
           callback(!_.isEmpty(items));
