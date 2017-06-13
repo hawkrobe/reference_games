@@ -100,9 +100,8 @@ function serve() {
       console.log("query (outside): ", request.body.query);
 
       var collectionList = ['sketchpad','sketchpad_repeated']; // hardcoded for now
-      var hits = 0; // how many hits in the database
 
-      function checkCollectionForHits(collectionName, query, projection, hits, callback) {
+      function checkCollectionForHits(collectionName, query, projection, callback) {
         const collection = database.collection(collectionName);
         console.log("query (inside): ", query);
         collection.find(query, projection).limit(1).toArray((err, items) => {
@@ -111,11 +110,12 @@ function serve() {
           });  
       }
 
-      function checkEach(collectionList, checkCollectionForHits, query, projection, hits, evaluateTally) {
+      function checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally) {
           var doneCounter = 0,
               results = [];
-          collectionList.forEach(function (collectionName, query, projection, hits) {
-              checkCollectionForHits(collectionName, query, projection, hits, function (res) {
+          console.log("query (middle): ", query)
+          collectionList.forEach(function (collectionName, query, projection) {
+              checkCollectionForHits(collectionName, query, projection, function (res) {
               log(`got request to findOne in ${collectionName} with` +
                 ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);          
                   doneCounter += 1;
@@ -130,7 +130,7 @@ function serve() {
         response.json(hits>0);
       }
 
-      checkEach(collectionList, checkCollectionForHits, query, projection, hits, evaluateTally);
+      checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally);
 
     });
 
