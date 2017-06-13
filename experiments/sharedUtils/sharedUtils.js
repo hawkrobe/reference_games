@@ -32,6 +32,7 @@ var checkPreviousParticipant = function(workerId, callback) {
     query: p,
     projection: {'_id': 1}
   };
+  console.log(postData);
   sendPostRequest(
     'http://localhost:4000/db/exists',
     {json: postData},

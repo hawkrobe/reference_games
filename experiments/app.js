@@ -56,7 +56,7 @@ console.log("info  - socket.io started");
 console.log('\t :: Express :: Listening on port ' + gameport );
 
 app.get( '/*' , function( req, res ) {
-  var id = req.query.workerId;
+  var id = req.query.workerId;  
   if(!id) {
     // If no worker id supplied (e.g. for demo), allow to continue
     return utils.serveFile(req, res);
