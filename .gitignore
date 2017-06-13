@@ -45,6 +45,6 @@ data/3dObjects/sketchpad/mturk/auth.json
 compensation_driver.py
 auth.json
 production_results/
-data/3dObjects/sketchpad/clickedObj/*.js
-data/3dObjects/sketchpad/stroke/*.js
-data/3dObjects/sketchpad_repeated/*
+data/3dObjects/sketchpad_basic/clickedObj/*.js
+data/3dObjects/sketchpad_basic/stroke/*.js
+data/3dObjects/sketchpad_repeated/
