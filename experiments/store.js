@@ -110,7 +110,7 @@ function serve() {
           });  
       }
 
-      function checkEach(collectionList, checkCollectionForHits, cb) {
+      function checkEach(collectionList, checkCollectionForHits, query, projection, hits, evaluateTally) {
           var doneCounter = 0,
               results = [];
           collectionList.forEach(function (item, query, projection, hits) {
@@ -120,7 +120,7 @@ function serve() {
                   doneCounter += 1;
                   results+=res;
                   if (doneCounter === collectionList.length) {
-                      cb(results);
+                      evaluateTally(results);
                   }
               });
           });
@@ -129,7 +129,7 @@ function serve() {
         response.json(hits>0);
       }
 
-      checkEach(collectionList, checkCollectionForHits, evaluateTally);
+      checkEach(collectionList, checkCollectionForHits, query, projection, hits, evaluateTally);
 
     });
 
