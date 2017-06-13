@@ -111,8 +111,8 @@ function serve() {
           console.log(hits);
         });
       }
-	console.log(_.isEmpty(hits));
-	response.json(_.isEmpty(hits));
+      	console.log(!_.isEmpty(hits));
+      	response.json(!_.isEmpty(hits));
     });
 
 
