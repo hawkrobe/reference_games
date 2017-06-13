@@ -25,11 +25,11 @@ var handleInvalidID = function(req, res) {
 
 var checkPreviousParticipant = function(workerId, callback) {
 
-  var p = {'workerid': 2+2};
+  // var p = {'workerid': 2+2};
   var postData = {
     dbname: '3dObjects',
     colname: 'sketchpad_repeated',
-    query: p,
+    query: workerId,
     projection: {'_id': 1}
   };
   sendPostRequest(
