@@ -127,10 +127,10 @@ function serve() {
           });
       }
       function evaluateTally(hits) {
-        response.json(hits>0);
+        return hits>0;
       }
 
-      checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally);
+      response.json(checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally));
 
     });
 
