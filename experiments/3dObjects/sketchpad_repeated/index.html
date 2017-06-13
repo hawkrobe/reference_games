@@ -19,7 +19,6 @@
 
     <!-- Load jQuery, which lets us handle mouse events -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/lib/js/keyboard.min.js"></script>
     <script type="text/javascript" src="/node_modules/paper/dist/paper-full.js"></script>
     <script type="text/javascript">	paper.install(window); </script>
 
@@ -56,7 +55,7 @@
 
     <div id='main'>
       <span>
-	   <canvas id="sketchpad" height='500px' width='500px'></canvas>
+	   <canvas id="sketchpad" tabindex=1 height='500px' width='500px'></canvas>
         <canvas id="viewport"> </canvas>
 
      <div id='occluder' style="display: none"> </div>
