@@ -103,6 +103,7 @@ function serve() {
 
       function checkCollectionForHits(collectionName, query, projection, callback) {
         const collection = database.collection(collectionName);
+        const query = request.body.query;
         console.log("query (inside): ", query);
         collection.find(query, projection).limit(1).toArray((err, items) => {
           // hits += !_.isEmpty(items) ? 1: 0;
