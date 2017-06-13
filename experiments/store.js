@@ -61,15 +61,15 @@ function serve() {
 
     app.post('/db/exists', (request, response) => {
       if (!request.body) {
-	return failure(response, '/db/exists needs post request body');
+        return failure(response, '/db/exists needs post request body');
       }
       const databaseName = request.body.dbname;
       const collectionName = request.body.colname;
       if (!collectionName) {
-	return failure(response, '/db/exists needs collection');
+        return failure(response, '/db/exists needs collection');
       }
       if (!databaseName) {
-	return failure(response, '/db/exist needs database');
+        return failure(response, '/db/exist needs database');
       }
 
       const database = connection.db(databaseName);
@@ -79,53 +79,53 @@ function serve() {
       const collection = database.collection(collectionName);
 
       log(`got request to findOne in ${collectionName} with` +
-	  ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
+          ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
       collection.find(query, projection).limit(1).toArray((err, items) => {
-	console.log('got items ' + JSON.stringify(items));
-	response.json(!_.isEmpty(items));
+        console.log('got items ' + JSON.stringify(items));
+        response.json(!_.isEmpty(items));
       });
     });
 
     // app.post('/db/find', (request, response) => {
     //   if (!request.body) {
-    // 	return failure(response, '/db/find needs post request body');
+    //         return failure(response, '/db/find needs post request body');
     //   }
     //   const databaseName = request.body.dbname
     //   const collectionName = request.body.colname;
     //   if (!collectionName) {
-    // 	return failure(response, '/db/find needs collection');
+    //         return failure(response, '/db/find needs collection');
     //   }
     //   const query = request.body.query || {};
     //   const projection = request.body.projection;
     //   const collection = database.collection(collectionName);
     //   log(`got request to find in ${collectionName} with` +
-    // 	  ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
+    //           ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
     //   collection.find(query, projection).toArray().then((data) => {
-    // 	response.json(data);
+    //         response.json(data);
     //   });
     // });
 
     app.post('/db/insert', (request, response) => {
       if (!request.body) {
-	return failure(response, '/db/insert needs post request body');
+        return failure(response, '/db/insert needs post request body');
       }
       log(`got request to insert into ${request.body.colname}`);
       
       const databaseName = request.body.dbname;
       const collectionName = request.body.colname;
       if (!collectionName) {
-	return failure(response, '/db/insert needs collection');
+        return failure(response, '/db/insert needs collection');
       }
       if (!databaseName) {
-	return failure(response, '/db/insert needs database');
+        return failure(response, '/db/insert needs database');
       }
 
       const database = connection.db(databaseName);
       
       // Add collection if it doesn't already exist
       if (!database.collection(collectionName)) {
-	console.log('creating collection ' + collectionName);
-	database.createCollection(collectionName);
+        console.log('creating collection ' + collectionName);
+        database.createCollection(collectionName);
       }
 
       const collection = database.collection(collectionName);
@@ -133,11 +133,11 @@ function serve() {
       const data = _.omit(request.body, ['colname', 'dbname']);
       log(`inserting data: ${JSON.stringify(data)}`);
       collection.insert(data, (err, result) => {
-	if (err) {
-	  return failure(response, `error inserting data: ${err}`);
-	} else {
-	  return success(response, `successfully inserted data. result: ${JSON.stringify(result)}`);
-	}
+        if (err) {
+          return failure(response, `error inserting data: ${err}`);
+        } else {
+          return success(response, `successfully inserted data. result: ${JSON.stringify(result)}`);
+        }
       });
     });
 
