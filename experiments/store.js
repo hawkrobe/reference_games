@@ -52,6 +52,32 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
   });
 }
 
+// // this function isn't currently being used, but might be once there are >1 databases
+// function getDatabaseList(connection, callback) {
+//    connection.admin().listDatabases(function(err, result) {
+//       if (err) {
+//         console.error('Error listing databases from this MongoDB connection');
+//       } else {
+//         log('success: got list of databases from this mongo connection')
+//         callback(result.databases);
+//       }
+//    })
+// }
+
+// // also not being used, but might be later to scale to new db/cols
+// function getCollectionList(db, callback) {
+//     db.listCollections().toArray(function(err, collections) {
+//         // collections is an array of collection info objects that look like:
+//         // { name: 'test', options: {} }
+//         if (err) {
+//           console.error(`Error retrieving collections: ${err}`)
+//         } else {
+//           log('success: retrieved collection information from this database');
+//           callback(collections);
+//         }
+//     });
+// }
+
 function serve() {
 
   mongoConnectWithRetry(2000, (connection) => {
@@ -59,32 +85,59 @@ function serve() {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    app.post('/db/exists', (request, response) => {
-      if (!request.body) {
-        return failure(response, '/db/exists needs post request body');
-      }
-      const databaseName = request.body.dbname;
-      const collectionName = request.body.colname;
-      if (!collectionName) {
-        return failure(response, '/db/exists needs collection');
-      }
-      if (!databaseName) {
-        return failure(response, '/db/exist needs database');
-      }
+    app.post('/db/exists', (request, response) => {            
 
       const database = connection.db(databaseName);
       console.log(request.body);
       const query = request.body.query;
       const projection = request.body.projection;
-      const collection = database.collection(collectionName);
 
-      log(`got request to findOne in ${collectionName} with` +
+      collectionList = ['sketchpad','sketchpad_repeated']; // hardcoded for now
+      var hits = 0; // how many hits in the database
+      for (i=0;i<collectionList.length;i++) {
+        const collection = database.collection(collectionList[i]);
+        const collectionName = collectionList[i];
+        log(`got request to findOne in ${collectionName} with` +
           ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
-      collection.find(query, projection).limit(1).toArray((err, items) => {
-        console.log('got items ' + JSON.stringify(items));
-        response.json(!_.isEmpty(items));
-      });
+
+        collection.find(query, projection).limit(1).toArray((err, items) => {
+          console.log('got items ' + JSON.stringify(items));
+          hits += !_.isEmpty(items) ? 1: 0;
+          console.log(collectionName);
+          console.log(hits);
+        });
+      }
+      response.json(_.isEmpty(hits));
     });
+
+
+    ////// original implementation to check within specific database
+    // app.post('/db/exists', (request, response) => {      
+    //   if (!request.body) {
+    //     return failure(response, '/db/exists needs post request body');
+    //   }
+    //   const databaseName = request.body.dbname;
+    //   const collectionName = request.body.colname;
+    //   if (!collectionName) {
+    //     return failure(response, '/db/exists needs collection');
+    //   }
+    //   if (!databaseName) {
+    //     return failure(response, '/db/exist needs database');
+    //   }
+
+    //   const database = connection.db(databaseName);
+    //   console.log(request.body);
+    //   const query = request.body.query;
+    //   const projection = request.body.projection;
+    //   const collection = database.collection(collectionName);
+
+    //   log(`got request to findOne in ${collectionName} with` +
+    //       ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
+    //   collection.find(query, projection).limit(1).toArray((err, items) => {
+    //     console.log('got items ' + JSON.stringify(items));
+    //     response.json(!_.isEmpty(items));
+    //   });
+    // });
 
     // app.post('/db/find', (request, response) => {
     //   if (!request.body) {
