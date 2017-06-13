@@ -124,7 +124,6 @@ function serve() {
       }
       function evaluateTally(hits) {
         console.log("hits: ", hits);
-        console.log("hits>0? ", hits>0);
         response.json(hits>0);
       }
 
