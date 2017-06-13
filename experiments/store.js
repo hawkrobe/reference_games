@@ -92,9 +92,9 @@ function serve() {
       }
       const databaseName = request.body.dbname;
       const database = connection.db(databaseName);
-      console.log(request.body);
       const query = request.body.query;
       const projection = request.body.projection;
+      console.log(request.body.query);
 
       var collectionList = ['sketchpad','sketchpad_repeated']; // hardcoded for now
       var hits = 0; // how many hits in the database
