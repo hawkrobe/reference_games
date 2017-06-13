@@ -47,3 +47,4 @@ auth.json
 production_results/
 data/3dObjects/sketchpad/clickedObj/*.js
 data/3dObjects/sketchpad/stroke/*.js
+data/3dObjects/sketchpad_repeated/*
