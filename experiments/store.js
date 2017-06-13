@@ -96,9 +96,9 @@ function serve() {
       const query = request.body.query;
       const projection = request.body.projection;
 
-      collectionList = ['sketchpad','sketchpad_repeated']; // hardcoded for now
+      var collectionList = ['sketchpad','sketchpad_repeated']; // hardcoded for now
       var hits = 0; // how many hits in the database
-      for (i=0;i<collectionList.length;i++) {
+      for (var i=0;i<collectionList.length;i++) {
         const collection = database.collection(collectionList[i]);
         const collectionName = collectionList[i];
         log(`got request to findOne in ${collectionName} with` +
@@ -111,7 +111,8 @@ function serve() {
           console.log(hits);
         });
       }
-      response.json(_.isEmpty(hits));
+	console.log(_.isEmpty(hits));
+	response.json(_.isEmpty(hits));
     });
 
 
