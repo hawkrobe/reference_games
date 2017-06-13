@@ -111,8 +111,8 @@ function serve() {
       }
 
       function checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally) {
-          var doneCounter = 0,
-              results = [];
+          var doneCounter = 0
+          var results = 0;
           console.log("query (middle): ", query)
           collectionList.forEach(function (collectionName) {
               checkCollectionForHits(collectionName, query, projection, function (res) {
@@ -127,10 +127,12 @@ function serve() {
           });
       }
       function evaluateTally(hits) {
-        return hits>0;
+        console.log("hits: ", hits);
+        console.log("hits>0? ", hits>0);
+        response.json(hits>0);
       }
 
-      response.json(checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally));
+      checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally);
 
     });
 
