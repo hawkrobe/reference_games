@@ -87,6 +87,10 @@ function serve() {
 
     app.post('/db/exists', (request, response) => {            
 
+      if (!request.body) {
+        return failure(response, '/db/exists needs post request body');
+      }
+      const databaseName = request.body.dbname;
       const database = connection.db(databaseName);
       console.log(request.body);
       const query = request.body.query;
