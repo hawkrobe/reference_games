@@ -102,7 +102,8 @@ function serve() {
       var collectionList = ['sketchpad','sketchpad_repeated']; // hardcoded for now
       var hits = 0; // how many hits in the database
 
-      function checkCollectionForHits(collection, query, projection, hits, callback) {
+      function checkCollectionForHits(collectionName, query, projection, hits, callback) {
+        const collection = database.collection(collectionName);        
         collection.find(query, projection).limit(1).toArray((err, items) => {
           // hits += !_.isEmpty(items) ? 1: 0;
           callback(!_.isEmpty(items));
@@ -127,7 +128,7 @@ function serve() {
       function evaluateTally(hits) {
         response.json(hits>0);
       }
-      
+
       checkEach(collectionList, checkCollectionForHits, evaluateTally);
 
     });
