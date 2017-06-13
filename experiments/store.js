@@ -103,7 +103,6 @@ function serve() {
 
       function checkCollectionForHits(collectionName, query, projection, callback) {
         const collection = database.collection(collectionName);
-        const query = request.body.query;
         console.log("query (inside): ", query);
         collection.find(query, projection).limit(1).toArray((err, items) => {
           // hits += !_.isEmpty(items) ? 1: 0;
@@ -115,7 +114,7 @@ function serve() {
           var doneCounter = 0,
               results = [];
           console.log("query (middle): ", query)
-          collectionList.forEach(function (collectionName, query, projection) {
+          collectionList.forEach(function (collectionName) {
               checkCollectionForHits(collectionName, query, projection, function (res) {
               log(`got request to findOne in ${collectionName} with` +
                 ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);          
