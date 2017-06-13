@@ -103,7 +103,8 @@ function serve() {
       var hits = 0; // how many hits in the database
 
       function checkCollectionForHits(collectionName, query, projection, hits, callback) {
-        const collection = database.collection(collectionName);        
+        const collection = database.collection(collectionName);
+        console.log("query: ", query);        
         collection.find(query, projection).limit(1).toArray((err, items) => {
           // hits += !_.isEmpty(items) ? 1: 0;
           callback(!_.isEmpty(items));
@@ -113,8 +114,8 @@ function serve() {
       function checkEach(collectionList, checkCollectionForHits, query, projection, hits, evaluateTally) {
           var doneCounter = 0,
               results = [];
-          collectionList.forEach(function (item, query, projection, hits) {
-              checkCollectionForHits(item, query, projection, hits, function (res) {
+          collectionList.forEach(function (collectionName, query, projection, hits) {
+              checkCollectionForHits(collectionName, query, projection, hits, function (res) {
               log(`got request to findOne in ${collectionName} with` +
                 ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);          
                   doneCounter += 1;
