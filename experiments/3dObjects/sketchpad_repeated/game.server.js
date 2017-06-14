@@ -80,7 +80,7 @@ var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = {expid: 'pilot', gameid: gc.id, time: Date.now(), trialNum: trialNum};
+  var line = {expid: 'pilot2', gameid: gc.id, time: Date.now(), trialNum: trialNum};
 
   switch(type) {
   case "clickedObj" :
