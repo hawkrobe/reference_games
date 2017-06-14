@@ -145,11 +145,11 @@ var startGame = function(game, player) {
   var dataFileName = startTime + "_" + game.id + ".csv";
   var baseCols = ["gameid","time","trialNum"].join('\t');
   var objectLocHeader = utils.getObjectLocHeader();
-  var strokeHeader = [baseCols,"strokeNum","targetName", "shiftKeyUsed","svg\n"].join('\t');
-  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", 
-			  "outcome", "pose", "condition", "epoch", "repeated", "workerId", "assignmentId", objectLocHeader, "png\n"].join('\t');
+  var strokeHeader = [baseCols, "targetName", "dataType", "strokeNum", "svg", "shiftKeyUsed", "workerId", "assignmentId\n"].join('\t');
+  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", "dataType",
+			  "outcome", "png", "pose", "condition", "epoch", "repeated", "workerId", "assignmentId", objectLocHeader+"\n"].join('\t');
 
-  utils.establishStream(game, "stroke", dataFileName,strokeHeader);
+  utils.establishStream(game, "stroke", dataFileName, strokeHeader);
   utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
 
   game.newRound();
@@ -162,7 +162,9 @@ var setCustomEvents = function(socket) {
     var xmlDoc = new parser().parseFromString(data.svgString);
     var svgData = xmlDoc.documentElement.getAttribute('d');
     var shiftKeyUsed = data.shiftKeyUsed;
-    writeData(socket, 'stroke', [data.currStrokeNum, svgData, shiftKeyUsed]);
+    var workerId = data.workerId;
+    var assignmentId = data.assignmentId;
+    writeData(socket, 'stroke', [data.currStrokeNum, svgData, shiftKeyUsed, workerId, assignmentId]);
 
     // send json format to partner
     _.map(others, function(p) {
