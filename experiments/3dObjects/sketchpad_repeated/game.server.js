@@ -143,7 +143,7 @@ var startGame = function(game, player) {
   // Establish write streams
   var startTime = utils.getLongFormTime();
   var dataFileName = startTime + "_" + game.id + ".csv";
-  var baseCols = ["gameid","time","trialNum"].join('\t');
+  var baseCols = ["expid","gameid","time","trialNum"].join('\t');
   var objectLocHeader = utils.getObjectLocHeader();
   var strokeHeader = [baseCols, "targetName", "dataType", "strokeNum", "svg", "shiftKeyUsed", "workerId", "assignmentId\n"].join('\t');
   var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", "dataType",
