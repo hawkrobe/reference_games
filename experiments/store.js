@@ -205,7 +205,7 @@ function serve() {
       const collection = database.collection(collectionName);
 
       const data = _.omit(request.body, ['colname', 'dbname']);
-      log(`inserting data: ${JSON.stringify(data)}`);
+      // log(`inserting data: ${JSON.stringify(data)}`);
       collection.insert(data, (err, result) => {
         if (err) {
           return failure(response, `error inserting data: ${err}`);
