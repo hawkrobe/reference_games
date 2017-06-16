@@ -76,6 +76,23 @@ function getObjectLocs(objects) {
   }));
 }
 
+const flatten = arr => arr.reduce(
+  (acc, val) => acc.concat(
+    Array.isArray(val) ? flatten(val) : val
+  ),
+  []
+);
+
+var getObjectLocHeaderArray = function() {
+  arr =  _.map(_.range(1,5), function(i) {
+    return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], function(v) {
+      return 'object' + i + v;
+    });
+  });
+  return flatten(arr);
+};
+
+
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
@@ -84,7 +101,7 @@ var writeData = function(client, type, message_parts) {
 
   switch(type) {
   case "clickedObj" :
-    console.log("concatenated objected header object: ", _.object(utils.getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
+    console.log("concatenated objected header object: ", _.object(getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
     var clickedName = message_parts[1];
     _.extend(line, {
       intendedName,
@@ -98,7 +115,7 @@ var writeData = function(client, type, message_parts) {
       repeated : message_parts[6],
       workerId : message_parts[7],
       assignmentId : message_parts[8]
-    }, _.object(utils.getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
+    }, _.object(getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
     break;
  
   case "stroke" :
