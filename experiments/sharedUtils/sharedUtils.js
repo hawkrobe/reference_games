@@ -82,6 +82,22 @@ var getObjectLocHeader = function() {
   }).join('\t');
 };
 
+const flatten = arr => arr.reduce(
+  (acc, val) => acc.concat(
+    Array.isArray(val) ? flatten(val) : val
+  ),
+  []
+);
+
+var getObjectLocHeaderArray = function() {
+  arr =  _.map(_.range(1,5), function(i) {
+    return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], function(v) {
+      return 'object' + i + v;
+    });
+  });
+  return flatten(arr);
+};
+
 var hsl2lab = function(hsl) {
   return converter.hsl.lab(hsl);
 };

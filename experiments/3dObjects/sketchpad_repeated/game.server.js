@@ -84,7 +84,7 @@ var writeData = function(client, type, message_parts) {
 
   switch(type) {
   case "clickedObj" :
-    console.log("concatenated objected header object: ", _.object(utils.getObjectLocHeader(), getObjectLocs(gc.trialInfo.currStim)));
+    console.log("concatenated objected header object: ", _.object(utils.getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
     var clickedName = message_parts[1];
     _.extend(line, {
       intendedName,
@@ -98,7 +98,7 @@ var writeData = function(client, type, message_parts) {
       repeated : message_parts[6],
       workerId : message_parts[7],
       assignmentId : message_parts[8]
-    }, _.object(utils.getObjectLocHeader(), getObjectLocs(gc.trialInfo.currStim)));
+    }, _.object(utils.getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
     break;
  
   case "stroke" :
