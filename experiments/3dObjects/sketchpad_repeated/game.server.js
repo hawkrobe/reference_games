@@ -80,10 +80,11 @@ var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = {expid: 'pilot2', gameid: gc.id, time: Date.now(), trialNum: trialNum};
+  var line = {expid: 'test', gameid: gc.id, time: Date.now(), trialNum: trialNum};
 
   switch(type) {
   case "clickedObj" :
+    console.log("concatenated objected header object: ", _.object(utils.getObjectLocHeader(), getObjectLocs(gc.trialInfo.currStim)));
     var clickedName = message_parts[1];
     _.extend(line, {
       intendedName,
@@ -97,7 +98,7 @@ var writeData = function(client, type, message_parts) {
       repeated : message_parts[6],
       workerId : message_parts[7],
       assignmentId : message_parts[8]
-    }, _.object(utils.getObjectLocHeader, getObjectLocs(gc.trialInfo.currStim)));
+    }, _.object(utils.getObjectLocHeader(), getObjectLocs(gc.trialInfo.currStim)));
     break;
  
   case "stroke" :
@@ -131,7 +132,8 @@ var writeDataToMongo = function(line) {
     { json: postData },
     (error, res, body) => {
       if (!error && res.statusCode === 200) {
-	      console.log(`sent data to store: ${JSON.stringify(postData)}`);
+	      // console.log(`sent data to store: ${JSON.stringify(postData)}`);
+        console.log(`sent data to store`);
       } else {
 	      console.log(`error sending data to store: ${error} ${body}`);
       }
