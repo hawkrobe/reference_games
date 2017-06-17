@@ -97,11 +97,10 @@ var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = {expid: 'test', gameid: gc.id, time: Date.now(), trialNum: trialNum};
+  var line = {expid: 'pilot3', gameid: gc.id, time: Date.now(), trialNum: trialNum};
 
   switch(type) {
   case "clickedObj" :
-    console.log("concatenated objected header object: ", _.object(getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
     var clickedName = message_parts[1];
     _.extend(line, {
       intendedName,
