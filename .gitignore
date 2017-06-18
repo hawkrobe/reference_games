@@ -48,3 +48,5 @@ production_results/
 data/3dObjects/sketchpad_basic/clickedObj/*.js
 data/3dObjects/sketchpad_basic/stroke/*.js
 data/3dObjects/sketchpad_repeated/
+analysis/3dObjects/sketchpad_repeated/sketches/*
+analysis/3dObjects/sketchpad_basic/sketches/*
