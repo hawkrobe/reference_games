@@ -12,7 +12,7 @@ function toRadians (angle) {
 }
 
 var rangeH = _.range(0, 360,2);
-var rangeS = _.range(0, 100,5); 
+var rangeS = _.range(0, 100,2); 
 
 var newCSV = _.flatten(_.map(rangeH, function(H) {
   return _.map(rangeS, function(S) {
