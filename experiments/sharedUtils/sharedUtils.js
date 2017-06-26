@@ -2,6 +2,49 @@ var _ = require('underscore');
 var fs = require('fs');
 var converter = require("color-convert");
 var DeltaE = require('../node_modules/delta-e');
+var sendPostRequest = require('request').post;
+
+var serveFile = function(req, res) {
+  var fileName = req.params[0];
+  console.log('\t :: Express :: file requested: ' + fileName);
+  if(req.query.workerId) {
+    console.log(" by workerID " + req.query.workerId);
+  }
+  return res.sendFile(fileName, {root: __base}); 
+};
+
+var handleDuplicate = function(req, res) {
+  console.log("duplicate id: blocking request");
+  return res.redirect('https://rxdhawkins.me:8888/sharedUtils/duplicate.html');
+};
+
+var handleInvalidID = function(req, res) {
+  console.log("invalid id: blocking request");
+  return res.redirect('https://rxdhawkins.me:8888/sharedUtils/invalid.html');
+};
+
+var checkPreviousParticipant = function(workerId, callback) {
+
+  var p = {'workerId': workerId};
+  var postData = {
+    dbname: '3dObjects',
+    colname: 'sketchpad_repeated',
+    query: p,
+    projection: {'_id': 1}
+  };
+  sendPostRequest(
+    'http://localhost:4000/db/exists',
+    {json: postData},
+    (error, res, body) => {
+      if (!error && res.statusCode === 200) {
+	console.log("success! Received data " + JSON.stringify(body));
+	callback(body);
+      } else {
+	console.log(`error checking participant in store: ${error} ${body}`);
+      }
+    }
+  );
+};
 
 var UUID = function() {
   var baseName = (Math.floor(Math.random() * 10) + '' +
@@ -37,6 +80,22 @@ var getObjectLocHeader = function() {
       return 'object' + i + v;
     }).join('\t');
   }).join('\t');
+};
+
+const flatten = arr => arr.reduce(
+  (acc, val) => acc.concat(
+    Array.isArray(val) ? flatten(val) : val
+  ),
+  []
+);
+
+var getObjectLocHeaderArray = function() {
+  arr =  _.map(_.range(1,5), function(i) {
+    return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], function(v) {
+      return 'object' + i + v;
+    });
+  });
+  return flatten(arr);
 };
 
 var hsl2lab = function(hsl) {
@@ -170,16 +229,20 @@ var series = function makeSeries(lb,ub) {
 // --- above added by jefan March 2017
 
 module.exports = {
-  UUID : UUID,
-  getLongFormTime : getLongFormTime,
-  establishStream: establishStream,
-  getObjectLocHeader: getObjectLocHeader,
-  hsl2lab : hsl2lab,
-  fillArray: fillArray,
-  randomColor: randomColor,
-  randomRect: randomRect,
-  randomCircle: randomCircle,
-  randomPoint: randomPoint,
-  randomSpline: randomSpline,
-  colorDiff : colorDiff
+  UUID,
+  checkPreviousParticipant,
+  serveFile,
+  handleDuplicate,
+  handleInvalidID,
+  getLongFormTime,
+  establishStream,
+  getObjectLocHeader,
+  hsl2lab,
+  fillArray,
+  randomColor,
+  randomRect,
+  randomCircle,
+  randomPoint,
+  randomSpline,
+  colorDiff
 };
