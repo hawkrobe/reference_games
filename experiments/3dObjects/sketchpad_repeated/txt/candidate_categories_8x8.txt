@@ -1,0 +1,102 @@
+
+## Category brainstorm 3/15/17
+
+birds -- 
+	duck
+	eagle
+	pigeon
+	swan
+	hummingbird
+	parrot
+	flamingo
+	peacock
+	robin	
+	owl
+	seagull
+	pelican
+
+dogs -- 
+	pug
+	husky
+	dalmatian
+	german shepherd
+	dachshund
+	golden retriever
+	basset hound	
+	poodle
+	chihuahua	
+	greyhound
+	yorkshire terrier
+	border collie	
+
+cars -- 
+	sedan
+	sports car
+	limo
+	smart car
+	SUV
+	convertible
+	beetle
+	race car
+	pickup truck	
+	bus
+	ambulance
+	taxi
+	jeep
+
+sittables -- 
+	couch
+	armchair
+	office chair
+	patio chair
+	rocking chair
+	stool
+	bench
+	director's chair
+
+flowers -- 
+	daisy
+	rose
+	tulip
+	sunflower
+	hibiscus
+	orchid
+	lily
+	carnation
+	chrsyanthamum
+
+table -- 
+	ping pong table
+	desk
+	picnic
+	coffee table
+	pool table
+	endtable
+	dining
+	patio table
+	conference table
+	wheelchair
+
+upper-body garments -- 
+	tshirt
+	polo shirt		
+	sweatshirt
+	dress shirt
+	blazer
+	tunic
+	dress
+	raincoat
+
+elongated tools -- 	
+	screwdriver
+	spoon
+	shovel
+	wrench
+	hammer
+	fork
+	axe
+	saw
+	knife
+	hoe
+	broom
+
