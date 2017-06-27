@@ -1,0 +1,38 @@
+[
+  {
+    'superAttribute' : 'triangle',
+    'basicAttribute' : 'blue',
+    'subVariant' : 1,
+    'path' : 'images/blueTriangle1.png'
+  },{
+    'superAttribute' : 'triangle',
+    'basicAttribute' : 'blue',
+    'subVariant' : 2,
+    'path' : 'images/blueTriangle2.png'
+  },{
+    'superAttribute' : 'triangle',
+    'basicAttribute' : 'red',
+    'subVariant' : 1,
+    'images/redTriangle1.png'
+  },{
+    'superAttribute' : 'triangle',
+    'basicAttribute' : 'red',
+    'subVariant' : 2
+  },{
+    'superAttribute' : 'square',
+    'basicAttribute' : 'spotted',
+    'subVariant' : 1
+  },{
+    'superAttribute' : 'square',
+    'basicAttribute' : 'spotted',
+    'subVariant' : 2
+  },{
+    'superAttribute' : 'square',
+    'basicAttribute' : 'striped',
+    'subVariant' : 1
+  },{
+    'superAttribute' : 'square',
+    'basicAttribute' : 'striped',
+    'subVariant' : 2
+  }
+]
