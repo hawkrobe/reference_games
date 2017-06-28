@@ -48,16 +48,16 @@ var client_onserverupdate_received = function(data){
 			gridX : customCoords.gridX, gridY : customCoords.gridY,
 			box : customCoords.box})
 	  .value();
-
+      
       var imgObj = new Image(); //initialize object as an image (from HTML5)
-      imgObj.src = customObj.url; // tell client where to find it
       imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)
         globalGame.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
 				 customObj.width, customObj.height);
         if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-          highlightCell(globalGame, '#d15619', function(x) {return x.target_status == 'target';});
+          highlightCell(globalGame, '#d15619', function(x) {return x.targetStatus == 'target';});
         }
       };
+      imgObj.src = customObj.url; // tell client where to find it
       return _.extend(customObj, {img: imgObj});
     });
   };
