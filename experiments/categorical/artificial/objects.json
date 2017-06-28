@@ -3,41 +3,41 @@
     "superAttribute" : "square",
     "basicAttribute" : "blue",
     "subID" : 1,
-    "url" : "images/blueSquare1.png"
+    "url" : "images/blueSquare1.jpg"
   },{
     "superAttribute" : "square",
     "basicAttribute" : "blue",
     "subID" : 2,
-    "url" : "images/blueSquare2.png"
+    "url" : "images/blueSquare2.jpg"
   },{
     "superAttribute" : "square",
     "basicAttribute" : "red",
     "subID" : 3,
-    "url" : "images/redSquare1.png"
+    "url" : "images/redSquare1.jpg"
   },{
     "superAttribute" : "square",
     "basicAttribute" : "red",
     "subID" : 4,
-    "url" : "images/redSquare2.png"
+    "url" : "images/redSquare2.jpg"
   },{
     "superAttribute" : "triangle",
     "basicAttribute" : "spotted",
     "subID" : 5,
-    "url" : "images/spottedTriangle1.png"
+    "url" : "images/spottedTriangle1.jpg"
   },{
     "superAttribute" : "triangle",
     "basicAttribute" : "spotted",
     "subID" : 6,
-    "url" : "images/spottedTriangle2.png"
+    "url" : "images/spottedTriangle2.jpg"
   },{
     "superAttribute" : "triangle",
     "basicAttribute" : "striped",
     "subID" : 7,
-    "url" : "images/stripedTriangle1.png"
+    "url" : "images/stripedTriangle1.jpg"
   },{
     "superAttribute" : "triangle",
     "basicAttribute" : "striped",
     "subID" : 8,
-    "url" : "images/stripedTriangle2.png"
+    "url" : "images/stripedTriangle2.jpg"
   }
 ]
