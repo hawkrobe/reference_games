@@ -167,25 +167,24 @@ game_core.prototype.makeTrialList = function () {
     trialList.push(_.map(world, function(obj) {
       var newObj = _.clone(obj);
       var speakerGridCell = local_this.getPixelFromCell(obj.speakerCoords);
-      var listenerGridCell = local_this.getPixelFromCell(obj.listenerCoords);      
-      newObj.width = local_this.cellDimensions.width;
-      newObj.height = local_this.cellDimensions.height;      
+      var listenerGridCell = local_this.getPixelFromCell(obj.listenerCoords);
+      newObj.width = local_this.cellDimensions.width * 3/4;
+      newObj.height = local_this.cellDimensions.height * 3/4;      
       newObj.speakerCoords = _.extend(obj.speakerCoords, {
-	trueX : speakerGridCell.centerX - obj.width/2,
-	trueY : speakerGridCell.centerY - obj.height/2,
+	trueX : speakerGridCell.centerX - newObj.width/2,
+	trueY : speakerGridCell.centerY - newObj.height/2,
 	gridPixelX: speakerGridCell.centerX - 100,
 	gridPixelY: speakerGridCell.centerY - 100
       });
       newObj.listenerCoords = _.extend(obj.listenerCoords, {
-	trueX : listenerGridCell.centerX - obj.width/2,
-	trueY : listenerGridCell.centerY - obj.height/2,
+	trueX : listenerGridCell.centerX - newObj.width/2,
+	trueY : listenerGridCell.centerY - newObj.height/2,
 	gridPixelX: listenerGridCell.centerX - 100,
 	gridPixelY: listenerGridCell.centerY - 100
       });
       return newObj;
     }));
   };
-
   return(trialList);
 };
 
@@ -210,14 +209,15 @@ game_core.prototype.sampleTrial = function(condition) {
   var objList = _.sample(this.objects, 4);
   // sample locations for those objects
   var locs = this.sampleStimulusLocs();
-  return _.map(objList, function(obj) {
+  return _.map(objList, function(obj, index) {
     return _.extend(obj, {
+      targetStatus: index === 0 ? 'target' : 'distractor',
       listenerCoords: {
-	gridX: locs.listener[0],
-	gridY: locs.listener[1]},
+	gridX: locs.listener[index][0],
+	gridY: locs.listener[index][1]},
       speakerCoords: {
-	gridX: locs.speaker[0],
-	gridY: locs.speaker[1]}
+	gridX: locs.speaker[index][0],
+	gridY: locs.speaker[index][1]}
     });
   });
 };

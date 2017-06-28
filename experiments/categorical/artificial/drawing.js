@@ -63,7 +63,26 @@ var drawScreen = function(game, player) {
   }
   else {
     drawGrid(globalGame);
-    drawObjects(globalGame, player);
+//    drawObjects(globalGame, player);
+  }
+};
+
+var highlightCell = function(game, color, condition) {
+  var targetObjects = _.filter(globalGame.objects, condition);
+  console.log(targetObjects);
+  var customCoords = globalGame.my_role == "speaker" ? 'speakerCoords' : 'listenerCoords';
+  for (var i = 0; i < targetObjects.length; i++){
+    var coords = targetObjects[i][customCoords];
+    var upperLeftX = globalGame.getPixelFromCell(coords).upperLeftX;
+    var upperLeftY = globalGame.getPixelFromCell(coords).upperLeftY;
+    globalGame.ctx.globalCompositeOperation='source-over';
+    if (upperLeftX != null && upperLeftY != null) {
+      globalGame.ctx.beginPath();
+      globalGame.ctx.lineWidth="10";
+      globalGame.ctx.strokeStyle=color;
+      globalGame.ctx.rect(upperLeftX +5 , upperLeftY +5 ,globalGame.cellDimensions.width-10,globalGame.cellDimensions.height-10);
+      globalGame.ctx.stroke();
+    }
   }
 };
 
