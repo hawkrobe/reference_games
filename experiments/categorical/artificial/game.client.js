@@ -36,9 +36,30 @@ var client_onserverupdate_received = function(data){
       z[1].id = z[0].id;
     });
   }
-
+  
   if (globalGame.roundNum != data.roundNum) {
-    globalGame.currStim =  data.trialInfo.currStim;
+    globalGame.objects = _.map(data.trialInfo.currStim, function(obj) {
+      // Extract the coordinates matching your role
+      var customCoords = globalGame.my_role == "speaker" ? obj.speakerCoords : obj.listenerCoords;
+      // remove the speakerCoords and listenerCoords properties
+      var customObj = _.chain(obj)
+	  .omit('speakerCoords', 'listenerCoords')
+	  .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
+			gridX : customCoords.gridX, gridY : customCoords.gridY,
+			box : customCoords.box})
+	  .value();
+
+      var imgObj = new Image(); //initialize object as an image (from HTML5)
+      imgObj.src = customObj.url; // tell client where to find it
+      imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)
+        globalGame.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
+				 customObj.width, customObj.height);
+        if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+          highlightCell(globalGame, '#d15619', function(x) {return x.target_status == 'target';});
+        }
+      };
+      return _.extend(customObj, {img: imgObj});
+    });
   };
 
   // Get rid of "waiting" screen if there are multiple players

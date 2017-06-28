@@ -9,7 +9,7 @@
 */
     var
         fs    = require('fs'),
-        utils = require('../sharedUtils/sharedUtils.js');
+        utils = require(__base + '/sharedUtils/sharedUtils.js');
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
