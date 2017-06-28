@@ -163,10 +163,73 @@ game_core.prototype.makeTrialList = function () {
 
   for (var i = 0; i < this.numRounds; i++) {
     var world = this.sampleTrial(); // Sample a world state
-    trialList.push(world);
+    // construct trial list (in sets of complete rounds)
+    trialList.push(_.map(world, function(obj) {
+      var newObj = _.clone(obj);
+      var speakerGridCell = local_this.getPixelFromCell(obj.speakerCoords);
+      var listenerGridCell = local_this.getPixelFromCell(obj.listenerCoords);      
+      newObj.width = local_this.cellDimensions.width;
+      newObj.height = local_this.cellDimensions.height;      
+      newObj.speakerCoords = _.extend(obj.speakerCoords, {
+	trueX : speakerGridCell.centerX - obj.width/2,
+	trueY : speakerGridCell.centerY - obj.height/2,
+	gridPixelX: speakerGridCell.centerX - 100,
+	gridPixelY: speakerGridCell.centerY - 100
+      });
+      newObj.listenerCoords = _.extend(obj.listenerCoords, {
+	trueX : listenerGridCell.centerX - obj.width/2,
+	trueY : listenerGridCell.centerY - obj.height/2,
+	gridPixelX: listenerGridCell.centerX - 100,
+	gridPixelY: listenerGridCell.centerY - 100
+      });
+      return newObj;
+    }));
   };
 
   return(trialList);
+};
+
+// maps a grid location to the exact pixel coordinates
+// for x = 1,2,3,4; y = 1,2,3,4
+game_core.prototype.getPixelFromCell = function (coords) {
+  var x = coords.gridX;
+  var y = coords.gridY;
+  return {
+    centerX: (this.cellPadding/2 + this.cellDimensions.width * (x - 1)
+        + this.cellDimensions.width / 2),
+    centerY: (this.cellPadding/2 + this.cellDimensions.height * (y - 1)
+        + this.cellDimensions.height / 2),
+    upperLeftX : (this.cellDimensions.width * (x - 1) + this.cellPadding/2),
+    upperLeftY : (this.cellDimensions.height * (y - 1) + this.cellPadding/2),
+    width: this.cellDimensions.width,
+    height: this.cellDimensions.height
+  };
+};
+
+game_core.prototype.sampleTrial = function(condition) {
+  var objList = _.sample(this.objects, 4);
+  // sample locations for those objects
+  var locs = this.sampleStimulusLocs();
+  return _.map(objList, function(obj) {
+    return _.extend(obj, {
+      listenerCoords: {
+	gridX: locs.listener[0],
+	gridY: locs.listener[1]},
+      speakerCoords: {
+	gridX: locs.speaker[0],
+	gridY: locs.speaker[1]}
+    });
+  });
+};
+
+game_core.prototype.sampleStimulusLocs = function() {
+  var listenerLocs = _.shuffle([[1,1], [2,1], [1,2], [2,2]]);
+  var speakerLocs = _.shuffle([[1,1], [2,1], [1,2], [2,2]]);
+
+  // // temporarily turn off shuffling to make sure that it has to do with this
+  // var listenerLocs = [[1,1], [2,1], [3,1], [4,1]];
+  // var speakerLocs = [[1,1], [2,1], [3,1], [4,1]];
+  return {listener : listenerLocs, speaker : speakerLocs};
 };
 
 game_core.prototype.server_send_update = function(){

@@ -1,38 +1,43 @@
 [
   {
-    'superAttribute' : 'triangle',
-    'basicAttribute' : 'blue',
-    'subVariant' : 1,
-    'path' : 'images/blueTriangle1.png'
+    "superAttribute" : "square",
+    "basicAttribute" : "blue",
+    "subID" : 1,
+    "url" : "images/blueSquare1.png"
   },{
-    'superAttribute' : 'triangle',
-    'basicAttribute' : 'blue',
-    'subVariant' : 2,
-    'path' : 'images/blueTriangle2.png'
+    "superAttribute" : "square",
+    "basicAttribute" : "blue",
+    "subID" : 2,
+    "url" : "images/blueSquare2.png"
   },{
-    'superAttribute' : 'triangle',
-    'basicAttribute' : 'red',
-    'subVariant' : 1,
-    'images/redTriangle1.png'
+    "superAttribute" : "square",
+    "basicAttribute" : "red",
+    "subID" : 3,
+    "url" : "images/redSquare1.png"
   },{
-    'superAttribute' : 'triangle',
-    'basicAttribute' : 'red',
-    'subVariant' : 2
+    "superAttribute" : "square",
+    "basicAttribute" : "red",
+    "subID" : 4,
+    "url" : "images/redSquare2.png"
   },{
-    'superAttribute' : 'square',
-    'basicAttribute' : 'spotted',
-    'subVariant' : 1
+    "superAttribute" : "triangle",
+    "basicAttribute" : "spotted",
+    "subID" : 5,
+    "url" : "images/spottedTriangle1.png"
   },{
-    'superAttribute' : 'square',
-    'basicAttribute' : 'spotted',
-    'subVariant' : 2
+    "superAttribute" : "triangle",
+    "basicAttribute" : "spotted",
+    "subID" : 6,
+    "url" : "images/spottedTriangle2.png"
   },{
-    'superAttribute' : 'square',
-    'basicAttribute' : 'striped',
-    'subVariant' : 1
+    "superAttribute" : "triangle",
+    "basicAttribute" : "striped",
+    "subID" : 7,
+    "url" : "images/stripedTriangle1.png"
   },{
-    'superAttribute' : 'square',
-    'basicAttribute' : 'striped',
-    'subVariant' : 2
+    "superAttribute" : "triangle",
+    "basicAttribute" : "striped",
+    "subID" : 8,
+    "url" : "images/stripedTriangle2.png"
   }
 ]

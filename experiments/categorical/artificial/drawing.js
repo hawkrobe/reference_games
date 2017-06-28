@@ -1,81 +1,50 @@
 // drawing.js
 // This file contains functions to draw on the HTML5 canvas
 
-var drawPlaza = function(game) {
+// Draws a grid of cells on the canvas (evenly divided
+var drawGrid = function(game){
+    //size of canvas
+    var cw = game.viewport.width;
+    var ch = game.viewport.height;
 
-  //http://stackoverflow.com/questions/6295564/html-canvas-dotted-stroke-around-circle
-  var calcPointsCirc = function calcPointsCirc(cx,cy, rad, dashLength)
-  {
-      var n = rad/dashLength,
-          alpha = Math.PI * 2 / n,
-          pointObj = {},
-          points = [],
-          i = -1;
+    //padding around grid
+    var p = game.cellPadding / 2;
 
-      while( i < n )
-      {
-          var theta = alpha * i,
-              theta2 = alpha * (i+1);
+    //grid width and height
+    var bw = cw - (p*2) ;
+    var bh = ch - (p*2) ;
 
-          points.push({x : (Math.cos(theta) * rad) + cx, y : (Math.sin(theta) * rad) + cy, ex : (Math.cos(theta2) * rad) + cx, ey : (Math.sin(theta2) * rad) + cy});
-          i+=2;
-      }
-      return points;
-  }
-
-  var drawCircle = function(circle) {
-    var pointArray = calcPointsCirc(circle.x, circle.y, circle.d / 2.0, 0.5);
-    game.ctx.strokeStyle = 'black'
     game.ctx.beginPath();
 
-    for(p = 0; p < pointArray.length; p++){
-        game.ctx.moveTo(pointArray[p].x, pointArray[p].y);
-        game.ctx.lineTo(pointArray[p].ex, pointArray[p].ey);
-        game.ctx.stroke();
-    }
+    // vertical lines
+  for (var x = 0; x <= bw; x += Math.floor((cw - 2*p) / game.numHorizontalCells)) {
+        game.ctx.moveTo(0.5 + x + p, p);
+        game.ctx.lineTo(0.5 + x + p, bh + p);}
 
-    game.ctx.closePath();
-  }
+    // horizontal lines
+    for (var x = 0; x <= bh; x += Math.floor((ch - 2*p) / game.numVerticalCells)) {
+        game.ctx.moveTo(p, 0.5 + x + p);
+        game.ctx.lineTo(bw + p, 0.5 + x + p);}
 
-  drawCircle(game.currStim.plaza);
-};
-
-var drawSectors = function(game) {
-  var drawRect = function drawRect(rect, color) {
-    game.ctx.beginPath();
-    game.ctx.rect(rect.x, rect.y, rect.w, rect.h);
-    game.ctx.fillStyle = color;
-    game.ctx.fill();
+    game.ctx.lineWidth = 0;
+    game.ctx.strokeStyle = "#000000";
     game.ctx.stroke();
-  }
-
-  drawRect(game.currStim.red, 'red');
-  drawRect(game.currStim.blue, 'blue');
 };
 
-var drawLily = function(game, x, y) {
-  var img = new Image;
-  img.onload = function() {
-    game.ctx.drawImage(img, x-20, y-20); //adjust for size of lily
-  }
-  img.src = "lotus.png"
-}
+// Loop through the object list and draw each one in its specified location
+var drawObjects = function(game, player) {
+    _.map(globalGame.objects, function(obj) {
+      // game.ctx.globalCompositeOperation='destination-over';  // draw under highlight
+      var customCoords = globalGame.my_role == "speaker" ? 'speakerCoords' : 'listenerCoords';
+      var trueX = obj[customCoords]['trueX'];
+      var trueY = obj[customCoords]['trueY'];
+      var gridX = obj[customCoords]['gridX'];
+      var gridY = obj[customCoords]['gridY'];
+      // console.log(obj['subordinate'],customCoords,gridX,gridY,trueX,trueY);
+      globalGame.ctx.drawImage(obj.img, trueX, trueY,obj.width, obj.height);
+    });
 
-var drawPoint = function(game, x, y) {
-  game.ctx.beginPath();
-  game.ctx.rect(x - 5, y - 5, 10, 10);
-  game.ctx.fillStyle = 'yellow';
-  game.ctx.fill();
-  game.ctx.stroke();
-}
-
-var drawTarget = function(game, x, y) {
-  game.ctx.beginPath();
-  game.ctx.arc(x, y, 50, 0, 2 * Math.PI);
-  game.ctx.fillStyle = "rgba(200, 200, 200, 0.25)";
-  game.ctx.fill();
-  game.ctx.stroke();
-}
+};
 
 var drawScreen = function(game, player) {
   // draw background
@@ -93,20 +62,9 @@ var drawScreen = function(game, player) {
              25);
   }
   else {
-    console.log(game);
-    if (!_.isEmpty(game.currStim)) {
-      drawSectors(game, player);
-      drawPlaza(game);
-
-      if (game.my_role === game.playerRoleNames.role1) {
-        if (game.roundNum <= 2) { //trial only
-          drawTarget(game, game.currStim.lily.x, game.currStim.lily.y);
-        }
-        drawLily(game, game.currStim.lily.x, game.currStim.lily.y);
-      }
-    }
+    drawGrid(globalGame);
+    drawObjects(globalGame, player);
   }
-
 };
 
 // This is a helper function to write a text string onto the HTML5 canvas.
