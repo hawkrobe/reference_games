@@ -17,6 +17,12 @@ var getTrajectories = function(data) {
 };
 ///
 
+var params = {
+  alpha: [1],
+  beta: [1],
+  numSteps : [2]
+};
+
 // possible states of the world
 var states = [{type: 0, color: 0}, 
               {type: 1, color: 1}];
@@ -69,8 +75,8 @@ var L0 = cache(function(utt, lexicon) {
 var S1 = cache(function(state, lexicon) {
   return Infer({method:"enumerate"}, function(){
     var utt = sample(utterancePrior);
-    factor(params.alpha * L0(utt, lexicon).score(state)
-           - params.beta * uttCost(utt));
+    factor(params.alpha[0] * L0(utt, lexicon).score(state)
+           - params.beta[0] * uttCost(utt));
     return utt;
   });
 });
@@ -111,20 +117,22 @@ var L = cache(function(utt, data) {
 var S = cache(function(state, data) {
   return Infer({method:"enumerate"}, function(){
     var utt = sample(utterancePrior);
-    var listener = Infer({method: 'enumerate'}, function() {
+    var utility = expectation(Infer({method: 'enumerate'}, function() {
       var lexicon = sample(lexiconPosterior('S', data));
-      return sample(L1(utt, lexicon));
-    });
-    factor(params.alpha * listener.score(state)
-           - params.beta * uttCost(utt));
+      return (params.alpha[0] * L1(utt, lexicon).score(state) -
+	      params.beta[0] * uttCost(utt));
+    }));
+//    console.log(utt);
+//    console.log(utility);
+    factor(utility);
     return utt;
   });
 });
 
 var model = function() {
   var step = function(data) {
-    if(data.length > params.numSteps) return getTrajectories(data);
-    var state = states[0]
+    if(data.length > params.numSteps[0]) return getTrajectories(data);
+    var state = states[0];
     var utt = sample(S(state, data));
     var response = sample(L(utt, data));
     var newDatum = {utt, response, intended: state, acc: state == response};
@@ -132,3 +140,9 @@ var model = function() {
   };
   step([]);
 };
+
+// console.log(L('type_a color_a', []))
+// console.log(L('type_a', []));
+// console.log(L('color_a', []));
+
+//S(states[0], []);

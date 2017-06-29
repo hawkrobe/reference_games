@@ -21,18 +21,6 @@ var statePrior =  Categorical({vs: states, ps: [1/2, 1/2]});
 var utterances = ['label1', 'label2'];
 var utterancePrior = Categorical({vs: utterances, ps: [1/2, 1/2]});
 
-// If the param exists in the store, use it as prior; otherwise use initial prior
-var getBetaParam = function(paramName, uniqueID, roundNum) {
-  if(roundNum > 0) {
-    var label = [paramName, uniqueID, roundNum].join('_');
-    return T.toScalars(getParams()[label][0])[0];
-  } else if(paramName == 'mu') {
-    return 0;
-  } else if(paramName == 'sigma') {
-    return 1;
-  }
-};
-
 // takes a sample from a logit normal distribution for each word,
 // representing the extent to which that word describes each object
 // at an implementational level, we use the params from the previous

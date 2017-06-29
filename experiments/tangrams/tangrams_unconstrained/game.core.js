@@ -19,7 +19,7 @@ var has_require = typeof require !== 'undefined';
 if(typeof _ === 'undefined') {
   if(has_require) {
     _ = require('underscore');
-    utils  = require('../sharedUtils/sharedUtils.js');    
+    utils  = require(__base + 'sharedUtils/sharedUtils.js');    
   } else {
     throw new ('this experiment requires underscore, see http://underscorejs.org');
   }
