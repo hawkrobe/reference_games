@@ -9,7 +9,7 @@
 */
     var
         fs    = require('fs'),
-        utils = require('../sharedUtils/sharedUtils.js');
+        utils = require(__base + 'sharedUtils/sharedUtils.js');
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
@@ -27,9 +27,9 @@ var onMessage = function(client,message) {
   //Extract important variables
   var gc = client.game;
   var id = gc.id,
-  var all = gc.get_active_players();
-  var target = gc.get_player(client.userid);
-  var others = gc.get_others(client.userid);  
+      all = gc.get_active_players(),
+      target = gc.get_player(client.userid),
+      others = gc.get_others(client.userid);  
   switch(message_type) {
     
   case 'clickedObj' :
