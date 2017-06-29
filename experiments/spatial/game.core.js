@@ -20,11 +20,11 @@ var has_require = typeof require !== 'undefined';
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
     _ = require('underscore');
-    utils  = require('../sharedUtils/sharedUtils.js');
+    utils  = require(__base + 'sharedUtils/sharedUtils.js');
     assert = require('assert');
     jsonfile = require('jsonfile')
 
-    TRIALS_OBJECT_FROM_JSON = _.shuffle(require("../spatialReference/trials.json"));
+    TRIALS_OBJECT_FROM_JSON = _.shuffle(require("./trials.json"));
     console.log(TRIALS_OBJECT_FROM_JSON);
     assert(_.isArray(TRIALS_OBJECT_FROM_JSON) && TRIALS_OBJECT_FROM_JSON.length == 50);
   }

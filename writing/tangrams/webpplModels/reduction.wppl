@@ -44,9 +44,10 @@ var lexiconPrior = function(){
     var bPrior = utt.split('_')[1] === 'a' ? 1 : 2;
     
     var betaGuide = function() {
-      return Beta({
-	a: softplus(param({name: ['a', uniqueID].join('_')})),
-	b: softplus(param({name: ['b', uniqueID].join('_')}))
+      return LogitNormal({
+        a: 0, b: 1,
+      	mu: param({name: ['mu', uniqueID].join('_')}),
+      	sigma: softplus(param({name: ['sigma', uniqueID].join('_')}))
       });
     };
     
@@ -63,8 +64,7 @@ var uttCost = function(utt) {
 // Looks up the meaning of an utterance in a lexicon object
 var uttFitness = function(utt, state, lexicon) {
   return Math.log(reduce(function(subUtt, memo) {
-    var relevantProperty = (subUtt.split('_')[0] === 'type' ? state.type : state.color);
-    var lexiconProb = relevantProperty ? lexicon[subUtt] : 1- lexicon[subUtt];
+    var lexiconProb = lexicon[subUtt] : 1- lexicon[subUtt];
     return lexiconProb * memo;
   }, 1, utt.split(' ')));
 };
@@ -104,7 +104,7 @@ var lexiconModel = function() {
       if(globalStore.originAgent == 'L')
 	observe(S1(datum.response, lexicon), datum['utt']);
       else if(globalStore.originAgent == 'S')
-	observe(L0(datum.utt, lexicon), datum['response']);
+	observe(L1(datum.utt, lexicon), datum['response']);
     });
   }
   return lexicon;
@@ -120,7 +120,7 @@ var updateBeliefs = function(originAgent, data) {
 
   Optimize({model: lexiconModel,
 	    method: 'optimize', steps: 10000, verbose: false,
-	    optMethod: {adam: {stepSize: .01}}});
+	    optMethod: {adam: {stepSize: .001}}});
 };
 
 // conventional listener (L1, marginalizing over lexicons)
@@ -141,7 +141,7 @@ var S = cache(function(state, data) {
 
     var expectedUtility = expectation(Infer({
       method: 'forward', samples: 10000, guide: true, model: function() {
-	var listener = L0(utt, lexiconPrior());
+	var listener = L1(utt, lexiconPrior());
 	return params.alpha[0]  * listener.score(state) - params.beta[0] * uttCost(utt);
       }
     }));
@@ -165,4 +165,3 @@ var model = function() {
   };
   step([]);
 };
-
