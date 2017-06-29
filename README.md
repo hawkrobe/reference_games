@@ -11,7 +11,7 @@ Local demo (from scratch)
    ```
    at the command line to create a local copy of this repository. On Windows, run this command in the shell you installed in the previous step.
 
-3. Install node and npm (the node package manager) on your machine. Node.js sponsors an [official download](http://nodejs.org/download/) for all systems. For an advanced installation, there are good instructions [here](https://gist.github.com/isaacs/579814).
+3. Install node and npm (the node package manager) on your machine. Node.js sponsors an [official download](https://nodejs.org/en/download/) for all systems.
 
 4. Navigate into the repository you created. You should see a file called package.json, which contains the dependencies. To install these dependencies, enter ```npm install``` at the command line. This may take a few minutes.
 
