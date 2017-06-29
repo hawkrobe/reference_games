@@ -10,7 +10,7 @@
 
 var
   fs          = require('fs'),
-  utils       = require('../sharedUtils/sharedUtils.js');
+  utils       = require(__base + 'sharedUtils/sharedUtils.js');
 
 // The server parses and acts on messages sent from 'clients'
 var onMessage = function(client,message) {
