@@ -54,7 +54,7 @@ var game_core = function(options){
 
   // How many rounds do we want people to complete?
   this.numRounds = 60;
-
+  this.feedbackDelay = 300;
   // This will be populated with the tangram set
   this.trialInfo = {};
 
@@ -151,18 +151,19 @@ game_core.prototype.advanceRound = function(delay) {
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
       localThis.trialInfo = {currStim: localThis.trialList[localThis.roundNum]};
-      console.log(localThis.trialInfo);
       localThis.server_send_update();
     }
   }, delay);
 };
 
-game_core.prototype.makeTrialList = function () {
+// Take condition as argument
+// construct context list w/ statistics of condition
+game_core.prototype.makeTrialList = function (condition) {
   var local_this = this;
   var trialList = [];
-
+  var contexts = this.sampleContextSequence(condition);
   for (var i = 0; i < this.numRounds; i++) {
-    var world = this.sampleTrial(); // Sample a world state
+    var world = this.sampleTrial(contexts[i]); // Sample a world state
     // construct trial list (in sets of complete rounds)
     trialList.push(_.map(world, function(obj) {
       var newObj = _.clone(obj);
@@ -188,6 +189,32 @@ game_core.prototype.makeTrialList = function () {
   return(trialList);
 };
 
+game_core.prototype.sampleContextSequence = function(condition) {
+  return Array(this.numRounds).fill('super');
+};
+
+// take context type as argument
+game_core.prototype.sampleTrial = function(contextType) {
+  var target = _.sample(this.objects);
+  var fCond = (contextType === 'super' ? (v) => {return v.super != target.super;} :
+	       contextType === 'basic' ? (v) => {return v.basic != target.basic;} :
+	       contextType === 'sub' ?   (v) => {return v.subID != target.subID;} :
+	       console.log('ERROR: contextType ' + contextType + ' not recognized'));
+  var distractors = _.sample(_.filter(this.objects, fCond), 3);
+  var locs = this.sampleStimulusLocs();
+  return _.map(distractors.concat(target), function(obj, index) {
+    return _.extend(obj, {
+      targetStatus: index === 3 ? 'target' : 'distractor',
+      listenerCoords: {
+	gridX: locs.listener[index][0],
+	gridY: locs.listener[index][1]},
+      speakerCoords: {
+	gridX: locs.speaker[index][0],
+	gridY: locs.speaker[index][1]}
+    });
+  });
+};
+
 // maps a grid location to the exact pixel coordinates
 // for x = 1,2,3,4; y = 1,2,3,4
 game_core.prototype.getPixelFromCell = function (coords) {
@@ -205,30 +232,9 @@ game_core.prototype.getPixelFromCell = function (coords) {
   };
 };
 
-game_core.prototype.sampleTrial = function(condition) {
-  var objList = _.sample(this.objects, 4);
-  // sample locations for those objects
-  var locs = this.sampleStimulusLocs();
-  return _.map(objList, function(obj, index) {
-    return _.extend(obj, {
-      targetStatus: index === 0 ? 'target' : 'distractor',
-      listenerCoords: {
-	gridX: locs.listener[index][0],
-	gridY: locs.listener[index][1]},
-      speakerCoords: {
-	gridX: locs.speaker[index][0],
-	gridY: locs.speaker[index][1]}
-    });
-  });
-};
-
 game_core.prototype.sampleStimulusLocs = function() {
   var listenerLocs = _.shuffle([[1,1], [2,1], [1,2], [2,2]]);
   var speakerLocs = _.shuffle([[1,1], [2,1], [1,2], [2,2]]);
-
-  // // temporarily turn off shuffling to make sure that it has to do with this
-  // var listenerLocs = [[1,1], [2,1], [3,1], [4,1]];
-  // var speakerLocs = [[1,1], [2,1], [3,1], [4,1]];
   return {listener : listenerLocs, speaker : speakerLocs};
 };
 
