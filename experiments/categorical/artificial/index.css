@@ -45,11 +45,24 @@ html , body {
 	font-size: 120%
 }
 
+#feedback {
+	height: 5%;
+	width: 20%;
+	text-align: center;
+	margin-left: 0;
+	margin-right: auto;
+	margin-bottom: auto;
+	left:auto; right:5%; top:5%; bottom: 0;
+	position: absolute;
+	font-size: 2.2vh;
+	font-weight:lighter;
+}
+
 #roundnumber {
 	height: 2%;
 	width: 8%;
 	text-align: center;
-	margin-left: 75%;
+	margin-left: 90%;
 	margin-right: auto;
 	margin-bottom: auto ;
 	left:0; right:0; top:2%; bottom: 0;
@@ -61,8 +74,8 @@ html , body {
     text-align: center;
     height: 2%;
     width: 8%;
-  margin-left: 90%;
-  margin-right: auto;
+  margin-left: auto;
+  margin-right: 90%;
   margin-bottom: auto ;
   left:0; right:0; top:2%; bottom: 0;
   position: absolute;

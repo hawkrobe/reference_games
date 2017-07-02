@@ -35,23 +35,8 @@ var onMessage = function(client,message) {
   case 'clickedObj' :
     // Write event to file
     writeData(client, "clickedObj", message_parts);
-
-    //calculate the penalty, which affects the amount the score goes up
-    var distance = (function distance(x1, y1, x2, y2) {
-      return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow(y2 - y1, 2));
-    })(message_parts[12], message_parts[13], message_parts[14], message_parts[15]);
-
-    //50 = radius of the displayed target; interpolate smoothly in [0,1]
-    gc.data.totalScore += (distance < 50 ? 1 :
-			   distance > 150 ? 0 :
-			   1 - (distance-50)/100);
-
-    // Give feedback to players
-    var feedbackMsg = "s.feedback." + [message_parts[12], message_parts[13], message_parts[14], message_parts[15], gc.data.totalScore.toFixed(2)].join('.');
-    console.log("Sending feedback message: ", feedbackMsg);
-
-    others[0].player.instance.send(feedbackMsg);
-    target.instance.send(feedbackMsg);
+    others[0].player.instance.send('s.feedback.' + message_parts[1]);
+    target.instance.send('s.feedback.' + message_parts[1]);
 
     // Continue
     gc.advanceRound(3000);

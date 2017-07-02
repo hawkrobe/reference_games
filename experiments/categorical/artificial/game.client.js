@@ -102,23 +102,25 @@ var client_onMessage = function(data) {
       break;
 
     case 'feedback' :
-      var lilyX;
-      var lilyY;
-      var mouseX;
-      var mouseY;
       $("#chatbox").attr("disabled", "disabled");
-
-      //update the score, TODO: update styling to be prettier
-      globalGame.data.totalScore = parseFloat(commands[6] + '.' + commands[7]); //HACKY
-
+      // update local score
+      var clickedObjName = commanddata;
+      console.log('clickedobj: ' + clickedObjName);
+      var target = _.filter(globalGame.objects, function(x){
+	return x.targetStatus == 'target';
+      })[0];
+      var scoreDiff = target.subID == clickedObjName ? 1 : 0;
+      globalGame.data.subject_information.score += scoreDiff;
       $('#score').empty()
-        .append("Bonus: $" + (globalGame.data.totalScore/100).toFixed(3));
-
+        .append("Bonus: $" + (globalGame.data.subject_information.score/100).toFixed(3));
+      
+      // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-        drawPoint(globalGame, commands[4], commands[5]);
+	drawSketcherFeedback(globalGame, scoreDiff, clickedObjName);
       } else {
-        drawLily(globalGame, commands[2], commands[3]);
+	drawViewerFeedback(globalGame, scoreDiff, clickedObjName);
       }
+
       break;
 
     case 'alert' : // Not in database, so you can't play...
@@ -155,6 +157,7 @@ var customSetup = function(game) {
       $('#instructs').empty()
         .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
     } else {
+      $('#feedback').empty();
       $('#roundnumber').empty()
         .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
     }
@@ -208,27 +211,34 @@ function mouseClickListener(evt) {
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = Math.floor((evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width));
   var mouseY = Math.floor((evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height));
-
   if (globalGame.messageSent) { // if message was not sent, don't do anything
-    globalGame.messageSent = false;
-    var world = globalGame.currStim;
-
-    drawPoint(globalGame, mouseX, mouseY);
-
-    // apparently _.values() uses for..in.., which does not guarantee order, so we sort
-    // http://stackoverflow.com/a/16809901
-    var serialize = function (obj) {
-      var sortedKeys = _.keys(obj).sort();
-      return _.map(sortedKeys, function(key){return obj[key]}).join('.');
-    };
-
-    globalGame.socket.send("clickedObj." +
-      [serialize(world.red),
-       serialize(world.blue),
-       serialize(world.plaza),
-       serialize(world.lily),
-       mouseX,
-       mouseY
-      ].join('.'));
-  }
+    console.log('click');
+    _.forEach(globalGame.objects, function(obj) {
+      console.log(obj);
+      if (hitTest(obj, mouseX, mouseY)) {
+	console.log('hit!');
+	globalGame.messageSent = false;
+        //highlight the object that was clicked:
+        // var upperLeftXListener = obj.listenerCoords.gridPixelX;
+        // var upperLeftYListener = obj.listenerCoords.gridPixelY;
+        // if (upperLeftXListener != null && upperLeftYListener != null) {
+        //   globalGame.ctx.beginPath();
+        //   globalGame.ctx.lineWidth="10";
+        //   globalGame.ctx.strokeStyle="black";
+        //   globalGame.ctx.rect(upperLeftXListener+5, upperLeftYListener+5,290,290); 
+        //   globalGame.ctx.stroke();
+        // }
+	// Tell the server about it
+        globalGame.socket.send(["clickedObj", obj.subID].join('.'));
+      }
+    });
+  };
 };
+
+function hitTest(shape,mx,my) {
+  console.log(shape)
+  console.log(mx + ',' + my);
+  var dx = mx - shape.trueX;
+  var dy = my - shape.trueY;
+  return (0 < dx) && (dx < shape.width) && (0 < dy) && (dy < shape.height);
+}
