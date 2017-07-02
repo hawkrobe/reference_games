@@ -74,7 +74,9 @@ var client_onserverupdate_received = function(data){
   globalGame.players_threshold = data.pt;
   globalGame.player_count = data.pc;
   globalGame.roundNum = data.roundNum;
-  globalGame.data = data.dataObj;
+  if(!_.has(globalGame, 'data')) {
+    globalGame.data = data.dataObj;
+  }
 
   if ((globalGame.roundNum > 2) && (globalGame.my_role === globalGame.playerRoleNames.role1)) { //TRIAL OVER
     $('#instructs').empty()
@@ -105,8 +107,7 @@ var client_onMessage = function(data) {
       $("#chatbox").attr("disabled", "disabled");
       // update local score
       var clickedObjName = commanddata;
-      console.log('clickedobj: ' + clickedObjName);
-      var target = _.filter(globalGame.objects, function(x){
+      var target = _.filter(globalGame.objects, (x) => {
 	return x.targetStatus == 'target';
       })[0];
       var scoreDiff = target.subID == clickedObjName ? 1 : 0;
