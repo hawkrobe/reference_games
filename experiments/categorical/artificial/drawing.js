@@ -26,9 +26,9 @@ var drawGrid = function(game){
         game.ctx.moveTo(p, 0.5 + x + p);
         game.ctx.lineTo(bw + p, 0.5 + x + p);}
 
-    game.ctx.lineWidth = 0;
-    game.ctx.strokeStyle = "#000000";
-    game.ctx.stroke();
+  game.ctx.lineWidth = '5';
+  game.ctx.strokeStyle = "#000000";
+  game.ctx.stroke();
 };
 
 // Loop through the object list and draw each one in its specified location
@@ -62,26 +62,61 @@ var drawScreen = function(game, player) {
              25);
   }
   else {
-    drawGrid(globalGame);
-//    drawObjects(globalGame, player);
+//    drawGrid(globalGame);
+    drawObjects(globalGame, player);
+  }
+};
+
+function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
+  // visual feedback
+  highlightCell(globalGame, 'black', function(x) {
+    return x.subID == clickedObjName;
+  });
+  // textual feedback
+  if (scoreDiff==1) {
+    setTimeout(function(){
+      $('#feedback').html('Great job! Your partner correctly identified the target.');
+    }, globalGame.feedbackDelay);
+  } else {
+    setTimeout(function(){
+      $('#feedback').html('Too bad... Your partner thought the target was the object outlined in ' + 'black'.bold() + '.');
+    }, globalGame.feedbackDelay);
+  }
+};
+
+function drawViewerFeedback(globalGame, scoreDiff, clickedObjName) {
+  // viewer feedback
+  highlightCell(globalGame, 'black', function(x) {
+    return x.subID == clickedObjName;
+  });
+  highlightCell(globalGame, 'green', function(x) {
+    return x.targetStatus == 'target';
+  });
+  if (scoreDiff==1) {
+    setTimeout(function(){
+      $('#feedback').html('Great job! You correctly identified the target!');
+    }, globalGame.feedbackDelay);
+  } else {
+    setTimeout(function(){
+      $('#feedback').html('Sorry... The target was the object outlined in ' + 'green'.fontcolor("#1aff1a").bold() + '.');
+    }, globalGame.feedbackDelay);
   }
 };
 
 var highlightCell = function(game, color, condition) {
-  var targetObjects = _.filter(globalGame.objects, condition);
-  console.log(targetObjects);
-  var customCoords = globalGame.my_role == "speaker" ? 'speakerCoords' : 'listenerCoords';
+  var targetObjects = _.filter(game.objects, condition);
+  var customCoords = game.my_role == "speaker" ? 'speakerCoords' : 'listenerCoords';
   for (var i = 0; i < targetObjects.length; i++){
     var coords = targetObjects[i][customCoords];
-    var upperLeftX = globalGame.getPixelFromCell(coords).upperLeftX;
-    var upperLeftY = globalGame.getPixelFromCell(coords).upperLeftY;
-    globalGame.ctx.globalCompositeOperation='source-over';
+    var upperLeftX = game.getPixelFromCell(coords).upperLeftX;
+    var upperLeftY = game.getPixelFromCell(coords).upperLeftY;
+    game.ctx.globalCompositeOperation='source-over';
     if (upperLeftX != null && upperLeftY != null) {
-      globalGame.ctx.beginPath();
-      globalGame.ctx.lineWidth="10";
-      globalGame.ctx.strokeStyle=color;
-      globalGame.ctx.rect(upperLeftX +5 , upperLeftY +5 ,globalGame.cellDimensions.width-10,globalGame.cellDimensions.height-10);
-      globalGame.ctx.stroke();
+      game.ctx.beginPath();
+      game.ctx.lineWidth="10";
+      game.ctx.strokeStyle=color;
+      game.ctx.rect(upperLeftX +5 , upperLeftY +5 ,game.cellDimensions.width-10,game.cellDimensions.height-10);
+      game.ctx.stroke();
     }
   }
 };
