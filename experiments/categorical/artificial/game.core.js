@@ -65,14 +65,15 @@ var game_core = function(options){
     this.expName = options.expName;
     this.player_count = options.player_count;
     this.objects = require('./objects.json');
-    this.trialList = this.makeTrialList();
+    this.condition = _.sample(['over', 'under', 'basic', 'uniform']);
+    this.trialList = this.makeTrialList(this.condition);
     this.data = {
       id : this.id,
       trials : [],
       catch_trials : [],
-      totalScore: 0,
       system : {},
       subject_information : {
+	score: 0,
         gameID: this.id
       }
     };
@@ -190,17 +191,46 @@ game_core.prototype.makeTrialList = function (condition) {
 };
 
 game_core.prototype.sampleContextSequence = function(condition) {
-  return Array(this.numRounds).fill('super');
+  var subTrials = (condition === 'uniform' ? this.numRounds * 1/3 :
+		   condition === 'over' ? this.numRounds * 2/3 :
+		   this.numRounds * 1/6);
+  var superTrials = (condition === 'uniform' ? this.numRounds * 1/3 :
+		     condition === 'under' ? this.numRounds * 2/3 :
+		     this.numRounds * 1/6);
+  var basicTrials = this.numRounds - superTrials - subTrials;
+  return (Array(subTrials).fill('sub')
+	  .concat(Array(basicTrials).fill('basic'))
+	  .concat(Array(superTrials).fill('super')));
 };
 
-// take context type as argument
-game_core.prototype.sampleTrial = function(contextType) {
-  var target = _.sample(this.objects);
+// For basic/sub conditions, want to make sure there's at least one distractor at the
+// same super/basic level, respectively (otherwise it's a different condition...)
+var checkDistractors = function(distractors, target, contextType) {
+  if(contextType === 'basic') {
+    return !_.isEmpty(_.filter(distractors, (v) => {return v.super === target.super;}));
+  } else if(contextType === 'sub') {
+    return !_.isEmpty(_.filter(distractors, (v) => {return v.basic === target.basic;}));
+  } else {
+    return true;
+  }
+};
+
+game_core.prototype.sampleDistractors = function(target, contextType) {
   var fCond = (contextType === 'super' ? (v) => {return v.super != target.super;} :
 	       contextType === 'basic' ? (v) => {return v.basic != target.basic;} :
 	       contextType === 'sub' ?   (v) => {return v.subID != target.subID;} :
 	       console.log('ERROR: contextType ' + contextType + ' not recognized'));
   var distractors = _.sample(_.filter(this.objects, fCond), 3);
+  if(checkDistractors(distractors, target, contextType))
+    return distractors;
+  else
+    return this.sampleDistractors(target, contextType);
+};
+
+// take context type as argument
+game_core.prototype.sampleTrial = function(contextType) {
+  var target = _.sample(this.objects);
+  var distractors = this.sampleDistractors(target, contextType);
   var locs = this.sampleStimulusLocs();
   return _.map(distractors.concat(target), function(obj, index) {
     return _.extend(obj, {
