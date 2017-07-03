@@ -15,7 +15,7 @@ Local demo (from scratch)
 
 4. Navigate into the repository you created, then ```./experiments```. You should see a file called package.json, which contains the dependencies. To install these dependencies, enter ```npm install``` at the command line. This may take a few minutes.
 
-5. Finally, to run the experiment of your choice, navigate into the experiments directory and type ```node app.js --expname <path/to/experiment> --gameport 8888``` at the command line. The experiment name argument is required; the game port number is optional. You should expect to see the following message:
+5. Finally, to run the experiment of your choice, in the experiments directory type ```node app.js --expname <path/to/experiment> --gameport 8888``` at the command line. The experiment name argument is required; the game port number is optional. You should expect to see the following message:
    ```
    info  - socket.io started
        :: Express :: Listening on port 8888
