@@ -67,6 +67,7 @@ var game_core = function(options){
     this.objects = require('./objects.json');
     this.condition = _.sample(['over', 'under', 'basic', 'uniform']);
     this.trialList = this.makeTrialList(this.condition);
+    this.language = new ArtificialLanguage();
     this.data = {
       id : this.id,
       trials : [],
@@ -84,11 +85,6 @@ var game_core = function(options){
     }];
     this.streams = {};
     this.server_send_update();
-
-    // jsonfile.writeFile("trials1.json", this.trialList, function (err) {
-    //   console.error(err)
-    // });
-
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.players = [{
@@ -157,10 +153,19 @@ game_core.prototype.advanceRound = function(delay) {
   }, delay);
 };
 
+game_core.prototype.coordExtension = function(obj, gridCell) {
+  return {
+    trueX : gridCell.centerX - obj.width/2,
+    trueY : gridCell.centerY - obj.height/2,
+    gridPixelX: gridCell.centerX - 100,
+    gridPixelY: gridCell.centerY - 100
+  };
+};
+
 // Take condition as argument
 // construct context list w/ statistics of condition
 game_core.prototype.makeTrialList = function (condition) {
-  var local_this = this;
+  var that = this;
   var trialList = [];
   var contexts = this.sampleContextSequence(condition);
   for (var i = 0; i < this.numRounds; i++) {
@@ -168,22 +173,12 @@ game_core.prototype.makeTrialList = function (condition) {
     // construct trial list (in sets of complete rounds)
     trialList.push(_.map(world, function(obj) {
       var newObj = _.clone(obj);
-      var speakerGridCell = local_this.getPixelFromCell(obj.speakerCoords);
-      var listenerGridCell = local_this.getPixelFromCell(obj.listenerCoords);
-      newObj.width = local_this.cellDimensions.width * 3/4;
-      newObj.height = local_this.cellDimensions.height * 3/4;      
-      newObj.speakerCoords = _.extend(obj.speakerCoords, {
-	trueX : speakerGridCell.centerX - newObj.width/2,
-	trueY : speakerGridCell.centerY - newObj.height/2,
-	gridPixelX: speakerGridCell.centerX - 100,
-	gridPixelY: speakerGridCell.centerY - 100
-      });
-      newObj.listenerCoords = _.extend(obj.listenerCoords, {
-	trueX : listenerGridCell.centerX - newObj.width/2,
-	trueY : listenerGridCell.centerY - newObj.height/2,
-	gridPixelX: listenerGridCell.centerX - 100,
-	gridPixelY: listenerGridCell.centerY - 100
-      });
+      var speakerGridCell = that.getPixelFromCell(obj.speakerCoords);
+      var listenerGridCell = that.getPixelFromCell(obj.listenerCoords);
+      newObj.width = that.cellDimensions.width * 3/4;
+      newObj.height = that.cellDimensions.height * 3/4;      
+      _.extend(newObj.speakerCoords, that.coordExtension(newObj, speakerGridCell));
+      _.extend(newObj.listenerCoords, that.coordExtension(newObj, listenerGridCell));
       return newObj;
     }));
   };
@@ -284,9 +279,9 @@ game_core.prototype.server_send_update = function(){
     pc : this.player_count,
     dataObj  : this.data,
     roundNum : this.roundNum,
-    trialInfo: this.trialInfo
+    trialInfo: this.trialInfo,
+    language: this.language
   };
-
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
 
@@ -296,3 +291,21 @@ game_core.prototype.server_send_update = function(){
     p.player.instance.emit( 'onserverupdate', state);});
 };
 
+var ArtificialLanguage = function() {
+  this.vocabSize = 9;
+  this.wordLength = 6;
+  this.possibleVowels = ['a','e','i','o','u'];
+  this.possibleConsonants = ['g','h','k','l','m','n','p','w'];
+  this.vocab = this.sampleVocab();
+};
+
+ArtificialLanguage.prototype.sampleVocab = function() {
+  var vocab = _.map(_.range(this.vocabSize), (wordNum) => {
+    return _.map(_.range(this.wordLength), (charNum) => {
+      var chars = charNum % 2 === 0 ? this.possibleConsonants : this.possibleVowels;
+      return _.sample(chars);
+    }).join('');
+  });
+  // Resample in (highly unlikely) case of duplicates
+  return _.uniq(vocab).length === vocab.length ? vocab : this.sampleVocab;
+}; 
