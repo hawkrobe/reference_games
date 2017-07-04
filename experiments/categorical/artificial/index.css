@@ -14,6 +14,41 @@ html , body {
 	float: right;
 }
 
+.drag-drop {
+  display: inline-block;
+  min-width: 40px;
+  padding: 2em 0.5em;
+
+  color: #fff;
+  border: solid 2px #fff;
+
+  -webkit-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+
+  transition: background-color 0.3s;
+}
+
+.dropzone {
+  background-color: #ccc;
+  border: dashed 4px transparent;
+  border-radius: 4px;
+  margin: 10px auto 30px;
+  padding: 10px;
+  width: 100%;
+  height: 30%;
+  transition: background-color 0.3s;
+}
+
+.grid {
+  display: flex;                       /* establish flex container */
+  flex-wrap: wrap;                     /* enable flex items to wrap */
+  justify-content: space-around;
+}
+
+.cell {
+    flex: 0 0 30%;                       /* don't grow, don't shrink, width */
+}
+
 #header {
     height: 20%;
     width: 100%;
@@ -130,8 +165,8 @@ ALOT...don't understand how to adjust that.*/
 	border: solid 1px #999;
 }
 
-#messages {
-	height:92%;
+#labels {
+	height:100%;
 	text-align: left;
 	font-size: 200%;
 	overflow-y: scroll;
