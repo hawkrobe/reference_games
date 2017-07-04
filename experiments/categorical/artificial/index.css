@@ -20,7 +20,6 @@ html , body {
   padding: 2em 0.5em;
 
   color: #fff;
-  background-color: #29e;
   border: solid 2px #fff;
 
   -webkit-transform: translate(0px, 0px);
@@ -35,7 +34,8 @@ html , body {
   border-radius: 4px;
   margin: 10px auto 30px;
   padding: 10px;
-  width: 80%;
+  width: 100%;
+  height: 30%;
   transition: background-color 0.3s;
 }
 
@@ -43,12 +43,10 @@ html , body {
   display: flex;                       /* establish flex container */
   flex-wrap: wrap;                     /* enable flex items to wrap */
   justify-content: space-around;
-  
 }
+
 .cell {
-  flex: 0 0 32%;                       /* don't grow, don't shrink, width */
-  height: 50px;
-  margin-bottom: 5px;
+    flex: 0 0 30%;                       /* don't grow, don't shrink, width */
 }
 
 #header {
@@ -168,7 +166,7 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #labels {
-	height:92%;
+	height:100%;
 	text-align: left;
 	font-size: 200%;
 	overflow-y: scroll;
