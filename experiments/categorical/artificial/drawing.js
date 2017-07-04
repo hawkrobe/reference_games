@@ -121,6 +121,31 @@ var highlightCell = function(game, color, condition) {
   }
 };
 
+function setupLabels(game) {
+  console.log('setting up labels');
+  _.forEach(globalGame.language.vocab, (word) => {
+    $('#labels').prepend('<p class="cell draggable drag-drop"> ' + word + '</p>');
+  });
+  var labels = document.querySelector('#message_panel');
+  interact('p', {context: labels})
+    .draggable({
+      restrict: {
+      	restriction: "parent",
+      	endOnly: true,
+      	elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+      },
+      onmove: dragMoveListener
+    });
+  interact('#chatarea')
+    .dropzone({
+      accept: '.draggable',
+      ondrop: function (event) {
+	console.log('dropped!');
+      }
+    });
+
+};
+
 // This is a helper function to write a text string onto the HTML5 canvas.
 // It automatically figures out how to break the text into lines that will fit
 // Input:
