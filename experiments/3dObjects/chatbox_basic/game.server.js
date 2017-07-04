@@ -104,13 +104,13 @@ var writeData = function(client, type, message_parts) {
     var condition = message_parts[3];
     var objectLocs = getObjectLocs(gc.trialInfo.currStim);
     line = (line.concat([intendedName, clickedName, correct, pose, condition])
-	    .concat(objectLocs)).join(',');
+	    .concat(objectLocs)).join('\t');
      console.log(line)
     break;
  
   case "message" :
     var msg = message_parts[1].replace(/~~~/g,'.');
-    var line = (id + ',' + Date.now() + ',' + roundNum + ',' + client.role + ',"' + msg + '"\n');
+    var line = (id + '\t' + Date.now() + '\t' + roundNum + '\t' + client.role + '\t"' + msg + '"\n');
     console.log("message:" + line);
     break;
   }
