@@ -104,7 +104,7 @@ var writeData = function(client, type, message_parts) {
     var condition = message_parts[3];
     var objectLocs = getObjectLocs(gc.trialInfo.currStim);
     line = (line.concat([intendedName, clickedName, correct, pose, condition])
-	    .concat(objectLocs));
+	    .concat(objectLocs)).join(',');
      console.log(line)
     break;
  
