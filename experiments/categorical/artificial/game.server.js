@@ -48,13 +48,22 @@ var onMessage = function(client,message) {
     });
     break;
 
+  case 'dragging' :
+    _.map(others, function(p) {
+      p.player.instance.emit( 'dragging', {
+	name: message_parts[1], dx: message_parts[2], dy: message_parts[3]
+      });
+    });
+    break;
+    
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
       writeData(client, "message", message_parts);
       // Update others
       var msg = message_parts[1].replace(/~~~/g,'.');
       _.map(all, function(p){
-  p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
+	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});
+      });
     }
     break;
 
