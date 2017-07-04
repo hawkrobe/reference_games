@@ -83,7 +83,12 @@ var client_onserverupdate_received = function(data){
     $("#chatbox").removeAttr("disabled");
     $('#chatbox').focus();
     globalGame.get_player(globalGame.my_id).message = "";
-    setupLabels();
+
+    // Insert labels & show dropzone
+    _.forEach(globalGame.language.vocab, (word) => {
+      $('#labels').prepend('<p class="cell draggable drag-drop"> ' + word + '</p>');
+    });
+    $('#chatarea').show();
   }
   
   if ((globalGame.roundNum > 2) &&
@@ -207,6 +212,9 @@ var client_onjoingame = function(num_players, role) {
   }
 
   // set mouse-tracking event handler
+  if(role === globalGame.playerRoleNames.role1) {
+    setupLabels(globalGame);
+  }
   if(role === globalGame.playerRoleNames.role2) {
     globalGame.viewport.addEventListener("click", mouseClickListener, false);
   }
