@@ -116,7 +116,7 @@ var client_onMessage = function(data) {
       ondisconnect();
       console.log("received end message...");
       break;
-
+      
     case 'feedback' :
       $("#chatbox").attr("disabled", "disabled");
       // update local score
@@ -137,7 +137,7 @@ var client_onMessage = function(data) {
       }
 
       break;
-
+      
     case 'alert' : // Not in database, so you can't play...
       alert('You did not enter an ID');
       window.location.replace('http://nodejs.org'); break;
@@ -176,6 +176,10 @@ var customSetup = function(game) {
       $('#roundnumber').empty()
         .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
     }
+  });
+
+  game.socket.on('dragging', function(event) {
+    dragMoveListener(event);
   });
 };
 
@@ -225,11 +229,20 @@ var client_onjoingame = function(num_players, role) {
  */
 
 function dragMoveListener (event) {
+  console.log(event);
+  // Tell the server if this is a real drag event (as opposed to an update from partner)
+  if(_.has(event, 'name')) {
+    event.target = $(`p:contains("${event.name}")`)[0];
+    console.log(event.target);
+  } else {
+    globalGame.socket.send(['dragging', event.target.innerHTML,
+			    event.dx, event.dy].join('.'));
+  }
   var target = event.target,
       // keep the dragged position in the data-x/data-y attributes
-      x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-      y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
+      x = (parseFloat(target.getAttribute('data-x')) || 0) + parseFloat(event.dx),
+      y = (parseFloat(target.getAttribute('data-y')) || 0) + parseFloat(event.dy);
+  
   // translate the element
   target.style.webkitTransform =
     target.style.transform =
