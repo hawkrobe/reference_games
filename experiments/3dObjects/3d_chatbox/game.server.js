@@ -36,6 +36,7 @@ var onMessage = function(client,message) {
     
   case 'clickedObj' :
     writeData(client, "clickedObj", message_parts);
+    console.log('wrote data' + message_parts)  
     others[0].player.instance.send("s.feedback." + message_parts[1]); 
     target.instance.send("s.feedback." + message_parts[1]);
     
@@ -47,18 +48,27 @@ var onMessage = function(client,message) {
     }, 4000);
     break; 
   
+  case 'playerTyping' :
+    _.map(others, function(p) {
+      p.player.instance.emit( 'playerTyping',
+            {typing: message_parts[1]});
+    });
+    break;
+  
+  case 'chatMessage' :
+    if(client.game.player_count == 2 && !gc.paused) {
+      writeData(client, "message", message_parts);
+      // Update others
+      var msg = message_parts[1].replace(/~~~/g,'.');
+      _.map(all, function(p){
+  p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
+    }
+    break;
+
   case 'h' : // Receive message when browser focus shifts
     target.visible = message_parts[1];
     break;
-
-  case 'doneDrawing' : // sketcher has declared that drawing is finished
-    drawing_status = message_parts[1];
-    // console.log('drawing_status in doneDrawing case in server');
-    console.log('drawing submitted: ', drawing_status);
-      _.map(all, function(p){
-        p.player.instance.emit('mutualDoneDrawing', {user: client.userid} );
-      });
-
+  
   }
 };
 
@@ -79,33 +89,32 @@ function getObjectLocs(objects) {
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
+  var roundNum = gc.state.roundNum + 1;
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
   var line = [gc.id, Date.now(), trialNum];
+  var id = gc.id;
+
 
   switch(type) {
   case "clickedObj" :
     // parse the message
     var clickedName = message_parts[1];
-    var correct = intendedName == clickedName ? 1 : 0;
-    var pngString = message_parts[2];
-    var pose = parseInt(message_parts[3]);
-    var condition = message_parts[4];
+    var correct = intendedName === clickedName ? 1 : 0;
+    var pose = parseInt(message_parts[2]);
+    var condition = message_parts[3];
     var objectLocs = getObjectLocs(gc.trialInfo.currStim);
     line = (line.concat([intendedName, clickedName, correct, pose, condition])
-	    .concat(objectLocs)
-	    .concat(pngString));
-        
+	    .concat(objectLocs));
+     console.log(line)
     break;
  
-  case "message" : 
+  case "message" :
     var msg = message_parts[1].replace(/~~~/g,'.');
     var line = (id + ',' + Date.now() + ',' + roundNum + ',' + client.role + ',"' + msg + '"\n');
     console.log("message:" + line);
     break;
   }
-  console.log(type + ":" + line.slice(0,-1).join('\t'));
-  gc.streams[type].write(line.join('\t') + "\n",
-			 function (err) {if(err) throw err;});
+  gc.streams[type].write(line, function (err) {if(err) throw err;});
 
 };
 

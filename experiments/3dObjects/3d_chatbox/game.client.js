@@ -178,13 +178,26 @@ var client_onMessage = function(data) {
 
 var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
-  document.getElementById('sketchpad').focus();
 };
 
 var customSetup = function(game) {
  
-
-  $(document).ready(function() {
+// Set up new round on client's browsers after submit round button is pressed.
+  // This means clear the chatboxes, update round number, and update score on screen
+  game.socket.on('newRoundUpdate', function(data){
+    $('#chatbox').removeAttr("disabled");
+    $('#chatbox').focus();
+    $('#messages').empty();
+    if(game.roundNum + 2 > game.numRounds) {
+      $('#roundnumber').empty();
+      $('#instructs').empty()
+  .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+    } else {
+      $('#roundnumber').empty()
+  .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
+    }
+  });
+/*  $(document).ready(function() {
     $("#submitbutton").click(function(){
       if (globalGame.currStrokeNum > 0) { // only allow submit button to be pressed if at least one stroke made
         var finished = ['doneDrawing',1];
@@ -262,7 +275,7 @@ var customSetup = function(game) {
       setTimeout(function(){$('#turnIndicator').html('Your turn: Select the target!');},globalGame.feedbackDelay);
     }
   });
-
+*/
 };
 
 var client_onjoingame = function(num_players, role) {
@@ -279,20 +292,14 @@ var client_onjoingame = function(num_players, role) {
   });
 
   // Update w/ role
+  // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
-  if (role === globalGame.playerRoleNames.role1) {
-    txt = "target";
-    $('#instructs').html("<p>Make a sketch of the target (orange)" +
-      " so that your partner can tell which it is. " +
-      " When you are done, click SUBMIT. </p>" +
-      "<p> To draw: Click & drag on canvas OR hold down Shift key while moving cursor. </p>" +
-      "<p> Important: Please do NOT resize browser window or change zoom during the game.</p>".bold());
-      $("#submitbutton").show();
-  } else if (role === globalGame.playerRoleNames.role2) {
-    $('#instructs').html("<p>Your partner is going to draw one of these four objects." +
-      " When they are done, click on the object they sketched. </p>" +
-      " <p> Important: Please do NOT resize browser window or change zoom during the game.</p>".bold());
-    $("#loading").show();
+  if(role === globalGame.playerRoleNames.role1) {
+    $('#instructs').append("Send messages to tell the listener which object " + 
+         "is the target.");
+  } else if(role === globalGame.playerRoleNames.role2) {
+    $('#instructs').append("Click on the target object which the speaker " +
+         "is telling you about.");
   }
 
   if(num_players == 1) {
@@ -308,8 +315,8 @@ var client_onjoingame = function(num_players, role) {
       }
     }, 1000 * 60 * 15);
 
-    globalGame.get_player(globalGame.my_id).message = ('Drawing will begin \n after another player connects... \n '
-						       + 'Please do not refresh the page!');
+    globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
+              + 'Please do not refresh the page!'); 
   }
 
 
@@ -325,96 +332,28 @@ var client_onjoingame = function(num_players, role) {
  */
 
 function responseListener(evt) {
-  // console.log('got to responseListener inside game.client.js');
+  console.log('got to responseListener inside game.client.js');
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
   // only allow to respond after message has been sent
+  console.log(globalGame.messageSent);
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
       // console.log('responseListener: globalGame.doneDrawing',globalGame.doneDrawing);
-      if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
+      if (hitTest(obj, mouseX, mouseY)) {
         globalGame.messageSent = false;
 
-
-        // highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
-        //               function(x){return x.subordinate == obj.subordinate;});
-
-
         // Send packet about trial to server
-        var dataURL = document.getElementById('sketchpad').toDataURL();
-        dataURL = dataURL.replace('data:image/png;base64,','');
         var currPose = globalGame.objects[0]['pose'];  
         var currCondition = globalGame.objects[0]['condition']; 
-        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition];
-        // console.log(packet);
+        var packet = ["clickedObj", obj.subordinate, currPose, currCondition];
+        console.log(packet);
         globalGame.socket.send(packet.join('.'));
-
-        if (globalGame.my_role == "viewer") {
-          var clickedName = packet[1];
-          var intendedName = getIntendedTargetName(globalGame.objects);
-          var correct = intendedName == clickedName ? 1 : 0;
-          var pngString = packet[2];
-          var objectLocs = getObjectLocs(globalGame.objects);
-          var trialNum = globalGame.roundNum + 1;
-          var gameID = globalGame['data']['id'];
-          var timestamp = Date.now();          
-
-          // send data to mongodb (also see writeData:clickedObj in game.server)
-          dbline = {role: globalGame.my_role,
-                    playerID: globalGame.my_id,
-                    gameID: gameID,
-                    timestamp: timestamp,
-                    trialNum: trialNum,
-                    responseType: 'clickedObj',
-                    intendedName: intendedName,
-                    clickedName: clickedName,
-                    correct: correct,
-                    objectLocs: objectLocs,
-                    pngString: pngString,
-                    currPose: currPose,
-                    currCondition: currCondition,
-                    dbname:globalGame.dbname,
-                    colname:globalGame.colname};
-
-          // console.log(dbline);
-          // jef 4/22/17: do NOT send data to mongo db until SSL certificate
-          // in place 
-          // $.ajax({
-          //  type: 'GET',
-          //  url: 'http://138.197.213.237:9919/savedecision',
-          //  dataType: 'jsonp',
-          //  traditional: true,
-          //  contentType: 'application/json; charset=utf-8',
-          //  data: dbline,
-          //  timeout: 2000,
-          //  retryLimit: 3,
-          //  data: dbline,
-          //  error: function(x, t, m) {
-          //   if(t==="timeout") {
-          //     console.log("got timeout, press on anyway...");
-          //     this.retryLimit--;
-          //     $.ajax(this);
-          //     return;
-
-          //   } else {
-          //       console.log(t);
-          //       this.retryLimit--;
-          //       $.ajax(this);    
-          //       return;                      
-          //   }
-          // },
-          //  success: function(msg) {
-          //             console.log('clickObj response: upload success!');
-          //           }
-          // });
-
-        }; //
-
-      }
-    });
-  }
+      };
+    })
+  };
   return false;
 };
 
