@@ -39,22 +39,28 @@ var client_onserverupdate_received = function(data){
   
   if (globalGame.roundNum != data.roundNum) {
     globalGame.objects = _.map(data.trialInfo.currStim, function(obj) {
-      // Extract the coordinates matching your role
-      var customCoords = globalGame.my_role == "speaker" ? obj.speakerCoords : obj.listenerCoords;
+      // Extract the coordinates matching your role &
       // remove the speakerCoords and listenerCoords properties
+      var customCoords = (globalGame.my_role == "speaker" ?
+			  obj.speakerCoords : obj.listenerCoords);
       var customObj = _.chain(obj)
 	  .omit('speakerCoords', 'listenerCoords')
-	  .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
-			gridX : customCoords.gridX, gridY : customCoords.gridY,
-			box : customCoords.box})
+	  .extend(obj, {
+	    trueX : customCoords.trueX, trueY : customCoords.trueY,
+	    gridX : customCoords.gridX, gridY : customCoords.gridY,
+	    box : customCoords.box
+	  })
 	  .value();
       
       var imgObj = new Image(); //initialize object as an image (from HTML5)
       imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)
-        globalGame.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
+        globalGame.ctx.drawImage(imgObj, parseInt(customObj.trueX),
+				 parseInt(customObj.trueY),
 				 customObj.width, customObj.height);
         if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-          highlightCell(globalGame, '#d15619', function(x) {return x.targetStatus == 'target';});
+          highlightCell(globalGame, '#d15619', function(x) {
+	    return x.targetStatus == 'target';
+	  });
         }
       };
       imgObj.src = customObj.url; // tell client where to find it
@@ -62,27 +68,30 @@ var client_onserverupdate_received = function(data){
     });
   };
 
+  globalGame.game_started = data.gs;
+  globalGame.players_threshold = data.pt;
+  globalGame.player_count = data.pc;
+  globalGame.roundNum = data.roundNum;
+  globalGame.language = data.language;
+  if(!_.has(globalGame, 'data')) {
+    globalGame.data = data.dataObj;
+  }
+
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
     $('#messages').empty();
     $("#chatbox").removeAttr("disabled");
     $('#chatbox').focus();
     globalGame.get_player(globalGame.my_id).message = "";
+    setupLabels();
   }
-
-  globalGame.game_started = data.gs;
-  globalGame.players_threshold = data.pt;
-  globalGame.player_count = data.pc;
-  globalGame.roundNum = data.roundNum;
-  if(!_.has(globalGame, 'data')) {
-    globalGame.data = data.dataObj;
+  
+  if ((globalGame.roundNum > 2) &&
+      (globalGame.my_role === globalGame.playerRoleNames.role1)) { //TRIAL OVER
+      $('#instructs').empty()
+      .append("Send messages to tell the listener stuff.");
   }
-
-  if ((globalGame.roundNum > 2) && (globalGame.my_role === globalGame.playerRoleNames.role1)) { //TRIAL OVER
-    $('#instructs').empty()
-      .append("Send messages to tell the listener where the lily is. To get points, you only need to make them click near the lily. There is no bonus for increased accuracy.");
-  }
-
+  
   // Draw all this new stuff
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 };
@@ -169,7 +178,6 @@ var client_onjoingame = function(num_players, role) {
   // set role locally
   globalGame.my_role = role;
   globalGame.get_player(globalGame.my_id).role = globalGame.my_role;
-
   _.map(_.range(num_players - 1), function(i){
     globalGame.players.unshift({id: null, player: new game_player(globalGame)});
   });
@@ -177,9 +185,9 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to tell the listener where the lily is. To get points, you only need to make them click within the circle around the lily. There is no bonus for increased accuracy. The circle will not appear after the first 3 trials.");
+    $('#instructs').append("Send messages to tell the listener stuff.");
   } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Click as closely as possible to the location of the lily on the map.");
+    $('#instructs').append("Click on object");
   }
 
   if(num_players == 1) {
@@ -207,6 +215,22 @@ var client_onjoingame = function(num_players, role) {
 /*
  MOUSE EVENT LISTENERS
  */
+
+function dragMoveListener (event) {
+  var target = event.target,
+      // keep the dragged position in the data-x/data-y attributes
+      x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+      y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+  // translate the element
+  target.style.webkitTransform =
+    target.style.transform =
+    'translate(' + x + 'px, ' + y + 'px)';
+
+  // update the posiion attributes
+  target.setAttribute('data-x', x);
+  target.setAttribute('data-y', y);
+}
 
 function mouseClickListener(evt) {
   var bRect = globalGame.viewport.getBoundingClientRect();
