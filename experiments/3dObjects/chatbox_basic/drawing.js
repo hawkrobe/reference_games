@@ -26,16 +26,16 @@ var drawGrid = function(game){
         game.ctx.moveTo(p, 0.5 + x + p);
         game.ctx.lineTo(bw + p, 0.5 + x + p);}
 
-  game.ctx.lineWidth = '5';
-  game.ctx.strokeStyle = "#000000";
-  game.ctx.stroke();
+    game.ctx.lineWidth = 0;
+    game.ctx.strokeStyle = "#000000";
+    game.ctx.stroke();
 };
 
 // Loop through the object list and draw each one in its specified location
 var drawObjects = function(game, player) {
     _.map(globalGame.objects, function(obj) {
       // game.ctx.globalCompositeOperation='destination-over';  // draw under highlight
-      var customCoords = globalGame.my_role == "speaker" ? 'speakerCoords' : 'listenerCoords';
+      var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
       var trueX = obj[customCoords]['trueX'];
       var trueY = obj[customCoords]['trueY'];
       var gridX = obj[customCoords]['gridX'];
@@ -46,9 +46,35 @@ var drawObjects = function(game, player) {
 
 };
 
+
+///// this version of highlightCell function edited from tangrams_sequential/drawing.js
+//// almost same as copy above except instances of game replaced by globalGame
+var highlightCell = function(game, color, condition) {
+  var targetObjects = _.filter(globalGame.objects, condition);
+  var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
+  for (var i = 0; i < targetObjects.length; i++){
+    var gridX = targetObjects[i][customCoords]['gridX'];
+    var gridY = targetObjects[i][customCoords]['gridY'];
+    var upperLeftX = globalGame.getPixelFromCell(gridX, gridY).upperLeftX;
+    var upperLeftY = globalGame.getPixelFromCell(gridX, gridY).upperLeftY;
+    globalGame.ctx.globalCompositeOperation='source-over';
+    if (upperLeftX != null && upperLeftY != null) {
+      globalGame.ctx.beginPath();
+      globalGame.ctx.lineWidth="10";
+      globalGame.ctx.strokeStyle=color;
+      globalGame.ctx.rect(upperLeftX +5 , upperLeftY +5 ,globalGame.cellDimensions.width-10,globalGame.cellDimensions.height-10);
+      globalGame.ctx.stroke();
+    }
+  }
+};
+
+
+
 var drawScreen = function(game, player) {
+  // console.log('got to drawScreen!')
   // draw background
-  game.ctx.fillStyle = "#FFFFFF";
+  game.ctx.strokeStyle = "#FFFFFF";
+  game.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
 
   // Draw message in center (for countdown, e.g.)
@@ -62,17 +88,28 @@ var drawScreen = function(game, player) {
              25);
   }
   else {
-//    drawGrid(globalGame);
+    drawGrid(globalGame);
     drawObjects(globalGame, player);
+    // if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+    //     highlightCell(globalGame, player, '#d15619',
+    //     function(x) {return x.target_status == 'target';});
+    // }
   }
 };
+
+function getIntendedTargetName(objects) {
+  return _.filter(objects, function(x){
+    return x.target_status == 'target';
+  })[0]['subordinate'];
+}
 
 function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
   // visual feedback
   highlightCell(globalGame, 'black', function(x) {
-    return x.subID == clickedObjName;
+    return x.subordinate == clickedObjName;
   });
   // textual feedback
+  $('#turnIndicator').html(" ");
   if (scoreDiff==1) {
     setTimeout(function(){
       $('#feedback').html('Great job! Your partner correctly identified the target.');
@@ -87,65 +124,23 @@ function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
 function drawViewerFeedback(globalGame, scoreDiff, clickedObjName) {
   // viewer feedback
   highlightCell(globalGame, 'black', function(x) {
-    return x.subID == clickedObjName;
+    return x.subordinate == clickedObjName;
   });
   highlightCell(globalGame, 'green', function(x) {
-    return x.targetStatus == 'target';
+    return x.target_status == 'target';
   });
+  // textual feedback
+  $('#turnIndicator').html(" ");
   if (scoreDiff==1) {
-    setTimeout(function(){
-      $('#feedback').html('Great job! You correctly identified the target!');
-    }, globalGame.feedbackDelay);
+      setTimeout(function(){
+        $('#feedback').html('Great job! You correctly identified the target!');
+      }, globalGame.feedbackDelay);
   } else {
-    setTimeout(function(){
-      $('#feedback').html('Sorry... The target was the object outlined in ' + 'green'.fontcolor("#1aff1a").bold() + '.');
-    }, globalGame.feedbackDelay);
+      setTimeout(function(){
+        $('#feedback').html('Sorry... The target was the object outlined in ' + 'green'.fontcolor("#1aff1a").bold() + '.');
+      }, globalGame.feedbackDelay);
   }
 };
-
-var highlightCell = function(game, color, condition) {
-  var targetObjects = _.filter(game.objects, condition);
-  var customCoords = game.my_role == "speaker" ? 'speakerCoords' : 'listenerCoords';
-  for (var i = 0; i < targetObjects.length; i++){
-    var coords = targetObjects[i][customCoords];
-    var upperLeftX = game.getPixelFromCell(coords).upperLeftX;
-    var upperLeftY = game.getPixelFromCell(coords).upperLeftY;
-    game.ctx.globalCompositeOperation='source-over';
-    if (upperLeftX != null && upperLeftY != null) {
-      game.ctx.beginPath();
-      game.ctx.lineWidth="10";
-      game.ctx.strokeStyle=color;
-      game.ctx.rect(upperLeftX +5 , upperLeftY +5 ,game.cellDimensions.width-10,game.cellDimensions.height-10);
-      game.ctx.stroke();
-    }
-  }
-};
-
-function setupLabels(game) {
-  console.log('setting up labels');
-  _.forEach(globalGame.language.vocab, (word) => {
-    $('#labels').prepend('<p class="cell draggable drag-drop"> ' + word + '</p>');
-  });
-  var labels = document.querySelector('#message_panel');
-  interact('p', {context: labels})
-    .draggable({
-      restrict: {
-      	restriction: "parent",
-      	endOnly: true,
-      	elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-      },
-      onmove: dragMoveListener
-    });
-  interact('#chatarea')
-    .dropzone({
-      accept: '.draggable',
-      ondrop: function (event) {
-	console.log('dropped!');
-      }
-    });
-
-};
-
 // This is a helper function to write a text string onto the HTML5 canvas.
 // It automatically figures out how to break the text into lines that will fit
 // Input:
