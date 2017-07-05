@@ -122,10 +122,6 @@ var highlightCell = function(game, color, condition) {
 };
 
 function setupLabels(game) {
-  console.log('setting up labels');
-  _.forEach(globalGame.language.vocab, (word) => {
-    $('#labels').prepend('<p class="cell draggable drag-drop"> ' + word + '</p>');
-  });
   var labels = document.querySelector('#message_panel');
   interact('p', {context: labels})
     .draggable({
@@ -140,6 +136,7 @@ function setupLabels(game) {
     .dropzone({
       accept: '.draggable',
       ondrop: function (event) {
+	game.socket.send('chatMessage.' + event.relatedTarget);
 	console.log('dropped!');
       }
     });

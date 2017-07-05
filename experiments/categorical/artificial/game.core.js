@@ -147,7 +147,8 @@ game_core.prototype.advanceRound = function(delay) {
       });
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
-      localThis.trialInfo = {currStim: localThis.trialList[localThis.roundNum]};
+      localThis.trialInfo = {currStim: localThis.trialList[localThis.roundNum],
+			     labels: _.shuffle(localThis.language.vocab)};
       localThis.server_send_update();
     }
   }, delay);

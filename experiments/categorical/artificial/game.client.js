@@ -72,7 +72,7 @@ var client_onserverupdate_received = function(data){
   globalGame.players_threshold = data.pt;
   globalGame.player_count = data.pc;
   globalGame.roundNum = data.roundNum;
-  globalGame.language = data.language;
+  globalGame.labels = data.trialInfo.labels;
   if(!_.has(globalGame, 'data')) {
     globalGame.data = data.dataObj;
   }
@@ -85,10 +85,11 @@ var client_onserverupdate_received = function(data){
     globalGame.get_player(globalGame.my_id).message = "";
 
     // Insert labels & show dropzone
-    _.forEach(globalGame.language.vocab, (word) => {
-      $('#labels').prepend('<p class="cell draggable drag-drop"> ' + word + '</p>');
-    });
-    $('#chatarea').show();
+    var labels = $('#labels').empty().append(
+      _.map(globalGame.labels, (word) => {
+	return '<p class="cell draggable drag-drop">' + word + '</p>';
+      }))
+	.append('<div id="chatarea" class="dropzone"></div>');
   }
   
   if ((globalGame.roundNum > 2) &&
@@ -258,22 +259,9 @@ function mouseClickListener(evt) {
   var mouseX = Math.floor((evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width));
   var mouseY = Math.floor((evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height));
   if (globalGame.messageSent) { // if message was not sent, don't do anything
-    console.log('click');
     _.forEach(globalGame.objects, function(obj) {
-      console.log(obj);
       if (hitTest(obj, mouseX, mouseY)) {
-	console.log('hit!');
 	globalGame.messageSent = false;
-        //highlight the object that was clicked:
-        // var upperLeftXListener = obj.listenerCoords.gridPixelX;
-        // var upperLeftYListener = obj.listenerCoords.gridPixelY;
-        // if (upperLeftXListener != null && upperLeftYListener != null) {
-        //   globalGame.ctx.beginPath();
-        //   globalGame.ctx.lineWidth="10";
-        //   globalGame.ctx.strokeStyle="black";
-        //   globalGame.ctx.rect(upperLeftXListener+5, upperLeftYListener+5,290,290); 
-        //   globalGame.ctx.stroke();
-        // }
 	// Tell the server about it
         globalGame.socket.send(["clickedObj", obj.subID].join('.'));
       }
@@ -282,8 +270,6 @@ function mouseClickListener(evt) {
 };
 
 function hitTest(shape,mx,my) {
-  console.log(shape)
-  console.log(mx + ',' + my);
   var dx = mx - shape.trueX;
   var dy = my - shape.trueY;
   return (0 < dx) && (dx < shape.width) && (0 < dy) && (dy < shape.height);
