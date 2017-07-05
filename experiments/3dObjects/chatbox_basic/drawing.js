@@ -35,7 +35,7 @@ var drawGrid = function(game){
 var drawObjects = function(game, player) {
     _.map(globalGame.objects, function(obj) {
       // game.ctx.globalCompositeOperation='destination-over';  // draw under highlight
-      var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
+      var customCoords = globalGame.my_role == "speaker" ? 'speakerCoords' : 'listenerCoords';
       var trueX = obj[customCoords]['trueX'];
       var trueY = obj[customCoords]['trueY'];
       var gridX = obj[customCoords]['gridX'];
@@ -51,7 +51,7 @@ var drawObjects = function(game, player) {
 //// almost same as copy above except instances of game replaced by globalGame
 var highlightCell = function(game, color, condition) {
   var targetObjects = _.filter(globalGame.objects, condition);
-  var customCoords = globalGame.my_role == "sketcher" ? 'speakerCoords' : 'listenerCoords';
+  var customCoords = globalGame.my_role == "speaker" ? 'speakerCoords' : 'listenerCoords';
   for (var i = 0; i < targetObjects.length; i++){
     var gridX = targetObjects[i][customCoords]['gridX'];
     var gridY = targetObjects[i][customCoords]['gridY'];
@@ -59,7 +59,7 @@ var highlightCell = function(game, color, condition) {
     var upperLeftY = globalGame.getPixelFromCell(gridX, gridY).upperLeftY;
     globalGame.ctx.globalCompositeOperation='source-over';
     if (upperLeftX != null && upperLeftY != null) {
-      globalGame.ctx.beginPath();
+      globalGame.ctx.beginPath(); 
       globalGame.ctx.lineWidth="10";
       globalGame.ctx.strokeStyle=color;
       globalGame.ctx.rect(upperLeftX +5 , upperLeftY +5 ,globalGame.cellDimensions.width-10,globalGame.cellDimensions.height-10);
