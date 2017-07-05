@@ -55,7 +55,11 @@ var onMessage = function(client,message) {
       });
     });
     break;
-    
+
+  case 'drop' :
+    _.map(others, (p) => {p.player.instance.emit( 'drop');});
+    break;
+
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
       writeData(client, "message", message_parts);
