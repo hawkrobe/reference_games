@@ -136,8 +136,9 @@ function setupLabels(game) {
     .dropzone({
       accept: '.draggable',
       ondrop: function (event) {
-	game.socket.send('chatMessage.' + event.relatedTarget);
-	console.log('dropped!');
+	$('#chatarea').css('background-color', '#29e');
+	game.socket.send('drop.' + event.relatedTarget);
+	interact('p', {context: labels}).draggable(false);
       }
     });
 

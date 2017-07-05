@@ -90,14 +90,13 @@ var client_onserverupdate_received = function(data){
 	return '<p class="cell draggable drag-drop">' + word + '</p>';
       }))
 	.append('<div id="chatarea" class="dropzone"></div>');
+
+    // reset labels
+    if(globalGame.my_role === globalGame.playerRoleNames.role1) {
+      setupLabels(globalGame);
+    }
   }
-  
-  if ((globalGame.roundNum > 2) &&
-      (globalGame.my_role === globalGame.playerRoleNames.role1)) { //TRIAL OVER
-      $('#instructs').empty()
-      .append("Send messages to tell the listener stuff.");
-  }
-  
+    
   // Draw all this new stuff
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 };
@@ -182,6 +181,11 @@ var customSetup = function(game) {
   game.socket.on('dragging', function(event) {
     dragMoveListener(event);
   });
+
+  game.socket.on('drop', function(event) {
+    $('#chatarea').css('background-color', '#29e');
+    globalGame.messageSent = true;
+  });
 };
 
 var client_onjoingame = function(num_players, role) {
@@ -216,10 +220,6 @@ var client_onjoingame = function(num_players, role) {
               + 'Please do not refresh the page!');
   }
 
-  // set mouse-tracking event handler
-  if(role === globalGame.playerRoleNames.role1) {
-    setupLabels(globalGame);
-  }
   if(role === globalGame.playerRoleNames.role2) {
     globalGame.viewport.addEventListener("click", mouseClickListener, false);
   }
