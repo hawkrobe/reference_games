@@ -82,6 +82,8 @@ var client_onserverupdate_received = function(data){
           if (alreadyLoaded == 4) {
             setTimeout(function() {
               $('#occluder').hide();
+	      $('#chatbox').removeAttr("disabled");
+	      $('#chatbox').focus();
               globalGame.drawingAllowed = true;
             },750);
           }
@@ -187,8 +189,6 @@ var customSetup = function(game) {
 // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
-    $('#chatbox').removeAttr("disabled");
-    $('#chatbox').focus();
     $('#messages').empty();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
