@@ -128,6 +128,10 @@ ALOT...don't understand how to adjust that.*/
 	overflow-y: scroll;
 }
 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 13px Helvetica, Arial; }
+#messages li { padding: 5px 10px; }
+
 #chatarea form {
 	padding: 3px; 
 	height: 5vh;
