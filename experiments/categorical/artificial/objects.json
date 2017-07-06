@@ -20,24 +20,24 @@
     "subID" : 4,
     "url" : "images/redSquare2.jpg"
   },{
-    "super" : "triangle",
+    "super" : "circle",
     "basic" : "spotted",
     "subID" : 5,
-    "url" : "images/spottedTriangle1.jpg"
+    "url" : "images/spottedCircle1.jpg"
   },{
-    "super" : "triangle",
+    "super" : "circle",
     "basic" : "spotted",
     "subID" : 6,
-    "url" : "images/spottedTriangle2.jpg"
+    "url" : "images/spottedCircle2.jpg"
   },{
-    "super" : "triangle",
+    "super" : "circle",
     "basic" : "striped",
     "subID" : 7,
-    "url" : "images/stripedTriangle1.jpg"
+    "url" : "images/stripedCircle1.jpg"
   },{
-    "super" : "triangle",
+    "super" : "circle",
     "basic" : "striped",
     "subID" : 8,
-    "url" : "images/stripedTriangle2.jpg"
+    "url" : "images/stripedCircle2.jpg"
   }
 ]
