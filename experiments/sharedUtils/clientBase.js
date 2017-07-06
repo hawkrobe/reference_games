@@ -99,11 +99,14 @@ var sharedSetup = function(game) {
   
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
-    // Just in case we want to bar responses until after some message received
-    globalGame.messageSent = true;
+
     var otherRole = (globalGame.my_role === game.playerRoleNames.role1 ?
 		     game.playerRoleNames.role2 : game.playerRoleNames.role1);
     var source = data.user === globalGame.my_id ? "You" : otherRole;
+    // To bar responses until speaker has uttered at least one message
+    if(source !== "You"){
+      globalGame.messageSent = true;
+    }
     var col = source === "You" ? "#363636" : "#707070";
     $('.typing-msg').remove();
     $('#messages')
