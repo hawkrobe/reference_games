@@ -148,14 +148,25 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #main {
-	height: auto;
-	width: auto;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: auto ;
-	left:0; right:0; top:10%; bottom: 0;
-	position: absolute;
+    height: auto;
+    width: auto;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto ;
+    left:0; right:0; top:10%; bottom: 0;
+    position: absolute;
+}
+
+#exit_survey {
+    height: auto;
+    width: auto;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto ;
+    left:0; right:0; top:10%; bottom: 0;
+    position: absolute;
 }
 
 /*height and width originally 80vh*/
