@@ -82,6 +82,8 @@ var client_onserverupdate_received = function(data){
           if (alreadyLoaded == 4) {
             setTimeout(function() {
               $('#occluder').hide();
+	      $('#chatbox').removeAttr("disabled");
+	      $('#chatbox').focus();
               globalGame.drawingAllowed = true;
             },750);
           }
@@ -187,8 +189,7 @@ var customSetup = function(game) {
 // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
-    $('#chatbox').removeAttr("disabled");
-    $('#chatbox').focus();
+    $('#chatbox').val("");
     $('#messages').empty();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
@@ -200,7 +201,7 @@ var customSetup = function(game) {
     }
 
     if (globalGame.my_role === globalGame.playerRoleNames.role2) {
-      $("#loading").fadeIn('fast');
+      //$("#loading").fadeIn('fast');
     }
 
     // clear feedback blurb
@@ -287,6 +288,7 @@ function responseListener(evt) {
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
   // only allow to respond after message has been sent
   console.log(globalGame.messageSent);
+
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
