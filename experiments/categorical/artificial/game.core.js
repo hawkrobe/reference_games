@@ -26,9 +26,6 @@ if( typeof _ === 'undefined' ) {
   else throw 'mymodule requires underscore, see http://underscorejs.org';
 }
 
-var WORLD_HEIGHT = 600;
-var WORLD_WIDTH = 600;
-
 var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
@@ -43,11 +40,11 @@ var game_core = function(options){
   //Dimensions of world in pixels and numberof cells to be divided into;
   this.numHorizontalCells = 2;
   this.numVerticalCells = 2;
-  this.cellDimensions = {height : 300, width : 300}; // in pixels
+  this.cellDimensions = {height : 600, width : 600}; // in pixels
   this.cellPadding = 0;
   this.world = {
-    height: WORLD_HEIGHT,
-    width: WORLD_WIDTH
+    height: 600 * 2,
+    width: 600 * 2
   };
   // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
