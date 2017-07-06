@@ -19,7 +19,7 @@ var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
-    _ = require('underscore');
+    _ = require('lodash');
     utils  = require(__base + 'sharedUtils/sharedUtils.js');
     assert = require('assert');
   }
@@ -187,25 +187,27 @@ game_core.prototype.makeTrialList = function (condition) {
 };
 
 game_core.prototype.sampleContextSequence = function(condition) {
-  var subTrials = (condition === 'uniform' ? this.numRounds * 1/3 :
-		   condition === 'over' ? this.numRounds * 2/3 :
-		   this.numRounds * 1/6);
-  var superTrials = (condition === 'uniform' ? this.numRounds * 1/3 :
-		     condition === 'under' ? this.numRounds * 2/3 :
-		     this.numRounds * 1/6);
-  var basicTrials = this.numRounds - superTrials - subTrials;
-  return (Array(subTrials).fill('sub')
-	  .concat(Array(basicTrials).fill('basic'))
-	  .concat(Array(superTrials).fill('super')));
+  var designMatrix = _.mapValues({
+    'uniform' : {'sub' : 1/3, 'super' : 1/3, 'basic' : 1/3},
+    'over'    : {'sub' : 2/3, 'super' : 1/6, 'basic' : 1/6},
+    'under'   : {'sub' : 1/6, 'super' : 2/3, 'basic' : 1/6},
+    'basic'   : {'sub' : 1/6, 'super' : 1/6, 'basic' : 2/3}
+  }, (obj, key) => {
+    return _.mapValues(obj, (innerVal, key) => {return innerVal * this.numRounds;});
+  });
+  var seq = (Array(designMatrix[condition]['sub']).fill('sub')
+	     .concat(Array(designMatrix[condition]['basic']).fill('basic'))
+	     .concat(Array(designMatrix[condition]['super']).fill('super')));
+  return _.shuffle(seq);
 };
 
 // For basic/sub conditions, want to make sure there's at least one distractor at the
 // same super/basic level, respectively (otherwise it's a different condition...)
 var checkDistractors = function(distractors, target, contextType) {
   if(contextType === 'basic') {
-    return !_.isEmpty(_.filter(distractors, (v) => {return v.super === target.super;}));
+    return !_.isEmpty(_.filter(distractors, ['super', target.super]));
   } else if(contextType === 'sub') {
-    return !_.isEmpty(_.filter(distractors, (v) => {return v.basic === target.basic;}));
+    return !_.isEmpty(_.filter(distractors, ['basic', target.basic]));
   } else {
     return true;
   }
@@ -216,7 +218,7 @@ game_core.prototype.sampleDistractors = function(target, contextType) {
 	       contextType === 'basic' ? (v) => {return v.basic != target.basic;} :
 	       contextType === 'sub' ?   (v) => {return v.subID != target.subID;} :
 	       console.log('ERROR: contextType ' + contextType + ' not recognized'));
-  var distractors = _.sample(_.filter(this.objects, fCond), 3);
+  var distractors = _.sampleSize(_.filter(this.objects, fCond), 3);
   if(checkDistractors(distractors, target, contextType))
     return distractors;
   else
