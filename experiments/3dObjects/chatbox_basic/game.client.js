@@ -248,7 +248,8 @@ var client_onjoingame = function(num_players, role) {
     $('#instructs').append("Send messages to tell the listener which object " + 
          "is the target.");
   } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Click on the target object the speaker " +
+    $('#instructs').append("The speaker will tell you about one of these objects. " + 
+          "Click on the target object the speaker " +
          "is telling you about.");
   }
 
