@@ -159,7 +159,7 @@ var startGame = function(game, player) {
   var baseCols = ["gameid","time","trialNum"].join('\t');
   var objectLocHeader = utils.getObjectLocHeader();
   var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", 
-			  "outcome", "pose", "condition", objectLocHeader, "png\n"].join('\t');
+			  "outcome", "pose", "condition", objectLocHeader, "\n"].join('\t');
   var messageHeader = [baseCols, "sender","contents\n"].join('\t');
  utils.establishStream(game, "message", dataFileName, messageHeader);
   utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);

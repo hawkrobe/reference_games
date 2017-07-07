@@ -75,7 +75,7 @@ var establishStream = function(game, streamName, outputFileName, header) {
 
 var getObjectLocHeader = function() {
   return _.map(_.range(1,5), function(i) {
-    return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], function(v) {
+    return _.map(['Name', 'SenderLoc', 'ReceiverLoc'], function(v) {
       return 'object' + i + v;
     }).join('\t');
   }).join('\t');
@@ -90,7 +90,7 @@ const flatten = arr => arr.reduce(
 
 var getObjectLocHeaderArray = function() {
   arr =  _.map(_.range(1,5), function(i) {
-    return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], function(v) {
+    return _.map(['Name', 'SenderLoc', 'ReceiverLoc'], function(v) {
       return 'object' + i + v;
     });
   });
