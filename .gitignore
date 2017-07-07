@@ -3,6 +3,7 @@
 *RData
 *Rhistory
 cogsci_cache
+data/
 data/colorReference/clickedObj/node_modules/
 data/sketchpad/message/*.csv
 experiments/node_modules/
