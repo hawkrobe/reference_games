@@ -18,15 +18,24 @@ var ondisconnect = function(data) {
   // Redirect to exit survey
   console.log("server booted");
   this.viewport.style.display="none";
+  var email = globalGame.email ? globalGame.email : '';
+  var failMsg = [
+    '<h3>Oops! It looks like your partner lost their connection!</h3>',
+    '<p> Completing this survey will submit your HIT so you will still receive full ',
+    'compensation.</p> <p>If you experience any problems, please email us (',
+    email, ')</p>'
+  ].join('');
+  var successMsg = [
+    "<h3>Thanks for participating in our experiment!</h3>",
+    "<p>Before you submit your HIT, we'd like to ask you a few questions.</p>"
+  ].join('');
+
   if(globalGame.roundNum + 2 > globalGame.numRounds) { 
-    $('#exit_survey').prepend('<h3>Thanks for participating in our experiment!</h3>' +
-	"<p>Before you submit your HIT, we'd like to ask you a few questions.</p>");    
+    $('#exit_survey').prepend(successMsg);    
+  } else {
+    $('#exit_survey').prepend(failMsg); 
   }
-  else {
-    $('#exit_survey').prepend('<h3>Oops! It looks like your partner lost their connection!</h3>' +
-      '<p> Completing this survey will submit your HIT so you will still receive ' +
-      'full compensation.</p> <p>If you experience any problems, please email us (sketchloop@gmail.com).</p>'); // this is from sketchpad experiment (jefan 4/23/17)
-  }
+
   $('#exit_survey').show();
   $('#main').hide();
   $('#header').hide();
@@ -40,15 +49,11 @@ var ondisconnect = function(data) {
   $('#loading').hide(); // this is from sketchpad experiment (jefan 4/23/17)
 };
 
+// The server responded that we are now in a game
 var onconnect = function(data) {
-  //The server responded that we are now in a game. Remember who we are
   this.my_id = data.id;
   this.players[0].id = this.my_id;
   this.urlParams = getURLParams();
-  // console.log(this.urlParams);
-  // console.log(this.my_id,this.players[0].id);
-  console.log(this);
-  // console.log(this.get_player(this.my_id));
   drawScreen(this, this.get_player(this.my_id));
 };
 
