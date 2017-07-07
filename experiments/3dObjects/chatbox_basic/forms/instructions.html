@@ -38,7 +38,7 @@
 
       <div class="well" style="width:800px; margin: 0 auto">
 
-<h2><center>Guess My Sketch!</center>  </h2>
+<h2><center>Guess My Object!</center>  </h2>
 
 	<p>
 
@@ -56,11 +56,10 @@
 
 <p>
 
-    One of you will be assigned the <b> Sketcher </b> role and the
-    other will be the <b> Viewer </b>. On each round, one of the four
+    One of you will be assigned the <b> Speaker </b> role and the
+    other will be the <b> Listener</b>. On each round, one of the four
     objects is the <b>target</b>, which is outlined in orange. Only the
-    Sketcher can see which object is
-    the target.
+    Speaker can see which object is the target.
 
 
 
@@ -68,12 +67,10 @@
 
 <p>
 
-    The goal of the Sketcher is to make a sketch of the target so
+    The goal of the Speaker is to describe the target using the chatbox so
     that the Viewer can figure out which object it is. You'll both
     get <b> a bonus of $0.03 for each correct response</b>, so pay
-    attention! If you are the Sketcher, please do your best to make a sketch of
-    each target from the perspective that is shown in the picture. Please
-    do not draw text labels.
+    attention! 
 
 </p>
 
@@ -85,16 +82,17 @@
 
 </p> -->
 <p>
-    The goal is for the Viewer to identify the target
-    based on what the Sketcher has drawn. If you are the Viewer,
-    you will first need to wait until the Sketcher has finished
-    their sketch before making your selection.
+    The goal of the Listener is to identify the target
+    based on what the Speaker has told you. You may also use the chatbox
+    to ask for clarification if needed. If you are the Listener,
+    you will first need to wait until the Speaker has sent at least
+    one message before being able to select an object.
 </p>
 
-    <p> Once the Viewer clicks on
+    <p> Once the Listener clicks on
     the object they believe is the target, both players will be given
-    feedback. So, the Sketcher will see what the Viewer clicked, and the
-    Viewer will see the true target. Then you will both automatically advance to the next round of objects. There are a
+    feedback. So, the Speaker will see what the Listener clicked, and the
+    Listener will see the true target. Then you will both automatically advance to the next round of objects. There are a
     total of <b>32 rounds</b>. After the final round you will fill out a quick
     15 second survey and be on your way.
 </p>
@@ -111,8 +109,7 @@
 
 <p>
   Second, please be respectful of the worker you're playing with: do
-  not send inappropriate material to your partner (e.g.,
-  words), and try to be as responsive as possible.
+  not send inappropriate material to your partner, and try to be as responsive as possible.
 </p>
 
 <p>
@@ -140,7 +137,7 @@
      <div class="well" style="width:800px; margin: 0 auto">
 
   </br>
-  The Sketcher can click on an object to end the round.
+  The Speaker can click on an object to end the round.
     </br>
     <input type="radio" name="dgoal" value="yes"> False
     </br>
@@ -149,7 +146,7 @@
 
 
   </br>
-  The Viewer wants to click on the object that the Sketcher has drawn.
+  The Listener wants to click on the object that the Speaker has described.
       </br>
       <input type="radio" name="mgoal" value="no"> False
       </br>
@@ -166,11 +163,11 @@
       </br>
 
   </br>
-  Only the Sketcher can make drawings.
+  Only the Speaker can use the chatbox.
       </br>
-      <input type="radio" name="message" value="no"> False
+      <input type="radio" name="message" value="no"> True
       </br>
-      <input type="radio" name="message" value="yes"> True
+      <input type="radio" name="message" value="yes"> False
       </br>
 
   </br>
@@ -182,7 +179,7 @@
       </br>
 
   </br>
-  The locations of the four objects are the same for the Sketcher and the Viewer.
+  The locations of the four objects are the same for the Speaker and the Listener.
       </br>
       <input type="radio" name="location" value="no"> True
       </br>
