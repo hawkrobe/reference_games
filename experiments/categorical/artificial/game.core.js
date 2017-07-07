@@ -306,6 +306,14 @@ ArtificialLanguage.prototype.sampleVocab = function() {
       return _.sample(chars);
     }).join('');
   });
-  // Resample in (highly unlikely) case of duplicates
-  return _.uniq(vocab).length === vocab.length ? vocab : this.sampleVocab;
+  return this.verifyVocab(vocab) ? vocab : this.sampleVocab();
 }; 
+
+// Ensure no words have same morpheme in same position
+ArtificialLanguage.prototype.verifyVocab = function(vocab) {
+  var morphemes = _.map(vocab, w => _.map(_.chunk(w.split(''), 2), m => m.join('')));
+  var uniqueMorphemes = _.every(_.zip.apply(_, morphemes), morpheme => {
+    return _.uniq(morpheme).length === vocab.length;
+  });
+  return uniqueMorphemes;
+};
