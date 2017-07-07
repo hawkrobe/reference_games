@@ -18,7 +18,7 @@ var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
-    _ = require('underscore');
+    _ = require('lodash');
     utils  = require(__base + 'sharedUtils/sharedUtils.js');
   }
   else throw 'mymodule requires underscore, see http://underscorejs.org';
@@ -223,8 +223,12 @@ game_core.prototype.getRandomizedConditions = function() {
   }
 
   // now shuffle the rows of condition & object matrices using same set of indices
-  var _zipped;
-  _zipped = _.shuffle(_.zip(_object,_category,_pose,_condition,_target));
+  var _zipped = _
+	.chain(_.zip(_object,_category,_pose,_condition,_target))
+	.chunk(8)
+	.map(epoch => _.shuffle(epoch))
+	.flatten()
+	.value();
   
   for (j=0;j<_zipped.length;j++) {
     object.push(_zipped[j][0]);
