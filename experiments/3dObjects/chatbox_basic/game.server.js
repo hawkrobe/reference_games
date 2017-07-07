@@ -104,13 +104,14 @@ var writeData = function(client, type, message_parts) {
     var condition = message_parts[3];
     var objectLocs = getObjectLocs(gc.trialInfo.currStim);
     line = (line.concat([intendedName, clickedName, correct, pose, condition])
-	    .concat(objectLocs)).join('\t');
+	    .concat(objectLocs)).join('\t') + '\n';
      console.log(line)
     break;
  
   case "message" :
     var msg = message_parts[1].replace(/~~~/g,'.');
-    var line = (id + '\t' + Date.now() + '\t' + roundNum + '\t' + client.role + '\t"' + msg + '"\n');
+    console.log(client.role);
+    var line = (id + '\t' + Date.now() + '\t' + roundNum + '\t' + client.role + '\t' + msg + '\n');
     console.log("message:" + line);
     break;
   }
@@ -125,7 +126,7 @@ var startGame = function(game, player) {
   var baseCols = ["gameid","time","trialNum"].join('\t');
   var objectLocHeader = utils.getObjectLocHeader();
   var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", 
-			  "outcome", "pose", "condition", objectLocHeader, "png\n"].join('\t');
+			  "outcome", "pose", "condition", objectLocHeader, "\n"].join('\t');
   var messageHeader = [baseCols, "sender","contents\n"].join('\t');
  utils.establishStream(game, "message", dataFileName, messageHeader);
   utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
