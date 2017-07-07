@@ -97,8 +97,13 @@ var valid_id = function(id) {
   return (id.length <= 15 && id.length >= 12) || id.length == 41;
 };
 
-var initialize = function(query, client, id) {                        
+var initialize = function(query, client, id) {
+  // Assign properties to client
   client.userid = id;
+  client.workerid = query.workerId ? query.workerId : '';
+  client.assignmentid = query.assignmentId ? query.assignmentId : '';
+
+  // Make contact with client
   client.emit('onconnected', { id: client.userid } );
   if(gameServer.setCustomEvents) {gameServer.setCustomEvents(client);};
   
