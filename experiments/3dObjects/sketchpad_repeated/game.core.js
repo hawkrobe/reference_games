@@ -27,6 +27,7 @@ if( typeof _ === 'undefined' ) {
 var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
+  this.email = 'sketchloop@gmail.com';
   
   // How many players in the game?
   this.players_threshold = 2;

@@ -147,28 +147,6 @@ ALOT...don't understand how to adjust that.*/
   	transform: translateY(1vh);
 }
 
-#main {
-    height: auto;
-    width: auto;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: auto ;
-    left:0; right:0; top:10%; bottom: 0;
-    position: absolute;
-}
-
-#exit_survey {
-    height: auto;
-    width: auto;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: auto ;
-    left:0; right:0; top:10%; bottom: 0;
-    position: absolute;
-}
-
 /*height and width originally 80vh*/
 #viewport {
     float: middle;
@@ -280,15 +258,4 @@ ALOT...don't understand how to adjust that.*/
   to {
     width: 1.25em;
   }
-}
-
-::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 7px;
-}
-
-::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(255,255,255,.5);
-    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
