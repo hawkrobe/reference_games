@@ -36,7 +36,6 @@ var onMessage = function(client,message) {
     
   case 'clickedObj' :
     writeData(client, "clickedObj", message_parts);
-    console.log('wrote data' + message_parts)  
     others[0].player.instance.send("s.feedback." + message_parts[1]); 
     target.instance.send("s.feedback." + message_parts[1]);
     
@@ -86,36 +85,71 @@ function getObjectLocs(objects) {
   }));
 }
 
+var getObjectLocHeaderArray = function() {
+  var arr =  _.map(_.range(1,5), function(i) {
+    return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], function(v) {
+      return 'object' + i + v;
+    });
+  });
+  return _.flatten(arr);
+};
+
 var writeData = function(client, type, message_parts) {
   var gc = client.game;
   var trialNum = gc.state.roundNum + 1; 
-  var roundNum = gc.state.roundNum + 1;
   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = [gc.id, Date.now(), trialNum];
-  var id = gc.id;
-
-
+  var line = {expid: gc.expid, gameid: gc.id, time: Date.now(), trialNum: trialNum,
+	      workerId: client.workerid, assignmentId: client.assignmentid};
+  
+  console.log(message_parts);
   switch(type) {
   case "clickedObj" :
-    // parse the message
     var clickedName = message_parts[1];
-    var correct = intendedName === clickedName ? 1 : 0;
-    var pose = parseInt(message_parts[2]);
-    var condition = message_parts[3];
-    var objectLocs = getObjectLocs(gc.trialInfo.currStim);
-    line = (line.concat([intendedName, clickedName, correct, pose, condition])
-	    .concat(objectLocs)).join('\t');
-     console.log(line)
+    _.extend(line, {
+      intendedName,
+      clickedName,
+      dataType: 'clickedObj',
+      correct: intendedName == clickedName ? 1 : 0,
+      pose : parseInt(message_parts[2]),
+      condition : message_parts[3]
+    }, _.zipObject(getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
     break;
- 
+
   case "message" :
-    var msg = message_parts[1].replace(/~~~/g,'.');
-    var line = (id + '\t' + Date.now() + '\t' + roundNum + '\t' + client.role + '\t"' + msg + '"\n');
-    console.log("message:" + line);
+    _.extend(line, {
+      intendedName,
+      dataType: 'message',
+      role: client.role,
+      text: message_parts[1].replace(/~~~/g,'.')
+    });
     break;
   }
-  gc.streams[type].write(line, function (err) {if(err) throw err;});
+  writeDataToCSV(gc, type, _.values(line));
+  writeDataToMongo(line); 
+};
 
+var writeDataToCSV = function(gc, type, line) {
+  gc.streams[type].write(line.join('\t') + "\n",
+			 function (err) {if(err) throw err;});
+};
+
+var writeDataToMongo = function(line) {
+  var postData = _.extend({
+    dbname: '3dObjects',
+    colname: 'chatbox_basic'
+  }, line);
+  sendPostRequest(
+    'http://localhost:4000/db/insert',
+    { json: postData },
+    (error, res, body) => {
+      if (!error && res.statusCode === 200) {
+	      // console.log(`sent data to store: ${JSON.stringify(postData)}`);
+        console.log(`sent data to store`);
+      } else {
+	      console.log(`error sending data to store: ${error} ${body}`);
+      }
+    }
+  );
 };
 
 var startGame = function(game, player) {
