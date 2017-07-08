@@ -25,10 +25,13 @@ if( typeof _ === 'undefined' ) {
 }
 
 var game_core = function(options){
-  // Store a flag if we are the server instance
   this.server = options.server ;
   this.email = 'sketchloop@gmail.com';
   this.expid = 'pilot0';
+
+  // save data to the following locations (allowed: 'csv', 'mongo')
+  this.dataStore = ['csv'];
+  console.log(this.dataStore);
   
   // How many players in the game?
   this.players_threshold = 2;
@@ -71,7 +74,6 @@ var game_core = function(options){
   this.trialInfo = {};
   
   if(this.server) {
-    console.log('sent server update bc satisfied this.server')
     // If we're initializing the server game copy, pre-create the list of trials
     // we'll use, make a player object, and tell the player who they are
     this.id = options.id;
@@ -117,8 +119,7 @@ var game_player = function( game_instance, player_instance) {
 if('undefined' != typeof global) {  
   var stimList = _.map(require('./stimList_subord_2', _.clone)); 
   // console.log(stimList);
-  module.exports = global.game_core = game_core;
-  module.exports = global.game_player = game_player;
+  module.exports = {game_core, game_player};
 }
 
 // HELPER FUNCTIONS
