@@ -35,7 +35,7 @@ var onMessage = function(client,message) {
   switch(message_type) {
     
   case 'clickedObj' :
-    writeData(client, "clickedObj", message_parts);
+//    writeData(client, "clickedObj", message_parts);
     others[0].player.instance.send("s.feedback." + message_parts[1]); 
     target.instance.send("s.feedback." + message_parts[1]);
     
@@ -182,7 +182,7 @@ var setCustomEvents = function(socket) {
     var shiftKeyUsed = data.shiftKeyUsed;
     var workerId = data.workerId;
     var assignmentId = data.assignmentId;
-    writeData(socket, 'stroke', [data.currStrokeNum, svgData, shiftKeyUsed, workerId, assignmentId]);
+//    writeData(socket, 'stroke', [data.currStrokeNum, svgData, shiftKeyUsed, workerId, assignmentId]);
 
     // send json format to partner
     _.map(others, function(p) {

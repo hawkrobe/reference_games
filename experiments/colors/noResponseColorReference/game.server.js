@@ -33,7 +33,7 @@ var onMessage = function(client,message) {
   switch(message_type) {
     
   case 'clickedObj' :
-    writeData(client, "clickedObj", message_parts);
+//    writeData(client, "clickedObj", message_parts);
     others[0].player.instance.send("s.feedback." + message_parts[2]);
     target.instance.send("s.feedback." + message_parts[2]);
     setTimeout(function() {
@@ -54,7 +54,7 @@ var onMessage = function(client,message) {
   
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
-      writeData(client, "message", message_parts);
+//      writeData(client, "message", message_parts);
       // Update others
       var msg = message_parts[1].replace(/~~~/g,'.');
       _.map(all, function(p){

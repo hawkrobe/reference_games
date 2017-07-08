@@ -33,8 +33,6 @@ var onMessage = function(client,message) {
   switch(message_type) {
     
   case 'clickedObj' :
-    // Write event to file
-    writeData(client, "clickedObj", message_parts);
     // Update score
     gc.data.totalScore += message_parts[1] === "target" ? 1 : 0;
     // Give feedback to players
@@ -42,7 +40,7 @@ var onMessage = function(client,message) {
     others[0].player.instance.send(feedbackMsg);
     target.instance.send(feedbackMsg);
     // Continue
-    gc.advanceRound(3000);
+    gc.newRound(3000);
     break; 
   
   case 'playerTyping' :
@@ -53,7 +51,6 @@ var onMessage = function(client,message) {
   
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
-      writeData(client, "message", message_parts);
       // Update others
       var msg = message_parts[1].replace(/~~~/g,'.');
       _.map(all, function(p){
@@ -114,7 +111,7 @@ var startGame = function(game, player) {
 			"alt1P7,alt1P8,alt1LocS,alt1LocL," +			
 			"alt2Status,alt2P1,alt2P2,alt2P3,alt2P4,alt2P5,alt2P6," +
 			"alt2P7,alt2P8,alt2LocS,alt2LocL,outcome\n");
-  game.advanceRound(0);
+  game.newRound(0);
 };
 
 module.exports = {

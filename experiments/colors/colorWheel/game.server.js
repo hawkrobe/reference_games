@@ -33,7 +33,7 @@ var onMessage = function(client,message) {
     var selectedColor = message_parts.slice(1,4);
     var targetColor = gc.trialInfo.currStim;
     var score = gc.calcScore(selectedColor, targetColor);
-    writeData(client, "outcome", message_parts.concat(score));
+//    writeData(client, "outcome", message_parts.concat(score));
     gc.previousRoundScore = score;
     gc.giveFeedback(selectedColor, targetColor);
     setTimeout(function(){
@@ -51,7 +51,7 @@ var onMessage = function(client,message) {
   
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
-      writeData(client, "message", message_parts);
+//      writeData(client, "message", message_parts);
     }
     // Update others
     var msg = message_parts[1].replace(/~~~/g,'.');
