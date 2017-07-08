@@ -34,10 +34,11 @@ class ReferenceGameServer {
   }
 
   onMessage (client, message) {
-    console.log(message);
     var message_parts = message.split('.');
     this.customServer.onMessage(client, message);
-    this.writeData(client, message_parts[0], message_parts);
+    if(!_.isEmpty(client.game.dataStore)) {
+      this.writeData(client, message_parts[0], message_parts);
+    }
   }
 
   findGame (player) {
