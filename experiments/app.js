@@ -15,7 +15,8 @@ var
     https         = require('https'),
     fs            = require('fs'),
     app           = require('express')(),
-    _             = require('underscore');
+    _             = require('underscore'),
+    Server        = require('./sharedUtils/serverBase.js');
 
 var gameport;
 
@@ -28,10 +29,11 @@ if(argv.gameport) {
 }
 
 if(argv.expname) {
-  var exp = argv.expname;
-  var gameServer = require('./sharedUtils/serverBase.js')(exp);  
+  var exp = argv.expname.replace(/\/$/, "");
+  var gameServer = new Server(exp);  
 } else {
-  throw "no experiment supplied; use --expname flag\nnode app.js --expname spatial";
+  console.log("no experiment supplied; use --expname flag");
+  console.log("\t node app.js --expname spatial");
 }
 
 try {
