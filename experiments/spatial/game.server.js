@@ -34,7 +34,7 @@ var onMessage = function(client,message) {
 
   case 'clickedObj' :
     // Write event to file
-    writeData(client, "clickedObj", message_parts);
+//    writeData(client, "clickedObj", message_parts);
 
     //calculate the penalty, which affects the amount the score goes up
     var distance = (function distance(x1, y1, x2, y2) {
@@ -54,7 +54,7 @@ var onMessage = function(client,message) {
     target.instance.send(feedbackMsg);
 
     // Continue
-    gc.advanceRound(3000);
+    gc.newRound(3000);
     break;
 
   case 'playerTyping' :
@@ -65,7 +65,7 @@ var onMessage = function(client,message) {
 
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
-      writeData(client, "message", message_parts);
+//      writeData(client, "message", message_parts);
       // Update others
       var msg = message_parts[1].replace(/~~~/g,'.');
       _.map(all, function(p){
@@ -124,7 +124,7 @@ var startGame = function(game, player) {
       "lilyX,lilyY," +
       "mouseX, mouseY" +
       "\n");
-  game.advanceRound(0);
+  game.newRound(0);
 };
 
 module.exports = {

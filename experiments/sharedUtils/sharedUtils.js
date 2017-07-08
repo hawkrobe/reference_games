@@ -1,7 +1,9 @@
 var _ = require('underscore');
 var fs = require('fs');
+var path = require('path');
 var converter = require("color-convert");
 var DeltaE = require('../node_modules/delta-e');
+var mkdirp = require('mkdirp');
 var sendPostRequest = require('request').post;
 
 var serveFile = function(req, res) {
@@ -24,7 +26,6 @@ var handleInvalidID = function(req, res) {
 };
 
 var checkPreviousParticipant = function(workerId, callback) {
-
   var p = {'workerId': workerId};
   var postData = {
     dbname: '3dObjects',
@@ -45,6 +46,35 @@ var checkPreviousParticipant = function(workerId, callback) {
   );
 };
 
+var writeDataToCSV = function(gc, dataPoint) {
+  var eventType = dataPoint.eventType;
+  console.log(gc.streams);
+  if(!_.has(gc.streams, eventType)) {
+    console.log('establishing stream');
+    establishStream(gc, dataPoint);    
+  }
+  var line = _.values(dataPoint).join('\t') + "\n";
+  gc.streams[eventType].write(line, err => {if(err) throw err;});
+};
+
+var writeDataToMongo = function(line) {
+  var postData = _.extend({
+    dbname: '3dObjects',
+    colname: 'chatbox_basic'
+  }, line);
+  sendPostRequest(
+    'http://localhost:4000/db/insert',
+    { json: postData },
+    (error, res, body) => {
+      if (!error && res.statusCode === 200) {
+        console.log(`sent data to store`);
+      } else {
+	console.log(`error sending data to store: ${error} ${body}`);
+      }
+    }
+  );
+};
+
 var UUID = function() {
   var baseName = (Math.floor(Math.random() * 10) + '' +
         Math.floor(Math.random() * 10) + '' +
@@ -60,41 +90,36 @@ var UUID = function() {
 
 var getLongFormTime = function() {
   var d = new Date();
-  var fullTime = (d.getFullYear() + '-' + d.getMonth() + 1 + '-' +
-        d.getDate() + '-' + d.getHours() + '-' + d.getMinutes() + '-' +
-        d.getSeconds() + '-' + d.getMilliseconds());
-  return fullTime;
+  var day = [d.getFullYear(), (d.getMonth() + 1), d.getDate()].join('-');
+  var time = [d.getHours() + 'h', d.getMinutes() + 'm', d.getSeconds() + 's'].join('-');
+  return day + '-' + time;
 };
 
-var establishStream = function(game, streamName, outputFileName, header) {
-  var streamLoc = "../data/" + game.expName + "/" + streamName + "/" + outputFileName;
-  fs.writeFile(streamLoc, header, function (err) {if(err) throw err;});
-  var stream = fs.createWriteStream(streamLoc, {'flags' : 'a'});
-  game.streams[streamName] = stream;
-};
+var establishStream = function(game, dataPoint) {
+  var startTime = getLongFormTime();
+  var dirPath = ['..', 'data', game.expName, dataPoint.eventType].join('/');
+  var fileName = startTime + "-" + game.id + ".csv";
+  var filePath = [dirPath, fileName].join('/');
 
-var getObjectLocHeader = function() {
-  return _.map(_.range(1,5), function(i) {
-    return _.map(['Name', 'SenderLoc', 'ReceiverLoc'], function(v) {
-      return 'object' + i + v;
-    }).join('\t');
-  }).join('\t');
-};
+  // Create path if it doesn't already exist
+  mkdirp(dirPath, err => {if (err) console.error(err);});
 
-const flatten = arr => arr.reduce(
-  (acc, val) => acc.concat(
-    Array.isArray(val) ? flatten(val) : val
-  ),
-  []
-);
+  // Write header
+  var header = _.keys(dataPoint).join('\t') + '\n';
+  fs.writeFile(filePath, header, err => {if(err) console.error(err);});
+
+  // Create stream
+  var stream = fs.createWriteStream(filePath, {'flags' : 'a'});
+  game.streams[dataPoint.eventType] = stream;
+};
 
 var getObjectLocHeaderArray = function() {
-  arr =  _.map(_.range(1,5), function(i) {
+  var arr =  _.map(_.range(1,5), function(i) {
     return _.map(['Name', 'SenderLoc', 'ReceiverLoc'], function(v) {
       return 'object' + i + v;
     });
   });
-  return flatten(arr);
+  return _.flatten(arr);
 };
 
 var hsl2lab = function(hsl) {
@@ -235,7 +260,8 @@ module.exports = {
   handleInvalidID,
   getLongFormTime,
   establishStream,
-  getObjectLocHeader,
+  writeDataToCSV,
+  writeDataToMongo,
   hsl2lab,
   fillArray,
   randomColor,
