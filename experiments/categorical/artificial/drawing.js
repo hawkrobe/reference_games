@@ -137,11 +137,12 @@ function setupLabels(game) {
       accept: '.draggable',
       ondrop: function (event) {
 	$('#chatarea').css('background-color', '#29e');
-	game.socket.send('drop.' + event.relatedTarget);
+	var timeElapsed = new Date() - game.roundStartTime;
+	game.socket.send('drop.' + event.relatedTarget.innerHTML + '.' + timeElapsed);
 	interact('p', {context: labels}).draggable(false);
       }
     });
-
+  
 };
 
 // This is a helper function to write a text string onto the HTML5 canvas.
