@@ -72,7 +72,9 @@ var client_onserverupdate_received = function(data){
   globalGame.players_threshold = data.pt;
   globalGame.player_count = data.pc;
   globalGame.roundNum = data.roundNum;
+  globalGame.roundStartTime = new Date();
   globalGame.labels = data.trialInfo.labels;
+  
   if(!_.has(globalGame, 'data')) {
     globalGame.data = data.dataObj;
   }
@@ -230,11 +232,9 @@ var client_onjoingame = function(num_players, role) {
  */
 
 function dragMoveListener (event) {
-  console.log(event);
   // Tell the server if this is a real drag event (as opposed to an update from partner)
   if(_.has(event, 'name')) {
     event.target = $(`p:contains("${event.name}")`)[0];
-    console.log(event.target);
   } else {
     globalGame.socket.send(['dragging', event.target.innerHTML,
 			    event.dx, event.dy].join('.'));

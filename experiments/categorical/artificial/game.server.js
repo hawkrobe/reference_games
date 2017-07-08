@@ -34,7 +34,6 @@ var onMessage = function(client,message) {
 
   case 'clickedObj' :
     // Write event to file
-//    writeData(client, "clickedObj", message_parts);
     others[0].player.instance.send('s.feedback.' + message_parts[1]);
     target.instance.send('s.feedback.' + message_parts[1]);
 
@@ -60,73 +59,82 @@ var onMessage = function(client,message) {
     _.map(others, (p) => {p.player.instance.emit( 'drop');});
     break;
 
-  case 'chatMessage' :
-    if(client.game.player_count == 2 && !gc.paused) {
-//      writeData(client, "message", message_parts);
-      // Update others
-      var msg = message_parts[1].replace(/~~~/g,'.');
-      _.map(all, function(p){
-	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});
-      });
-    }
-    break;
-
   case 'h' : // Receive message when browser focus shifts
     target.visible = message_parts[1];
     break;
   }
 };
 
-var writeData = function(client, type, message_parts) {
-  var gc = client.game;
-  var roundNum = gc.state.roundNum + 1;
-  var id = gc.id;
-  switch(type) {
-  case "clickedObj" :
-    var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
-    message_parts.slice(1).join(', ') + '\n');
-    console.log("clickedObj:" + line);
-    break;
-
-
-  case "message" :
-    var msg = message_parts[1].replace('~~~','.');
-    var line = (id + ',' + Date.now() + ',' + roundNum + ',' + client.role + ',"' + msg + '"\n');
-    console.log("message:" + line);
-    break;
+/*
+  Associates events in onMessage with callback returning json to be saved
+  {
+    <eventName>: (client, message_parts) => {<datajson>}
   }
-  gc.streams[type].write(line, function (err) {if(err) throw err;});
-};
+  Note: If no function provided for an event, no data will be written
+*/
+var dataOutput = function() {
+  function getIntendedTargetName(objects) {
+    return _.filter(objects, o => o.targetStatus === 'target')[0]['subID'];
+  }
 
-var getStim = function(game, targetStatus) {
-  return _.filter(game.trialInfo.currStim, function(x){
-    return x.targetStatus == targetStatus;
-  })[0]['color'];
-};
+  function getObjectLocs(objects) {
+    return _.flatten(_.map(objects, o => {
+      return [o.subID, o.speakerCoords.gridX, o.speakerCoords.gridY,
+	      o.listenerCoords.gridX, o.listenerCoords.gridY];
+    }));
+  }
 
-// /*
-//    The following functions should not need to be modified for most purposes
-// */
+  function getObjectLocHeaderArray() {
+    return _.flatten(_.map(_.range(1,5), i => {
+      return _.map(['name', 'speakerX', 'speakerY', 'listenerX', 'listenerY'], v => {
+	return 'object' + i + v;
+      });
+    }));
+  };
+  
+  function commonOutput (client, message_data) {
+    return {
+      expid: client.game.expid,
+      gameid: client.game.id,
+      time: Date.now(),
+      trialNum : client.game.state.roundNum + 1,
+      workerId: client.workerid,
+      assignmentId: client.assignmentid
+    };
+  };
 
-var startGame = function(game, player) {
-  // Establish write streams
-  var startTime = utils.getLongFormTime();
-  var dataFileName = startTime + "_" + game.id + ".csv";
-  utils.establishStream(game, "message", dataFileName,
-      "gameid,time,roundNum,sender,contents\n");
-  utils.establishStream(game, "clickedObj", dataFileName,
-      "gameid,time,roundNum," +
-      "redH,redW,redX,redY," +
-      "blueH,blueW,blueX,blueY," +
-      "plazaD,plazaX,plazaY," +
-      "lilyX,lilyY," +
-      "mouseX, mouseY" +
-      "\n");
-  game.newRound(0);
-};
+  var clickedObjOutput = function(client, message_data) {
+    var objects = client.game.trialInfo.currStim;
+    var intendedName = getIntendedTargetName(objects);
+    var objLocations = _.zipObject(getObjectLocHeaderArray(), getObjectLocs(objects));
+    return _.extend(
+      commonOutput(client, message_data),
+      objLocations, {
+	intendedName,
+	clickedName: message_data[1],
+	correct: intendedName === message_data[1],
+	pose: parseInt(message_data[2]),
+	condition : message_data[3]
+      }
+    );
+  };
 
-module.exports = {
-  writeData : writeData,
-  startGame : startGame,
-  onMessage : onMessage
-};
+  var dropOutput = function(client, message_data) {
+    var intendedName = getIntendedTargetName(client.game.trialInfo.currStim);
+    return _.extend(
+      commonOutput(client, message_data), {
+	intendedName,
+	role: client.role,
+	text: message_data[1].replace(/~~~/g, '.'),
+	timeFromRoundStart: message_data[2]
+      }
+    );
+  };
+
+  return {
+    'drop' : dropOutput,
+    'clickedObj' : clickedObjOutput
+  };
+}();
+
+module.exports = {dataOutput, onMessage};
