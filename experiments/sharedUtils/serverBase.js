@@ -1,27 +1,46 @@
-var utils = require('./sharedUtils.js');
+var utils = require(__base + 'sharedUtils/sharedUtils.js');
 
 global.window = global.document = global;
 
-// Construct server object
-module.exports = function(expName) {
-  var gameServer = {
-    games : {},
-    game_count:0
-  };
+class ReferenceGameServer {
+  constructor(expName) {
+    this.expName = expName;
+    this.core = require([__base, expName, 'game.core.js'].join('/')).game_core;
+    this.player = require([__base, expName, 'game.core.js'].join('/')).game_player;
+    this.customServer = require([__base, expName, 'game.server.js'].join('/'));
+    this.setCustomEvents = this.customServer.setCustomEvents;
+    
+    // Track ongoing games
+    this.games = {};
+    this.game_count = 0;
+  }
 
-  // Incorporate task-specific functions
-  var serverLocal = require('../' + expName + '/game.server.js');
-  gameServer.onMessage = serverLocal.onMessage;
-  gameServer.writeData = serverLocal.writeData;
-  gameServer.startGame = serverLocal.startGame;
-  gameServer.setCustomEvents = serverLocal.setCustomEvents;
-  
-  // Incorprate task-specific core
-  var core = require('../' + expName + '/game.core.js');
+  startGame (game) {
+    game.newRound();
+  }
 
-  // This is the important function that pairs people up into 'rooms'
-  // all independent of one another.
-  gameServer.findGame = function(player) {
+  /*
+    Writes data specified by experiment instance to csv and/or mongodb
+  */
+  writeData (client, eventType, message_parts) {
+    var output = this.customServer.dataOutput;
+    if(_.has(output, eventType)) {
+      var dataPoint = _.extend(output[eventType](client, message_parts), {eventType});
+      if(_.includes(client.game.dataStore, 'csv'))
+	utils.writeDataToCSV(client.game, dataPoint);
+      if(_.includes(client.game.dataStore, 'mongodb'))
+	utils.writeDataToMongo(dataPoint); 
+    }
+  }
+
+  onMessage (client, message) {
+    console.log(message);
+    var message_parts = message.split('.');
+    this.customServer.onMessage(client, message);
+    this.writeData(client, message_parts[0], message_parts);
+  }
+
+  findGame (player) {
     this.log('looking for a game. We have : ' + this.game_count);
     var joined_a_game = false;
     for (var gameid in this.games) {
@@ -32,9 +51,11 @@ module.exports = function(expName) {
 
 	// Add player to game
 	game.player_count++;
-	game.players.push({id: player.userid,
-			   instance: player,
-			   player: new game_player(game, player)});
+	game.players.push({
+	  id: player.userid,
+	  instance: player,
+	  player: new this.player(game, player)
+	});
 
 	// Add game to player
 	player.game = game;
@@ -50,7 +71,7 @@ module.exports = function(expName) {
 	this.startGame(game);
       }
     }
-
+    
     // If you couldn't find a game to join, create a new one
     if(!joined_a_game) {
       this.createGame(player);
@@ -58,17 +79,17 @@ module.exports = function(expName) {
   };
 
   // Will run when first player connects
-  gameServer.createGame = function(player) {
+  createGame (player) {
     //Create a new game instance
     var options = {
-      expName: expName,
+      expName: this.expName,
       server: true,
       id : utils.UUID(),
       player_instances: [{id: player.userid, player: player}],
       player_count: 1
     };
     
-    var game = new game_core(options);
+    var game = new this.core(options);
     
     // assign role
     player.game = game;
@@ -86,11 +107,11 @@ module.exports = function(expName) {
 
   // we are requesting to kill a game in progress.
   // This gets called if someone disconnects
-  gameServer.endGame = function(gameid, userid) {
+  endGame (gameid, userid) {
     var thegame = this.games[gameid];
     if(thegame) {
       _.map(thegame.get_others(userid),function(p) {
-	       p.player.instance.send('s.end');
+	p.player.instance.send('s.end');
       });
       delete this.games[gameid];
       this.game_count--;
@@ -100,12 +121,11 @@ module.exports = function(expName) {
     }   
   }; 
   
-  //A simple wrapper for logging so we can toggle it,
-  //and augment it for clarity.
-  gameServer.log = function() {
+  // A simple wrapper for logging so we can toggle it, and augment it for clarity.
+  log () {
     console.log.apply(this,arguments);
   };
-
-  return gameServer;
 };
+
+module.exports = ReferenceGameServer;
 
