@@ -24,12 +24,13 @@ class ReferenceGameServer {
   */
   writeData (client, eventType, message_parts) {
     var output = this.customServer.dataOutput;
+    var game = client.game;
     if(_.has(output, eventType)) {
       var dataPoint = _.extend(output[eventType](client, message_parts), {eventType});
-      if(_.includes(client.game.dataStore, 'csv'))
-	utils.writeDataToCSV(client.game, dataPoint);
-      if(_.includes(client.game.dataStore, 'mongodb'))
-	utils.writeDataToMongo(dataPoint); 
+      if(_.includes(game.dataStore, 'csv'))
+	utils.writeDataToCSV(game, dataPoint);
+      if(_.includes(game.dataStore, 'mongodb'))
+	utils.writeDataToMongo(game, dataPoint); 
     }
   }
 

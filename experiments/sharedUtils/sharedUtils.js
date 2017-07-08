@@ -46,21 +46,20 @@ var checkPreviousParticipant = function(workerId, callback) {
   );
 };
 
-var writeDataToCSV = function(gc, dataPoint) {
+var writeDataToCSV = function(game, dataPoint) {
   var eventType = dataPoint.eventType;
-  console.log(gc.streams);
-  if(!_.has(gc.streams, eventType)) {
+  if(!_.has(game.streams, eventType)) {
     console.log('establishing stream');
-    establishStream(gc, dataPoint);    
+    establishStream(game, dataPoint);    
   }
   var line = _.values(dataPoint).join('\t') + "\n";
-  gc.streams[eventType].write(line, err => {if(err) throw err;});
+  game.streams[eventType].write(line, err => {if(err) throw err;});
 };
 
-var writeDataToMongo = function(line) {
+var writeDataToMongo = function(game, line) {
   var postData = _.extend({
-    dbname: '3dObjects',
-    colname: 'chatbox_basic'
+    dbname: game.projectName,
+    colname: game.experimentName
   }, line);
   sendPostRequest(
     'http://localhost:4000/db/insert',
