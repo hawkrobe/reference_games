@@ -60,7 +60,7 @@ var onMessage = function(client,message) {
     gc.trialInfo.currStim[swapIndex].matcherCoords.gridX = swapObjCell[0];
     gc.trialInfo.currStim[swapIndex].matcherCoords.gridY = swapObjCell[1];  
 
-    writeData(client, "dropObj", message_parts);
+//    writeData(client, "dropObj", message_parts);
     break;
   
   case 'advanceRound' :
@@ -68,7 +68,7 @@ var onMessage = function(client,message) {
     gc.data.totalScore += score;
 
     var boxLocations = message_parts[1];
-    writeData(client, "finalBoard", message_parts);
+//    writeData(client, "finalBoard", message_parts);
     _.map(all, function(p){
       p.player.instance.emit( 'newRoundUpdate', {user: client.userid, score: score});});
     gc.newRound();
@@ -83,7 +83,7 @@ var onMessage = function(client,message) {
   
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
-      writeData(client, "message", message_parts);
+//      writeData(client, "message", message_parts);
     }
     // Update others
     var msg = message_parts[1].replace(/~~~/g,'.');

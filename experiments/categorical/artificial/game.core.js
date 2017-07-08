@@ -29,6 +29,11 @@ if( typeof _ === 'undefined' ) {
 var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
+  this.email = 'rxdh@stanford.edu';
+  this.expid = 'pilot0';
+
+  // save data to the following locations (allowed: 'csv', 'mongo')
+  this.dataStore = ['csv'];
 
   // How many players in the game?
   this.players_threshold = 2;
@@ -103,8 +108,7 @@ var game_player = function( game_instance, player_instance) {
 // server side we set some classes to global types, so that
 // we can use them in other files (specifically, game.server.js)
 if('undefined' != typeof global) {
-  module.exports = global.game_core = game_core;
-  module.exports = global.game_player = game_player;
+  module.exports = {game_core, game_player};
 }
 
 // HELPER FUNCTIONS
@@ -128,7 +132,7 @@ game_core.prototype.get_active_players = function() {
   return _.without(noEmptiesList, null);
 };
 
-game_core.prototype.advanceRound = function(delay) {
+game_core.prototype.newRound = function(delay) {
   var players = this.get_active_players();
   var localThis = this;
   setTimeout(function() {

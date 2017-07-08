@@ -31,7 +31,6 @@ var game_core = function(options){
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv'];
-  console.log(this.dataStore);
   
   // How many players in the game?
   this.players_threshold = 2;
