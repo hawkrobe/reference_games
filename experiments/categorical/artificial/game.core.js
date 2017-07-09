@@ -72,7 +72,7 @@ var game_core = function(options){
     this.player_count = options.player_count;
     this.objects = require('./objects.json');
     this.condition = _.sample(['over', 'under', 'basic', 'uniform']);
-    this.trialList = this.makeTrialList(this.condition);
+    this.trialList = this.makeTrialList();
     this.language = new ArtificialLanguage();
     this.data = {
       id : this.id,
@@ -152,8 +152,11 @@ game_core.prototype.newRound = function(delay) {
       });
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
-      localThis.trialInfo = {currStim: localThis.trialList[localThis.roundNum],
-			     labels: _.shuffle(localThis.language.vocab)};
+      localThis.trialInfo = {
+	currStim: localThis.trialList[localThis.roundNum],
+	currContextType: localThis.contextTypeList[localThis.roundNum],
+	labels: _.shuffle(localThis.language.vocab)
+      };
       localThis.server_send_update();
     }
   }, delay);
@@ -170,12 +173,12 @@ game_core.prototype.coordExtension = function(obj, gridCell) {
 
 // Take condition as argument
 // construct context list w/ statistics of condition
-game_core.prototype.makeTrialList = function (condition) {
+game_core.prototype.makeTrialList = function () {
   var that = this;
   var trialList = [];
-  var contexts = this.sampleContextSequence(condition);
+  this.contextTypeList = this.sampleContextSequence();
   for (var i = 0; i < this.numRounds; i++) {
-    var world = this.sampleTrial(contexts[i]); // Sample a world state
+    var world = this.sampleTrial(this.contextTypeList[i]); // Sample a world state
     // construct trial list (in sets of complete rounds)
     trialList.push(_.map(world, function(obj) {
       var newObj = _.clone(obj);
@@ -191,7 +194,7 @@ game_core.prototype.makeTrialList = function (condition) {
   return(trialList);
 };
 
-game_core.prototype.sampleContextSequence = function(condition) {
+game_core.prototype.sampleContextSequence = function() {
   var designMatrix = _.mapValues({
     'uniform' : {'sub' : 1/3, 'super' : 1/3, 'basic' : 1/3},
     'over'    : {'sub' : 2/3, 'super' : 1/6, 'basic' : 1/6},
@@ -200,9 +203,9 @@ game_core.prototype.sampleContextSequence = function(condition) {
   }, (obj, key) => {
     return _.mapValues(obj, (innerVal, key) => {return innerVal * this.numRounds;});
   });
-  var seq = (Array(designMatrix[condition]['sub']).fill('sub')
-	     .concat(Array(designMatrix[condition]['basic']).fill('basic'))
-	     .concat(Array(designMatrix[condition]['super']).fill('super')));
+  var seq = (Array(designMatrix[this.condition]['sub']).fill('sub')
+	     .concat(Array(designMatrix[this.condition]['basic']).fill('basic'))
+	     .concat(Array(designMatrix[this.condition]['super']).fill('super')));
   return _.shuffle(seq);
 };
 
