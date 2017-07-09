@@ -55,9 +55,9 @@ var writeDataToCSV = function(game, _dataPoint) {
     establishStream(game, dataPoint);    
 
   // Omit sensitive data
-  if(game.anonymizeCSV)
+  if(game.anonymizeCSV) 
     dataPoint = _.omit(dataPoint, ['workerId', 'assignmentId']);
-  
+
   var line = _.values(dataPoint).join('\t') + "\n";
   game.streams[eventType].write(line, err => {if(err) throw err;});
 };
