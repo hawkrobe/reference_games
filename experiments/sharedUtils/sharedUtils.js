@@ -46,12 +46,18 @@ var checkPreviousParticipant = function(workerId, callback) {
   );
 };
 
-var writeDataToCSV = function(game, dataPoint) {
+var writeDataToCSV = function(game, _dataPoint) {
+  var dataPoint = _.clone(_dataPoint);  
   var eventType = dataPoint.eventType;
-  if(!_.has(game.streams, eventType)) {
-    console.log('establishing stream');
+  
+  // Establish stream to file if it doesn't already exist
+  if(!_.has(game.streams, eventType))
     establishStream(game, dataPoint);    
-  }
+
+  // Omit sensitive data
+  if(game.anonymizeCSV)
+    dataPoint = _.omit(dataPoint, ['workerId', 'assignmentId']);
+  
   var line = _.values(dataPoint).join('\t') + "\n";
   game.streams[eventType].write(line, err => {if(err) throw err;});
 };
