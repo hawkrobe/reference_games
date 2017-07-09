@@ -18,33 +18,42 @@ var ondisconnect = function(data) {
   // Redirect to exit survey
   console.log("server booted");
   this.viewport.style.display="none";
+  var email = globalGame.email ? globalGame.email : '';
+  var failMsg = [
+    '<h3>Oops! It looks like your partner lost their connection!</h3>',
+    '<p> Completing this survey will submit your HIT so you will still receive full ',
+    'compensation.</p> <p>If you experience any problems, please email us (',
+    email, ')</p>'
+  ].join('');
+  var successMsg = [
+    "<h3>Thanks for participating in our experiment!</h3>",
+    "<p>Before you submit your HIT, we'd like to ask you a few questions.</p>"
+  ].join('');
+
   if(globalGame.roundNum + 2 > globalGame.numRounds) { 
-      $('#instructs').html('Thanks for participating in our experiment! ' +
-        "Before you submit your HIT, we'd like to ask you a few questions.");    
+    $('#exit_survey').prepend(successMsg);    
+  } else {
+    $('#exit_survey').prepend(failMsg); 
   }
-  else {
-      $('#instructs').html('Oops! It looks like your partner lost their connection.' +
-      ' Completing this survey will submit your HIT so you will still receive ' +
-      'full compensation. If you experience any problems, please email us (sketchloop@gmail.com).'); // this is from sketchpad experiment (jefan 4/23/17)
-  }
+
+  $('#exit_survey').show();
+  $('#main').hide();
+  $('#header').hide();
+  
   $('#message_panel').hide();
   $('#submitbutton').hide();
   $('#roleLabel').hide();
   $('#score').hide();
-  $('#exit_survey').show();
+
   $('#sketchpad').hide(); // this is from sketchpad experiment (jefan 4/23/17)
   $('#loading').hide(); // this is from sketchpad experiment (jefan 4/23/17)
 };
 
+// The server responded that we are now in a game
 var onconnect = function(data) {
-  //The server responded that we are now in a game. Remember who we are
   this.my_id = data.id;
   this.players[0].id = this.my_id;
   this.urlParams = getURLParams();
-  // console.log(this.urlParams);
-  // console.log(this.my_id,this.players[0].id);
-  console.log(this);
-  // console.log(this.get_player(this.my_id));
   drawScreen(this, this.get_player(this.my_id));
 };
 
@@ -95,11 +104,14 @@ var sharedSetup = function(game) {
   
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
-    // Just in case we want to bar responses until after some message received
-    globalGame.messageSent = true;
+
     var otherRole = (globalGame.my_role === game.playerRoleNames.role1 ?
 		     game.playerRoleNames.role2 : game.playerRoleNames.role1);
     var source = data.user === globalGame.my_id ? "You" : otherRole;
+    // To bar responses until speaker has uttered at least one message
+    if(source !== "You"){
+      globalGame.messageSent = true;
+    }
     var col = source === "You" ? "#363636" : "#707070";
     $('.typing-msg').remove();
     $('#messages')

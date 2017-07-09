@@ -61,7 +61,7 @@ var client_onserverupdate_received = function(data){
     // globalGame.drawingAllowed = false;
     globalGame.objects = _.map(data.objects, function(obj) {
       // Extract the coordinates matching your role
-      var customCoords = globalGame.my_role == "sketcher" ? obj.speakerCoords : obj.listenerCoords;
+      var customCoords = globalGame.my_role == "speaker" ? obj.speakerCoords : obj.listenerCoords;
       // remove the speakerCoords and listenerCoords properties
       var customObj = _.chain(obj)
 	    .omit('speakerCoords', 'listenerCoords')
@@ -82,15 +82,19 @@ var client_onserverupdate_received = function(data){
           if (alreadyLoaded == 4) {
             setTimeout(function() {
               $('#occluder').hide();
+	      $('#chatbox').removeAttr("disabled");
+	      $('#chatbox').focus();
               globalGame.drawingAllowed = true;
             },750);
           }
       };
+
+
       return _.extend(customObj, {img: imgObj});
     });
   };
 
-
+console.log(globalGame.objects);
   // Get rid of "waiting" screen and allow drawing if there are multiple players
   if(data.players.length > 1) {
     $('#messages').empty();
@@ -185,8 +189,7 @@ var customSetup = function(game) {
 // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('newRoundUpdate', function(data){
-    $('#chatbox').removeAttr("disabled");
-    $('#chatbox').focus();
+    $('#chatbox').val("");
     $('#messages').empty();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
@@ -196,41 +199,9 @@ var customSetup = function(game) {
       $('#roundnumber').empty()
   .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
     }
-  });
-/*  $(document).ready(function() {
-    $("#submitbutton").click(function(){
-      if (globalGame.currStrokeNum > 0) { // only allow submit button to be pressed if at least one stroke made
-        var finished = ['doneDrawing',1];
-        globalGame.socket.send(finished.join('.'));
-      } else {
-        $('#feedback').html("Please make your sketch.");
-      }
-    });
-  });
-
-  // Set up new round on client's browsers after submit round button is pressed.
-  // This means clear the canvas, update round number, and update score on screen
-  game.socket.on('newRoundUpdate', function(data){
-    // Reset sketchpad each round
-    project.activeLayer.removeChildren();
-
-    // reset drawing stuff
-    globalGame.doneDrawing = false;
-    globalGame.path = [];
-    
-    // Reset stroke counter
-    globalGame.currStrokeNum = 0;
-
-    // occluder box animation now controlled within client_onserverupdate_received
-    // // fade in occluder box, wait a beat, then fade it out (then allow drawing)
-    // $("#occluder").show(0)
-    //               .delay(3000)
-    //               .hide(0, function() {
-    //                 globalGame.drawingAllowed = true;
-    //               });
 
     if (globalGame.my_role === globalGame.playerRoleNames.role2) {
-      $("#loading").fadeIn('fast');
+      //$("#loading").fadeIn('fast');
     }
 
     // clear feedback blurb
@@ -244,38 +215,17 @@ var customSetup = function(game) {
       $('#sketchpad').hide();
       $('#instructs').html('Thanks for participating in our experiment! ' +
         "Before you submit your HIT, we'd like to ask you a few questions.");
-      $('#roundnumber').empty()	
+      $('#roundnumber').empty() 
         .append("Round\n" + (game.roundNum + 1) + " of " + game.numRounds);
     } else {
       $('#roundnumber').empty()
         .append("Round\n" + (game.roundNum + 2) + " of " + game.numRounds);
     }
     $('#score').empty().append(score + ' of ' + (game.roundNum + 1) + ' correct for a bonus of $'
-			       + ((score * 3)/100).toFixed(2));
+             + ((score * 3)/100).toFixed(2));
   });
 
-  game.socket.on('stroke', function(jsonData) {
-    // first, allow listener to respond
-    game.messageSent = true;
-    // draw it
-    var path = new Path();
-    path.importJSON(jsonData);
 
-  });
-
-  game.socket.on('mutualDoneDrawing', function(role) {
-    // console.log('the doneness of drawing is mutual knowledge');
-    globalGame.doneDrawing = true;
-    globalGame.drawingAllowed = false;
-    if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-      $('#feedback').html(" ");
-      setTimeout(function(){$('#turnIndicator').html("Your partner's turn to guess the target!");},globalGame.feedbackDelay);
-    } else if (globalGame.my_role === globalGame.playerRoleNames.role2) {
-      $("#loading").fadeOut('fast');
-      setTimeout(function(){$('#turnIndicator').html('Your turn: Select the target!');},globalGame.feedbackDelay);
-    }
-  });
-*/
 };
 
 var client_onjoingame = function(num_players, role) {
@@ -298,7 +248,8 @@ var client_onjoingame = function(num_players, role) {
     $('#instructs').append("Send messages to tell the listener which object " + 
          "is the target.");
   } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Click on the target object which the speaker " +
+    $('#instructs').append("The speaker will tell you about one of these objects. " + 
+          "Click on the target object the speaker " +
          "is telling you about.");
   }
 
@@ -338,6 +289,7 @@ function responseListener(evt) {
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
   // only allow to respond after message has been sent
   console.log(globalGame.messageSent);
+
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {

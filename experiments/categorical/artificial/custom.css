@@ -1,0 +1,41 @@
+.drag-drop {
+  display: inline-block;
+  min-width: 40px;
+  padding: 1em 0.5em;
+
+  color: #fff;
+  /* border: solid 2px #fff; */
+
+  -webkit-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+
+  transition: background-color 0.3s;
+}
+
+.dropzone {
+  background-color: #aaa;
+  border: dashed 4px transparent;
+  border-radius: 4px;
+  margin: 10px auto 30px;
+  padding: 10px;
+  width: 100%;
+  height: 30%;
+  transition: background-color 0.3s;
+}
+
+.grid {
+  display: flex;                       /* establish flex container */
+  flex-wrap: wrap;                     /* enable flex items to wrap */
+  justify-content: space-around;
+}
+
+.cell {
+    flex: 0 0 30%;                       /* don't grow, don't shrink, width */
+}
+
+#labels {
+	height:100%;
+	text-align: left;
+	font-size: 200%;
+	overflow-y: scroll;
+}

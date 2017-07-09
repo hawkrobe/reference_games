@@ -10,7 +10,8 @@
     </style>
 
     <!-- Load style sheet -->
-    <link href="index.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="/lib/css/shared.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="custom.css" media="screen" rel="stylesheet" type="text/css">
     
     <!-- Notice the URL, this is handled by socket.io on the server automatically, via express -->
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
@@ -44,67 +45,63 @@
 
 
         
-        <div id='main'>
-            <span>
-            <div id='message_panel'>
-                <ul id="messages"></ul>
-                <hr>
-                <div id="chatarea">
-                    <form action="">
-                        <input id="chatbox" autocomplete="off" />
-                        <button id="chatbutton">Send</button>
-                    </form>
-                </div>
-            </div>
-	    
-              <canvas id="viewport"> </canvas>
-	    
-	    <div id="exit_survey" style="display:none">
-	      <br><br><br><br><br>
-	      <h3> Thanks for participating in our experiment! </h3>
-	      <h3> Before you submit your HIT, we'd like to ask you a few questions. </h3>
-	      <br><br><br>
-	      <p> Did you believe you were playing against another human player? </p>
-	      <select onChange="dropdownTip('human::' + this.value)">
-		<option value=""></option>
-		<option value="yes">Yes, I thought they were a human</option>
-		<option value="no">No, I thought it was a computer program</option>
-	      </select>
-	      <p id='humanResult' style="display:none;color:red"> Thank you for your response -- all players were paired with other human turkers! <p>
-
-		<br> <br>
-	      <p> Are you a native English speaker? </p>
-	      <select onChange="dropdownTip('language::' + this.value)">
-		<option value = ""></option>
-		<option value="yes">Yes</option>
-		<option value="no">No</option>
-	      </select>
-	      <p> Did you read the instructions and do you think you did the 
-		HIT correctly? </p>
-	      <select onChange="dropdownTip('confused::' + this.value)">
-		<option value = ""></option>
-		<option value="yes">Yes</option>
-		<option value="no">No</option>
-		<option value="confused">I was confused</option>
-	      </select>
-	      
-	      <br><br>
-              <p> How much did you like working with your partner? </p>
-              <select onChange="dropdownTip('partner::' + this.value)">
-		<option value = ""></option>
-		<option value="not much">Not that much</option>
-		<option value="okay">My partner was fine</option>
-		<option value="liked">I liked working with my partner</option>
-		<option value="loved">I really enjoyed working with my partner</option>
-              </select>
-              <br><br>
-	      
-	      <p> Do you have any comments on the experiment? </p>
-	      <textarea id='comments' rows="4" cols="50"></textarea>
-	      <br>
-	      <div><button id="surveySubmit" onclick="dropdownTip('submit')" type="button">Submit HIT</button></div>
-	    </div>
-            </span>
+    <div id='main'>
+      <span>
+        <div id='message_panel'>
+          <ul id="messages"></ul>
+          <hr>
+          <div id="chatarea">
+            <form action="">
+              <input id="chatbox" autocomplete="off" />
+              <button id="chatbutton">Send</button>
+            </form>
+          </div>
         </div>
-    </body>
+        <canvas id="viewport"> </canvas>
+    </div>
+    
+    <div id="exit_survey" style="display:none">
+      <br><br><br>
+      <p> Did you believe you were playing against another human player? </p>
+      <select onChange="dropdownTip('human::' + this.value)">
+	<option value=""></option>
+	<option value="yes">Yes, I thought they were a human</option>
+	<option value="no">No, I thought it was a computer program</option>
+      </select>
+      <p id='humanResult' style="display:none;color:red"> Thank you for your response -- all players were paired with other human turkers! <p>
+
+	<br> <br>
+      <p> Are you a native English speaker? </p>
+      <select onChange="dropdownTip('language::' + this.value)">
+	<option value = ""></option>
+	<option value="yes">Yes</option>
+	<option value="no">No</option>
+      </select>
+      <p> Did you read the instructions and do you think you did the 
+	HIT correctly? </p>
+      <select onChange="dropdownTip('confused::' + this.value)">
+	<option value = ""></option>
+	<option value="yes">Yes</option>
+	<option value="no">No</option>
+	<option value="confused">I was confused</option>
+      </select>
+      
+      <br><br>
+      <p> How much did you like working with your partner? </p>
+      <select onChange="dropdownTip('partner::' + this.value)">
+	<option value = ""></option>
+	<option value="not much">Not that much</option>
+	<option value="okay">My partner was fine</option>
+	<option value="liked">I liked working with my partner</option>
+	<option value="loved">I really enjoyed working with my partner</option>
+      </select>
+      <br><br>
+      
+      <p> Do you have any comments on the experiment? </p>
+      <textarea id='comments' rows="4" cols="50"></textarea>
+      <br>
+      <div><button id="surveySubmit" onclick="dropdownTip('submit')" type="button">Submit HIT</button></div>
+    </div>
+    </span>
+  </body>
 </html>

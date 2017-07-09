@@ -18,7 +18,7 @@ var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
-    _ = require('underscore');
+    _ = require('lodash');
     utils  = require(__base + 'sharedUtils/sharedUtils.js');
   }
   else throw 'mymodule requires underscore, see http://underscorejs.org';
@@ -27,6 +27,7 @@ if( typeof _ === 'undefined' ) {
 var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
+  this.email = 'sketchloop@gmail.com';
   
   // How many players in the game?
   this.players_threshold = 2;
@@ -238,6 +239,14 @@ game_core.prototype.getRandomizedConditions = function() {
   }
 
   // now shuffle the rows of condition & object matrices using same set of indices
+  // now shuffle the rows of condition & object matrices using same set of indices
+  var _zipped = _
+	.chain(_.zip(_object,_category,_pose,_condition,_target))
+	.chunk(8)
+	.map(epoch => _.shuffle(epoch))
+	.flatten()
+	.value();
+
   var _zipped;
   _zipped = _.shuffle(_.zip(_object,_category,_pose,_condition,_target));
   
