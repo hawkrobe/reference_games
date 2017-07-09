@@ -201,9 +201,11 @@ var client_onjoingame = function(num_players, role) {
   // Update w/ role (can only move stuff if agent)
   $('#roleLabel').append(role + '.');
   if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to tell the listener stuff.");
+    $('#instructs').append("<p>Click & drag one word down to the grey box</p>" +
+			   "<p>to tell the listener which object is the target.</p>");
   } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("Click on object");
+    $('#instructs').append("<p>After you see the speaker drag a word into the box,</p>" +
+			   "<p>click the object they are telling you about.</p>");
   }
 
   if(num_players == 1) {
