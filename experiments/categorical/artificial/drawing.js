@@ -70,10 +70,10 @@ var drawScreen = function(game, player) {
 function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
   // visual feedback
   highlightCell(globalGame, 'black', function(x) {
-    return x.subID == clickedObjName;
+    return x.name == clickedObjName;
   });
   // textual feedback
-  if (scoreDiff==1) {
+  if (scoreDiff > 0) {
     setTimeout(function(){
       $('#feedback').html('Great job! Your partner correctly identified the target.');
     }, globalGame.feedbackDelay);
@@ -87,12 +87,12 @@ function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
 function drawViewerFeedback(globalGame, scoreDiff, clickedObjName) {
   // viewer feedback
   highlightCell(globalGame, 'black', function(x) {
-    return x.subID == clickedObjName;
+    return x.name == clickedObjName;
   });
   highlightCell(globalGame, 'green', function(x) {
     return x.targetStatus == 'target';
   });
-  if (scoreDiff==1) {
+  if (scoreDiff > 0) {
     setTimeout(function(){
       $('#feedback').html('Great job! You correctly identified the target!');
     }, globalGame.feedbackDelay);
