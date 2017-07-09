@@ -29,11 +29,16 @@ if( typeof _ === 'undefined' ) {
 var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
-  this.email = 'rxdh@stanford.edu';
-  this.expid = 'pilot0';
 
+  // Some config settings
+  this.email = 'rxdh@stanford.edu';
+  this.projectName = 'basicLevel';
+  this.experimentName = 'artificialLanguage';
+  this.iterationName = 'pilot0';
+  this.anonymizeCSV = true;
+  
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = ['csv', 'mongo'];
 
   // How many players in the game?
   this.players_threshold = 2;
@@ -51,6 +56,7 @@ var game_core = function(options){
     height: 600 * 2,
     width: 600 * 2
   };
+  
   // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
 
@@ -61,8 +67,6 @@ var game_core = function(options){
   this.trialInfo = {};
 
   if(this.server) {
-    // If we're initializing the server game copy, pre-create the list of trials
-    // we'll use, make a player object, and tell the player who they are
     this.id = options.id;
     this.expName = options.expName;
     this.player_count = options.player_count;

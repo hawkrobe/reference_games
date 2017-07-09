@@ -29,7 +29,7 @@ class ReferenceGameServer {
       var dataPoint = _.extend(output[eventType](client, message_parts), {eventType});
       if(_.includes(game.dataStore, 'csv'))
 	utils.writeDataToCSV(game, dataPoint);
-      if(_.includes(game.dataStore, 'mongodb'))
+      if(_.includes(game.dataStore, 'mongo'))
 	utils.writeDataToMongo(game, dataPoint); 
     }
   }
