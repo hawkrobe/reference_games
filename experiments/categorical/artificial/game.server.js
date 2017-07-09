@@ -38,7 +38,7 @@ var onMessage = function(client,message) {
     target.instance.send('s.feedback.' + message_parts[1]);
 
     // Continue
-    gc.newRound(3000);
+    gc.newRound(5000);
     break;
 
   case 'playerTyping' :
@@ -74,12 +74,12 @@ var onMessage = function(client,message) {
 */
 var dataOutput = function() {
   function getIntendedTargetName(objects) {
-    return _.filter(objects, o => o.targetStatus === 'target')[0]['subID'];
+    return _.filter(objects, o => o.targetStatus === 'target')[0]['name'];
   }
 
   function getObjectLocs(objects) {
     return _.flatten(_.map(objects, o => {
-      return [o.subID, o.speakerCoords.gridX, o.speakerCoords.gridY,
+      return [o.name, o.speakerCoords.gridX, o.speakerCoords.gridY,
 	      o.listenerCoords.gridX, o.listenerCoords.gridY];
     }));
   }
@@ -113,8 +113,8 @@ var dataOutput = function() {
 	intendedName,
 	clickedName: message_data[1],
 	correct: intendedName === message_data[1],
-	pose: parseInt(message_data[2]),
-	condition : message_data[3]
+	condition: client.game.condition,
+	contextType: client.game.trialInfo.currContextType
       }
     );
   };
