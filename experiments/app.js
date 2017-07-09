@@ -32,8 +32,7 @@ if(argv.expname) {
   var exp = argv.expname.replace(/\/$/, "");
   var gameServer = new Server(exp);  
 } else {
-  console.log("no experiment supplied; use --expname flag");
-  console.log("\t node app.js --expname spatial");
+  throw new Error("missing arguments. Use --expname flag (e.g. 'node app.js --expname spatial')");
 }
 
 try {
