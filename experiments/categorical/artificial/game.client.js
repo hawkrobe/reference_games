@@ -185,7 +185,7 @@ var customSetup = function(game) {
   });
 
   game.socket.on('drop', function(event) {
-    $('#chatarea').css('background-color', '#29e');
+    $('#chatarea').css('background-color', '#32CD32');
     globalGame.messageSent = true;
   });
 };

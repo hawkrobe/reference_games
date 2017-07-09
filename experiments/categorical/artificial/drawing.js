@@ -136,7 +136,7 @@ function setupLabels(game) {
     .dropzone({
       accept: '.draggable',
       ondrop: function (event) {
-	$('#chatarea').css('background-color', '#29e');
+	$('#chatarea').css('background-color', '#32CD32');
 	var timeElapsed = new Date() - game.roundStartTime;
 	game.socket.send('drop.' + event.relatedTarget.innerHTML + '.' + timeElapsed);
 	interact('p', {context: labels}).draggable(false);
