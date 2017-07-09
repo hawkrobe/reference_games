@@ -126,10 +126,10 @@ var client_onMessage = function(data) {
       var target = _.filter(globalGame.objects, (x) => {
 	return x.targetStatus == 'target';
       })[0];
-      var scoreDiff = target.subID == clickedObjName ? 1 : 0;
+      var scoreDiff = target.name == clickedObjName ? 5 : 0;
       globalGame.data.subject_information.score += scoreDiff;
       $('#score').empty()
-        .append("Bonus: $" + (globalGame.data.subject_information.score/100).toFixed(3));
+        .append("Bonus: $" + (globalGame.data.subject_information.score/100).toFixed(2));
       
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
@@ -263,7 +263,7 @@ function mouseClickListener(evt) {
       if (hitTest(obj, mouseX, mouseY)) {
 	globalGame.messageSent = false;
 	// Tell the server about it
-        globalGame.socket.send(["clickedObj", obj.subID].join('.'));
+        globalGame.socket.send(["clickedObj", obj.name].join('.'));
       }
     });
   };
