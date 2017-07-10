@@ -25,6 +25,8 @@ playGame.prototype = {
     },
     create: function() {
         game.stage.backgroundColor = '#076324';
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
         // initialize deck of cards as number array
         this.deck = Phaser.ArrayUtils.numberArray(0, 51);
 
@@ -41,10 +43,10 @@ playGame.prototype = {
         // deck and counter
         let deck = game.add.sprite(140, this.game.world.centerY, 'cardback');
         deck.anchor.set(0.5);
-        deck.scale.set(0.4);
+        deck.scale.set(0.32);
         let counterString = '42 cards left';
-        let counterStyle = {font: 'bold 20px Arial', fill: '#000'};
-        let cardCounter = game.add.text(140,this.game.world.centerY, counterString, counterStyle);
+        let counterStyle = {font: 'bold 20px Arial', fill: '#FFF', align: 'center'};
+        let cardCounter = game.add.text(140,this.game.world.centerY+100, counterString, counterStyle);
         cardCounter.anchor = new Phaser.Point(0.5,0.5);
   
         // text stating whose turn it is
@@ -57,7 +59,7 @@ playGame.prototype = {
 
         let style = {font : 'bold 32px Arial', fill:'#FFF', boundsAlignH:'center', boundsAlignV:'middle'};
         isPartner = isMyTurn ? '' : 'partner\'s ' 
-        text = game.add.text(0,0,'It is your ' + isPartner + 'turn', style);
+        text = game.add.text(0,0,'It\'s your ' + isPartner + 'turn.', style);
         text.setShadow(3,3,'rgba(0,0,0,0.5)', 2);
         text.setTextBounds(0, barYOffset, barWidth, barHeight);
     },
@@ -80,125 +82,39 @@ playGame.prototype = {
         card.anchor = new Phaser.Point(0.5,0.5);
 
         // enable drag and drop
+        this.game.physics.arcade.enable(card);
         card.inputEnabled = true;
         card.input.enableDrag();
-        card.events.onDragStart.add(onDragStart, this);
-        card.events.onDragStop.add(onDragStop, this);
+        // card.events.onDragStart.add(onDragStart, this);
+        // card.events.onDragStop.add(onDragStop, this);
+
+        card.originalPosition = card.position.clone();
+        card.events.onDragStop.add(function(sprite1){
+          this.stopDrag(sprite1, card);
+        }, this);
 
         return card;
     },
+
+    // snaps card back into original position after drag
+    stopDrag: function(sprite1, sprite2){
+    if (!this.game.physics.arcade.overlap(sprite1, sprite2, function() {
+        sprite1.input.draggable = false;
+        sprite1.position.copyFrom(sprite2.position); 
+        sprite1.anchor.setTo(sprite2.anchor.x, sprite2.anchor.y); 
+    }));
+    sprite1.position.copyFrom(sprite1.originalPosition);
+    },
 }
 
-// function swap(card1, card2) {
-//     game.physics.arcade.overlap(sprite, sprite2, function() {  
-//         // ... do something here
-//     });
+// function onDragStart(sprite, pointer) {
+//     result = "Dragging " + sprite.key + "..."
+//     console.log(result);
 // }
 
-function onDragStart(sprite, pointer) {
-    result = "Dragging " + sprite.key;
-}
-
-function onDragStop(sprite, pointer) {
-    result = sprite.key + " dropped at x:" + pointer.x + " y: " + pointer.y;
-    // if (pointer.y > 400) {
-    //     console.log('input disabled on', sprite.key);
-    //     sprite.input.enabled = false;
-    //     sprite.sendToBack();
-    // }
-}
-
-
-// var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create });
-
-// var w = 800, h = 600;
-
-// function preload() {
-//     game.load.image('diamond', 'assets/sprites/diamond.png');
-//     game.load.image('menu', 'assets/buttons/number-buttons-90x90.png', 270, 180);
-// }
-
-// function create() {
-//     /*
-//         Code from example diamond burst
-//     */
-//     game.stage.backgroundColor = '#337799';
-//     emitter = game.add.emitter(game.world.centerX, 100, 200);
-//     emitter.makeParticles('diamond');
-//     emitter.start(false, 5000, 20);
-
-
-//     /*
-//         Code for the pause menu
-//     */
-
-//     // Create a label to use as a button
-//     pause_label = game.add.text(w - 100, 20, 'Pause', { font: '24px Arial', fill: '#fff' });
-//     pause_label.inputEnabled = true;
-//     pause_label.events.onInputUp.add(function () {
-//         // When the paus button is pressed, we pause the game
-//         game.paused = true;
-
-//         // Then add the menu
-//         menu = game.add.sprite(w/2, h/2, 'menu');
-//         menu.anchor.setTo(0.5, 0.5);
-
-//         // And a label to illustrate which menu item was chosen. (This is not necessary)
-//         choiseLabel = game.add.text(w/2, h-150, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-//         choiseLabel.anchor.setTo(0.5, 0.5);
-//     });
-
-//     // Add a input listener that can help us return from being paused
-//     game.input.onDown.add(unpause, self);
-
-//     // And finally the method that handels the pause menu
-//     function unpause(event){
-//         // Only act if paused
-//         if(game.paused){
-//             // Calculate the corners of the menu
-//             var x1 = w/2 - 270/2, x2 = w/2 + 270/2,
-//                 y1 = h/2 - 180/2, y2 = h/2 + 180/2;
-
-//             // Check if the click was inside the menu
-//             if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
-//                 // The choicemap is an array that will help us see which item was clicked
-//                 var choisemap = ['one', 'two', 'three', 'four', 'five', 'six'];
-
-//                 // Get menu local coordinates for the click
-//                 var x = event.x - x1,
-//                     y = event.y - y1;
-
-//                 // Calculate the choice 
-//                 var choise = Math.floor(x / 90) + 3*Math.floor(y / 90);
-
-//                 // Display the choice
-//                 choiseLabel.text = 'You chose menu item: ' + choisemap[choise];
-//             }
-//             else{
-//                 // Remove the menu and the label
-//                 menu.destroy();
-//                 choiseLabel.destroy();
-
-//                 // Unpause the game
-//                 game.paused = false;
-//             }
-//         }
-//     };
-// }
-
-
-
-// function toggleMenu(){
-//      if(menuGroup.y == 0){
-//           var menuTween = game.add.tween(menuGroup).to({
-//                y: -180     
-//           }, 500, Phaser.Easing.Bounce.Out, true);
-//      }
-//      if(menuGroup.y == -180){
-//           var menuTween = game.add.tween(menuGroup).to({
-//                y: 0    
-//           }, 500, Phaser.Easing.Bounce.Out, true);     
-//      }
+// function onDragStop(sprite, pointer) {
+//     result = sprite.key + " dropped at x:" + pointer.x + " y: " + pointer.y;
+//     console.log(result);
 // }
 
 // let game;
