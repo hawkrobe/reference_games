@@ -32,7 +32,7 @@ html , body {
   background-color: #aaa;
   border: dashed 4px transparent;
   border-radius: 4px;
-  margin: 10px auto 30px;
+  margin: 10px auto 10px;
   padding: 10px;
   width: 100%;
   height: 30%;
@@ -46,7 +46,7 @@ html , body {
 }
 
 .cell {
-    flex: 0 0 30%;                       /* don't grow, don't shrink, width */
+    flex: 1 1 30%;                       /* don't grow, don't shrink, width */
 }
 
 #header {
@@ -173,32 +173,32 @@ ALOT...don't understand how to adjust that.*/
 	overflow-y: scroll;
 }
 
-#chatarea form {
-	background: #212121;
-	padding: 3px;
-	height: 7%;
-	width: 100%;
-	float: bottom;
-}
+/* #chatarea form { */
+/* 	background: #212121; */
+/* 	padding: 3px; */
+/* 	height: 7%; */
+/* 	width: 100%; */
+/* 	float: bottom; */
+/* } */
 
-#chatarea input {
-	border: 0;
-	height: 100%;
-	font-size: 150%;
-	width: 80%;
-	margin-left: .5%;
-	margin-right: .5%;
-	padding: 5px;
-}
+/* #chatarea input { */
+/* 	border: 0; */
+/* 	height: 100%; */
+/* 	font-size: 150%; */
+/* 	width: 80%; */
+/* 	margin-left: .5%; */
+/* 	margin-right: .5%; */
+/* 	padding: 5px; */
+/* } */
 
-#chatarea button {
-	width: 15%;
-	height: 100%;
-	font-size: 150%;
-	background: rgb(130, 224, 255);
-	border: none;
-	padding: 5px;
-}
+/* #chatarea button { */
+/* 	width: 15%; */
+/* 	height: 100%; */
+/* 	font-size: 150%; */
+/* 	background: rgb(130, 224, 255); */
+/* 	border: none; */
+/* 	padding: 5px; */
+/* } */
 
 
 ::-webkit-scrollbar {
