@@ -16,53 +16,42 @@ let playGame = function(game) {}
 playGame.prototype = {
     preload: function() {
         game.load.spritesheet('cards', 'cards.png', gameOptions.cardSheetWidth, gameOptions.cardSheetHeight);
-        // game.load.image('menu', 'menu.png', 270, 180);
+        game.load.image('cardback', 'cardback.png', 150, 200);
     },
     create: function() {
         // initialize deck of cards as number array
         this.deck = Phaser.ArrayUtils.numberArray(0, 51);
+
         // shuffle the deck and print to console
         Phaser.ArrayUtils.shuffle(this.deck);
         console.log(this.deck);
+
         // make hands for this player and that player
         this.thisHand = this.makeHand(0, true);
         this.thatHand = this.makeHand(3, false);
         this.onTable = this.draw(6, 4);
-        // this.nextCardIndex = 6;   
+
+        let deck = game.add.sprite(0.25, 0.25, 'cardback');
+        let counterString = 52-10 + ' cards left';
+        console.log(counterString);
+        let cardCounter = new Text(game, -3, 3, counterString, {font: '30px Arial', fill: '#ffffff'})
     },
     // startIndex = index in this.deck where hand should start
     // thisPlayer = true if this player, false if that player
     makeHand: function(startIndex, thisPlayer) {
-        var handy = thisPlayer ? -1 : 2;
-        var hand = [startIndex, startIndex+1, startIndex+2].map(i => this.makeCard(i, i-startIndex-5, handy));
+        let handy = thisPlayer ? -1 : 2;
+        let hand = [startIndex, startIndex+1, startIndex+2].map(i => this.makeCard(i, i-startIndex-5, handy));
         return hand;
     },
     draw: function(startIndex, numCards) {
-        var onTable = [startIndex, startIndex+1, startIndex+2, startIndex+3].map(i =>
+        let onTable = [startIndex, startIndex+1, startIndex+2, startIndex+3].map(i =>
                         this.makeCard(i, i-startIndex-5.5, 0.55));
         return onTable;
     },
     makeCard: function(cardIndex, x, y) {
-        // initialize card
-        //new Sprite(game, x, y, key, frame)
-        //sprite(x, y, key, frame, group)
-        //let card = new Phaser.Sprite(game, gameOptions.cardSheetWidth * gameOptions.cardScale / 2, game.height / 2, 'cards', this.deck[cardIndex]);
         let card = game.add.sprite(gameOptions.cardSheetWidth * gameOptions.cardScale / 2, game.height / 2, 'cards', this.deck[cardIndex]);
         card.scale.set(gameOptions.cardScale);
         card.anchor = new Phaser.Point(x,y);
-        //card.frame = this.deck[cardIndex];
-
-        // trigger action menu on click
-        // card.inputEnabled = true;
-        // card.events.onInputUp.add(function () {
-        //     game.paused = true;
-        //     // add the menu
-        //     menu = game.add.sprite(gameOptions.gameWidth/2, gameOptions.gameHeight/2, 'menu');
-        //     menu.anchor.setTo(-1.5 + 1.5*cardIndex, -0.1);
-        // });
-
-        // game.input.onDown.add(this.unpause, self);
-
         return card;
     },
     // unpause: function(event) {
