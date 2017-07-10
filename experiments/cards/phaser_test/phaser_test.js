@@ -7,18 +7,21 @@ let gameOptions = {
 }
 
 window.onload = function() {
-    game = new Phaser.Game(gameOptions.gameWidth, gameOptions.gameHeight);
+    game = new Phaser.Game(gameOptions.gameWidth, gameOptions.gameHeight, Phaser.WEBGL);
     game.state.add("PlayGame", playGame)
     game.state.start("PlayGame");
 }
 
 let playGame = function(game) {}
+let isMyTurn = false;
+
 playGame.prototype = {
     preload: function() {
         game.load.spritesheet('cards', 'cards.png', gameOptions.cardSheetWidth, gameOptions.cardSheetHeight);
         game.load.image('menu', 'menu.png', 270, 180);
     },
     create: function() {
+        game.stage.backgroundColor = '#076324';
         // initialize deck of cards as number array
         this.deck = Phaser.ArrayUtils.numberArray(0, 51);
         // shuffle the deck and print to console
@@ -27,6 +30,12 @@ playGame.prototype = {
         // make cards
         this.cardsInGame = [this.makeCard(0), this.makeCard(1), this.makeCard(2)];
         this.nextCardIndex = 3;   
+
+        let style = {font : '32px Arial', fill:'#888888', align:'center'};
+        isPartner = isMyTurn ? '' : 'partner\'s ' 
+        turnText = game.add.text(game.world.centerX, game.world.height, 'It is your ${isPartner}turn', style);
+        turnText.align('center'); // align the text to the center
+        turnText.anchor.set(1);
     },
     makeCard: function(cardIndex) {
         // initialize card
