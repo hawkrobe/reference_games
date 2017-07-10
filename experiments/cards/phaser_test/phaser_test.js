@@ -7,18 +7,21 @@ let gameOptions = {
 }
 
 window.onload = function() {
-    game = new Phaser.Game(gameOptions.gameWidth, gameOptions.gameHeight);
+    game = new Phaser.Game(gameOptions.gameWidth, gameOptions.gameHeight, Phaser.WEBGL);
     game.state.add("PlayGame", playGame)
     game.state.start("PlayGame");
 }
 
 let playGame = function(game) {}
+let isMyTurn = false;
+
 playGame.prototype = {
     preload: function() {
         game.load.spritesheet('cards', 'cards.png', gameOptions.cardSheetWidth, gameOptions.cardSheetHeight);
         game.load.image('cardback', 'cardback.png', 150, 200);
     },
     create: function() {
+        game.stage.backgroundColor = '#076324';
         // initialize deck of cards as number array
         this.deck = Phaser.ArrayUtils.numberArray(0, 51);
 
@@ -35,6 +38,13 @@ playGame.prototype = {
         let counterString = 52-10 + ' cards left';
         console.log(counterString);
         let cardCounter = new Text(game, -3, 3, counterString, {font: '30px Arial', fill: '#ffffff'})
+
+        // this.nextCardIndex = 6;   
+        let style = {font : '32px Arial', fill:'#888888', align:'center'};
+        isPartner = isMyTurn ? '' : 'partner\'s ' 
+        turnText = game.add.text(game.world.centerX, game.world.height, 'It is your ${isPartner}turn', style);
+        turnText.align('center'); // align the text to the center
+        turnText.anchor.set(1);
     },
     // startIndex = index in this.deck where hand should start
     // thisPlayer = true if this player, false if that player
