@@ -304,7 +304,7 @@ game_core.prototype.server_send_update = function(){
 
 var ArtificialLanguage = function() {
   this.vocabSize = 9;
-  this.wordLength = 6;
+  this.wordLength = 4;
   this.possibleVowels = ['a','e','i','o','u'];
   this.possibleConsonants = ['g','h','k','l','m','n','p','w'];
   this.vocab = this.sampleVocab();
