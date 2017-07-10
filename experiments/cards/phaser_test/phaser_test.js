@@ -1,4 +1,4 @@
-let gameOptions = {
+let options = {
     gameWidth: 1000,
     gameHeight: 700,
     cardSheetWidth: 334,
@@ -7,7 +7,7 @@ let gameOptions = {
 }
 
 window.onload = function() {
-    game = new Phaser.Game(gameOptions.gameWidth, gameOptions.gameHeight, Phaser.WEBGL);
+    game = new Phaser.Game(options.gameWidth, options.gameHeight, Phaser.WEBGL);
     game.state.add("PlayGame", playGame)
     game.state.start("PlayGame");
 }
@@ -15,10 +15,13 @@ window.onload = function() {
 let playGame = function(game) {}
 let isMyTurn = false;
 
+// horizontal gap between cards
+let cardGap = 120;
+
 playGame.prototype = {
     preload: function() {
-        game.load.spritesheet('cards', 'cards.png', gameOptions.cardSheetWidth, gameOptions.cardSheetHeight);
-        game.load.image('cardback', 'cardback.png', gameOptions.cardSheetWidth, gameOptions.cardSheetHeight);
+        game.load.spritesheet('cards', 'cards.png', options.cardSheetWidth, options.cardSheetHeight);
+        game.load.image('cardback', 'cardback.png', options.cardSheetWidth, options.cardSheetHeight);
     },
     create: function() {
         game.stage.backgroundColor = '#076324';
@@ -35,16 +38,16 @@ playGame.prototype = {
         this.onTable = this.draw(6, 4);
         this.nextCardIndex = 6;   
 
-        let deck = game.add.sprite(75, game.world.centerY, 'cardback');
+        // deck and counter
+        let deck = game.add.sprite(140, this.game.world.centerY, 'cardback');
         deck.anchor.set(0.5);
-        deck.scale.set(gameOptions.cardScale);
-        deck.anchor = new Phaser.Point(-0.6,-1.25);
+        deck.scale.set(0.4);
         let counterString = '42 cards left';
-        console.log(counterString);
-        let cardCounter = game.add.text(-0.75,-1.25, counterString, {font: '20px Arial', fill: '#000'});
-        cardCounter.anchor = new Phaser.Point(-1,-11);
-
-        // this.nextCardIndex = 6;   
+        let counterStyle = {font: 'bold 20px Arial', fill: '#000'};
+        let cardCounter = game.add.text(140,this.game.world.centerY, counterString, counterStyle);
+        cardCounter.anchor = new Phaser.Point(0.5,0.5);
+  
+        // text stating whose turn it is
         let bar = game.add.graphics();
         let barWidth = game.world.width;
         let barHeight = 100;
@@ -61,21 +64,48 @@ playGame.prototype = {
     // startIndex = index in this.deck where hand should start
     // thisPlayer = true if this player, false if that player
     makeHand: function(startIndex, thisPlayer) {
-        let handy = thisPlayer ? -1 : 2;
-        let hand = [startIndex, startIndex+1, startIndex+2].map(i => this.makeCard(i, 1.1*(i-startIndex)-5, handy));
+        let dy = thisPlayer ? -200 : 200;
+        let hand = [0,1,2].map(i => 
+                    this.makeCard(startIndex+i, this.game.world.centerX + (i-1)*cardGap, this.game.world.centerY + dy));
         return hand;
     },
     draw: function(startIndex, numCards) {
-        let onTable = [startIndex, startIndex+1, startIndex+2, startIndex+3].map(i =>
-                        this.makeCard(i, 1.1*(i-startIndex)-5.5, 0.55));
+        let onTable = [0,1,2,3].map(i =>
+                        this.makeCard(startIndex+i, this.game.world.centerX + (i-1.5)*cardGap, this.game.world.centerY));
         return onTable;
     },
     makeCard: function(cardIndex, x, y) {
-        let card = game.add.sprite(gameOptions.cardSheetWidth * gameOptions.cardScale / 2, game.height / 2, 'cards', this.deck[cardIndex]);
-        card.scale.set(gameOptions.cardScale);
-        card.anchor = new Phaser.Point(x,y);
+        let card = game.add.sprite(x, y, 'cards', this.deck[cardIndex]);
+        card.scale.set(options.cardScale);
+        card.anchor = new Phaser.Point(0.5,0.5);
+
+        // enable drag and drop
+        card.inputEnabled = true;
+        card.input.enableDrag();
+        card.events.onDragStart.add(onDragStart, this);
+        card.events.onDragStop.add(onDragStop, this);
+
         return card;
     },
+}
+
+// function swap(card1, card2) {
+//     game.physics.arcade.overlap(sprite, sprite2, function() {  
+//         // ... do something here
+//     });
+// }
+
+function onDragStart(sprite, pointer) {
+    result = "Dragging " + sprite.key;
+}
+
+function onDragStop(sprite, pointer) {
+    result = sprite.key + " dropped at x:" + pointer.x + " y: " + pointer.y;
+    // if (pointer.y > 400) {
+    //     console.log('input disabled on', sprite.key);
+    //     sprite.input.enabled = false;
+    //     sprite.sendToBack();
+    // }
 }
 
 
