@@ -35,11 +35,12 @@ playGame.prototype = {
         this.onTable = this.draw(6, 4);
         this.nextCardIndex = 6;   
 
-
-        let deck = game.add.sprite(0.25, 0.25, 'cardback');
-        let counterString = 52-10 + ' cards left';
+        let deck = game.add.sprite(0, 0, 'cardback');
+        deck.anchor = new Phaser.Point(-0.6,-1.25);
+        let counterString = '42 cards left';
         console.log(counterString);
-        let cardCounter = new Text(game, -3, 3, counterString, {font: '30px Arial', fill: '#ffffff'})
+        let cardCounter = game.add.text(-0.75,-1.25, counterString, {font: '20px Arial', fill: '#000'});
+        cardCounter.anchor = new Phaser.Point(-1,-11);
 
         // this.nextCardIndex = 6;   
         let bar = game.add.graphics();
@@ -48,7 +49,7 @@ playGame.prototype = {
 
         let style = {font : 'bold 32px Arial', fill:'#FFF', boundsAlignH:'center', boundsAlignV:'middle'};
         isPartner = isMyTurn ? '' : 'partner\'s ' 
-        text=game.add.text(0,0,'It is your ' + isPartner + 'turn', style);
+        text = game.add.text(0,0,'It is your ' + isPartner + 'turn', style);
         text.setShadow(3,3,'rgba(0,0,0,0.5)', 2);
         text.setTextBounds(0,100,game.world.width,100);
     },
@@ -56,12 +57,12 @@ playGame.prototype = {
     // thisPlayer = true if this player, false if that player
     makeHand: function(startIndex, thisPlayer) {
         let handy = thisPlayer ? -1 : 2;
-        let hand = [startIndex, startIndex+1, startIndex+2].map(i => this.makeCard(i, i-startIndex-5, handy));
+        let hand = [startIndex, startIndex+1, startIndex+2].map(i => this.makeCard(i, 1.1*(i-startIndex)-5, handy));
         return hand;
     },
     draw: function(startIndex, numCards) {
         let onTable = [startIndex, startIndex+1, startIndex+2, startIndex+3].map(i =>
-                        this.makeCard(i, i-startIndex-5.5, 0.55));
+                        this.makeCard(i, 1.1*(i-startIndex)-5.5, 0.55));
         return onTable;
     },
     makeCard: function(cardIndex, x, y) {
