@@ -64,27 +64,6 @@ playGame.prototype = {
         card.anchor = new Phaser.Point(x,y);
         return card;
     },
-    // unpause: function(event) {
-    //     // Only act if paused
-    //     if(game.paused){
-    //         // Calculate the corners of the menu
-    //         var x1 = gameOptions.gameWidth/2 - 270/2, x2 = gameOptions.gameWidth/2 + 270/2,
-    //             y1 = gameOptions.gameHeight/2 - 180/2, y2 = gameOptions.gameHeight/2 + 180/2;
-
-    //         // Check if the click was inside the menu
-    //         if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
-    //             console.log('you have clicked on the menu')
-    //         }
-    //         else{
-    //             // Remove the menu and the label
-    //             menu.destroy();
-    //             // choiseLabel.destroy();
-
-    //             // Unpause the game
-    //             game.paused = false;
-    //         }
-    //     }
-    // }
 }
 
 
