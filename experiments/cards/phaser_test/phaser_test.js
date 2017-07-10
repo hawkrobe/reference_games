@@ -31,12 +31,17 @@ playGame.prototype = {
         this.thisHand = this.makeHand(0, true);
         this.thatHand = this.makeHand(3, false);
         this.onTable = this.draw(6, 4);
-        // this.nextCardIndex = 6;   
-        let style = {font : '32px Arial', fill:'#888888', align:'center'};
+        this.nextCardIndex = 6;   
+
+        let bar = game.add.graphics();
+        bar.beginFill(0x000000, 0.2);
+        bar.drawRect(0,100,game.world.width,100);
+
+        let style = {font : 'bold 32px Arial', fill:'#FFF', boundsAlignH:'center', boundsAlignV:'middle'};
         isPartner = isMyTurn ? '' : 'partner\'s ' 
-        turnText = game.add.text(game.world.centerX, game.world.height, 'It is your ${isPartner}turn', style);
-        turnText.align('center'); // align the text to the center
-        turnText.anchor.set(1);
+        text=game.add.text(0,0,'It is your ' + isPartner + 'turn', style);
+        text.setShadow(3,3,'rgba(0,0,0,0.5)', 2);
+        text.setTextBounds(0,100,game.world.width,100);
     },
     // startIndex = index in this.deck where hand should start
     // thisPlayer = true if this player, false if that player
@@ -72,7 +77,7 @@ playGame.prototype = {
         // game.input.onDown.add(this.unpause, self);
 
         return card;
-    },
+    }
     // unpause: function(event) {
     //     // Only act if paused
     //     if(game.paused){
