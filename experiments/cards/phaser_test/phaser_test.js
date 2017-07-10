@@ -18,7 +18,7 @@ let isMyTurn = false;
 playGame.prototype = {
     preload: function() {
         game.load.spritesheet('cards', 'cards.png', gameOptions.cardSheetWidth, gameOptions.cardSheetHeight);
-        game.load.image('cardback', 'cardback.png', 150, 200);
+        game.load.image('cardback', 'cardback.png', gameOptions.cardSheetWidth, gameOptions.cardSheetHeight);
     },
     create: function() {
         game.stage.backgroundColor = '#076324';
@@ -35,7 +35,9 @@ playGame.prototype = {
         this.onTable = this.draw(6, 4);
         this.nextCardIndex = 6;   
 
-        let deck = game.add.sprite(0, 0, 'cardback');
+        let deck = game.add.sprite(75, game.world.centerY, 'cardback');
+        deck.anchor.set(0.5);
+        deck.scale.set(gameOptions.cardScale);
         deck.anchor = new Phaser.Point(-0.6,-1.25);
         let counterString = '42 cards left';
         console.log(counterString);
@@ -44,14 +46,17 @@ playGame.prototype = {
 
         // this.nextCardIndex = 6;   
         let bar = game.add.graphics();
+        let barWidth = game.world.width;
+        let barHeight = 100;
+        let barYOffset = game.world.height - barHeight;
         bar.beginFill(0x000000, 0.2);
-        bar.drawRect(0,100,game.world.width,100);
+        bar.drawRect(0, barYOffset, barWidth, barHeight);
 
         let style = {font : 'bold 32px Arial', fill:'#FFF', boundsAlignH:'center', boundsAlignV:'middle'};
         isPartner = isMyTurn ? '' : 'partner\'s ' 
         text = game.add.text(0,0,'It is your ' + isPartner + 'turn', style);
         text.setShadow(3,3,'rgba(0,0,0,0.5)', 2);
-        text.setTextBounds(0,100,game.world.width,100);
+        text.setTextBounds(0, barYOffset, barWidth, barHeight);
     },
     // startIndex = index in this.deck where hand should start
     // thisPlayer = true if this player, false if that player
