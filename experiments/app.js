@@ -82,12 +82,12 @@ io.on('connection', function (client) {
   var query = require('url').parse(hs.headers.referer, true).query;
   var id;
   if( !(query.workerId && query.workerId in global_player_set) ) {
-    if(query.workerId) {
+    if(!query.workerId || query.workerId === 'undefined') {
+      id = utils.UUID();
+    } else {
       // useid from query string if exists
       global_player_set[query.workerId] = true;
       id = query.workerId; 
-    } else {
-      id = utils.UUID();
     }
     if(valid_id(id)) {
       initialize(query, client, id);
