@@ -235,12 +235,21 @@ var client_onjoingame = function(num_players, role) {
 
 function dragMoveListener (event) {
   // Tell the server if this is a real drag event (as opposed to an update from partner)
+  var container = $('#message_panel')[0];
+  var width = parseInt(container.getBoundingClientRect().width);
+  var height = parseInt(container.getBoundingClientRect().height);
+  console.log(width + ' ' + height);
   if(_.has(event, 'name')) {
+    console.log(event);
     event.target = $(`p:contains("${event.name}")`)[0];
+    event.dx = parseFloat(event.dx) / event.width * width;
+    event.dy = parseFloat(event.dy) / event.height * height;
+    console.log(event);
   } else {
     globalGame.socket.send(['dragging', event.target.innerHTML,
-			    event.dx, event.dy].join('.'));
+			    event.dx, event.dy, width, height].join('.'));
   }
+  
   var target = event.target,
       // keep the dragged position in the data-x/data-y attributes
       x = (parseFloat(target.getAttribute('data-x')) || 0) + parseFloat(event.dx),
