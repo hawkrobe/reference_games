@@ -16,7 +16,7 @@ let playGame = function(game) {}
 playGame.prototype = {
     preload: function() {
         game.load.spritesheet('cards', 'cards.png', gameOptions.cardSheetWidth, gameOptions.cardSheetHeight);
-        game.load.image('menu', 'menu.png', 270, 180);
+        // game.load.image('menu', 'menu.png', 270, 180);
     },
     create: function() {
         // initialize deck of cards as number array
@@ -24,51 +24,68 @@ playGame.prototype = {
         // shuffle the deck and print to console
         Phaser.ArrayUtils.shuffle(this.deck);
         console.log(this.deck);
-        // make cards
-        this.cardsInGame = [this.makeCard(0), this.makeCard(1), this.makeCard(2)];
-        this.nextCardIndex = 3;   
+        // make hands for this player and that player
+        this.thisHand = this.makeHand(0, true);
+        this.thatHand = this.makeHand(3, false);
+        this.onTable = this.draw(6, 4);
+        // this.nextCardIndex = 6;   
     },
-    makeCard: function(cardIndex) {
+    // startIndex = index in this.deck where hand should start
+    // thisPlayer = true if this player, false if that player
+    makeHand: function(startIndex, thisPlayer) {
+        var handy = thisPlayer ? -1 : 2;
+        var hand = [startIndex, startIndex+1, startIndex+2].map(i => this.makeCard(i, i-startIndex-5, handy));
+        return hand;
+    },
+    draw: function(startIndex, numCards) {
+        var onTable = [startIndex, startIndex+1, startIndex+2, startIndex+3].map(i =>
+                        this.makeCard(i, i-startIndex-5.5, 0.55));
+        return onTable;
+    },
+    makeCard: function(cardIndex, x, y) {
         // initialize card
-        let card = game.add.sprite(gameOptions.cardSheetWidth * gameOptions.cardScale / 2, game.height / 2, 'cards');
-        card.anchor.setTo(-5.5 + 1.5*cardIndex, 0.5);
+        //new Sprite(game, x, y, key, frame)
+        //sprite(x, y, key, frame, group)
+        //let card = new Phaser.Sprite(game, gameOptions.cardSheetWidth * gameOptions.cardScale / 2, game.height / 2, 'cards', this.deck[cardIndex]);
+        let card = game.add.sprite(gameOptions.cardSheetWidth * gameOptions.cardScale / 2, game.height / 2, 'cards', this.deck[cardIndex]);
         card.scale.set(gameOptions.cardScale);
-        card.frame = this.deck[cardIndex];
+        card.anchor = new Phaser.Point(x,y);
+        //card.frame = this.deck[cardIndex];
 
         // trigger action menu on click
-        card.inputEnabled = true;
-        card.events.onInputUp.add(function () {
-            game.paused = true;
-            // add the menu
-            menu = game.add.sprite(gameOptions.gameWidth/2, gameOptions.gameHeight/2, 'menu');
-            menu.anchor.setTo(-1.5 + 1.5*cardIndex, -0.1);
-        });
+        // card.inputEnabled = true;
+        // card.events.onInputUp.add(function () {
+        //     game.paused = true;
+        //     // add the menu
+        //     menu = game.add.sprite(gameOptions.gameWidth/2, gameOptions.gameHeight/2, 'menu');
+        //     menu.anchor.setTo(-1.5 + 1.5*cardIndex, -0.1);
+        // });
 
-        game.input.onDown.add(this.unpause, self);
+        // game.input.onDown.add(this.unpause, self);
 
         return card;
     },
-    unpause: function(event) {
-        // Only act if paused
-        if(game.paused){
-            // Calculate the corners of the menu
-            var x1 = gameOptions.gameWidth/2 - 270/2, x2 = gameOptions.gameWidth/2 + 270/2,
-                y1 = gameOptions.gameHeight/2 - 180/2, y2 = gameOptions.gameHeight/2 + 180/2;
+    // unpause: function(event) {
+    //     // Only act if paused
+    //     if(game.paused){
+    //         // Calculate the corners of the menu
+    //         var x1 = gameOptions.gameWidth/2 - 270/2, x2 = gameOptions.gameWidth/2 + 270/2,
+    //             y1 = gameOptions.gameHeight/2 - 180/2, y2 = gameOptions.gameHeight/2 + 180/2;
 
-            // Check if the click was inside the menu
-            if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
-                console.log('you have clicked on the menu')
-            }
-            else{
-                // Remove the menu and the label
-                menu.destroy();
-                // choiseLabel.destroy();
+    //         // Check if the click was inside the menu
+    //         if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
+    //             console.log('you have clicked on the menu')
+    //         }
+    //         else{
+    //             // Remove the menu and the label
+    //             menu.destroy();
+    //             // choiseLabel.destroy();
 
-                // Unpause the game
-                game.paused = false;
-            }
-        }
-    }
+    //             // Unpause the game
+    //             game.paused = false;
+    //         }
+    //     }
+    // }
 }
 
 
