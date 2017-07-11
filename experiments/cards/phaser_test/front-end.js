@@ -15,8 +15,7 @@ window.onload = function () {
 }
 
 let playGame = function (game) { }
-let isMyTurn = false;
-let self = this;
+let isMyTurn = true;
 
 // horizontal gap between cards
 const cardGap = 120;
@@ -68,18 +67,18 @@ playGame.prototype = {
         turnText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
         turnText.setTextBounds(0, barYOffset, barWidth, barHeight);
 
+        // end turn button
         const centerInBar = (barHeight - options.turnButtonHeight) / 2;
         const horizontalPad = centerInBar;
-        const button = game.add.button(game.world.width - options.turnButtonWidth - horizontalPad,
+        this.button = game.add.button(game.world.width - options.turnButtonWidth - horizontalPad,
                                         game.world.height - options.turnButtonHeight - centerInBar,
                                         'end-turn', this.nextTurn, this, 0, 1, 2);
-        // const button = game.add.button(game.world.centerX,
-        //                                 game.world.centerY,
-        //                                 'end-turn', this.nextTurn, this, 0, 1, 2);
-        // button.anchor.set(0.5);
+        if (!isMyTurn){
+            // set the button to disabled
+            this.button.setFrames(3,3,3);
+            this.button.inputEnabled = false;
+        }
     },
-    // startIndex = index in this.deck where hand should start
-    // thisPlayer = true if this player, false if that player
     makeHand: function (startIndex, thisPlayer) {
         let dy = thisPlayer ? 200 : -200;
         let hand = [0, 1, 2].map(i =>
@@ -124,8 +123,6 @@ playGame.prototype = {
         card.position.copyFrom(card.originalPosition);
       }
     },
-    // let handInd = this.thisHand.findIndex(h => game.physics.arcade.overlap(h,card,this.swapPos));
-    // let tableInd = this.onTable.findIndex(t => game.physics.arcade.overlap(t,card,this.swapPos));
     cardGroupOverlap: function(card, newGroup, oldGroup) {
       let oldIndex = oldGroup.indexOf(card);
       for (let i = 0; i < newGroup.length; i++) {
