@@ -76,7 +76,7 @@ playGame.prototype = {
                                         game.world.height - options.turnButtonHeight - centerInBar,
                                         'end-turn', this.nextTurn, this, 0, 1, 2);
     },
-    update : function() {
+    update: function() {
         // flip the turn
         if (!isMyTurn){
             // set the button to disabled
@@ -86,10 +86,19 @@ playGame.prototype = {
         this.turnText.setText(getTurnText());
     },
     makeHand: function (startIndex, thisPlayer) {
-        let dy = thisPlayer ? 200 : -200;
-        let hand = [0, 1, 2].map(i =>
-            this.makeCard(startIndex + i, game.world.centerX + (i - 1) * cardGap, game.world.centerY + dy));
-        return hand;
+        if (thisPlayer) {
+          let hand = [0, 1, 2].map(i =>
+              this.makeCard(startIndex + i, game.world.centerX + (i - 1) * cardGap, game.world.centerY + 200));
+          return hand;
+        }
+        else {
+          let hand = [0, 1, 2].forEach(function(i) {
+              let c = game.add.sprite(game.world.centerX + (i - 1) * cardGap, game.world.centerY - 200, 'cardback');
+              c.scale.set(options.cardScale);
+              c.anchor = new Phaser.Point(0.5,0.5)
+          });
+          return hand;
+        }
     },
     drawCards: function (startIndex, numCards) {
         let onTable = [0, 1, 2, 3].map(i =>
@@ -106,7 +115,7 @@ playGame.prototype = {
       game.physics.arcade.enable(card);
       card.inputEnabled = true;
       card.input.enableDrag();
-      card.originalPosition = card.position.clone();
+      card.origPos = card.position.clone();
       card.events.onDragStart.add(this.startDrag, this);
       card.events.onDragStop.add(this.stopDrag, this);
 
@@ -115,7 +124,6 @@ playGame.prototype = {
     startDrag: function(card, pointer){
       game.world.bringToTop(card);
       card.scale.set(options.cardScale*1.1);
-
       // for debugging
       loc = this.thisHand.indexOf(card) != -1 ? 'hand' : 'table';
       console.log(loc);
@@ -126,8 +134,7 @@ playGame.prototype = {
       // check for overlap in cards on table and within hand
       if (!(this.cardGroupOverlap(card, this.thisHand, this.onTable) ||
           this.cardGroupOverlap(card, this.onTable, this.thisHand))) {
-        game.add.tween(card).to(card.originalPosition, 400, Phaser.Easing.Back.Out, true);
-        // card.position.copyFrom(card.originalPosition);
+        easeIn(card, card.origPos);
       }
     },
     cardGroupOverlap: function(card, newGroup, oldGroup) {
@@ -142,33 +149,34 @@ playGame.prototype = {
       }
     },
     swapPos: function(card1, card2){
-      highlight([card1, card2]);
+      // animations
+      tint([card1, card2]);
+      easeIn(card1, card2.origPos);
+      easeIn(card2, card1.origPos);
+      setTimeout(function () {untint([card1, card2])}, 700);
 
-      game.add.tween(card1).to(card2.originalPosition, 400, Phaser.Easing.Back.Out, true);
-      game.add.tween(card2).to(card1.originalPosition, 400, Phaser.Easing.Back.Out, true);
-      //card1.position.copyFrom(card2.originalPosition);
-      //card2.position.copyFrom(card1.originalPosition);
-
-      let temp = card1.originalPosition;
-      card1.originalPosition = card2.originalPosition;
-      card2.originalPosition = temp;
-
-      setTimeout(function () {unhighlight([card1, card2])}, 700);
+      let temp = card1.origPos;
+      card1.origPos = card2.origPos;
+      card2.origPos = temp;
     },
     nextTurn: function(){
         isMyTurn = !isMyTurn;
     }
 }
 
-function highlight(cards) {
+function tint(cards) {
   cards.forEach(c => c.tint = 0xD3D3D3);
 }
 
-function unhighlight(cards) {
+function untint(cards) {
   cards.forEach(c => c.tint = 0xFFFFFF);
 }
 
 function getTurnText(){
     let isPartner = isMyTurn ? '' : 'partner\'s '
     return 'It\'s your ' + isPartner + 'turn.'
+}
+
+function easeIn(card, pos) {
+  game.add.tween(card).to(pos, 400, Phaser.Easing.Back.Out, true);
 }
