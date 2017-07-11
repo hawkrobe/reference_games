@@ -9,7 +9,7 @@
 */
     var
         fs    = require('fs'),
-        utils = require('../sharedUtils/sharedUtils.js');
+        utils = require(__base + 'sharedUtils/sharedUtils.js');
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the
@@ -36,18 +36,32 @@ var onMessage = function(client,message) {
     // Write event to file
 //    writeData(client, "clickedObj", message_parts);
 
-    //calculate the penalty, which affects the amount the score goes up
-    var distance = (function distance(x1, y1, x2, y2) {
-      return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow(y2 - y1, 2));
-    })(message_parts[12], message_parts[13], message_parts[14], message_parts[15]);
+    var mouseX = parseInt(message_parts[1]);
+    var mouseY = parseInt(message_parts[2]);
+    var lilyW = parseInt(message_parts[3]);
+    var lilyH = parseInt(message_parts[4]);
+    var lilyX = parseInt(message_parts[5]);
+    var lilyY = parseInt(message_parts[6]);
 
-    //50 = radius of the displayed target; interpolate smoothly in [0,1]
-    gc.data.totalScore += (distance < 50 ? 1 :
-			   distance > 150 ? 0 :
-			   1 - (distance-50)/100);
+    //calculate the penalty, which affects the amount the score goes up
+    var distanceFn = function distance(x1, y1, x2, y2) {
+      console.log("x1 " + x1 + " y1 " + y1 + " x2 " + x2 + " y2 "+ y2);
+      return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow(y2 - y1, 2));
+    }
+    var distance = distanceFn(mouseX, mouseY, lilyX + lilyW/2.0, lilyY + lilyH/2.0);
+
+    console.log("dist " + distance + " lilyW " + lilyW + " lilyH " + lilyH + " mouseX " + mouseX + " mouseY" + mouseY + " lilyX " + lilyX + " lilyY " + lilyY);
+
+    if (distance < lilyW * .5) {
+      gc.data.totalScore += 1;
+    } else if (distance < lilyW * 1.5) {
+      gc.data.totalScore +=  1 - (distance - lilyW * .5)/(lilyW * 1.5 - lilyW * .5);
+    }
+			   /*distance > 150 ? 0 :
+			   1 - (distance-50)/100);*/
 
     // Give feedback to players
-    var feedbackMsg = "s.feedback." + [message_parts[12], message_parts[13], message_parts[14], message_parts[15], gc.data.totalScore.toFixed(2)].join('.');
+    var feedbackMsg = "s.feedback." + [lilyX, lilyY, mouseX, mouseY, gc.data.totalScore.toFixed(2)].join('.');
     console.log("Sending feedback message: ", feedbackMsg);
 
     others[0].player.instance.send(feedbackMsg);
@@ -86,7 +100,7 @@ var writeData = function(client, type, message_parts) {
   switch(type) {
   case "clickedObj" :
     var line = (id + ',' + Date.now() + ',' + roundNum  + ',' +
-    message_parts.slice(1).join(', ') + '\n');
+    message_parts.slice(1).join(',') + '\n');
     console.log("clickedObj:" + line);
     break;
 
@@ -116,14 +130,27 @@ var startGame = function(game, player) {
   var dataFileName = startTime + "_" + game.id + ".csv";
   utils.establishStream(game, "message", dataFileName,
       "gameid,time,roundNum,sender,contents\n");
-  utils.establishStream(game, "clickedObj", dataFileName,
+
+  var dims = ["gameid,time,roundNum,mouseX,mouseY,lilyW,lilyH,lilyX,lilyY"];
+  for (var i = 0; i < game.numBoxes; i++) {
+    dims.push("boxW" + i);
+    dims.push("boxH" + i);
+    dims.push("boxX" + i);
+    dims.push("boxY" + i);
+    dims.push("boxC" + i);
+  }
+
+  var dimsStr = dims.join(",") + "\n";
+
+  utils.establishStream(game, "clickedObj", dataFileName, dimsStr);
+      /* FIXME - Old - remove later
       "gameid,time,roundNum," +
       "redH,redW,redX,redY," +
       "blueH,blueW,blueX,blueY," +
       "plazaD,plazaX,plazaY," +
       "lilyX,lilyY," +
       "mouseX, mouseY" +
-      "\n");
+      "\n"*);*/
   game.newRound(0);
 };
 
