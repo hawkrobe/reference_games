@@ -1,4 +1,4 @@
-let options = {
+const options = {
     gameWidth: 1000,
     gameHeight: 700,
     cardSheetWidth: 334,
@@ -6,24 +6,24 @@ let options = {
     cardScale: 0.3
 }
 
-window.onload = function() {
+window.onload = function () {
     game = new Phaser.Game(options.gameWidth, options.gameHeight, Phaser.WEBGL);
     game.state.add("PlayGame", playGame)
     game.state.start("PlayGame");
 }
 
-let playGame = function(game) {}
+let playGame = function (game) { }
 let isMyTurn = false;
 
 // horizontal gap between cards
 let cardGap = 120;
 
 playGame.prototype = {
-    preload: function() {
+    preload: function () {
         game.load.spritesheet('cards', 'cards.png', options.cardSheetWidth, options.cardSheetHeight);
         game.load.image('cardback', 'cardback.png', options.cardSheetWidth, options.cardSheetHeight);
     },
-    create: function() {
+    create: function () {
         game.stage.backgroundColor = '#076324';
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -34,77 +34,90 @@ playGame.prototype = {
         Phaser.ArrayUtils.shuffle(this.deck);
         console.log(this.deck);
 
+        // deck and counter
+        const deck = game.add.sprite(140, this.game.world.centerY, 'cardback');
+        deck.anchor.set(0.5);
+        deck.scale.set(options.cardScale);
+        let counterString = '42 cards left';
+        const counterStyle = { font: 'bold 20px Arial', fill: '#FFF', align: 'center' };
+        const cardCounter = game.add.text(140, this.game.world.centerY + 100, counterString, counterStyle);
+        cardCounter.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+        cardCounter.anchor = new Phaser.Point(0.5, 0.5);
+
         // make hands for this player and that player
         this.thisHand = this.makeHand(0, true);
         this.thatHand = this.makeHand(3, false);
         this.onTable = this.draw(6, 4);
-        this.nextCardIndex = 6;   
+        this.nextCardIndex = 6;
 
-        // deck and counter
-        let deck = game.add.sprite(140, this.game.world.centerY, 'cardback');
-        deck.anchor.set(0.5);
-        deck.scale.set(0.32);
-        let counterString = '42 cards left';
-        let counterStyle = {font: 'bold 20px Arial', fill: '#FFF', align: 'center'};
-        let cardCounter = game.add.text(140,this.game.world.centerY+100, counterString, counterStyle);
-        cardCounter.anchor = new Phaser.Point(0.5,0.5);
-  
         // text stating whose turn it is
-        let bar = game.add.graphics();
-        let barWidth = game.world.width;
-        let barHeight = 100;
-        let barYOffset = game.world.height - barHeight;
+        const bar = game.add.graphics();
+        const barWidth = game.world.width;
+        const barHeight = 75;
+        const barYOffset = game.world.height - barHeight;
         bar.beginFill(0x000000, 0.2);
         bar.drawRect(0, barYOffset, barWidth, barHeight);
 
-        let style = {font : 'bold 32px Arial', fill:'#FFF', boundsAlignH:'center', boundsAlignV:'middle'};
-        isPartner = isMyTurn ? '' : 'partner\'s ' 
-        text = game.add.text(0,0,'It\'s your ' + isPartner + 'turn.', style);
-        text.setShadow(3,3,'rgba(0,0,0,0.5)', 2);
-        text.setTextBounds(0, barYOffset, barWidth, barHeight);
+        const turnStyle = { font: 'bold 32px Arial', fill: '#FFF', boundsAlignH: 'center', boundsAlignV: 'middle' };
+        isPartner = isMyTurn ? '' : 'partner\'s '
+        turnText = game.add.text(0, 0, 'It\'s your ' + isPartner + 'turn.', turnStyle);
+        turnText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+        turnText.setTextBounds(0, barYOffset, barWidth, barHeight);
     },
     // startIndex = index in this.deck where hand should start
     // thisPlayer = true if this player, false if that player
-    makeHand: function(startIndex, thisPlayer) {
+    makeHand: function (startIndex, thisPlayer) {
         let dy = thisPlayer ? -200 : 200;
-        let hand = [0,1,2].map(i => 
-                    this.makeCard(startIndex+i, this.game.world.centerX + (i-1)*cardGap, this.game.world.centerY + dy));
+        let hand = [0, 1, 2].map(i =>
+            this.makeCard(startIndex + i, this.game.world.centerX + (i - 1) * cardGap, this.game.world.centerY + dy));
         return hand;
     },
-    draw: function(startIndex, numCards) {
-        let onTable = [0,1,2,3].map(i =>
-                        this.makeCard(startIndex+i, this.game.world.centerX + (i-1.5)*cardGap, this.game.world.centerY));
+    draw: function (startIndex, numCards) {
+        let onTable = [0, 1, 2, 3].map(i =>
+            this.makeCard(startIndex + i, this.game.world.centerX + (i - 1.5) * cardGap, this.game.world.centerY));
         return onTable;
     },
-    makeCard: function(cardIndex, x, y) {
+    makeCard: function (cardIndex, x, y) {
         let card = game.add.sprite(x, y, 'cards', this.deck[cardIndex]);
         card.scale.set(options.cardScale);
-        card.anchor = new Phaser.Point(0.5,0.5);
+        card.anchor = new Phaser.Point(0.5, 0.5);
 
         // enable drag and drop
         this.game.physics.arcade.enable(card);
         card.inputEnabled = true;
-        card.input.enableDrag();
-        // card.events.onDragStart.add(onDragStart, this);
-        // card.events.onDragStop.add(onDragStop, this);
+        card.input.enableDrag(false, true);
 
         card.originalPosition = card.position.clone();
-        card.events.onDragStop.add(function(sprite1){
-          this.stopDrag(sprite1, card);
+        card.events.onDragStop.add(sprite1 => {
+            this.stopDrag(sprite1, card);
         }, this);
+
+        // enable highlight/shadow on selection (NOT WORKING YET)
+        // let shadow = game.add.sprite(x, y, 'cards', this.deck[cardIndex]);
+        // shadow.scale.set(options.cardScale);
+        // shadow.tint = '#000';
+        // shadow.alpha = 0.6;
+        // shadow.anchor.set(0.5);
+        // shadowOffset = new Phaser.Point(10,8);
+
+        // card.inputEnabled = true;
+        // card.events.onInputDown.add(() => {
+        //     shadow.x = card.x + shadowOffset.x;
+        //     shadow.y = card.y + shadowOffset.y;
+        // }, this);
 
         return card;
     },
 
     // snaps card back into original position after drag
-    stopDrag: function(sprite1, sprite2){
-    if (!this.game.physics.arcade.overlap(sprite1, sprite2, function() {
-        sprite1.input.draggable = false;
-        sprite1.position.copyFrom(sprite2.position); 
-        sprite1.anchor.setTo(sprite2.anchor.x, sprite2.anchor.y); 
-    }));
-    sprite1.position.copyFrom(sprite1.originalPosition);
-    },
+    stopDrag: function (sprite1, sprite2) {
+        if (!this.game.physics.arcade.overlap(sprite1, sprite2, function () {
+            sprite1.input.draggable = false;
+            sprite1.position.copyFrom(sprite2.position);
+            sprite1.anchor.setTo(sprite2.anchor.x, sprite2.anchor.y);
+        }));
+        sprite1.position.copyFrom(sprite1.originalPosition);
+    }
 }
 
 // function onDragStart(sprite, pointer) {
