@@ -82,8 +82,8 @@
     clicked, and the listener will see the true location of the Lily), and you will
     both be automatically forwarded to the next round. You
     will <b>both</b> get a bonus based on how closely the listener
-    locates the Lily, for a total of <b>30
-    rounds</b>. To get the maximum bonus of $0.01 per round, the listener does not need to click exactly on the location, just in a certain area around it. To help you get a feel for how close they need to get, the speaker will see a circle around the lily for the first few trials. After the final round you will fill out a quick 15
+    locates the Lily, for a total of <b>15
+    rounds</b>. To get the maximum bonus of $0.01 per round, the listener does not need to click exactly on the location, just in a certain area around it.  After the final round you will fill out a quick 15
     second survey and be on your way.
 </p>
 
@@ -98,7 +98,16 @@
   accepted, out of gratitude for the time you spent waiting.
 </p>
 
-<p> Second, please be respectful of the turker you're playing with:
+<p> Second, when playing the role of the speaker, please avoid using precise
+    measurement descriptions (in terms of inches, centimeters, or other units)
+    for communicating the location of the lily. The screen size of your partner may
+    differ from your own, and so measurements may not effectively communicate the lily's
+    location.  Instead, just describe the general location as best you can in relation
+    to other objects on the screen, and you will still receive points as long as
+    your partner clicks somewhere near the right location.
+</p>
+
+<p> Third, please be respectful of the turker you're playing with:
   they're real people, so do not send rude or inappropriate material
   through the chat box (including links or screenshots), and try to be
   as fast and responsive as possible to respect your partner's time:
@@ -175,6 +184,14 @@
       </br>
 
   </br>
+  The speaker should use measurements like inches, centimeters, etc to describe
+         the location of the lily.
+         </br>
+         <input type="radio" name="measure" value="no"> True
+         </br>
+         <input type="radio" name="measure" value="yes"> False
+         </br>
+  </br>
   Have you participated in this study before?
         </br>
         <input type="radio" name="completed" value="no"> Yes
@@ -211,10 +228,11 @@
         var ans3 = $('input[name="message"]:checked').val();
         var ans4 = $('input[name="comp"]:checked').val();
         var ans5 = $('input[name="location"]:checked').val();
-        var ans6 = $('input[name="completed"]:checked').val();
+        var ans6 = $('input[name="measure"]:checked').val();
+        var ans7 = $('input[name="completed"]:checked').val();
 
         if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" && 
-           ans4 == "yes" && ans5 == "yes" && ans6 == "yes") { 
+           ans4 == "yes" && ans5 == "yes" && ans6 == "yes" && ans7 == "yes") {
            var workerId = urlParams.workerId;
            var assignmentId = urlParams.assignmentId;
            var hitId = urlParams.hitId;
