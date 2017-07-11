@@ -62,10 +62,9 @@ playGame.prototype = {
         bar.drawRect(0, barYOffset, barWidth, barHeight);
 
         const turnTextStyle = { font: 'bold 32px Arial', fill: '#FFF', boundsAlignH: 'center', boundsAlignV: 'middle' };
-        let isPartner = isMyTurn ? '' : 'partner\'s '
-        turnText = game.add.text(0, 0, 'It\'s your ' + isPartner + 'turn.', turnTextStyle);
-        turnText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
-        turnText.setTextBounds(0, barYOffset, barWidth, barHeight);
+        this.turnText = game.add.text(0, 0, getTurnText(), turnTextStyle);
+        this.turnText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+        this.turnText.setTextBounds(0, barYOffset, barWidth, barHeight);
 
         // end turn button
         const centerInBar = (barHeight - options.turnButtonHeight) / 2;
@@ -73,12 +72,16 @@ playGame.prototype = {
         this.button = game.add.button(game.world.width - options.turnButtonWidth - horizontalPad,
                                         game.world.height - options.turnButtonHeight - centerInBar,
                                         'end-turn', this.nextTurn, this, 0, 1, 2);
+    },
+    update : function() {
+        // flip the turn
         if (!isMyTurn){
             // set the button to disabled
             this.button.setFrames(3,3,3);
             this.button.inputEnabled = false;
         }
-    },
+        this.turnText.setText(getTurnText());
+    }, 
     makeHand: function (startIndex, thisPlayer) {
         let dy = thisPlayer ? 200 : -200;
         let hand = [0, 1, 2].map(i =>
@@ -141,5 +144,12 @@ playGame.prototype = {
       let temp = card1.originalPosition;
       card1.originalPosition = card2.originalPosition;
       card2.originalPosition = temp;
+    },
+    nextTurn: function(){
+        isMyTurn = !isMyTurn;
     }
+}
+function getTurnText(){
+    let isPartner = isMyTurn ? '' : 'partner\'s '
+    return 'It\'s your ' + isPartner + 'turn.'
 }
