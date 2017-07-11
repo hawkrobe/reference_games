@@ -50,7 +50,7 @@ playGame.prototype = {
         // make hands for this player and that player
         this.thisHand = this.makeHand(0, true);
         this.thatHand = this.makeHand(3, false);
-        this.onTable = this.draw(6, 4);
+        this.onTable = this.drawCards(6, 4);
         this.nextCardIndex = 10;
 
         // FOR TESTING
@@ -91,7 +91,7 @@ playGame.prototype = {
             this.makeCard(startIndex + i, game.world.centerX + (i - 1) * cardGap, game.world.centerY + dy));
         return hand;
     },
-    draw: function (startIndex, numCards) {
+    drawCards: function (startIndex, numCards) {
         let onTable = [0, 1, 2, 3].map(i =>
             this.makeCard(startIndex + i, game.world.centerX + (i - 1.5) * cardGap, game.world.centerY));
         return onTable;
