@@ -52,7 +52,10 @@ playGame.prototype = {
         this.thisHand = this.makeHand(0, true);
         this.thatHand = this.makeHand(3, false);
         this.onTable = this.draw(6, 4);
-        this.nextCardIndex = 6;
+        this.nextCardIndex = 10;
+
+        // FOR TESTING
+        // reshuffle(0.5, this.onTable, this.deck.slice(this.nextCardIndex, 52));
 
         // text stating whose turn it is
         const bar = game.add.graphics();
@@ -107,27 +110,26 @@ playGame.prototype = {
     },
     startDrag: function(card, pointer){
       game.world.bringToTop(card);
-      card.tint = 0xFFFF00;
+      card.scale.set(options.cardScale*1.1);
+
       // for debugging
       loc = this.thisHand.indexOf(card) != -1 ? 'hand' : 'table';
       console.log(loc);
     },
-    stopDrag: function (card, pointer) {
-        // unhighlight dragged card
-        card.tint = 0xFFFFFF;
+    stopDrag: function(card, pointer) {
+      card.scale.set(options.cardScale);
 
       // check for overlap in cards on table and within hand
       if (!(this.cardGroupOverlap(card, this.thisHand, this.onTable) ||
           this.cardGroupOverlap(card, this.onTable, this.thisHand))) {
-        card.position.copyFrom(card.originalPosition);
+        game.add.tween(card).to(card.originalPosition, 400, Phaser.Easing.Back.Out, true);
+        // card.position.copyFrom(card.originalPosition);
       }
     },
-    // let handInd = this.thisHand.findIndex(h => game.physics.arcade.overlap(h,card,this.swapPos));
-    // let tableInd = this.onTable.findIndex(t => game.physics.arcade.overlap(t,card,this.swapPos));
     cardGroupOverlap: function(card, newGroup, oldGroup) {
       let oldIndex = oldGroup.indexOf(card);
       for (let i = 0; i < newGroup.length; i++) {
-        if(game.physics.arcade.overlap(newGroup[i], card, this.swapPos) && oldIndex != -1) {
+        if (game.physics.arcade.overlap(newGroup[i], card, this.swapPos) && oldIndex != -1) {
           let temp = newGroup[i];
           oldGroup[oldIndex] = temp;
           newGroup[i] = card;
@@ -136,11 +138,25 @@ playGame.prototype = {
       }
     },
     swapPos: function(card1, card2){
-      card1.position.copyFrom(card2.originalPosition);
-      card2.position.copyFrom(card1.originalPosition);
+      highlight([card1, card2]);
+
+      game.add.tween(card1).to(card2.originalPosition, 400, Phaser.Easing.Back.Out, true);
+      game.add.tween(card2).to(card1.originalPosition, 400, Phaser.Easing.Back.Out, true);
+      //card1.position.copyFrom(card2.originalPosition);
+      //card2.position.copyFrom(card1.originalPosition);
 
       let temp = card1.originalPosition;
       card1.originalPosition = card2.originalPosition;
       card2.originalPosition = temp;
+
+      setTimeout(function () {unhighlight([card1, card2])}, 1000);
     }
+}
+
+function highlight(cards) {
+  cards.forEach(c => c.tint = 0xD3D3D3);
+}
+
+function unhighlight(cards) {
+  cards.forEach(c => c.tint = 0xFFFFFF);
 }
