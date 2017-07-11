@@ -68,11 +68,11 @@ playGame.prototype = {
         turnText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
         turnText.setTextBounds(0, barYOffset, barWidth, barHeight);
 
-        const button = game.add.button(game.world.width - options.turnButtonWidth, 
-                                        game.world.height - options.turnButtonHeight, 
+        const button = game.add.button(game.world.width - options.turnButtonWidth,
+                                        game.world.height - options.turnButtonHeight,
                                         'end-turn', this.nextTurn, this, 0, 1, 2);
-        // const button = game.add.button(game.world.centerX, 
-        //                                 game.world.centerY, 
+        // const button = game.add.button(game.world.centerX,
+        //                                 game.world.centerY,
         //                                 'end-turn', this.nextTurn, this, 0, 1, 2);
         // button.anchor.set(0.5);
     },
