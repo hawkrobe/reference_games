@@ -76,14 +76,19 @@ playGame.prototype = {
                                         game.world.height - options.turnButtonHeight - centerInBar,
                                         'end-turn', this.nextTurn, this, 0, 1, 2);
     },
-    update: function() {
-        // flip the turn
+    update : function() {
+        this.turnText.setText(getTurnText());
+        // toggle turn settings
         if (!isMyTurn){
             // set the button to disabled
             this.button.setFrames(3,3,3);
             this.button.inputEnabled = false;
+            this.onTable.forEach(card => card.inputEnabled = false);
+        } else {
+            this.button.setFrames(0, 1, 2);
+            this.button.inputEnabled = true;
+            this.onTable.forEach(card => card.inputEnabled = true);
         }
-        this.turnText.setText(getTurnText());
     },
     makeHand: function (startIndex, thisPlayer) {
         if (thisPlayer) {
