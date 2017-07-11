@@ -40,23 +40,23 @@ var drawPlaza = function(game) {
   drawCircle(game.currStim.plaza);
 };
 
-var drawSectors = function(game) {
-  var drawRect = function drawRect(rect, color) {
+var drawBoxes = function(game) {
+  var drawBox = function(box) {
     game.ctx.beginPath();
-    game.ctx.rect(rect.x, rect.y, rect.w, rect.h);
-    game.ctx.fillStyle = color;
+    game.ctx.rect(box.x, box.y, box.w, box.h);
+    game.ctx.fillStyle = box.color;
     game.ctx.fill();
     game.ctx.stroke();
   }
 
-  drawRect(game.currStim.red, 'red');
-  drawRect(game.currStim.blue, 'blue');
+  for (var i = 0; i < game.currStim.boxes.length; i++)
+    drawBox(game.currStim.boxes[i]);
 };
 
-var drawLily = function(game, x, y) {
+var drawLily = function(game, lily) {
   var img = new Image;
   img.onload = function() {
-    game.ctx.drawImage(img, x-20, y-20); //adjust for size of lily
+    game.ctx.drawImage(img, lily.x, lily.y, lily.w, lily.h); //adjust for size of lily
   }
   img.src = "lotus.png"
 }
@@ -95,18 +95,17 @@ var drawScreen = function(game, player) {
   else {
     console.log(game);
     if (!_.isEmpty(game.currStim)) {
-      drawSectors(game, player);
-      drawPlaza(game);
+      drawBoxes(game);
+      //drawPlaza(game);
 
       if (game.my_role === game.playerRoleNames.role1) {
-        if (game.roundNum <= 2) { //trial only
+        /*if (game.roundNum <= 2) { //trial only
           drawTarget(game, game.currStim.lily.x, game.currStim.lily.y);
-        }
-        drawLily(game, game.currStim.lily.x, game.currStim.lily.y);
+        }*/
+        drawLily(game, game.currStim.lily);
       }
     }
   }
-
 };
 
 // This is a helper function to write a text string onto the HTML5 canvas.
