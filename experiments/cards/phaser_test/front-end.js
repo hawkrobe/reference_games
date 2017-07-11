@@ -15,8 +15,7 @@ window.onload = function () {
 }
 
 let playGame = function (game) { }
-let isMyTurn = false;
-let self = this;
+let isMyTurn = true;
 
 // horizontal gap between cards
 const cardGap = 120;
@@ -66,21 +65,26 @@ playGame.prototype = {
         bar.drawRect(0, barYOffset, barWidth, barHeight);
 
         const turnTextStyle = { font: 'bold 32px Arial', fill: '#FFF', boundsAlignH: 'center', boundsAlignV: 'middle' };
-        let isPartner = isMyTurn ? '' : 'partner\'s '
-        turnText = game.add.text(0, 0, 'It\'s your ' + isPartner + 'turn.', turnTextStyle);
-        turnText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
-        turnText.setTextBounds(0, barYOffset, barWidth, barHeight);
+        this.turnText = game.add.text(0, 0, getTurnText(), turnTextStyle);
+        this.turnText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+        this.turnText.setTextBounds(0, barYOffset, barWidth, barHeight);
 
-        const button = game.add.button(game.world.width - options.turnButtonWidth,
-                                        game.world.height - options.turnButtonHeight,
+        // end turn button
+        const centerInBar = (barHeight - options.turnButtonHeight) / 2;
+        const horizontalPad = centerInBar;
+        this.button = game.add.button(game.world.width - options.turnButtonWidth - horizontalPad,
+                                        game.world.height - options.turnButtonHeight - centerInBar,
                                         'end-turn', this.nextTurn, this, 0, 1, 2);
-        // const button = game.add.button(game.world.centerX,
-        //                                 game.world.centerY,
-        //                                 'end-turn', this.nextTurn, this, 0, 1, 2);
-        // button.anchor.set(0.5);
     },
-    // startIndex = index in this.deck where hand should start
-    // thisPlayer = true if this player, false if that player
+    update : function() {
+        // flip the turn
+        if (!isMyTurn){
+            // set the button to disabled
+            this.button.setFrames(3,3,3);
+            this.button.inputEnabled = false;
+        }
+        this.turnText.setText(getTurnText());
+    },
     makeHand: function (startIndex, thisPlayer) {
         let dy = thisPlayer ? 200 : -200;
         let hand = [0, 1, 2].map(i =>
@@ -149,7 +153,10 @@ playGame.prototype = {
       card1.originalPosition = card2.originalPosition;
       card2.originalPosition = temp;
 
-      setTimeout(function () {unhighlight([card1, card2])}, 1000);
+      setTimeout(function () {unhighlight([card1, card2])}, 700);
+    },
+    nextTurn: function(){
+        isMyTurn = !isMyTurn;
     }
 }
 
@@ -159,4 +166,9 @@ function highlight(cards) {
 
 function unhighlight(cards) {
   cards.forEach(c => c.tint = 0xFFFFFF);
+}
+
+function getTurnText(){
+    let isPartner = isMyTurn ? '' : 'partner\'s '
+    return 'It\'s your ' + isPartner + 'turn.'
 }
