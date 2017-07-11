@@ -33,16 +33,27 @@ if( typeof _ === 'undefined' ) {
 
 var WORLD_HEIGHT = 400;
 var WORLD_WIDTH = 600;
+var LILY_SIZE = 50;
+var NUM_BOXES = 5;
+var BOX_SIZES = [{ w : 100, h : 100}, { w : 100, h : 200}, { w : 200, h : 100}, { w : 300, h : 50}];
+var BOX_COLORS = ["blue", "red", "green", "yellow", "black"];
+var COLOR_VARIETY = true;
 
 var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
+
+  // Some config settings
   this.email = 'rxdh@stanford.edu';
-  this.expid = 'pilot0';
-
+  this.projectName = 'spatial';
+  this.experimentName = 'boxes';
+  this.iterationName = 'pilot0';
+  this.anonymizeCSV = true;
+  
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = [];
+  this.dataStore = ['csv'];
 
+  
   // How many players in the game?
   this.players_threshold = 2;
   this.playerRoleNames = {
@@ -59,11 +70,18 @@ var game_core = function(options){
     height: WORLD_HEIGHT,
     width: WORLD_WIDTH
   };
-  // Which round are we on (initialize at -1 so that first round is 0-indexed)
+
+  this.numBoxes = NUM_BOXES;
+  this.lilySize = LILY_SIZE;
+  this.boxSizes = BOX_SIZES;
+  this.boxColors = BOX_COLORS;
+  this.colorVariety = COLOR_VARIETY;
+
+    // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 30;
+  this.numRounds = 15;
 
   // This will be populated with the tangram set
   this.trialInfo = {};
@@ -74,7 +92,7 @@ var game_core = function(options){
     this.id = options.id;
     this.expName = options.expName;
     this.player_count = options.player_count;
-    this.trialList = _.shuffle(TRIALS_OBJECT_FROM_JSON);
+    this.trialList = this.makeTrialList() //_.shuffle(TRIALS_OBJECT_FROM_JSON);
     this.data = {
       id : this.id,
       trials : [],
@@ -118,7 +136,7 @@ var game_player = function( game_instance, player_instance) {
 // server side we set some classes to global types, so that
 // we can use them in other files (specifically, game.server.js)
 if('undefined' != typeof global) {
-  module.exports = {game_core, game_player};  
+  module.exports = {game_core, game_player};
 }
 
 // HELPER FUNCTIONS
@@ -226,112 +244,111 @@ game_core.prototype.server_send_update = function(){
 };
 
 game_core.prototype.sampleTrial = function() {
-  var options = {
-    //for rect (and point)
-    xMin: 50,
-    xMax: 600,
-    yMin: 50,
-    yMax: 400,
-    wMin: 50,
-    wMax: 350,
-    hMin: 50,
-    hMax: 350,
+  var lilyPrior = uniformLilyPrior;
+  var boxPrior = makeUniformBoxPrior(this.boxSizes, this.boxColors, this.colorVariety);
 
-    //circle
-    dMin: 100,
-    dMax: 100,
+  return lilyRectangleWorldPrior(lilyPrior, boxPrior, this.numBoxes);
+}
 
-    width: WORLD_WIDTH,
-    height: WORLD_HEIGHT
-  };
+var makeUniformBoxPrior = function(possibleDimensions, possibleColors, colorVariety) {
+    return function(i) {
+        var dims = _.sample(possibleDimensions);
+        var color = (colorVariety) ? possibleColors[i % possibleColors.length] : _.sample(possibleColors);
+        var point = utils.randomPoint({
+            xMin: 0,
+            xMax: WORLD_WIDTH - dims.w,
+            yMin: 0,
+            yMax: WORLD_HEIGHT - dims.h
+        });
 
-  //the random functions handle bounds checking for us
-  var getRandomRect = function getRandomRect() {
-    return utils.randomRect(options);
-  }
+        var rect = {
+            x: point.x,
+            y: point.y,
+            w: dims.w,
+            h: dims.h,
+            color: color
+        };
 
-  var getRandomCircle = function getRandomCircle(world) {
-    var plazaOptions = _.clone(options);
-    var mode = _.random(1,3);
-
-    if (mode == 1) { //plaza somewhere near red
-      options.xMin = world.red.x;
-      options.xMax = world.red.x + world.red.w;
-      options.yMin = world.red.y;
-      options.yMax = world.red.y + world.red.h;
-
-    } else if (mode == 2) { //plaza somewhere near blue
-      options.xMin = world.blue.x;
-      options.xMax = world.blue.x + world.blue.w;
-      options.yMin = world.blue.y;
-      options.yMax = world.blue.y + world.blue.h;
+        return rect;
     }
+}
 
-    return utils.randomCircle(plazaOptions);
-  }
 
-  var getRandomPoint = function getRandomPoint(world) {
-    var lilyOptions = _.clone(options);
-    var mode = _.random(1,3);
-
-    if (mode == 1) { //lily somewhere near red
-      options.xMin = world.red.x;
-      options.xMax = world.red.x + world.red.w;
-      options.yMin = world.red.y;
-      options.yMax = world.red.y + world.red.h;
-
-    } else if (mode == 2) { //lily somewhere near blue
-      options.xMin = world.blue.x;
-      options.xMax = world.blue.x + world.blue.w;
-      options.yMin = world.blue.y;
-      options.yMax = world.blue.y + world.blue.h;
-    } else if (mode == 3) { //lily somewhere near plaza
-      options.xMin = world.plaza.x;
-      options.xMax = world.plaza.x + world.plaza.w;
-      options.yMin = world.plaza.y;
-      options.yMax = world.plaza.y + world.plaza.h;
-    }
-
-    return utils.randomPoint(lilyOptions);
-  }
-
-  var world = {
-    red: getRandomRect(),
-    blue: getRandomRect(),
-  };
-
-  world.plaza = getRandomCircle(world);
-  world.lily = getRandomPoint(world);
-
-  if (!checkWorld(world, options)) {
-    //the world is invalid, so we just resample
-
-    return this.sampleTrial();
-  }
-
-  return world;
-};
-
-var checkWorld = function(world, options) {
-
-  //takes two rects with x, y, w, h parameters
-  var existsIntersection = function(object1, object2) {
-    //convert to bounding points
+var checkPartialIntersection = function(box1, box2) {
     var convertToBounds = function(object) {
-      return {
-        x1: object.x,
-        x2: object.x + object.w,
-        y1: object.y,
-        y2: object.y + object.h
-      }
+        return {
+            x1: object.x,
+            x2: object.x + object.w,
+            y1: object.y,
+            y2: object.y + object.h
+        }
     }
 
-    var o1 = convertToBounds(object1);
-    var o2 = convertToBounds(object2);
+    var o1 = convertToBounds(box1);
+    var o2 = convertToBounds(box2);
+
+    return !((o1.x1 > o2.x1 && o1.x2 < o2.x2 && o1.y1 > o2.y1 && o1.y2 < o2.y2)
+    || (o2.x1 > o1.x1 && o2.x2 < o1.x2 && o2.y1 > o1.y1 && o2.y2 < o1.y2)
+    || (o1.x2 < o2.x1 || o1.x1 > o2.x2 || o1.y2 < o2.y1 || o1.y1 > o2.y2));
+}
+
+var uniformLilyPrior = function(boxes) {
+    var point = utils.randomPoint({
+        xMin : 0,
+        xMax : WORLD_WIDTH - LILY_SIZE,
+        yMin : 0,
+        yMax : WORLD_HEIGHT - LILY_SIZE
+    });
+
+    var lily = {
+        x : point.x,
+        y : point.y,
+        w : LILY_SIZE,
+        h : LILY_SIZE
+    };
+
+    var hasIntersection = _.some(boxes, function(box) { return checkPartialIntersection(lily, box) });
+    if (hasIntersection)
+        return uniformLilyPrior(boxes);
+    else
+        return lily;
+}
+
+var checkBoxIntersection = function(box1, box2) {
+    var convertToBounds = function(object) {
+        return {
+            x1: object.x,
+            x2: object.x + object.w,
+            y1: object.y,
+            y2: object.y + object.h
+        }
+    }
+
+    var o1 = convertToBounds(box1);
+    var o2 = convertToBounds(box2);
 
     return ((o1.x1 >= o2.x1 && o1.x1 < o2.x2) || (o2.x1 >= o1.x1) && (o2.x1 < o1.x2)) &&
-           ((o1.y1 < o2.y2 && o1.y1 >= o2.y1) || (o2.y1 < o1.y2 && o2.y1 >= o1.y1))
-  }
+        ((o1.y1 < o2.y2 && o1.y1 >= o2.y1) || (o2.y1 < o1.y2 && o2.y1 >= o1.y1));
+}
 
-  return !existsIntersection(world.red, world.blue);
+var lilyRectangleWorldPrior = function(lilyPrior, boxPrior, boxCount) {
+    var makeBoxes = function(n, boxes) {
+        if (n == 0)
+            return boxes;
+
+        var box = boxPrior(n);
+        var hasIntersection = _.some(boxes, function(oBox) { return checkBoxIntersection(box, oBox) });
+        if (hasIntersection) {
+            return makeBoxes(n, boxes);
+        } else {
+            boxes.push(box);
+            return makeBoxes(n-1, boxes);
+        }
+    }
+
+    var boxes = makeBoxes(boxCount, []);
+    var lily = lilyPrior(boxes);
+    var world = { boxes: boxes, lily: lily };
+
+    return world;
 };
