@@ -10,7 +10,6 @@ function reshuffle(p, cards, deck) {
     c.kill();
   });
   Phaser.ArrayUtils.shuffle(deck);
-  // console.log(`${deck.length} cards left, ${n} added back to the deck`);
   return [deck.length, n];
 }
 

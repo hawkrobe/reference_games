@@ -22,11 +22,9 @@ const cardGap = 120;
 
 playGame.prototype = {
     preload: function () {
-        game.load.spritesheet('cards', 'cards.png', options.cardSheetWidth, options.cardSheetHeight);
-        game.load.image('cardback', 'cardback.png', options.cardSheetWidth, options.cardSheetHeight);
-        game.load.spritesheet('end-turn', 'end-turn-button.png', 188, 46);
-        //  for Google webfonts
-        game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+        game.load.spritesheet('cards', 'images/cards.png', options.cardSheetWidth, options.cardSheetHeight);
+        game.load.image('cardback', 'images/cardback.png', options.cardSheetWidth, options.cardSheetHeight);
+        game.load.spritesheet('end-turn', 'images/end-turn-button.png', 188, 46);
     },
     create: function () {
         game.stage.backgroundColor = '#076324';
@@ -45,14 +43,14 @@ playGame.prototype = {
         deckSprite.scale.set(options.cardScale);
 
         // make hands for this player and that player
-        this.myHand = this.makeHand(0, true);
-        this.theirHand = this.makeHand(3, false);
-        this.table = this.drawCards(6, 4);
+        this.myHand = makeHand(0, true, game, this);
+        this.theirHand = makeHand(3, false, game, this);
+        this.table = drawCards(6, 4, game, this);
         this.nextCardIndex = 10;
         this.cardsAdded = 0;
 
         // text stating how many cards are left in the deck and how many were reshuffled in the previous round
-        const counterStyle = { font: 'Arial', fontSize: 20, fill: '#FFF', align: 'center' };
+        const counterStyle = { font: '20px Arial', fill: '#FFF', align: 'center' };
         this.cardsLeftText = game.add.text(140, game.world.centerY + 100, getCounterText(this.cardsLeft, 'left'), counterStyle);
         this.cardsAddedText = game.add.text(140, game.world.centerY - 100, getCounterText(this.cardsAdded, 'added'), counterStyle);
         const counterTexts = [this.cardsLeftText, this.cardsAddedText];
@@ -100,42 +98,6 @@ playGame.prototype = {
             this.table.forEach(card => card.inputEnabled = true);
         }
     },
-    makeHand: function (startIndex, thisPlayer) {
-        if (thisPlayer) {
-          let hand = [0, 1, 2].map(i =>
-              this.makeCard(startIndex + i, game.world.centerX + (i - 1) * cardGap, game.world.centerY + 200));
-          return hand;
-        }
-        else {
-          let hand = [0, 1, 2].forEach(function(i) {
-              let c = game.add.sprite(game.world.centerX + (i - 1) * cardGap, game.world.centerY - 200, 'cardback');
-              c.scale.set(options.cardScale);
-              c.anchor = new Phaser.Point(0.5,0.5)
-          });
-          return hand;
-        }
-    },
-    drawCards: function (startIndex, numCards) {
-        let onTable = [0, 1, 2, 3].map(i =>
-            this.makeCard(startIndex + i, game.world.centerX + (i - 1.5) * cardGap, game.world.centerY));
-        return onTable;
-    },
-    makeCard: function(cardIndex, x, y) {
-      // initialize card
-      let card = game.add.sprite(x, y, 'cards', this.deck[cardIndex]);
-      card.scale.set(options.cardScale);
-      card.anchor = new Phaser.Point(0.5,0.5);
-
-      // enable drag and drop
-      game.physics.arcade.enable(card);
-      card.inputEnabled = true;
-      card.input.enableDrag();
-      card.origPos = card.position.clone();
-      card.events.onDragStart.add(this.startDrag, this);
-      card.events.onDragStop.add(this.stopDrag, this);
-
-      return card;
-    },
     startDrag: function(card, pointer){
       game.world.bringToTop(card);
       card.scale.set(options.cardScale*1.1);
@@ -147,60 +109,25 @@ playGame.prototype = {
       card.scale.set(options.cardScale);
       let shouldSwap = false;
       if (isMyTurn) {
-        shouldSwap = this.cardGroupOverlap(card, this.myHand, this.table) ||
-                     this.cardGroupOverlap(card, this.table, this.myHand);
+        shouldSwap = cardGroupOverlap(card, this.myHand, this.table, game) ||
+                     cardGroupOverlap(card, this.table, this.myHand, game);
       }
       else {
         for (let i = 0; i < this.myHand.length; i++) {
-          shouldSwap = shouldSwap || game.physics.arcade.overlap(this.myHand[i], card, this.swapPos);
+          shouldSwap = shouldSwap || game.physics.arcade.overlap(this.myHand[i], card, swapPos);
         }
       }
       if (!shouldSwap) {
         easeIn(card, card.origPos);
       }
     },
-    cardGroupOverlap: function(card, newGroup, oldGroup) {
-      let oldIndex = oldGroup.indexOf(card);
-      for (let i = 0; i < newGroup.length; i++) {
-        if (game.physics.arcade.overlap(newGroup[i], card, this.swapPos) && oldIndex != -1) {
-          let temp = newGroup[i];
-          oldGroup[oldIndex] = temp;
-          newGroup[i] = card;
-          return true;
-        }
-      }
-    },
-    swapPos: function(card1, card2){
-      // animations
-      tint([card1, card2]);
-      easeIn(card1, card2.origPos);
-      easeIn(card2, card1.origPos);
-      setTimeout(function () {untint([card1, card2])}, 700);
-
-      let temp = card1.origPos;
-      card1.origPos = card2.origPos;
-      card2.origPos = temp;
-    },
     nextTurn: function(){
         isMyTurn = !isMyTurn;
-
         // reshuffle cards
         [this.cardsLeft, this.cardsAdded] = reshuffle(0.5, this.table, this.deck.slice(this.nextCardIndex, 52));
-        this.table = this.drawCards(this.nextCardIndex, 4);
+        this.table = drawCards(this.nextCardIndex, 4, game, this);
         this.nextCardIndex += 4;
     }
-}
-
-function tint(cards) {
-  cards.forEach(c => c.tint = 0xD3D3D3);
-}
-
-function untint(cards) {
-  cards.forEach(c => c.tint = 0xFFFFFF);
-}
-
-function easeIn(card, pos) {
-  game.add.tween(card).to(pos, 400, Phaser.Easing.Back.Out, true);
 }
 
 function getTurnText(){
