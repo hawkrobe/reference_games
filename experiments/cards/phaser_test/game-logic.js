@@ -1,14 +1,17 @@
 // reshuffles each element of cards into deck with probability p
+// returns (#cards left in dec, #cards added back to the deck)
 function reshuffle(p, cards, deck) {
   let n = 0;
   cards.forEach(function(c) {
     if (Math.random() <= p) {
       n++;
-      deck.push(c);
+      deck.push(c); // MIGHT HAVE TO PUSH FRAME OR INDEX INSTEAD
     }
+    c.kill();
   });
   Phaser.ArrayUtils.shuffle(deck);
-  console.log(`${deck.length} cards left, ${n} reshuffled`);
+  // console.log(`${deck.length} cards left, ${n} added back to the deck`);
+  return [deck.length, n];
 }
 
 

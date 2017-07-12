@@ -25,6 +25,8 @@ playGame.prototype = {
         game.load.spritesheet('cards', 'cards.png', options.cardSheetWidth, options.cardSheetHeight);
         game.load.image('cardback', 'cardback.png', options.cardSheetWidth, options.cardSheetHeight);
         game.load.spritesheet('end-turn', 'end-turn-button.png', 188, 46);
+        //  for Google webfonts
+        game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
     },
     create: function () {
         game.stage.backgroundColor = '#076324';
@@ -37,24 +39,27 @@ playGame.prototype = {
         Phaser.ArrayUtils.shuffle(this.deck);
         console.log(this.deck);
 
-        // deck and counter
-        const deck = game.add.sprite(140, game.world.centerY, 'cardback');
-        deck.anchor.set(0.5);
-        deck.scale.set(options.cardScale);
-        let counterString = '42 cards left';
-        const counterStyle = { font: 'bold 20px Arial', fill: '#FFF', align: 'center' };
-        const cardCounter = game.add.text(140, game.world.centerY + 100, counterString, counterStyle);
-        cardCounter.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
-        cardCounter.anchor = new Phaser.Point(0.5, 0.5);
+        // deck sprite
+        const deckSprite = game.add.sprite(140, game.world.centerY, 'cardback');
+        deckSprite.anchor.set(0.5);
+        deckSprite.scale.set(options.cardScale);
 
         // make hands for this player and that player
         this.myHand = this.makeHand(0, true);
         this.theirHand = this.makeHand(3, false);
-        this.onTable = this.drawCards(6, 4);
+        this.table = this.drawCards(6, 4);
         this.nextCardIndex = 10;
+        this.cardsAdded = 0;
 
-        // FOR TESTING
-        // reshuffle(0.5, this.onTable, this.deck.slice(this.nextCardIndex, 52));
+        // text stating how many cards are left in the deck and how many were reshuffled in the previous round
+        const counterStyle = { font: 'Arial', fontSize: 20, fill: '#FFF', align: 'center' };
+        this.cardsLeftText = game.add.text(140, game.world.centerY + 100, getCounterText(this.cardsLeft, 'left'), counterStyle);
+        this.cardsAddedText = game.add.text(140, game.world.centerY - 100, getCounterText(this.cardsAdded, 'added'), counterStyle);
+        const counterTexts = [this.cardsLeftText, this.cardsAddedText];
+        counterTexts.forEach(function (text) {
+          text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
+          text.anchor = new Phaser.Point(0.5, 0.5);
+        });
 
         // text stating whose turn it is
         const bar = game.add.graphics();
@@ -77,17 +82,22 @@ playGame.prototype = {
                                         'end-turn', this.nextTurn, this, 0, 1, 2);
     },
     update : function() {
+        // update card counters
+        this.cardsLeft = 52 - this.nextCardIndex + this.cardsAdded;
+        this.cardsLeftText.setText(getCounterText(this.cardsLeft, 'left'));
+        this.cardsAddedText.setText(getCounterText(this.cardsAdded, 'added'));
+
         this.turnText.setText(getTurnText());
         // toggle turn settings
         if (!isMyTurn){
             // set the button to disabled
             this.button.setFrames(3,3,3);
             this.button.inputEnabled = false;
-            this.onTable.forEach(card => card.inputEnabled = false);
+            this.table.forEach(card => card.inputEnabled = false);
         } else {
             this.button.setFrames(0, 1, 2);
             this.button.inputEnabled = true;
-            this.onTable.forEach(card => card.inputEnabled = true);
+            this.table.forEach(card => card.inputEnabled = true);
         }
     },
     makeHand: function (startIndex, thisPlayer) {
@@ -137,8 +147,8 @@ playGame.prototype = {
       card.scale.set(options.cardScale);
       let shouldSwap = false;
       if (isMyTurn) {
-        shouldSwap = this.cardGroupOverlap(card, this.myHand, this.onTable) ||
-                     this.cardGroupOverlap(card, this.onTable, this.myHand);
+        shouldSwap = this.cardGroupOverlap(card, this.myHand, this.table) ||
+                     this.cardGroupOverlap(card, this.table, this.myHand);
       }
       else {
         for (let i = 0; i < this.myHand.length; i++) {
@@ -173,6 +183,11 @@ playGame.prototype = {
     },
     nextTurn: function(){
         isMyTurn = !isMyTurn;
+
+        // reshuffle cards
+        [this.cardsLeft, this.cardsAdded] = reshuffle(0.5, this.table, this.deck.slice(this.nextCardIndex, 52));
+        this.table = this.drawCards(this.nextCardIndex, 4);
+        this.nextCardIndex += 4;
     }
 }
 
@@ -184,11 +199,17 @@ function untint(cards) {
   cards.forEach(c => c.tint = 0xFFFFFF);
 }
 
+function easeIn(card, pos) {
+  game.add.tween(card).to(pos, 400, Phaser.Easing.Back.Out, true);
+}
+
 function getTurnText(){
     let isPartner = isMyTurn ? '' : 'partner\'s '
     return 'It\'s your ' + isPartner + 'turn.'
 }
 
-function easeIn(card, pos) {
-  game.add.tween(card).to(pos, 400, Phaser.Easing.Back.Out, true);
+function getCounterText(num, counterType) {
+  let plural = (num == 1) ? '' : 's';
+  let descrip = (counterType == 'left') ? 'left in deck' : 'reshuffled';
+  return `${num} card${plural} ${descrip}`;
 }
