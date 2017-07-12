@@ -58,9 +58,7 @@ var client_onserverupdate_received = function(data){
 				 parseInt(customObj.trueY),
 				 customObj.width, customObj.height);
         if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-          highlightCell(globalGame, '#d15619', function(x) {
-	    return x.targetStatus == 'target';
-	  });
+          highlightCell(globalGame, '#000000', x => x.targetStatus == 'target');
         }
       };
       imgObj.src = customObj.url; // tell client where to find it
@@ -126,7 +124,7 @@ var client_onMessage = function(data) {
       var target = _.filter(globalGame.objects, (x) => {
 	return x.targetStatus == 'target';
       })[0];
-      var scoreDiff = target.name == clickedObjName ? 5 : 0;
+      var scoreDiff = target.name == clickedObjName ? globalGame.bonusAmt : 0;
       globalGame.data.subject_information.score += scoreDiff;
       $('#score').empty()
         .append("Bonus: $" + (globalGame.data.subject_information.score/100).toFixed(2));
