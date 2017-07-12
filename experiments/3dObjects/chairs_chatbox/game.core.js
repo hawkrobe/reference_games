@@ -30,7 +30,7 @@ var game_core = function(options){
   this.expid = 'pilot0';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = [];
   
   // How many players in the game?
   this.players_threshold = 2;
@@ -154,7 +154,6 @@ game_core.prototype.newRound = function() {
     this.roundNum += 1;
     this.trialInfo = {currStim: this.trialList[this.roundNum]};
     this.objects = this.trialList[this.roundNum];
-    console.log(this.objects);
     this.server_send_update();
   }
 };
@@ -267,6 +266,8 @@ game_core.prototype.sampleStimulusLocs = function() {
 
 game_core.prototype.makeTrialList = function () { 
 
+
+
 //sample 23 of each condition and randomize
 f = _.times(23,function() {return "far"});
 c = _.times(23,function() {return "close"});
@@ -290,11 +291,22 @@ var trialList = [];
 var fam = []; 
 
 for (var i = 0; i < 69; i++){
+
   //now add whole families based on random order established by criteria
   fam = _.filter(stimList, function(s){ return (s['condition']==criteria[i][0] && s['family']==criteria[i][1])});
 
+  //target is always member 'a', and fam is always in order 'a' 'b' 'c'
+  fam[0]['target_status'] = "target";
+  fam[1]['target_status'] = "distractor1";
+  fam[2]['target_status'] = "distractor2";
+
+  //remove ".png" file extension from filename property to prevent join/split errors by "."
+  for(var i; i < fam.length; i++){
+    fam[i]['filename'] = fam[i]['filename'].slice(0, -4);
+  }
+
   // sample locations for those objects
-  var locs = this.sampleStimulusLocs();
+  var locs = this.sampleStimulusLocs();  
 
   // construct trial list (in sets of complete rounds)
   trialList.push(_.map(_.zip(fam, locs.speaker, locs.listener), function(tuple) {
@@ -324,66 +336,9 @@ for (var i = 0; i < 69; i++){
       }));
   }
 
-  console.log(trialList[0][0]['speakerCoords']);
-  console.log(trialList[0][1]['speakerCoords']);
-  console.log(trialList[0][2]['speakerCoords']);
   return(trialList);
 }
 
-
-/*
-  var local_this = this;
-  var design_dict = this.getRandomizedConditions();
-  var conditionList = design_dict['condition'];
-  var categoryList = design_dict['category'];
-  var _objectList = design_dict['object'];
-  var poseList = design_dict['pose'];
-  var targetList = design_dict['target'];
-
-  var objList = new Array;
-  var locs = new Array;
-
-  
-  var trialList = [];
-  for (var i = 0; i < categoryList.length; i++) { // "i" indexes round number    
-    // sample four object images that are unique and follow the condition constraints
-    var objList = sampleTrial(i,categoryList,_objectList,poseList,targetList,conditionList);      
-    // sample locations for those objects
-    var locs = this.sampleStimulusLocs(); 
-    // construct trial list (in sets of complete rounds)
-    trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
-      var object = _.clone(tuple[0]);
-      object.width = local_this.cellDimensions.width;
-      object.height = local_this.cellDimensions.height;      
-      var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
-      var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);      
-      object.speakerCoords = {
-      	gridX : tuple[1][0],
-      	gridY : tuple[1][1],
-      	trueX : speakerGridCell.centerX - object.width/2,
-      	trueY : speakerGridCell.centerY - object.height/2,
-      	gridPixelX: speakerGridCell.centerX - 100,
-      	gridPixelY: speakerGridCell.centerY - 100
-            };
-      object.listenerCoords = {
-      	gridX : tuple[2][0],
-      	gridY : tuple[2][1],
-      	trueX : listenerGridCell.centerX - object.width/2,
-      	trueY : listenerGridCell.centerY - object.height/2,
-      	gridPixelX: listenerGridCell.centerX - 100,
-      	gridPixelY: listenerGridCell.centerY - 100
-      };
-      return object;
-
-      }));
-  
-    
-  };
-  //console.log(trialList);
-  return(trialList);
-
-};
-*/
 
 game_core.prototype.server_send_update = function(){
   //Make a snapshot of the current state, for updating the clients
@@ -414,7 +369,9 @@ game_core.prototype.server_send_update = function(){
   // console.log('printing state variable from server_send_update');
   // console.log(state);
   //Send the snapshot to the players
+
   this.state = state;
+
   _.map(local_game.get_active_players(), function(p){
     p.player.instance.emit( 'onserverupdate', state);});
 };

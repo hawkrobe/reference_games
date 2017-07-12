@@ -86,61 +86,11 @@ function getObjectLocs(objects) {
   }));
 }
 
-var writeData = function(client, type, message_parts) {
-  var gc = client.game;
-  var trialNum = gc.state.roundNum + 1; 
-  var roundNum = gc.state.roundNum + 1;
-  var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = [gc.id, Date.now(), trialNum];
-  var id = gc.id;
-
-
-  switch(type) {
-  case "clickedObj" :
-    // parse the message
-    var clickedName = message_parts[1];
-    var correct = intendedName === clickedName ? 1 : 0;
-    var pose = parseInt(message_parts[2]);
-    var condition = message_parts[3];
-    var objectLocs = getObjectLocs(gc.trialInfo.currStim);
-    line = (line.concat([intendedName, clickedName, correct, pose, condition])
-	    .concat(objectLocs)).join('\t') + '\n';
-     console.log(line)
-    break;
- 
-  case "message" :
-    var msg = message_parts[1].replace(/~~~/g,'.');
-    console.log(client.role);
-    var line = (id + '\t' + Date.now() + '\t' + roundNum + '\t' + client.role + '\t' + msg + '\n');
-    console.log("message:" + line);
-    break;
-  }
-  gc.streams[type].write(line, function (err) {if(err) throw err;});
-
-};
-
-var startGame = function(game, player) {
-  // Establish write streams
-  var startTime = utils.getLongFormTime();
-  var dataFileName = startTime + "_" + game.id + ".csv";
-  var baseCols = ["gameid","time","trialNum"].join('\t');
-  var objectLocHeader = utils.getObjectLocHeader();
-  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", 
-			  "outcome", "pose", "condition", objectLocHeader, "\n"].join('\t');
-  var messageHeader = [baseCols, "sender","contents\n"].join('\t');
- utils.establishStream(game, "message", dataFileName, messageHeader);
-  utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
-
-  game.newRound(0);
-};
-
 var setCustomEvents = function(socket) {
   //empty
 };
 
 module.exports = {
   setCustomEvents : setCustomEvents,
-  writeData : writeData,
-  startGame : startGame,
   onMessage : onMessage
 };

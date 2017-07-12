@@ -43,7 +43,7 @@ var selecting;
  */
 
 var client_onserverupdate_received = function(data){
-
+  console.log('received data from server' + JSON.stringify(data))
   // Update client versions of variables with data received from
   // server_send_update function in game.core.js
   //data refers to server information
@@ -58,7 +58,7 @@ var client_onserverupdate_received = function(data){
   if (globalGame.roundNum != data.roundNum) {
     var alreadyLoaded = 0; 
     $('#occluder').show();
-    // globalGame.drawingAllowed = false;
+    //console.log(data.objects);
     globalGame.objects = _.map(data.objects, function(obj) {
       // Extract the coordinates matching your role
       var customCoords = globalGame.my_role == "speaker" ? obj.speakerCoords : obj.listenerCoords;
@@ -73,7 +73,6 @@ var client_onserverupdate_received = function(data){
       var imgObj = new Image(); //initialize object as an image (from HTML5)
       imgObj.src = customObj.url; // tell client where to find it
       imgObj.onload = function(){ // Draw image as soon as it loads (this is a callback)
-        console.log("in onload");
         globalGame.ctx.drawImage(imgObj, parseInt(customObj.trueX), parseInt(customObj.trueY),
 				  customObj.width, customObj.height);
           if (globalGame.my_role === globalGame.playerRoleNames.role1) {
@@ -83,8 +82,8 @@ var client_onserverupdate_received = function(data){
           if (alreadyLoaded == 3) {
             setTimeout(function() {
               $('#occluder').hide();
-	      $('#chatbox').removeAttr("disabled");
-	      $('#chatbox').focus();
+      	      $('#chatbox').removeAttr("disabled");
+      	      $('#chatbox').focus();
               globalGame.drawingAllowed = true;
             },750);
           }
@@ -95,7 +94,8 @@ var client_onserverupdate_received = function(data){
     });
   };
 
-console.log(globalGame.objects);
+//console.log(globalGame);
+//console.log(data);
   // Get rid of "waiting" screen and allow drawing if there are multiple players
   if(data.players.length > 1) {
     $('#messages').empty();
@@ -127,6 +127,7 @@ console.log(globalGame.objects);
 var client_onMessage = function(data) {
 
   var commands = data.split('.');
+  console.log(commands);
   var command = commands[0];
   var subcommand = commands[1] || null;
   var commanddata = commands[2] || null;
@@ -146,11 +147,16 @@ var client_onMessage = function(data) {
       $('#chatbox').attr("disabled", "disabled");
       var clickedObjName = commanddata;
 
+      console.log("clickedObjName is " + clickedObjName);
+
       // update local score
+      console.log("game.client - client_onMessage");
+      console.log(globalGame.objects);
       var target = _.filter(globalGame.objects, function(x){
-	return x.target_status == 'target';
+	       return x.target_status == 'target';
       })[0];
-      var scoreDiff = target.subordinate == clickedObjName ? 1 : 0;
+      var scoreDiff = target.filename == clickedObjName ? 1 : 0;
+      console.log("aaaand target.filename is     " + target.filename );
       globalGame.data.subject_information.score += scoreDiff;
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
@@ -251,7 +257,7 @@ var client_onjoingame = function(num_players, role) {
   } else if(role === globalGame.playerRoleNames.role2) {
     $('#instructs').append("The speaker will tell you about one of these objects. " + 
           "Click on the target object the speaker " +
-         "is telling you about.");
+          "is telling you about.");
   }
 
   if(num_players == 1) {
@@ -263,10 +269,10 @@ var client_onjoingame = function(num_players, role) {
   	window.close();
       } else {
   	console.log("would have submitted the following :");
-  	console.log(this.data);
+  	//console.log(this.data);
       }
     }, 1000 * 60 * 15);
-
+    console.log(globalGame.my_id);
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
               + 'Please do not refresh the page!'); 
   }
@@ -301,7 +307,7 @@ function responseListener(evt) {
         // Send packet about trial to server
         var currPose = globalGame.objects[0]['pose'];  
         var currCondition = globalGame.objects[0]['condition']; 
-        var packet = ["clickedObj", obj.subordinate, currPose, currCondition];
+        var packet = ["clickedObj", obj.filename, currPose, currCondition];
         console.log(packet);
         globalGame.socket.send(packet.join('.'));
       };
@@ -312,7 +318,7 @@ function responseListener(evt) {
 
 function getObjectLocs(objects) {
   return _.flatten(_.map(objects, function(object) {
-    return [object.subordinate,
+    return [object.filename,
       object.speakerCoords.gridX,
       object.listenerCoords.gridX];
   }));
@@ -321,7 +327,7 @@ function getObjectLocs(objects) {
 function getIntendedTargetName(objects) {
   return _.filter(objects, function(x){
     return x.target_status == 'target';
-  })[0]['subordinate'];
+  })[0]['filename'];
 }
 
 function hitTest(shape,mx,my) {

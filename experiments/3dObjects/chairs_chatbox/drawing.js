@@ -71,14 +71,13 @@ var highlightCell = function(game, color, condition) {
 
 
 var drawScreen = function(game, player) {
-  // console.log('got to drawScreen!')
-  // draw background
-  game.ctx.strokeStyle = "#FFFFFF";
-  game.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-  game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
+  console.log('got to drawScreen!')
+ // // draw background
+  game.ctx.fillStyle = "#FFFFFF";
+  game.ctx.fillRect(0,0, game.viewport.width, game.viewport.height);
 
   // Draw message in center (for countdown, e.g.)
-  if (player.message) {
+  if (player.message != "") {
     game.ctx.font = "bold 23pt Helvetica";
     game.ctx.fillStyle = 'blue';
     game.ctx.textAlign = 'center';
@@ -106,7 +105,7 @@ function getIntendedTargetName(objects) {
 function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
   // visual feedback
   highlightCell(globalGame, 'black', function(x) {
-    return x.subordinate == clickedObjName;
+    return x.filename == clickedObjName;
   });
   // textual feedback
   $('#turnIndicator').html(" ");
@@ -124,7 +123,7 @@ function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
 function drawViewerFeedback(globalGame, scoreDiff, clickedObjName) {
   // viewer feedback
   highlightCell(globalGame, 'black', function(x) {
-    return x.subordinate == clickedObjName;
+    return x.filename == clickedObjName;
   });
   highlightCell(globalGame, 'green', function(x) {
     return x.target_status == 'target';
