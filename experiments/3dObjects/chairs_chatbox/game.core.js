@@ -30,7 +30,7 @@ var game_core = function(options){
   this.expid = 'pilot0';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = [];
+  this.dataStore = ['csv'];
   
   // How many players in the game?
   this.players_threshold = 2;
@@ -266,8 +266,6 @@ game_core.prototype.sampleStimulusLocs = function() {
 
 game_core.prototype.makeTrialList = function () { 
 
-
-
 //sample 23 of each condition and randomize
 f = _.times(23,function() {return "far"});
 c = _.times(23,function() {return "close"});
@@ -301,8 +299,9 @@ for (var i = 0; i < 69; i++){
   fam[2]['target_status'] = "distractor2";
 
   //remove ".png" file extension from filename property to prevent join/split errors by "."
-  for(var i; i < fam.length; i++){
-    fam[i]['filename'] = fam[i]['filename'].slice(0, -4);
+  for(var j = 0; j < fam.length; j++){
+    fam[j]['filename'] = fam[j]['filename'].slice(0, -4);
+    console.log(fam[j]['filename']);
   }
 
   // sample locations for those objects
