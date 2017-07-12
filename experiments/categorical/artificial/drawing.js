@@ -68,37 +68,34 @@ var drawScreen = function(game, player) {
 };
 
 function drawSketcherFeedback(globalGame, scoreDiff, clickedObjName) {
-  // visual feedback
-  highlightCell(globalGame, 'black', function(x) {
-    return x.name == clickedObjName;
-  });
   // textual feedback
   if (scoreDiff > 0) {
-    setTimeout(function(){
+    // visual feedback
+    highlightCell(globalGame, '#19A319', x => x.name == clickedObjName);
+    setTimeout(() => {
       $('#feedback').html('Great job! Your partner correctly identified the target.');
     }, globalGame.feedbackDelay);
   } else {
-    setTimeout(function(){
-      $('#feedback').html('Too bad... Your partner thought the target was the object outlined in ' + 'black'.bold() + '.');
+    highlightCell(globalGame, '#C83232', x => x.name == clickedObjName);
+    setTimeout(() => {
+      $('#feedback').html('Too bad... Your partner thought the target was the object outlined in ' + 'red'.fontcolor('#C83232').bold() + '.');
     }, globalGame.feedbackDelay);
   }
 };
 
 function drawViewerFeedback(globalGame, scoreDiff, clickedObjName) {
   // viewer feedback
-  highlightCell(globalGame, 'black', function(x) {
-    return x.name == clickedObjName;
-  });
-  highlightCell(globalGame, 'green', function(x) {
-    return x.targetStatus == 'target';
-  });
+  highlightCell(globalGame, '#000000', x => x.name == clickedObjName);
   if (scoreDiff > 0) {
-    setTimeout(function(){
+    highlightCell(globalGame, '#19A319', x => x.targetStatus == 'target');
+    setTimeout(() => {
       $('#feedback').html('Great job! You correctly identified the target!');
     }, globalGame.feedbackDelay);
   } else {
-    setTimeout(function(){
-      $('#feedback').html('Sorry... The target was the object outlined in ' + 'green'.fontcolor("#1aff1a").bold() + '.');
+    highlightCell(globalGame, '#C83232', x => x.targetStatus == 'target');
+    setTimeout(() => {
+      $('#feedback').html('Sorry... The target was the object outlined in '
+			  + 'red'.fontcolor("#C83232").bold() + '.');
     }, globalGame.feedbackDelay);
   }
 };
