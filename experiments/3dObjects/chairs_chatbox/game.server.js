@@ -72,19 +72,74 @@ var onMessage = function(client,message) {
   }
 };
 
-function getIntendedTargetName(objects) {
-  return _.filter(objects, function(x){
-    return x.target_status == 'target';
-  })['filename']; 
-}
+/*
+  Associates events in onMessage with callback returning json to be saved
+  {
+    <eventName>: (client, message_parts) => {<datajson>}
+  }
+  Note: If no function provided for an event, no data will be written
+*/
+var dataOutput = function() {
+  function getIntendedTargetName(objects) {
+    return _.filter(objects, o => o.target_status === 'target')[0]['filename'];
+  }
 
-function getObjectLocs(objects) {
-  return _.flatten(_.map(objects, function(object) {
-    return [object.filename,
-	    object.speakerCoords.gridX,
-	    object.listenerCoords.gridX];
-  }));
-}
+  function getObjectLocs(objects) {
+    return _.flatten(_.map(objects, o => {
+      return [o.filename, o.speakerCoords.gridX, o.listenerCoords.gridX];
+    }));
+  }
+
+  function getObjectLocHeaderArray() {
+    return _.flatten(_.map(_.range(1,5), i => {
+      return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], v => 'object' + i + v);
+    }));
+  };
+
+  function commonOutput (client, message_data) {
+    return {
+      expid: client.game.expid,
+      gameid: client.game.id,
+      time: Date.now(),
+      trialNum : client.game.state.roundNum + 1,
+      workerId: client.workerid,
+      assignmentId: client.assignmentid
+    };
+  };
+
+  var clickedObjOutput = function(client, message_data) {
+    var objects = client.game.trialInfo.currStim;
+    var intendedName = getIntendedTargetName(objects);
+    var objLocations = _.zipObject(getObjectLocHeaderArray(), getObjectLocs(objects));
+    return _.extend(
+      commonOutput(client, message_data),
+      objLocations, {
+	intendedName,
+	clickedName: message_data[1],
+	correct: intendedName === message_data[1],
+	pose: parseInt(message_data[2]),
+	condition : message_data[3]
+      }
+    );
+  };
+
+  var chatMessageOutput = function(client, message_data) {
+    var intendedName = getIntendedTargetName(client.game.trialInfo.currStim);
+    return _.extend(
+      commonOutput(client, message_data), {
+	intendedName,
+	role: client.role,
+	text: message_data[1].replace(/~~~/g, '.'),
+	reactionTime: message_data[2]
+      }
+    );
+  };
+
+  return {
+    'chatMessage' : chatMessageOutput,
+    'clickedObj' : clickedObjOutput
+  };
+}();
 
 var setCustomEvents = function(socket) {
   //empty
