@@ -48,8 +48,8 @@ playGame.prototype = {
         cardCounter.anchor = new Phaser.Point(0.5, 0.5);
 
         // make hands for this player and that player
-        this.thisHand = this.makeHand(0, true);
-        this.thatHand = this.makeHand(3, false);
+        this.myHand = this.makeHand(0, true);
+        this.theirHand = this.makeHand(3, false);
         this.onTable = this.drawCards(6, 4);
         this.nextCardIndex = 10;
 
@@ -130,15 +130,22 @@ playGame.prototype = {
       game.world.bringToTop(card);
       card.scale.set(options.cardScale*1.1);
       // for debugging
-      loc = this.thisHand.indexOf(card) != -1 ? 'hand' : 'table';
+      loc = this.myHand.indexOf(card) != -1 ? 'hand' : 'table';
       console.log(loc);
     },
     stopDrag: function(card, pointer) {
       card.scale.set(options.cardScale);
-
-      // check for overlap in cards on table and within hand
-      if (!(this.cardGroupOverlap(card, this.thisHand, this.onTable) ||
-          this.cardGroupOverlap(card, this.onTable, this.thisHand))) {
+      let shouldSwap = false;
+      if (isMyTurn) {
+        shouldSwap = this.cardGroupOverlap(card, this.myHand, this.onTable) ||
+                     this.cardGroupOverlap(card, this.onTable, this.myHand);
+      }
+      else {
+        for (let i = 0; i < this.myHand.length; i++) {
+          shouldSwap = shouldSwap || game.physics.arcade.overlap(this.myHand[i], card, this.swapPos);
+        }
+      }
+      if (!shouldSwap) {
         easeIn(card, card.origPos);
       }
     },
