@@ -36,9 +36,10 @@ var game_core = function(options){
   this.experimentName = 'artificialLanguage';
   this.iterationName = 'pilot0';
   this.anonymizeCSV = true;
+  this.bonusAmt = 3; // in cents
   
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv', 'mongo'];
+  this.dataStore = ['csv'];
 
   // How many players in the game?
   this.players_threshold = 2;
