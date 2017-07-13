@@ -301,7 +301,6 @@ for (var i = 0; i < 69; i++){
   //remove ".png" file extension from filename property to prevent join/split errors by "."
   for(var j = 0; j < fam.length; j++){
     fam[j]['filename'] = fam[j]['filename'].slice(0, -4);
-    console.log(fam[j]['filename']);
   }
 
   // sample locations for those objects
