@@ -229,7 +229,7 @@ var customSetup = function(game) {
         .append("Round\n" + (game.roundNum + 2) + " of " + game.numRounds);
     }
     $('#score').empty().append(score + ' of ' + (game.roundNum + 1) + ' correct for a bonus of $'
-             + ((score * 3)/100).toFixed(2));
+             + ((score * 2)/100).toFixed(2));
   });
 
 
