@@ -35,8 +35,6 @@ var onMessage = function(client,message) {
   switch(message_type) {
     
   case 'clickedObj' :
-    //writeData(client, "clickedObj", message_parts);
-    //console.log('wrote data' + message_parts)  
     others[0].player.instance.send("s.feedback." + message_parts[1]); 
     target.instance.send("s.feedback." + message_parts[1]);
     
@@ -91,7 +89,7 @@ var dataOutput = function() {
   }
 
   function getObjectLocHeaderArray() {
-    return _.flatten(_.map(_.range(1,5), i => {
+    return _.flatten(_.map(_.range(1,4), i => {
       return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], v => 'object' + i + v);
     }));
   };
@@ -117,7 +115,6 @@ var dataOutput = function() {
 	intendedName,
 	clickedName: message_data[1],
 	correct: intendedName === message_data[1],
-	pose: parseInt(message_data[2]),
 	condition : message_data[3]
       }
     );
@@ -147,5 +144,6 @@ var setCustomEvents = function(socket) {
 
 module.exports = {
   setCustomEvents : setCustomEvents,
-  onMessage : onMessage
+  onMessage : onMessage,
+  dataOutput: dataOutput
 };
