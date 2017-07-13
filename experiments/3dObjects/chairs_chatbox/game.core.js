@@ -30,7 +30,7 @@ var game_core = function(options){
   this.expid = 'pilot0';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = ['csv', 'mongo'];
   
   // How many players in the game?
   this.players_threshold = 2;
@@ -61,7 +61,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 32;
+  this.numRounds = 69;
 
   // How many objects per round (how many items in the menu)?
   this.numItemsPerRound = this.numHorizontalCells*this.numVerticalCells;
