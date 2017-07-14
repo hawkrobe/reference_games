@@ -87,7 +87,7 @@ var drawScreen = function(game, player) {
              25);
   }
   else {
-    drawGrid(globalGame);
+    // drawGrid(globalGame);
     drawObjects(globalGame, player);
     // if (globalGame.my_role === globalGame.playerRoleNames.role1) {
     //     highlightCell(globalGame, player, '#d15619',

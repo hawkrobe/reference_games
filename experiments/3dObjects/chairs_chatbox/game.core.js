@@ -27,10 +27,13 @@ if( typeof _ === 'undefined' ) {
 var game_core = function(options){
   this.server = options.server ;
   this.email = 'rxdh@stanford.edu';
-  this.expid = 'pilot0';
+  this.projectName = '3dObjects';
+  this.experimentName = 'chairs_chatbox';
+  this.iterationName = 'pilot0';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
+  this.anonymizeCSV = true;
   
   // How many players in the game?
   this.players_threshold = 2;
