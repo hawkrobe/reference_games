@@ -43,7 +43,7 @@ var selecting;
  */
 
 var client_onserverupdate_received = function(data){
-  console.log('received data from server' + JSON.stringify(data))
+  // console.log('received data from server' + JSON.stringify(data))
   // Update client versions of variables with data received from
   // server_send_update function in game.core.js
   //data refers to server information
@@ -127,7 +127,7 @@ var client_onserverupdate_received = function(data){
 var client_onMessage = function(data) {
 
   var commands = data.split('.');
-  console.log(commands);
+  //console.log(commands);
   var command = commands[0];
   var subcommand = commands[1] || null;
   var commanddata = commands[2] || null;
@@ -147,11 +147,11 @@ var client_onMessage = function(data) {
       $('#chatbox').attr("disabled", "disabled");
       var clickedObjName = commanddata;
 
-      console.log("clickedObjName is " + clickedObjName);
+      // console.log("clickedObjName is " + clickedObjName);
 
       // update local score
-      console.log("game.client - client_onMessage");
-      console.log(globalGame.objects);
+      //console.log("game.client - client_onMessage");
+      //console.log(globalGame.objects);
       var target = _.filter(globalGame.objects, function(x){
 	       return x.target_status == 'target';
       })[0];
