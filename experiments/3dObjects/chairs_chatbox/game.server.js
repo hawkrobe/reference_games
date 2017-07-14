@@ -109,7 +109,8 @@ var dataOutput = function() {
     var objects = client.game.trialInfo.currStim;
     var intendedName = getIntendedTargetName(objects);
     var objLocations = _.zipObject(getObjectLocHeaderArray(), getObjectLocs(objects));
-    return _.extend(
+    
+    var output =  _.extend(
       commonOutput(client, message_data),
       objLocations, {
 	intendedName,
@@ -118,11 +119,13 @@ var dataOutput = function() {
 	condition : message_data[3]
       }
     );
+    console.log(JSON.stringify(output, null, 3));
+    return output;
   };
 
   var chatMessageOutput = function(client, message_data) {
     var intendedName = getIntendedTargetName(client.game.trialInfo.currStim);
-    return _.extend(
+    var output = _.extend(
       commonOutput(client, message_data), {
 	intendedName,
 	role: client.role,
@@ -130,6 +133,9 @@ var dataOutput = function() {
 	reactionTime: message_data[2]
       }
     );
+    console.log(JSON.stringify({role: client.role, 
+        text: message_data[1].replace(/~~~/g, '.')}, null, 3));
+    return output;
   };
 
   return {
