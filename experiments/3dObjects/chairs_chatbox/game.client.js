@@ -100,6 +100,9 @@ var client_onserverupdate_received = function(data){
   if(data.players.length > 1) {
     $('#messages').empty();
     globalGame.get_player(globalGame.my_id).message = "";
+    $('#chatbox').removeAttr("disabled");
+  } else{
+    $('#chatbox').attr("disabled", "disabled");
   }
 
   globalGame.game_started = data.gs;
