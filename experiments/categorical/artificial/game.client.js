@@ -236,16 +236,14 @@ function dragMoveListener (event) {
   var container = $('#message_panel')[0];
   var width = parseInt(container.getBoundingClientRect().width);
   var height = parseInt(container.getBoundingClientRect().height);
-  console.log(width + ' ' + height);
   if(_.has(event, 'name')) {
-    console.log(event);
     event.target = $(`p:contains("${event.name}")`)[0];
     event.dx = parseFloat(event.dx) / event.width * width;
     event.dy = parseFloat(event.dy) / event.height * height;
-    console.log(event);
   } else {
     globalGame.socket.send(['dragging', event.target.innerHTML,
-			    event.dx, event.dy, width, height].join('.'));
+			    parseInt(event.dx), parseInt(event.dy),
+			    width, height].join('.'));
   }
   
   var target = event.target,
@@ -253,6 +251,7 @@ function dragMoveListener (event) {
       x = (parseFloat(target.getAttribute('data-x')) || 0) + parseFloat(event.dx),
       y = (parseFloat(target.getAttribute('data-y')) || 0) + parseFloat(event.dy);
   
+
   // translate the element
   target.style.webkitTransform =
     target.style.transform =

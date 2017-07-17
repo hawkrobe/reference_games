@@ -57,7 +57,9 @@ var onMessage = function(client,message) {
     break;
 
   case 'drop' :
-    _.map(others, (p) => {p.player.instance.emit( 'drop');});
+    _.map(others, (p) => {
+      p.player.instance.emit('drop', {name: message_parts[1]});
+    });
     break;
 
   case 'h' : // Receive message when browser focus shifts
