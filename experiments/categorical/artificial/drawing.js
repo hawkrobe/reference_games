@@ -118,7 +118,12 @@ var highlightCell = function(game, color, condition) {
   }
 };
 
-function setupLabels(game) {
+function disableLabels(game) {
+  interact('p').unset();
+  interact('#chatarea').unset();
+}
+
+function enableLabels(game) {
   var labels = document.querySelector('#message_panel');
   var startPos = null;
   var dropCenter = null;
