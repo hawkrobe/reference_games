@@ -107,7 +107,7 @@ var establishStream = function(game, dataPoint) {
   var filePath = [dirPath, fileName].join('/');
 
   // Create path if it doesn't already exist
-  mkdirp(dirPath, err => {if (err) console.error(err);});
+  mkdirp.sync(dirPath, err => {if (err) console.error(err);});
 
   // Write header
   var header = _.keys(dataPoint).join('\t') + '\n';
