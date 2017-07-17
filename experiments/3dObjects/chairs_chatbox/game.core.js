@@ -26,10 +26,10 @@ if( typeof _ === 'undefined' ) {
 
 var game_core = function(options){
   this.server = options.server ;
-  this.email = 'rxdh@stanford.edu';
+  this.email = 'sketchloop@gmail.com';
   this.projectName = '3dObjects';
   this.experimentName = 'chairs_chatbox';
-  this.iterationName = 'pilot0';
+  this.iterationName = 'pilot1';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
