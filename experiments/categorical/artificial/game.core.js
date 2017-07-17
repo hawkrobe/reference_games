@@ -156,7 +156,7 @@ game_core.prototype.newRound = function(delay) {
       localThis.trialInfo = {
 	currStim: localThis.trialList[localThis.roundNum],
 	currContextType: localThis.contextTypeList[localThis.roundNum],
-	labels: _.shuffle(localThis.language.vocab)
+	labels: localThis.language.vocab
       };
       localThis.server_send_update();
     }
@@ -304,7 +304,7 @@ game_core.prototype.server_send_update = function(){
 };
 
 var ArtificialLanguage = function() {
-  this.vocabSize = 9;
+  this.vocabSize = 16;
   this.wordLength = 4;
   this.possibleVowels = ['a','e','i','o','u'];
   this.possibleConsonants = ['g','h','k','l','m','n','p','w'];
