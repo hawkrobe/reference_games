@@ -96,7 +96,7 @@ var dataOutput = function() {
 
   function commonOutput (client, message_data) {
     return {
-      expid: client.game.expid,
+      iterationName: client.game.iterationName,
       gameid: client.game.id,
       time: Date.now(),
       trialNum : client.game.state.roundNum + 1,
@@ -113,10 +113,10 @@ var dataOutput = function() {
     var output =  _.extend(
       commonOutput(client, message_data),
       objLocations, {
-	intendedName,
-	clickedName: message_data[1],
-	correct: intendedName === message_data[1],
-	condition : message_data[3]
+    	intendedName,
+    	clickedName: message_data[1],
+    	correct: intendedName === message_data[1],
+    	condition : message_data[3]
       }
     );
     console.log(JSON.stringify(output, null, 3));
