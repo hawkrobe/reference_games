@@ -127,7 +127,6 @@ var dataOutput = function() {
     return _.extend(
       commonOutput(client, message_data), {
 	intendedName,
-	role: client.role,
 	text: message_data[1].replace(/~~~/g, '.'),
 	timeFromRoundStart: message_data[2]
       }
