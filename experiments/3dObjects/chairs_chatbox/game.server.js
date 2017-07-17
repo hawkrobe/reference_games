@@ -133,8 +133,7 @@ var dataOutput = function() {
 	reactionTime: message_data[2]
       }
     );
-    console.log(JSON.stringify({role: client.role, 
-        text: message_data[1].replace(/~~~/g, '.')}, null, 3));
+    console.log(JSON.stringify(output, null, 3));
     return output;
   };
 
