@@ -37,10 +37,10 @@ var checkPreviousParticipant = function(workerId, callback) {
     {json: postData},
     (error, res, body) => {
       if (!error && res.statusCode === 200) {
-	console.log("success! Received data " + JSON.stringify(body));
-	callback(body);
+	       console.log("success! Received data " + JSON.stringify(body));
+	       callback(body);
       } else {
-	console.log(`error checking participant in store: ${error} ${body}`);
+	       console.log(`error checking participant in store: ${error} ${body}`);
       }
     }
   );
