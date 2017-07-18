@@ -39,7 +39,7 @@ var game_core = function(options){
   this.bonusAmt = 3; // in cents
   
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = ['csv', 'mongo'];
 
   // How many players in the game?
   this.players_threshold = 2;
