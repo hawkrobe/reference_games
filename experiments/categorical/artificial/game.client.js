@@ -86,13 +86,6 @@ var client_onserverupdate_received = function(data){
     $('#chatbox').focus();
     globalGame.get_player(globalGame.my_id).message = "";
 
-    // Insert labels & show dropzone
-    var labels = $('#labels').empty().append(
-      _.map(globalGame.labels, (word) => {
-	return '<p class="cell draggable drag-drop">' + word + '</p>';
-      }))
-	.append('<div id="chatarea" class="dropzone"></div>');
-
     // reset labels
     // Update w/ role (can only move stuff if agent)
     $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
@@ -104,6 +97,12 @@ var client_onserverupdate_received = function(data){
 	.empty()
 	.append("<p>Click & drag one word down to the grey box</p>" +
 		"<p>to tell the listener which object is the target.</p>");
+      // Insert labels & show dropzone
+      $('#labels').empty().append(
+	_.map(globalGame.labels, (word) => {
+	  return '<p class="cell draggable drag-drop">' + word + '</p>';
+	}))
+	.append('<div id="chatarea" class="dropzone"></div>');
     } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
       disableLabels(globalGame);
       globalGame.viewport.addEventListener("click", mouseClickListener, false);
@@ -111,7 +110,11 @@ var client_onserverupdate_received = function(data){
 	.empty()
 	.append("<p>After you see the speaker drag a word into the box,</p>" +
 		"<p>click the object they are telling you about.</p>");
-
+      $('#labels').empty().append(
+	_.map(globalGame.labels, (word) => {
+	  return '<p class="cell draggable drag-drop" style="color:black">' + word + '</p>';
+	}))
+	.append('<div id="chatarea" class="dropzone"></div>');
     }
   }
     
