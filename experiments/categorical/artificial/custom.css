@@ -46,8 +46,10 @@ html , body {
 }
 
 .cell {
+    max-width: 25%;
+    height: 15%;    
     text-align: center;
-    flex: 1 1 30%;                       /* don't grow, don't shrink, width */
+    flex: 0 0 25%;                       /* don't grow, don't shrink, width */
 }
 
 #header {

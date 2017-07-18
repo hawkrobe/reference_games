@@ -64,8 +64,9 @@ var game_core = function(options){
   // How many rounds do we want people to complete?
   this.numRounds = 60;
   this.feedbackDelay = 300;
+
   // This will be populated with the tangram set
-  this.trialInfo = {};
+  this.trialInfo = {roles: _.values(this.playerRoleNames)};
 
   if(this.server) {
     this.id = options.id;
@@ -149,14 +150,17 @@ game_core.prototype.newRound = function(delay) {
     } else {
       // Tell players
       _.forEach(players, function(p){
-        p.player.instance.emit( 'newRoundUpdate' );
+        p.player.instance.emit( 'newRoundUpdate');
       });
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
+
       localThis.trialInfo = {
 	currStim: localThis.trialList[localThis.roundNum],
 	currContextType: localThis.contextTypeList[localThis.roundNum],
-	labels: _.shuffle(localThis.language.vocab)
+	labels: localThis.language.vocab,
+	roles: _.zipObject(_.map(localThis.players, p =>p.id),
+			   _.reverse(_.values(localThis.trialInfo.roles)))
       };
       localThis.server_send_update();
     }
@@ -304,7 +308,7 @@ game_core.prototype.server_send_update = function(){
 };
 
 var ArtificialLanguage = function() {
-  this.vocabSize = 9;
+  this.vocabSize = 16;
   this.wordLength = 4;
   this.possibleVowels = ['a','e','i','o','u'];
   this.possibleConsonants = ['g','h','k','l','m','n','p','w'];
