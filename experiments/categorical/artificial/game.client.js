@@ -27,6 +27,8 @@ var waiting;
 var selecting;
 
 var client_onserverupdate_received = function(data){
+  console.log(data.trialInfo);
+  globalGame.my_role = data.trialInfo.roles[globalGame.my_id];
 
   // Update client versions of variables with data received from
   // server_send_update function in game.core.js
@@ -41,7 +43,7 @@ var client_onserverupdate_received = function(data){
     globalGame.objects = _.map(data.trialInfo.currStim, function(obj) {
       // Extract the coordinates matching your role &
       // remove the speakerCoords and listenerCoords properties
-      var customCoords = (globalGame.my_role == "speaker" ?
+      var customCoords = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
 			  obj.speakerCoords : obj.listenerCoords);
       var customObj = _.chain(obj)
 	  .omit('speakerCoords', 'listenerCoords')
@@ -84,16 +86,35 @@ var client_onserverupdate_received = function(data){
     $('#chatbox').focus();
     globalGame.get_player(globalGame.my_id).message = "";
 
-    // Insert labels & show dropzone
-    var labels = $('#labels').empty().append(
-      _.map(globalGame.labels, (word) => {
-	return '<p class="cell draggable drag-drop">' + word + '</p>';
-      }))
-	.append('<div id="chatarea" class="dropzone"></div>');
-
     // reset labels
+    // Update w/ role (can only move stuff if agent)
+    $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
+
     if(globalGame.my_role === globalGame.playerRoleNames.role1) {
-      setupLabels(globalGame);
+      enableLabels(globalGame);
+      globalGame.viewport.removeEventListener("click", mouseClickListener, false);
+      $('#instructs')
+	.empty()
+	.append("<p>Click & drag one word down to the grey box</p>" +
+		"<p>to tell the listener which object is the target.</p>");
+      // Insert labels & show dropzone
+      $('#labels').empty().append(
+	_.map(globalGame.labels, (word) => {
+	  return '<p class="cell draggable drag-drop">' + word + '</p>';
+	}))
+	.append('<div id="chatarea" class="dropzone"></div>');
+    } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
+      disableLabels(globalGame);
+      globalGame.viewport.addEventListener("click", mouseClickListener, false);
+      $('#instructs')
+	.empty()
+	.append("<p>After you see the speaker drag a word into the box,</p>" +
+		"<p>click the object they are telling you about.</p>");
+      $('#labels').empty().append(
+	_.map(globalGame.labels, (word) => {
+	  return '<p class="cell draggable drag-drop" style="color:black">' + word + '</p>';
+	}))
+	.append('<div id="chatarea" class="dropzone"></div>');
     }
   }
     
@@ -196,16 +217,6 @@ var client_onjoingame = function(num_players, role) {
     globalGame.players.unshift({id: null, player: new game_player(globalGame)});
   });
 
-  // Update w/ role (can only move stuff if agent)
-  $('#roleLabel').append(role + '.');
-  if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("<p>Click & drag one word down to the grey box</p>" +
-			   "<p>to tell the listener which object is the target.</p>");
-  } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("<p>After you see the speaker drag a word into the box,</p>" +
-			   "<p>click the object they are telling you about.</p>");
-  }
-
   if(num_players == 1) {
     this.timeoutID = setTimeout(function() {
       if(_.size(this.urlParams) == 4) {
@@ -221,10 +232,6 @@ var client_onjoingame = function(num_players, role) {
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
               + 'Please do not refresh the page!');
   }
-
-  if(role === globalGame.playerRoleNames.role2) {
-    globalGame.viewport.addEventListener("click", mouseClickListener, false);
-  }
 };
 
 /*
@@ -236,16 +243,14 @@ function dragMoveListener (event) {
   var container = $('#message_panel')[0];
   var width = parseInt(container.getBoundingClientRect().width);
   var height = parseInt(container.getBoundingClientRect().height);
-  console.log(width + ' ' + height);
   if(_.has(event, 'name')) {
-    console.log(event);
     event.target = $(`p:contains("${event.name}")`)[0];
     event.dx = parseFloat(event.dx) / event.width * width;
     event.dy = parseFloat(event.dy) / event.height * height;
-    console.log(event);
   } else {
     globalGame.socket.send(['dragging', event.target.innerHTML,
-			    event.dx, event.dy, width, height].join('.'));
+			    parseInt(event.dx), parseInt(event.dy),
+			    width, height].join('.'));
   }
   
   var target = event.target,
@@ -253,6 +258,7 @@ function dragMoveListener (event) {
       x = (parseFloat(target.getAttribute('data-x')) || 0) + parseFloat(event.dx),
       y = (parseFloat(target.getAttribute('data-y')) || 0) + parseFloat(event.dy);
   
+
   // translate the element
   target.style.webkitTransform =
     target.style.transform =

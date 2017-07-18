@@ -49,14 +49,14 @@ var checkPreviousParticipant = function(workerId, callback) {
 var writeDataToCSV = function(game, _dataPoint) {
   var dataPoint = _.clone(_dataPoint);  
   var eventType = dataPoint.eventType;
-  
-  // Establish stream to file if it doesn't already exist
-  if(!_.has(game.streams, eventType))
-    establishStream(game, dataPoint);    
 
   // Omit sensitive data
   if(game.anonymizeCSV) 
     dataPoint = _.omit(dataPoint, ['workerId', 'assignmentId']);
+  
+  // Establish stream to file if it doesn't already exist
+  if(!_.has(game.streams, eventType))
+    establishStream(game, dataPoint);    
 
   var line = _.values(dataPoint).join('\t') + "\n";
   game.streams[eventType].write(line, err => {if(err) throw err;});
@@ -107,7 +107,7 @@ var establishStream = function(game, dataPoint) {
   var filePath = [dirPath, fileName].join('/');
 
   // Create path if it doesn't already exist
-  mkdirp(dirPath, err => {if (err) console.error(err);});
+  mkdirp.sync(dirPath, err => {if (err) console.error(err);});
 
   // Write header
   var header = _.keys(dataPoint).join('\t') + '\n';
