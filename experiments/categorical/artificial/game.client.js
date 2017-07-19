@@ -74,6 +74,7 @@ var client_onserverupdate_received = function(data){
   globalGame.roundNum = data.roundNum;
   globalGame.roundStartTime = new Date();
   globalGame.labels = data.trialInfo.labels;
+  globalGame.allObjects = data.allObjects;
   
   if(!_.has(globalGame, 'data')) {
     globalGame.data = data.dataObj;
@@ -132,11 +133,6 @@ var client_onMessage = function(data) {
   switch(command) {
   case 's': //server message
     switch(subcommand) {
-    case 'end' :
-      // Redirect to exit survey
-      ondisconnect();
-      console.log("received end message...");
-      break;
       
     case 'feedback' :
       $("#chatbox").attr("disabled", "disabled");
@@ -179,6 +175,65 @@ var client_onMessage = function(data) {
   }
 };
 
+function setupPostTest () {
+  var showNextLabel = () => {
+    // Clear borders on objects
+    $('img').css({'border-color' : 'white'});
+    globalGame.selectedObjects = [];
+    
+    // grey out old label
+    if(globalGame.currLabel) {
+      var oldLabel = $(`p:contains("${globalGame.currLabel}")`)
+	  .css('color', '#666666');
+    }
+    
+    // highlight new label
+    globalGame.labelNum += 1;
+    globalGame.currLabel = globalGame.labels[globalGame.labelNum];
+    var newLabel = $(`p:contains("${globalGame.currLabel}")`)
+	.css('color', '#FFFFFF');
+  };
+
+  var button = document.getElementById('post_test_button');
+  button.onclick = () => {
+    globalGame.socket.send('s.meaning.' + globalGame.currLabel.innerHTML);
+    showNextLabel();
+  };  
+  
+  // Populate display fields
+  _.forEach(globalGame.labels, (word) =>{
+    $('#word_grid').append(
+      $('<p/>')
+	.css({color: '#666666'})
+	.addClass('cell')
+	.text(word)
+    );
+  });
+  
+  _.forEach(globalGame.allObjects, (obj) => {
+    $("#object_grid").append(
+      $('<img/>')
+      	.attr({height: "50%", width: "25%", src: obj.url})
+	.css({border: '10px solid', 'border-color' : 'white'})
+  	.addClass("imgcell")
+    );
+  });
+  
+  $('img').click(function() {
+    console.log($(this).css('border-color'));
+    if($(this).css('border-color') === 'rgb(255, 255, 255)') {
+      globalGame.selectedObjects.push($(this).src);
+      $(this).css({'border-color': 'grey'});
+    } else {
+      _.remove(globalGame.selectedObjects, obj => obj == $(this).src);
+      $(this).css({'border-color': 'white'});
+    }
+  });
+
+  globalGame.labelNum = -1;
+  showNextLabel();
+};
+
 var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
 };
@@ -199,6 +254,13 @@ var customSetup = function(game) {
     }
   });
 
+  game.socket.on('finishedGame', function(data) {
+    $("#main").hide();
+    $("#header").hide();    
+    $("#post_test").show();
+    setupPostTest();
+  });
+  
   game.socket.on('dragging', function(event) {
     dragMoveListener(event);
   });

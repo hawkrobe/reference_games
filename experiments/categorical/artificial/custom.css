@@ -52,6 +52,13 @@ html , body {
     flex: 0 0 25%;                       /* don't grow, don't shrink, width */
 }
 
+.imgcell {
+    text-align: center;
+    flex: 0 0 25%;                       /* don't grow, don't shrink, width */
+    border: '20px solid',
+    border-color: 'white',
+}
+
 #header {
     height: 20%;
     width: 100%;
@@ -174,6 +181,38 @@ ALOT...don't understand how to adjust that.*/
 	text-align: left;
 	font-size: 200%;
 	overflow-y: visible;
+}
+
+#post_test {
+	height: auto;
+	width: auto;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: auto ;
+	left:0; right:0; top:0; bottom: 0;
+	position: absolute;
+}
+
+#word_grid {
+    float: top;
+    margin: auto;
+    border:solid 1px #333;
+    height: 25vh;
+    width: 40vw;
+    margin-top: 1%;
+    font-size: 200%;
+    background: #383838;
+}
+
+#object_grid {
+    float: bottom;
+    margin: auto;
+    border:solid 1px #333;
+    height: 50vh;
+    margin-top: 1%;
+    width: 100vh;
+    background: #383838;
 }
 
 /* #chatarea form { */
