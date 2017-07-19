@@ -1,0 +1,93 @@
+iterationName	gameid	time	trialNum	workerId	assignmentId	intendedName	role	text	reactionTime	eventType
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335831943	1	split_27_a_7b5b032a2cddeebc54d7082b34825ef0	speaker	the fatter toilet	4767	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335841522	1	split_27_a_7b5b032a2cddeebc54d7082b34825ef0	listener	Is it a little shorter?	3948	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335847449	1	split_27_a_7b5b032a2cddeebc54d7082b34825ef0	speaker	no	745	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335853118	1	split_27_a_7b5b032a2cddeebc54d7082b34825ef0	speaker	wider	957	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335872944	2	far_59_a_e4931ffa06d7b05cb04cb542	speaker	the high chair	2085	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335886041	2	far_59_a_e4931ffa06d7b05cb04cb542	listener	With the longest legs?	6710	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335890147	2	far_59_a_e4931ffa06d7b05cb04cb542	speaker	yes	793	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335909421	3	close_57_a_1055f78d441d170c4f3443b2	speaker	the one with the curved back leg	5776	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335927502	4	split_89_a_537924063294eb5f46ed025f8f85e067	speaker	the shortest chair	2503	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335948704	4	split_89_a_537924063294eb5f46ed025f8f85e067	listener	With the wider back?	4519	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335952868	4	split_89_a_537924063294eb5f46ed025f8f85e067	speaker	yes	370	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335967197	5	far_120_a_41852b57b492559eb3617808	speaker	the wide back chair	2270	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336002111	6	close_64_a_2a1184b04dd8f30e3e92f39	speaker	the one with thick legs and retangle back	12987	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336022564	7	far_79_a_bbf45d2d189dcd758e5f5b49c9f5	speaker	the one with a tall long back	7869	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336039549	8	close_39_a_20b36bbb42d36e0771dcb8deedb6c8d	speaker	the one with a wheel on the bottom	4515	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336057216	9	close_4_a_38b5f764afc9d28f200a	speaker	tall one with very skinny legs	4467	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336080460	10	split_67_a_d3f31fd0fc99f45e8b3f6b4a44a7	speaker	the one with least back support	9100	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336106860	11	close_117_a_665bfb42a0362f71d577f4b88a77	speaker	thick legs and wide back	10069	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336130267	12	split_130_a_8a21b853c8de77f0c8687ff9b0b4	speaker	the one with arms raising up	9071	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336146179	13	split_66_a_a14c7700cfc99b03ca6910e4922d61aa	speaker	the one that is leaning forward	3763	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336168394	14	split_18_a_8e0832b4ee38c9743b8d5c0e	speaker	a hole on the seat	2562	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336181066	15	far_106_a_2fc2b897b6b131c4dc75a59e	speaker	wide one	1446	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336194801	16	split_129_a_d5e1c6d3e6ce16ca8f5bf896	speaker	circular back	1849	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336212061	17	close_86_a_58f44c0057ae64b525633180	speaker	skinniest legs	2488	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336228711	18	split_2_a_46c7367eede2d9c5ca2ed12df13a	speaker	leaned back	3771	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336242227	19	split_68_a_98f923c006fdd918e6d206b2ed87676	speaker	rounded sides	1721	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336257362	20	far_17_a_81ba38f4d3b7eac1f82a35e8b19a	speaker	fat one with short back	3425	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336284941	21	split_16_a_a3260f0c8fddf11cf0f4992137d8	speaker	the one with rectangular sides and rectangular bottom	15718	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336296166	21	split_16_a_a3260f0c8fddf11cf0f4992137d8	speaker	back doesnt close	2871	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336301787	21	split_16_a_a3260f0c8fddf11cf0f4992137d8	speaker	i mean bottom	1644	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336326624	22	split_82_a_668c488e900c2ede62a9	speaker	tall fat chair	3209	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336343826	23	far_51_a_81628a0b5f7f9ad7ba94feec	speaker	the one that is reclined	6519	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336346574	23	far_51_a_81628a0b5f7f9ad7ba94feec	speaker	rocking chair	1358	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336362191	24	split_35_a_3853339519aca1bdfcd49104	speaker	rectangular back	2646	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336380032	25	close_98_a_c04c5b7d68b4e6481a68dda	speaker	lowest chair	2702	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336390648	25	close_98_a_c04c5b7d68b4e6481a68dda	listener	diamond pattern?	80773	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336392823	25	close_98_a_c04c5b7d68b4e6481a68dda	speaker	yes	407	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336426473	26	close_114_a_6f70a7948c59b49943da6ec23cebe068	speaker	stripped one that is not rounded	7376	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336449818	27	close_9_a_ee445cf3710af7e21548fc89657a4fac	speaker	plainback and plain seat	5887	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336468299	28	close_111_a_892d8090f05c136dd93768e7b9b1eabf	speaker	the one with a pillow	2588	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336486740	29	close_26_a_bce5c7402feef6d235fce1b314c8	speaker	rounded back with no patterns	8407	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336510621	30	split_7_a_64c80a33436b8a84541e733f	speaker	reclined back with solid color	9157	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336529134	31	close_8_a_e78f25a1f66c19a38a63c123	speaker	solid back thickest legs	4595	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336548274	32	close_70_a_99e4c4b39b75a06b30e0	speaker	ribbed back	2476	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336566171	33	split_91_a_f90dab51bec2bcd1a3340564b56a7f70	speaker	that one with spots	5734	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336590036	34	far_23_a_3c81fab5678a3872327289c00b6d	speaker	the the second thickest legs	9319	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336606985	35	split_101_a_9c7c3478edebfc1031d38697be8a	speaker	shortest chair	1662	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336622499	35	split_101_a_9c7c3478edebfc1031d38697be8a	listener	curved legs?	3029	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336625170	35	split_101_a_9c7c3478edebfc1031d38697be8a	speaker	yes	653	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336654176	36	far_84_a_5402eecc67e489502fa77440	speaker	the one with 2 triangle legs	16661	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336657157	36	far_84_a_5402eecc67e489502fa77440	speaker	solid back	2162	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336682324	37	close_95_a_4eed9ad9465482d543b9eef399a0841d	speaker	the one with a curved seat, and curved back with pointy top	13245	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336706184	38	close_107_a_f112035c6413080a664b3b9b23dd	speaker	solid side arms	5196	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336717639	39	split_25_a_3bb2201ba3b8709523f4da4464aa	speaker	pillows	1258	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336726599	40	far_48_a_8d4efa9893f7e49b3a85	speaker	hole	542	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336740481	41	far_24_a_d9a1f2e7290cd2c3baab0c715904	speaker	thick solid fattest one	4962	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336756269	42	close_133_a_a5a2d09e5384237869513d09	speaker	rounded back curved legs	5801	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336775747	43	close_123_a_e3d23dc47ddd9620c9be65dfbd21428b	speaker	solid rectangualr back square legs	9489	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336790350	44	split_71_a_22cc9b68e67339738d2d730aebe7	speaker	cup holders	1745	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336817679	45	close_122_a_2cb0ac27f1cdb3f0b2db0181fdb9f615	speaker	stripped chair	4521	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336821812	45	close_122_a_2cb0ac27f1cdb3f0b2db0181fdb9f615	speaker	striped seat	1542	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336839385	46	split_62_a_93ee27f70b593cee7b11ae648ea9	speaker	tall back solid chair	5918	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336855550	47	close_22_a_8b005a01cf4ae50dab49dceef0d15b99	speaker	armrest	1365	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336871255	48	far_116_a_5e89f5cc834553622acd2bb62058	speaker	tall back	1163	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336892901	49	split_135_a_61950eabab269b5c530a9fedbec	speaker	solid back square legs	3316	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336911046	50	far_113_a_3e1e1070ed7a0ba67484091a041f	speaker	stripes	4973	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336932741	51	close_28_a_c79532846cee59c35a4549f7	speaker	sqare	6650	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336950624	52	close_102_a_9e6564dce4cc128efc24661f	speaker	c shaped back	2106	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336963325	52	close_102_a_9e6564dce4cc128efc24661f	listener	wheels?	1934	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336968835	52	close_102_a_9e6564dce4cc128efc24661f	speaker	yes, circular seat	3263	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500336990390	53	far_30_a_313bfbd7bc2d516e14d782de5388	speaker	tallest chair rectangular back	4427	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337005984	54	split_60_a_6223f3849d57154b5ecb	speaker	stripe	2778	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337023068	55	far_118_a_b3e4c494a862986b9226550f	speaker	the one with a top	2494	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337039559	56	far_128_a_faca91ff3f9e2b93a87dbaf229daf408	speaker	striped back	1640	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337051447	56	far_128_a_faca91ff3f9e2b93a87dbaf229daf408	listener	round bottom?	2424	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337058313	56	far_128_a_faca91ff3f9e2b93a87dbaf229daf408	speaker	no	544	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337065559	56	far_128_a_faca91ff3f9e2b93a87dbaf229daf408	speaker	tall legs	1037	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337078002	57	far_69_a_fe6b3c001a86d844d576	speaker	hollywood chair	2109	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337092337	58	far_134_a_11dba3a8d7b7210f5ff61a3a2a0e2484	speaker	thick chair	2660	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337108721	59	far_14_a_4fdcd44fd622400a97fe55e7ac43b9fd	speaker	striped solid back	2965	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337112617	59	far_14_a_4fdcd44fd622400a97fe55e7ac43b9fd	speaker	ribbed	1872	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337137739	60	close_31_a_87e11555e7233fb4a9bdc22a1e02e82	speaker	solid chair, with 4 lines on the head of the seat	13260	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337156040	61	far_58_a_6cf3b41688dfc4b4707cdefe	speaker	chair with leg rest	3608	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337196827	62	close_109_a_44ddb3d46266bb0ffebad4f49b26	speaker	surved legs , solid side arms,	12760	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337204393	62	close_109_a_44ddb3d46266bb0ffebad4f49b26	speaker	pointy back	3157	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337222904	63	split_38_a_a66d78cbf3603e8bba9df3ea0397	speaker	c shaped back sounded seat	4198	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337235196	64	far_74_a_2dc5055b8d900ec7db4b0ee93cf6	speaker	2 legs	1299	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337251593	65	far_121_a_91cf38c4b99d75374fa7	speaker	3 holes on back	1760	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337266702	66	far_50_a_f550b5413eb040c29829306a513f9466	speaker	thickest one	2343	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337291729	67	split_13_a_fb9f11f128e006d2498725b9a1405ebb	speaker	horse shoe shaped top	3641	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337303783	68	far_138_a_67d9afec46e20fd279c4b4a860b6	speaker	shortest one	1679	chatMessage
+pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500337324481	69	split_29_a_b8fe0dd70bae3a9dba7a8c9ac8add14	speaker	5 bars of back support	4163	chatMessage

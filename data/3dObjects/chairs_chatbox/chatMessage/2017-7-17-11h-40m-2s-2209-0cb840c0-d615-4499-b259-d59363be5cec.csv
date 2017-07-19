@@ -1,0 +1,3 @@
+expid	gameid	time	trialNum	workerId	assignmentId	intendedName	role	text	reactionTime	eventType
+	2209-0cb840c0-d615-4499-b259-d59363be5cec	1500316802754	1	close_35_a_3853339519aca1bdfcd4910413c446d9	listener	asdf	249	chatMessage
+	2209-0cb840c0-d615-4499-b259-d59363be5cec	1500316806391	1	close_35_a_3853339519aca1bdfcd4910413c446d9	speaker	asdf	255	chatMessage
