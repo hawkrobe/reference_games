@@ -32,18 +32,23 @@ var checkPreviousParticipant = function(workerId, callback) {
     query: p,
     projection: {'_id': 1}
   };
-  sendPostRequest(
-    'http://localhost:4000/db/exists',
-    {json: postData},
-    (error, res, body) => {
-      if (!error && res.statusCode === 200) {
-	       console.log("success! Received data " + JSON.stringify(body));
-	       callback(body);
-      } else {
-	       console.log(`error checking participant in store: ${error} ${body}`);
+  try {
+    sendPostRequest(
+      'http://localhost:4000/db/exists',
+      {json: postData},
+      (error, res, body) => {
+	if (!error && res.statusCode === 200) {
+	  console.log("success! Received data " + JSON.stringify(body));
+	  callback(body);
+	} else {
+	  console.log(`error checking duplicate participant in db: ${error} ${body}`);
+	}
       }
-    }
-  );
+    );
+  } catch (err) {
+    console.log('allowing participant to continue');
+    return callback(true);
+  }
 };
 
 var writeDataToCSV = function(game, _dataPoint) {
