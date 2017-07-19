@@ -1,0 +1,66 @@
+expid	gameid	time	trialNum	workerId	assignmentId	intendedName	role	text	reactionTime	eventType
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064324255	1	far_117_a_665bfb42a0362f71d577f4b88a77	speaker	chair with a separation between the back and the seat	12962	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064363510	2	close_82_a_668c488e900c2ede62a9eaa32bfe	speaker	bar connecting the legs only in the front; thick legs	17336	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064395236	3	far_71_a_22cc9b68e67339738d2d730aebe7865d	speaker	armrests with cupholders	4454	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064425975	4	close_2_a_46c7367eede2d9c5ca2ed12df13a916a	speaker	six legs, strappy looking cross pieces	8735	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064460553	5	split_116_a_5e89f5cc834553622acd2bb62058	speaker	tall and thin, three vertical pieces for the back	11847	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064488173	6	split_106_a_2fc2b897b6b131c4dc75a59e280f	speaker	solid back, ornate front posts	7716	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064512733	7	close_62_a_93ee27f70b593cee7b11ae648ea92233	speaker	square back	5570	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064531876	8	far_59_a_e4931ffa06d7b05cb04cb542e2c5	speaker	four tall thin legs	4199	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064556346	9	far_98_a_c04c5b7d68b4e6481a68dda	speaker	short, x-shaped pattern in back	10510	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064587259	10	split_23_a_3c81fab5678a3872327289c0	speaker	rounded top and seat, thin legs	7810	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064608740	11	close_129_a_d5e1c6d3e6ce16ca8f5bf896c08c	speaker	circle seat, circle back	4137	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064626430	12	split_51_a_81628a0b5f7f9ad7ba94feec	speaker	many slats on back	4626	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064650916	13	far_130_a_8a21b853c8de77f0c8687ff9b0b4e4ac	speaker	thick and boxy with weird shaped back	10053	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064674131	14	split_29_a_b8fe0dd70bae3a9dba7a8c9ac8add14	speaker	five spindles on back	7115	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064704530	15	far_39_a_20b36bbb42d36e0771dcb8deedb6c8d	speaker	square, boxy, no legs	4116	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064738739	16	far_68_a_98f923c006fdd918e6d206b	speaker	arms and legs are one big circle	16146	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064769318	17	close_89_a_537924063294eb5f46ed025f8f85	speaker	square arms, square legs	8396	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064787952	18	split_18_a_8e0832b4ee38c9743b8d5c0ebdd1	speaker	hole in the middle	1844	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064802230	19	far_86_a_58f44c0057ae64b525633180	speaker	folding chair	2035	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064815320	20	far_102_a_9e6564dce4cc128efc24661f5f8d	speaker	swivel base	1456	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064834264	21	split_133_a_a5a2d09e5384237869513d0907f1	speaker	four legs, curved back	6360	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064853736	22	far_28_a_c79532846cee59c35a4549f761d78642	speaker	one big bent piece	6649	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064870259	23	split_138_a_67d9afec46e20fd279c4b4a860b6	speaker	recliner	3229	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064888627	24	split_101_a_9c7c3478edebfc1031d38697be8abe58	speaker	spindles all the way around, from arms to back	6007	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064921362	25	close_113_a_3e1e1070ed7a0ba67484091a041f	speaker	two nested curved pieces in the base	12748	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064937480	26	far_48_a_8d4efa9893f7e49b3a85b56ecd01e269	speaker	circle hole in back	2702	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064987274	27	close_30_a_313bfbd7bc2d516e14d782de5388fe8c	speaker	l-shaped legs, separate base and back, top of back is square	29235	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065024335	28	close_16_a_a3260f0c8fddf11cf0f49921	speaker	legs and arms are one single continuous piece, all angles are square	13117	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065059084	29	close_69_a_fe6b3c001a86d844d5767a0de8dd	speaker	thickest arms of the three	12286	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065079316	30	far_91_a_f90dab51bec2bcd1a3340564	speaker	one long sort of rolled up piece	8061	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065098725	31	close_134_a_11dba3a8d7b7210f5ff61a3a2a0e2484	speaker	back is a semicircle	3745	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065119032	32	split_8_a_e78f25a1f66c19a38a63c123f2a5	speaker	back is wider than base	3616	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065150996	33	split_31_a_87e11555e7233fb4a9bdc22	speaker	arms and legs are single continuous shape.  no x pattern	15408	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065185939	34	far_57_a_1055f78d441d170c4f3443b22038	speaker	no slats on back, just a thin curved piece	16387	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065216649	35	close_25_a_3bb2201ba3b8709523f4da44	speaker	two throw pillows that are messy	12613	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065260195	36	close_27_a_7b5b032a2cddeebc54d7082b3482	speaker	tank is rounded, not narrower in front than in back	15684	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065294600	36	close_27_a_7b5b032a2cddeebc54d7082b3482	listener	Does the top seem like one piece with the tank?	10248	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065337479	36	close_27_a_7b5b032a2cddeebc54d7082b3482	speaker	yes, the lid doesn't seem to have a lip.  no lip on the lid, and no pipe out the back	28154	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065371730	37	close_84_a_5402eecc67e489502fa77440dcb9	speaker	weird kind of lumpy trapezoid shaped back	16131	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065392013	38	split_128_a_faca91ff3f9e2b93a87dbaf229daf408	speaker	vertical slats on back	6783	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065414430	39	split_67_a_d3f31fd0fc99f45e8b3f6b4a44a70e52	speaker	two horizontal slats on back, no vertical	10467	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065434767	40	far_109_a_44ddb3d46266bb0ffebad4f49b26	speaker	solid back and base, no swivel	4257	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065459384	41	split_120_a_41852b57b492559eb3617808	speaker	square, solid back and base	6363	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065496384	42	split_95_a_4eed9ad9465482d543b9eef399a0	speaker	four legs, u-shaped back piece	23020	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065528289	42	split_95_a_4eed9ad9465482d543b9eef399a0	listener	there is a slight square outline on the seat?	15660	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065566068	42	split_95_a_4eed9ad9465482d543b9eef399a0	speaker	no.  and the piece across the back is not flat across the top	26018	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065592792	43	split_26_a_bce5c7402feef6d235fc	speaker	rounded back, no subtle square patterns	11940	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065625869	44	split_58_a_6cf3b41688dfc4b4707cdefe	speaker	leg rest that sticks out past legs	17023	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065652451	45	far_4_a_38b5f764afc9d28f200ad3f421b6c3d0	speaker	four legs, everything square	5545	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065667193	46	close_14_a_4fdcd44fd622400a97fe55e7	speaker	ridges across back	2488	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065687722	47	close_7_a_64c80a33436b8a84541e	speaker	all solid, no slats anywhere	9323	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065722229	48	far_66_a_a14c7700cfc99b03ca6910e4922d	speaker	vertical lines in back, no swivel	23345	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065748333	49	close_107_a_f112035c6413080a664b3b9b	speaker	square back, solid arms, thin legs	10937	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065793845	50	split_13_a_fb9f11f128e006d2498725b9	speaker	rounded back with a thin vertical piece in the middle, one curved piece makes back and arms	26397	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065832646	51	split_79_a_bbf45d2d189dcd758e5f5b49c9f5b3f2	speaker	rectangular back and seat, no arms, no holes	14380	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065861955	52	close_123_a_e3d23dc47ddd9620c9be65df	speaker	one single piece makes back and seat, legs are two squares	17549	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065881556	53	far_35_a_3853339519aca1bdfcd4	speaker	swivel chair	3508	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065914441	54	close_50_a_f550b5413eb040c29829306a513f9466	speaker	top and arms are both semicircle shaped	13746	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065953601	55	split_22_a_8b005a01cf4ae50dab49dceef0d1	speaker	vertical slats on back, tall arms and tall piece above slats	19753	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065977295	56	close_38_a_a66d78cbf3603e8bba9df3ea0397	speaker	circular, three legs	5780	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500065989252	57	far_122_a_2cb0ac27f1cdb3f0b2db0181fdb9f615	speaker	desk	1170	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500066023890	58	close_17_a_81ba38f4d3b7eac1f82a35e8b19afa86	speaker	thick seat, no visible cushion, no arms	23704	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500066048748	59	close_70_a_99e4c4b39b75a06b30e06a011e63236a	speaker	many horizontal ridges across back	8683	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500066064919	60	far_24_a_d9a1f2e7290cd2c3baab0c715904	speaker	thick and blocky, all square	4243	chatMessage
+	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500066090174	61	close_9_a_ee445cf3710af7e21548fc89	speaker	square,no cushion, looks like it has a shelf under it	9859	chatMessage

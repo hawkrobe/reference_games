@@ -1,0 +1,5 @@
+iterationName	gameid	time	trialNum	workerId	assignmentId	intendedName	role	text	reactionTime	eventType
+pilot1	9012-e90e9eb6-4f80-46bd-a042-36f288dc1e39	1500327745716	1	far_84_a_5402eecc67e489502fa77440dcb93214	speaker	folded chair	2928	chatMessage
+pilot1	9012-e90e9eb6-4f80-46bd-a042-36f288dc1e39	1500327748119	1	far_84_a_5402eecc67e489502fa77440dcb93214	speaker	leaning	1231	chatMessage
+pilot1	9012-e90e9eb6-4f80-46bd-a042-36f288dc1e39	1500327769104	1	far_84_a_5402eecc67e489502fa77440dcb93214	speaker	not a normal angle	2656	chatMessage
+pilot1	9012-e90e9eb6-4f80-46bd-a042-36f288dc1e39	1500327780542	1	far_84_a_5402eecc67e489502fa77440dcb93214	listener	what	2335	chatMessage
