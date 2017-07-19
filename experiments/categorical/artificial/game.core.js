@@ -62,7 +62,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 60;
+  this.numRounds = 1;
   this.feedbackDelay = 300;
 
   // This will be populated with the tangram set
@@ -144,14 +144,11 @@ game_core.prototype.newRound = function(delay) {
   setTimeout(function() {
     // If you've reached the planned number of rounds, end the game
     if(localThis.roundNum == localThis.numRounds - 1) {
-      _.forEach(players, function(p){
-        p.player.instance.disconnect();
-      });
+      _.forEach(players, p => p.player.instance.emit( 'finishedGame' ));
     } else {
       // Tell players
-      _.forEach(players, function(p){
-        p.player.instance.emit( 'newRoundUpdate');
-      });
+      _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate'));
+
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
 
@@ -206,7 +203,7 @@ game_core.prototype.sampleContextSequence = function() {
     'under'   : {'sub' : 1/6, 'super' : 2/3, 'basic' : 1/6},
     'basic'   : {'sub' : 1/6, 'super' : 1/6, 'basic' : 2/3}
   }, (obj, key) => {
-    return _.mapValues(obj, (innerVal, key) => {return innerVal * this.numRounds;});
+    return _.mapValues(obj, (innerVal, key) => parseInt(innerVal * this.numRounds));
   });
   var seq = (Array(designMatrix[this.condition]['sub']).fill('sub')
 	     .concat(Array(designMatrix[this.condition]['basic']).fill('basic'))
@@ -296,7 +293,8 @@ game_core.prototype.server_send_update = function(){
     dataObj  : this.data,
     roundNum : this.roundNum,
     trialInfo: this.trialInfo,
-    language: this.language
+    language: this.language,
+    allObjects: this.objects
   };
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
