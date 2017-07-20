@@ -78,9 +78,6 @@ var game_core = function(options){
     this.language = new ArtificialLanguage();
     this.data = {
       id : this.id,
-      trials : [],
-      catch_trials : [],
-      system : {},
       subject_information : {
 	score: 0,
         gameID: this.id
