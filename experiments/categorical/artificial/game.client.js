@@ -195,9 +195,14 @@ function setupPostTest () {
 
   var button = document.getElementById('post_test_button');
   button.onclick = () => {
-    globalGame.socket.send('meaning.' + globalGame.currLabel + '.'
+    globalGame.socket.send('postTestData.' + globalGame.currLabel + '.'
 			   + globalGame.selectedObjects.join('.'));
-    showNextLabel();
+    if(globalGame.labelNum >= globalGame.labels.length - 1){
+      $('#post_test').hide();
+      $('#exit_survey').show();
+    } else {
+      showNextLabel();
+    }
   };  
   
   // Populate display fields
@@ -220,13 +225,14 @@ function setupPostTest () {
     );
   });
   
-  $('img').click(function() {
-    if($(this).css('border-color') === 'rgb(255, 255, 255)') {
-      globalGame.selectedObjects.push($(this).attr('data-name'));
-      $(this).css({'border-color': 'grey'});
-    } else {
+  $('img').click(function(event) {
+    $(this).css('border-color');
+    if(_.includes(globalGame.selectedObjects, $(this).attr('data-name'))) {
       _.remove(globalGame.selectedObjects, obj => obj == $(this).attr('data-name'));
       $(this).css({'border-color': 'white'});
+    } else {
+      globalGame.selectedObjects.push($(this).attr('data-name'));
+      $(this).css({'border-color': 'grey'});
     }
   });
 
