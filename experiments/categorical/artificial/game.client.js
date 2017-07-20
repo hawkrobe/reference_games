@@ -27,7 +27,6 @@ var waiting;
 var selecting;
 
 var client_onserverupdate_received = function(data){
-  console.log(data.trialInfo);
   globalGame.my_role = data.trialInfo.roles[globalGame.my_id];
 
   // Update client versions of variables with data received from
@@ -196,7 +195,8 @@ function setupPostTest () {
 
   var button = document.getElementById('post_test_button');
   button.onclick = () => {
-    globalGame.socket.send('s.meaning.' + globalGame.currLabel.innerHTML);
+    globalGame.socket.send('meaning.' + globalGame.currLabel + '.'
+			   + globalGame.selectedObjects.join('.'));
     showNextLabel();
   };  
   
@@ -213,19 +213,19 @@ function setupPostTest () {
   _.forEach(globalGame.allObjects, (obj) => {
     $("#object_grid").append(
       $('<img/>')
-      	.attr({height: "50%", width: "25%", src: obj.url})
+      	.attr({height: "50%", width: "25%", src: obj.url,
+	       'data-name' : obj.name})
 	.css({border: '10px solid', 'border-color' : 'white'})
   	.addClass("imgcell")
     );
   });
   
   $('img').click(function() {
-    console.log($(this).css('border-color'));
     if($(this).css('border-color') === 'rgb(255, 255, 255)') {
-      globalGame.selectedObjects.push($(this).src);
+      globalGame.selectedObjects.push($(this).attr('data-name'));
       $(this).css({'border-color': 'grey'});
     } else {
-      _.remove(globalGame.selectedObjects, obj => obj == $(this).src);
+      _.remove(globalGame.selectedObjects, obj => obj == $(this).attr('data-name'));
       $(this).css({'border-color': 'white'});
     }
   });
