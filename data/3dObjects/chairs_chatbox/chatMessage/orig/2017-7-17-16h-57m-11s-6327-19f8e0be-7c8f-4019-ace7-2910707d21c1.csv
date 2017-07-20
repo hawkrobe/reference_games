@@ -1,4 +1,4 @@
-iterationName	gameid	time	trialNum	intendedName	role	text	reactionTime	eventType
+iterationName	gameid	time	trialNum	workerId	assignmentId	intendedName	role	text	reactionTime	eventType
 pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335831943	1	split_27_a_7b5b032a2cddeebc54d7082b34825ef0	speaker	the fatter toilet	4767	chatMessage
 pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335841522	1	split_27_a_7b5b032a2cddeebc54d7082b34825ef0	listener	Is it a little shorter?	3948	chatMessage
 pilot1	6327-19f8e0be-7c8f-4019-ace7-2910707d21c1	1500335847449	1	split_27_a_7b5b032a2cddeebc54d7082b34825ef0	speaker	no	745	chatMessage
