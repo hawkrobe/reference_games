@@ -1,0 +1,136 @@
+---
+title: "chairs_chatbox"
+date: "7/18/2017"
+output: html_document
+---
+
+#Import data
+
+```{r, message=F, warning=F}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+setwd("~/Documents/cocolab/reference_games/analysis")
+
+msgs_filenames <- list.files(path="../data/3dObjects/chairs_chatbox/chatMessage", pattern=".csv", full.names=TRUE)
+msgs <- do.call(rbind, lapply(msgs_filenames, read.csv, sep='\t'))
+#colnames(msgs) <- c("iterationName","gameid","time","trialNum","intendedName","role","text","reactionTime","eventType", "temp1", "temp2")
+#msgs <- subset(msgs, select=-c(temp1,temp2))
+
+clks_filenames <- list.files(path="../data/3dObjects/chairs_chatbox/clickedObj", pattern=".csv", full.names=TRUE)
+clks <- do.call(rbind, lapply(clks_filenames, read.csv, sep='\t'))
+#colnames(clks) <- c("iterationName","gameid","time","trialNum","object1Name","object1SketcherLoc","object1ViewerLoc","object2Name","object2SketcherLoc","object2ViewerLoc","object3Name","object3SketcherLoc","object3ViewerLoc","intendedName","clickedName","correct","condition","eventType", "temp1","temp2")
+#clks <- subset(clks, select=-c(temp1,temp2))
+```
+
+# Pre-processing
+
+We want to look only at complete (or nearly-complete) games. 
+
+```{r}
+
+rawAggregated <- clks %>%
+  left_join(msgs, by =c("gameid","trialNum"))
+
+#add a word count column
+rawAggregated$numWords = sapply(strsplit(as.character(rawAggregated$text), " "), length)
+
+goodGames <- unique((rawAggregated %>%
+  group_by(gameid) %>%
+  filter(length(unique(trialNum)) >= 40))$gameid)
+
+
+
+```
+
+#Preliminary histograms/bar graphs
+
+Dependent Variables
+-Histogram of word distribution
+-distribution of num words in different conditions (3 different facets within the same figure)
+
+Summary bar plots
+1.words sent by speaker during round
+      a. Most important: words in first message
+      b. words in all messages from round
+2.total words sent by listener during round by condition
+3. Trial duration across conditions
+
+```{r}
+#number of trials per game
+ggplot(data=rawAggregated %>%
+         group_by(gameid) %>%
+         slice(which.max(trialNum)),
+       aes(x = gameid, y = trialNum)) + 
+  geom_bar(stat = "identity") +
+  ggtitle("Number of trials per game")
+
+#word distribution
+ggplot(data=rawAggregated, aes(numWords)) + 
+  geom_histogram(binwidth=1) +
+  ggtitle("Word distribution")
+
+#distribution of words in different conditions
+ggplot(data=rawAggregated, aes(numWords)) + 
+  geom_histogram(binwidth=1) +
+  facet_wrap(~condition) +
+  ggtitle("Word distribution by condition")
+
+#number of trials where listener replied by condition
+
+
+
+#number of incorrect clicks by condition
+length(which(clks$correct=="false" & clks$condition=="close"))
+length(which(clks$correct=="false" & clks$condition=="split"))
+length(which(clks$correct=="false" & clks$condition=="far"))
+
+
+ggplot(data=clks %>%
+         group_by(gameid, condition),
+       aes(x = condition, y = length(which(clks$correct=="false")))) + 
+  geom_bar(stat = "identity") +
+  ggtitle("Number of incorrect clicks")
+```
+
+
+#Anaylsis (preliminary)
+
+Do people use more words on harder trials?
+
+```{r}
+
+#total words sent by speaker during round
+#total words 
+
+#***average num of words in first message***
+ggplot(data=rawAggregated %>%
+         filter(role=="speaker") %>% 
+         group_by(gameid, condition, trialNum) %>%
+         slice(which.min(time.x)) %>%
+         summarise(n = sum(numWords)/length(numWords)) %>%
+         group_by(condition) %>%
+         summarize(numWords = mean(n), se = sd(n)/sqrt(length(n))),
+       aes(x = condition, y = numWords)) +
+  geom_bar(stat="identity") + 
+  ggtitle("Average words in first message only")
+
+#Do people use more words on harder trials?
+ggplot(rawAggregated %>%
+         filter(role=="speaker") %>%
+         group_by(gameid, condition, trialNum) %>%
+         summarise(n = sum(numWords)/length(numWords)) %>%
+         group_by(condition) %>%
+         summarize(numWords = mean(n), se = sd(n)/sqrt(length(n))),
+       aes(x = condition, y = numWords)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymax = numWords + se, ymin = numWords - se),
+                  position="dodge", width=0.25) +
+  ylab("Average # words per message per round")+
+  theme_bw() +
+  ggtitle("Average words by context")
+
+```
