@@ -45,6 +45,7 @@ var ondisconnect = function(data) {
   $('#roleLabel').hide();
   $('#score').hide();
 
+  $('#post_test').hide();
   $('#sketchpad').hide(); // this is from sketchpad experiment (jefan 4/23/17)
   $('#loading').hide(); // this is from sketchpad experiment (jefan 4/23/17)
 };
@@ -60,7 +61,7 @@ var onconnect = function(data) {
 // Associates callback functions corresponding to different socket messages
 var sharedSetup = function(game) {
   //Store a local reference to our connection to the server
-  game.socket = io.connect();
+  game.socket = io.connect({reconnection: false});
 
   // Tell other player if someone is typing...
   $('#chatbox').on('input', function() {
@@ -188,7 +189,8 @@ function dropdownTip(data){
 						   {'confused' : commands[1]}); break;
   case 'submit' :
     globalGame.data.subject_information = _.extend(globalGame.data.subject_information, 
-				   {'comments' : $('#comments').val(), 
+						   {'comments' : $('#comments').val(),
+						    'strategy' : $('#strategy').val(),
 				    'role' : globalGame.my_role,
 				    'totalLength' : Date.now() - globalGame.startTime});
     globalGame.submitted = true;
@@ -200,8 +202,6 @@ function dropdownTip(data){
     } else {
       console.log("would have submitted the following :")
       console.log(globalGame.data);
-//      var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
-//      window.location.replace(URL);
     }
     break;
   }
