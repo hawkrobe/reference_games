@@ -1,4 +1,4 @@
-iterationName	gameid	time	trialNum	intendedName	role	text	reactionTime	eventType
+expid	gameid	time	trialNum	workerId	assignmentId	intendedName	role	text	reactionTime	eventType
 	3843-940f7b62-8e2f-4bb9-bfcc-eabe4181c5e9	1500068849668	1	close_107_a_f112035c6413080a664b	speaker	square backrest solid armrests	20022	chatMessage
 	3843-940f7b62-8e2f-4bb9-bfcc-eabe4181c5e9	1500068876915	2	close_28_a_c79532846cee59c35a4549f7	speaker	square backrest square bottom	6958	chatMessage
 	3843-940f7b62-8e2f-4bb9-bfcc-eabe4181c5e9	1500068909892	3	split_2_a_46c7367eede2d9c5ca2ed12df13a	speaker	lowest to the ground and flattest	5515	chatMessage

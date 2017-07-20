@@ -1,4 +1,4 @@
-iterationName	gameid	time	trialNum	intendedName	role	text	reactionTime	eventType
+expid	gameid	time	trialNum	workerId	assignmentId	intendedName	role	text	reactionTime	eventType
 	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064324255	1	far_117_a_665bfb42a0362f71d577f4b88a77	speaker	chair with a separation between the back and the seat	12962	chatMessage
 	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064363510	2	close_82_a_668c488e900c2ede62a9eaa32bfe	speaker	bar connecting the legs only in the front; thick legs	17336	chatMessage
 	1855-c51d933b-f52b-43c9-a784-80952e3901d3	1500064395236	3	far_71_a_22cc9b68e67339738d2d730aebe7865d	speaker	armrests with cupholders	4454	chatMessage
