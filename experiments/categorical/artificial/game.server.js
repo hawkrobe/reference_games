@@ -32,7 +32,7 @@ var onMessage = function(client,message) {
   var others = gc.get_others(client.userid);
   switch(message_type) {
 
-  case 'meaning' :
+  case 'postTestData' :
     console.log('received meaning message');
     break;
     
@@ -109,7 +109,7 @@ var dataOutput = function() {
     };
   };
 
-  var meaningOutput = function(client, message_data) {
+  var postTestDataOutput = function(client, message_data) {
     var label = message_data[1];
     var objs = message_data.slice(2);
     var meaningHeader = _.map(client.game.objects, 'name');
@@ -154,7 +154,7 @@ var dataOutput = function() {
   return {
     'drop' : dropOutput,
     'clickedObj' : clickedObjOutput,
-    'meaning' : meaningOutput
+    'postTestData' : postTestDataOutput
   };
 }();
 
