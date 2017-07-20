@@ -1,5 +1,0 @@
-iterationName	gameid	time	trialNum	intendedName	role	text	reactionTime	eventType
-pilot1	1379-15a2b018-fc40-496a-a563-70121278b9c1	1500338577983	1	close_23_a_3c81fab5678a3872327289c00b6d	listener	Hello	815	chatMessage
-pilot1	1379-15a2b018-fc40-496a-a563-70121278b9c1	1500338715639	1	close_23_a_3c81fab5678a3872327289c00b6d	listener	Hello?	1168	chatMessage
-pilot1	1379-15a2b018-fc40-496a-a563-70121278b9c1	1500340886692	1	close_23_a_3c81fab5678a3872327289c00b6d	speaker	Sorry I had been waiting awhile	4419	chatMessage
-pilot1	1379-15a2b018-fc40-496a-a563-70121278b9c1	1500340921533	1	close_23_a_3c81fab5678a3872327289c00b6d	speaker	the target chair is rounder than the other two chairs	25913	chatMessage
