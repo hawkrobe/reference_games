@@ -1,0 +1,69 @@
+iterationName	gameid	time	trialNum	intendedName	role	text	reactionTime	eventType
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412407376	1	far_138_a_67d9afec46e20fd279c4b4a860b67e81	speaker	Lazy boy recliner	6395	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412420343	2	close_48_a_8d4efa9893f7e49b3a85b56ecd01	speaker	circle in the back	3873	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412453504	3	close_51_a_81628a0b5f7f9ad7ba94feecf6f7a200	speaker	mid-century rocking chair with narrow slatted back; not the adirondack chair	19277	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412467036	4	far_68_a_98f923c006fdd918e6d206b2ed87676	listener	good one	2379	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412471799	4	far_68_a_98f923c006fdd918e6d206b2ed87676	speaker	thanks!	5046	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412477531	4	far_68_a_98f923c006fdd918e6d206b2ed87676	speaker	modern chair, circular arm	4640	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412492999	5	close_35_a_3853339519aca1bdfcd4910413c4	speaker	t-shaped back	3983	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412523865	6	close_67_a_d3f31fd0fc99f45e8b3f6b4a44a7	speaker	folding chair with open back and LESS space between the two slats at the top	15652	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412553565	7	split_133_a_a5a2d09e5384237869513d0907f19c8f	speaker	klismos chair with the fluted front legs and round back	14273	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412569435	7	split_133_a_a5a2d09e5384237869513d0907f19c8f	speaker	like a T	2314	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412594744	8	split_60_a_6223f3849d57154b5ecb3cc57fe87cee	speaker	the arched full back with the MORE dramatic arch	9938	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412623879	9	close_59_a_e4931ffa06d7b05cb04cb542e2c50eb4	speaker	the rounded one with the open back	6244	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412637200	10	close_102_a_9e6564dce4cc128efc24661f5f8d5d00	speaker	open-ish back, rather	6277	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412650872	10	close_102_a_9e6564dce4cc128efc24661f5f8d5d00	speaker	T-shaped back	4000	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412692321	11	close_23_a_3c81fab5678a3872327289c00b6dc9ca	speaker	the spider chair w/ the back/seat that are similar in shape to an 8	31404	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412713917	12	far_58_a_6cf3b41688dfc4b4707cdefe012d0353	speaker	the one with the wierd footrest	6575	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412718061	12	far_58_a_6cf3b41688dfc4b4707cdefe012d0353	speaker	weird even	2296	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412729717	13	far_18_a_8e0832b4ee38c9743b8d5c0ebdd1	speaker	circle in the seat	3020	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412741861	14	close_4_a_38b5f764afc9d28f200ad3f421b6c3d0	speaker	hmmm	580	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412749958	14	close_4_a_38b5f764afc9d28f200ad3f421b6c3d0	speaker	not the one with the slatted back	6327	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412762968	14	close_4_a_38b5f764afc9d28f200ad3f421b6c3d0	speaker	the one with the MORE narrow arms/legs	11440	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412787286	15	close_38_a_a66d78cbf3603e8bba9df3ea0397b1a6	speaker	the one with the almost perfect half-cirlce back	13515	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412791771	15	close_38_a_a66d78cbf3603e8bba9df3ea0397b1a6	speaker	not the taller one though	2630	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412801538	15	close_38_a_a66d78cbf3603e8bba9df3ea0397b1a6	listener	thick legs?	45288	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412804117	15	close_38_a_a66d78cbf3603e8bba9df3ea0397b1a6	speaker	three lefgs	2917	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412806620	15	close_38_a_a66d78cbf3603e8bba9df3ea0397b1a6	speaker	three	613	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412829934	16	close_135_a_61950eabab269b5c530a9fedbeceb83	speaker	the more square, not rounded one, and NOT the slatted one	14579	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412853573	17	split_69_a_fe6b3c001a86d844d5767a0de8dd037e	speaker	the director's chair with the HIGHER arms	9671	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412870716	18	far_114_a_6f70a7948c59b49943da6ec23cebe068	speaker	adirondack chair	3086	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412906443	19	close_16_a_a3260f0c8fddf11cf0f4992137d8f4a3	speaker	the one with the legs/arms in the shape of a U -- not rounded	19719	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412949180	20	split_106_a_2fc2b897b6b131c4dc75a59e280f3bf8	speaker	the upholstered one that looks like it has columns on the arms/feet in front	19364	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500412997266	21	far_107_a_f112035c6413080a664b3b9b23ddfcbc	speaker	NOT the office one with wheels and NOT the one that looks like it belongs in a Gregorian church	19977	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413022467	22	far_134_a_11dba3a8d7b7210f5ff61a3a2a0e2484	speaker	the one with the semi-circular back	8829	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413040790	23	far_109_a_44ddb3d46266bb0ffebad4f49b26	speaker	the widest one	14453	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413061723	24	split_121_a_91cf38c4b99d75374fa746d16faad4f5	speaker	the one with the weird handle one the top, in the center	10582	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413093075	25	close_2_a_46c7367eede2d9c5ca2ed12df13a916a	speaker	the lawn chair -- not the modern one or the adirondack-ish one	19600	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413119955	26	far_50_a_f550b5413eb040c29829306a513f9466	speaker	the low and very wide one	9581	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413130973	27	split_29_a_b8fe0dd70bae3a9dba7a8c9ac8a	speaker	hmmm	576	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413132114	27	split_29_a_b8fe0dd70bae3a9dba7a8c9ac8a	speaker	ok	272	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413154062	27	split_29_a_b8fe0dd70bae3a9dba7a8c9ac8a	speaker	the one with the slatted back that is MORE of a T-shape	13204	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413175059	28	split_84_a_5402eecc67e489502fa77440dcb93214	speaker	the very very strange one that looks like jabba the hut	9869	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413184491	29	far_122_a_2cb0ac27f1cdb3f0b2db0181fdb9	listener	lol	885	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413194512	29	far_122_a_2cb0ac27f1cdb3f0b2db0181fdb9	speaker	lol	8183	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413198356	29	far_122_a_2cb0ac27f1cdb3f0b2db0181fdb9	speaker	the one with the desk	3127	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413209152	30	far_27_a_7b5b032a2cddeebc54d7082b3482	speaker	toilet	1257	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413232699	31	split_62_a_93ee27f70b593cee7b11ae648ea92233	speaker	the one with the tall back that is straight, not curved	13875	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413260857	32	close_9_a_ee445cf3710af7e21548fc89657a4fac	speaker	perfect l shape & no feet or arms	12086	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413265441	32	close_9_a_ee445cf3710af7e21548fc89657a4fac	speaker	l = "L"	2784	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413283976	33	close_86_a_58f44c0057ae64b525633180ba76	speaker	sorry	832	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413295503	33	close_86_a_58f44c0057ae64b525633180ba76	speaker	hmmm	8438	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413296150	33	close_86_a_58f44c0057ae64b525633180ba76	speaker	ok	278	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413297630	33	close_86_a_58f44c0057ae64b525633180ba76	listener	my bad	50578	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413313279	33	close_86_a_58f44c0057ae64b525633180ba76	speaker	not the wooden folding chair and NOT the one with the more dramatic dip in the middle of the back	15934	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413340314	34	split_13_a_fb9f11f128e006d2498725b9a1405ebb	speaker	the chinese armchair	4559	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413364905	35	far_30_a_313bfbd7bc2d516e14d782de5388fe8c	speaker	the simple one with an H base	17353	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413387273	36	split_24_a_d9a1f2e7290cd2c3baab0c715904	speaker	the VERY blocky one with four legs	9743	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413410088	37	far_120_a_41852b57b492559eb36178084a593098	speaker	the modern one without the hood and NOT the office chair	10927	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413425966	38	split_57_a_1055f78d441d170c4f3443b22038d340	speaker	hmmm	624	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413433144	38	split_57_a_1055f78d441d170c4f3443b22038d340	speaker	ok, not the slatted back	5706	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413445767	38	split_57_a_1055f78d441d170c4f3443b22038d340	speaker	four legs and the BACK legs are curved	9334	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413469420	39	close_17_a_81ba38f4d3b7eac1f82a35e8b19afa86	speaker	the low vanity chair with the sloped arms	11981	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413497823	40	far_89_a_537924063294eb5f46ed025f8f85e067	speaker	blocky adirondack chair 	13449	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413523109	41	far_130_a_8a21b853c8de77f0c8687ff9b0b4e4ac	speaker	the odd one that looks like a person with its arms up in the air	13575	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413544775	42	far_28_a_c79532846cee59c35a4549f761d78642	speaker	the modern one without arms	6922	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413567781	43	close_116_a_5e89f5cc834553622acd2bb62058	speaker	the one with the three pieces of wood slatted on teh back	11488	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413568990	43	close_116_a_5e89f5cc834553622acd2bb62058	speaker	the	569	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413592009	44	far_64_a_2a1184b04dd8f30e3e92f39ce48d644	speaker	the one with four legs	9097	chatMessage
+pilot1	7959-d883ad88-087f-4bee-b779-fe919398a1c4	1500413613142	45	far_82_a_668c488e900c2ede62a9eaa32bfe99c4	speaker	the one that looks like an odd breakfast bar chair	9560	chatMessage
