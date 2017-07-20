@@ -32,6 +32,10 @@ var onMessage = function(client,message) {
   var others = gc.get_others(client.userid);
   switch(message_type) {
 
+  case 'meaning' :
+    console.log('received meaning message');
+    break;
+    
   case 'clickedObj' :
     // Write event to file
     others[0].player.instance.send('s.feedback.' + message_parts[1]);
@@ -100,12 +104,24 @@ var dataOutput = function() {
       iterationName: client.game.iterationName,
       gameid: client.game.id,
       time: Date.now(),
-      trialNum : client.game.state.roundNum + 1,
       workerId: client.workerid,
       assignmentId: client.assignmentid
     };
   };
 
+  var meaningOutput = function(client, message_data) {
+    var label = message_data[1];
+    var objs = message_data.slice(2);
+    var meaningHeader = _.map(client.game.objects, 'name');
+    var meaning = _.map(client.game.objects, obj => _.includes(objs, obj.name));
+    return _.extend(
+      commonOutput(client, message_data),
+      _.zipObject(meaningHeader, meaning), {
+	label,
+	finalRole: client.role
+      });	
+  };
+  
   var clickedObjOutput = function(client, message_data) {
     var objects = client.game.trialInfo.currStim;
     var intendedName = getIntendedTargetName(objects);
@@ -115,6 +131,7 @@ var dataOutput = function() {
       objLocations, {
 	intendedName,
 	clickedName: message_data[1],
+	trialNum : client.game.state.roundNum + 1,	
 	correct: intendedName === message_data[1],
 	condition: client.game.condition,
 	contextType: client.game.trialInfo.currContextType
@@ -127,6 +144,7 @@ var dataOutput = function() {
     return _.extend(
       commonOutput(client, message_data), {
 	intendedName,
+	trialNum : client.game.state.roundNum + 1,	
 	text: message_data[1].replace(/~~~/g, '.'),
 	timeFromRoundStart: message_data[2]
       }
@@ -135,7 +153,8 @@ var dataOutput = function() {
 
   return {
     'drop' : dropOutput,
-    'clickedObj' : clickedObjOutput
+    'clickedObj' : clickedObjOutput,
+    'meaning' : meaningOutput
   };
 }();
 
