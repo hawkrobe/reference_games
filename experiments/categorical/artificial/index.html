@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
 
     <!-- Load jQuery, which lets us handle mouse events -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     
     <!-- Load the common game code. -->
     <script type="text/javascript" src="game.core.js"></script>
@@ -78,6 +78,8 @@
       <h3> Thanks for participating in our experiment! </h3>
       <h3> Before you submit your HIT, we'd like to ask you a few questions. </h3>
       <br><br><br>
+      <p> How would you describe the strategy you used in this experiment? </p>
+      <textarea id='strategy' rows="4" cols="50"></textarea>
       <p> Did you believe you were playing against another human player? </p>
       <select onChange="dropdownTip('human::' + this.value)">
 	<option value=""></option>
