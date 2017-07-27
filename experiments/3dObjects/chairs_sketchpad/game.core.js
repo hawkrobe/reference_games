@@ -33,7 +33,7 @@ var game_core = function(options){
   this.iterationName = 'pilot0';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = ['csv', 'mongo'];
   this.anonymizeCSV = true;
 
 
