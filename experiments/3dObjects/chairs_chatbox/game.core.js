@@ -269,75 +269,75 @@ game_core.prototype.sampleStimulusLocs = function() {
 
 game_core.prototype.makeTrialList = function () { 
 
-//sample 23 of each condition and randomize
-f = _.times(23,function() {return "far"});
-c = _.times(23,function() {return "close"});
-s = _.times(23,function() {return "split"});
-var conditionList = _.shuffle(f.concat(c).concat(s));
+  //sample 23 of each condition and randomize
+  f = _.times(23,function() {return "far"});
+  c = _.times(23,function() {return "close"});
+  s = _.times(23,function() {return "split"});
+  var conditionList = _.shuffle(f.concat(c).concat(s));
 
-//get family IDs and randomize
-var familyList = _.filter(stimList, function(s){ return (s['condition']=="close")});
-familyList = _.uniq(_.map(familyList, _.property('family')));
-familyList = _.shuffle(familyList);
+  //get family IDs and randomize
+  var familyList = _.filter(stimList, function(s){ return (s['condition']=="close")});
+  familyList = _.uniq(_.map(familyList, _.property('family')));
+  familyList = _.shuffle(familyList);
 
-var criteria = _.zip(conditionList, familyList);
-//console.log(criteria);
-
-//now add whole families based on random order established by criteria
-
-var local_this = this;
-var trialList = [];
-
-//family of three stimList_chair objects {<target>, <distractor1>, <distractor2>}
-var fam = []; 
-
-for (var i = 0; i < 69; i++){
+  var criteria = _.zip(conditionList, familyList);
+  //console.log(criteria);
 
   //now add whole families based on random order established by criteria
-  fam = _.filter(stimList, function(s){ return (s['condition']==criteria[i][0] && s['family']==criteria[i][1])});
 
-  //target is always member 'a', and fam is always in order 'a' 'b' 'c'
-  fam[0]['target_status'] = "target";
-  fam[1]['target_status'] = "distractor1";
-  fam[2]['target_status'] = "distractor2";
+  var local_this = this;
+  var trialList = [];
 
-  //remove ".png" file extension from filename property to prevent join/split errors by "."
-  for(var j = 0; j < fam.length; j++){
-    fam[j]['filename'] = fam[j]['filename'].slice(0, -4);
-  }
+  //family of three stimList_chair objects {<target>, <distractor1>, <distractor2>}
+  var fam = []; 
 
-  // sample locations for those objects
-  var locs = this.sampleStimulusLocs();  
+  for (var i = 0; i < 69; i++){
 
-  // construct trial list (in sets of complete rounds)
-  trialList.push(_.map(_.zip(fam, locs.speaker, locs.listener), function(tuple) {
-      var object = _.clone(tuple[0]);
-      object.width = local_this.cellDimensions.width;
-      object.height = local_this.cellDimensions.height;      
-      var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
-      var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);      
-      object.speakerCoords = {
-        gridX : tuple[1][0],
-        gridY : tuple[1][1],
-        trueX : speakerGridCell.centerX - object.width/2,
-        trueY : speakerGridCell.centerY - object.height/2,
-        gridPixelX: speakerGridCell.centerX - 100,
-        gridPixelY: speakerGridCell.centerY - 100
-            };
-      object.listenerCoords = {
-        gridX : tuple[2][0],
-        gridY : tuple[2][1],
-        trueX : listenerGridCell.centerX - object.width/2,
-        trueY : listenerGridCell.centerY - object.height/2,
-        gridPixelX: listenerGridCell.centerX - 100,
-        gridPixelY: listenerGridCell.centerY - 100
-      };
-      return object;
+    //now add whole families based on random order established by criteria
+    fam = _.filter(stimList, function(s){ return (s['condition']==criteria[i][0] && s['family']==criteria[i][1])});
 
-      }));
-  }
+    //target is always member 'a', and fam is always in order 'a' 'b' 'c'
+    fam[0]['target_status'] = "target";
+    fam[1]['target_status'] = "distractor1";
+    fam[2]['target_status'] = "distractor2";
 
-  return(trialList);
+    //remove ".png" file extension from filename property to prevent join/split errors by "."
+    for(var j = 0; j < fam.length; j++){
+      fam[j]['filename'] = fam[j]['filename'].slice(0, -4);
+    }
+
+    // sample locations for those objects
+    var locs = this.sampleStimulusLocs();  
+
+    // construct trial list (in sets of complete rounds)
+    trialList.push(_.map(_.zip(fam, locs.speaker, locs.listener), function(tuple) {
+        var object = _.clone(tuple[0]);
+        object.width = local_this.cellDimensions.width;
+        object.height = local_this.cellDimensions.height;      
+        var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
+        var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);      
+        object.speakerCoords = {
+          gridX : tuple[1][0],
+          gridY : tuple[1][1],
+          trueX : speakerGridCell.centerX - object.width/2,
+          trueY : speakerGridCell.centerY - object.height/2,
+          gridPixelX: speakerGridCell.centerX - 100,
+          gridPixelY: speakerGridCell.centerY - 100
+              };
+        object.listenerCoords = {
+          gridX : tuple[2][0],
+          gridY : tuple[2][1],
+          trueX : listenerGridCell.centerX - object.width/2,
+          trueY : listenerGridCell.centerY - object.height/2,
+          gridPixelX: listenerGridCell.centerX - 100,
+          gridPixelY: listenerGridCell.centerY - 100
+        };
+        return object;
+
+        }));
+    }
+
+    return(trialList);
 }
 
 

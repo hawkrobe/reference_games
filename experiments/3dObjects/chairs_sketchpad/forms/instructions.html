@@ -12,7 +12,7 @@
     <title>Experiment</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../../lib/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../lib/css/bootstrap.min.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
@@ -38,18 +38,18 @@
 
       <div class="well" style="width:800px; margin: 0 auto">
 
-<h2><center>Guess My Sketch!</center>  </h2>
+<h2><center>Where's My Chair?</center>  </h2>
 
 	<p>
 
 	  In this experiment you will play a fun communication game with
-	  another player on MTurk! In each round both of you are going to be shown a set of objects like this:
+	  another player on MTurk! In each round both of you are going to be shown a set of chairs like this:
 </p>
     <p>
-      <center><img src="images/chairset.png" alt="Example objects" style="width:700px;height:200px"></center>
+      <center><img src="images/chairset.png" alt="Example objects" style="width:500px;height:164px"></center>
     </p>
 <p>
-    You'll each see the same four objects <b> but the order they are in
+    You'll each see the same three chairs <b> but the order they are in
 	will be different. </b>
 
 </p>
@@ -57,10 +57,9 @@
 <p>
 
     One of you will be assigned the <b> Sketcher </b> role and the
-    other will be the <b> Viewer </b>. On each round, one of the four
-    objects is the <b>target</b>, which is outlined in orange. Only the
-    Sketcher can see which object is
-    the target.
+    other will be the <b> Viewer</b>. On each round, one of the three
+    chairs is the <b>target</b>, which is outlined in orange. Only the
+    Sketcher can see which object is the target.
 
 
 
@@ -68,34 +67,32 @@
 
 <p>
 
-    The goal of the Sketcher is to make a sketch of the target so
-    that the Viewer can figure out which object it is. You'll both
-    get <b> a bonus of $0.03 for each correct response</b>, so pay
-    attention! If you are the Sketcher, please do your best to make a sketch of
-    each target from the perspective that is shown in the picture. Please
-    do not draw text labels.
+    The goal of the Sketcher is to describe the target by drawing on the canvas so
+    that the Viewer can figure out which chair it is. You'll both
+    get <b> a bonus of $0.02 for each correct response</b>, so pay
+    attention! 
 
 </p>
 
 <!-- <p>
-      <center><img src="images/speakerView.png" alt="Example gameplay" style="width:600px;height:328px"></center>
+      <center><img src="images/SketcherView.png" alt="Example gameplay" style="width:600px;height:328px"></center>
     </p>
 <p>
   <i> <center> <small> Only the Sketcher can see which is the target. </small> </center> </i>
 
 </p> -->
 <p>
-    The goal is for the Viewer to identify the target
-    based on what the Sketcher has drawn. If you are the Viewer,
-    you will first need to wait until the Sketcher has finished
-    their sketch before making your selection.
+    The goal of the Viewer is to identify the target
+    based on what the Sketcher has drawn for you. If you are the Viewer,
+    you will first need to wait until the Sketcher has submitted their drawing
+    before being able to select a chair.
 </p>
 
     <p> Once the Viewer clicks on
-    the object they believe is the target, both players will be given
+    the chair they believe is the target, both players will be given
     feedback. So, the Sketcher will see what the Viewer clicked, and the
-    Viewer will see the true target. Then you will both automatically advance to the next round of objects. There are a
-    total of <b>32 rounds</b>. After the final round you will fill out a quick
+    Viewer will see the true target. Then you will both automatically advance to the next round of chairs. There are a
+    total of <b>69 rounds</b>. After the final round you will fill out a quick
     15 second survey and be on your way.
 </p>
 
@@ -111,8 +108,7 @@
 
 <p>
   Second, please be respectful of the worker you're playing with: do
-  not send inappropriate material to your partner (e.g.,
-  words), and try to be as responsive as possible.
+  not send inappropriate material to your partner, and try to be as responsive as possible.
 </p>
 
 <p>
@@ -140,7 +136,7 @@
      <div class="well" style="width:800px; margin: 0 auto">
 
   </br>
-  The Sketcher can click on an object to end the round.
+  The Sketcher can click on a chair to end the round.
     </br>
     <input type="radio" name="dgoal" value="yes"> False
     </br>
@@ -149,7 +145,7 @@
 
 
   </br>
-  The Viewer wants to click on the object that the Sketcher has drawn.
+  The Viewer wants to click on the chair that the Sketcher has drawn.
       </br>
       <input type="radio" name="mgoal" value="no"> False
       </br>
@@ -158,7 +154,7 @@
 
 
   </br>
-  The target is the object which has the orange box around it.
+  The target is the chair which has the orange box around it.
       </br>
       <input type="radio" name="round" value="yes"> True
       </br>
@@ -166,11 +162,11 @@
       </br>
 
   </br>
-  Only the Sketcher can make drawings.
-      </br>
-      <input type="radio" name="message" value="no"> False
+  Only the Sketcher can use the canvas.
       </br>
       <input type="radio" name="message" value="yes"> True
+      </br>
+      <input type="radio" name="message" value="no"> False
       </br>
 
   </br>
@@ -182,7 +178,7 @@
       </br>
 
   </br>
-  The locations of the four objects are the same for the Sketcher and the Viewer.
+  The locations of the three chairs are the same for the Sketcher and the Viewer.
       </br>
       <input type="radio" name="location" value="no"> True
       </br>
@@ -244,6 +240,6 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
 
-    <script src="../../lib/js/bootstrap.min.js"></script>
+    <script src="../../../lib/js/bootstrap.min.js"></script>
   </body>
 </html>
