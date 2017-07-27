@@ -253,7 +253,7 @@ var customSetup = function(game) {
 
     globalGame.socket.send(message.join('.'));
 
-  });
+  }); 
 
   game.socket.on('mutualDoneDrawing', function(role) {
     // console.log('the doneness of drawing is mutual knowledge');
@@ -294,7 +294,7 @@ var client_onjoingame = function(num_players, role) {
       "<p> Important: Please do NOT resize browser window or change zoom during the game.</p>".bold());
       $("#submitbutton").show();
   } else if (role === globalGame.playerRoleNames.role2) {
-    $('#instructs').html("<p>Your partner is going to draw one of these four objects." +
+    $('#instructs').html("<p>Your partner is going to draw one of these three objects." +
       " When they are done, click on the object they sketched. </p>" +
       " <p> Important: Please do NOT resize browser window or change zoom during the game.</p>".bold());
     $("#loading").show();
