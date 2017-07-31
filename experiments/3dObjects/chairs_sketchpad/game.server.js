@@ -100,14 +100,20 @@ var dataOutput = function() {
   var clickedObjOutput = function(client, message_data) {
     var objects = client.game.trialInfo.currStim;
     var intendedName = getIntendedTargetName(objects);
+    // var family = _.filter(objects, o => o.target_status === 'target')[0]['family'];
+    // var member = _.filter(objects, o => o.target_status === 'target')[0]['member'];
+    // var shapenet_id = _.filter(objects, o => o.target_status === 'target')[0]['shapenet_id'];
     var objLocations = _.zipObject(getObjectLocHeaderArray(), getObjectLocs(objects));
     
     var output =  _.extend(
       commonOutput(client, message_data), {
-      intendedName,
-      clickedName: message_data[1],
-      correct: intendedName === message_data[1],
-      condition : message_data[4]
+        intendedName,
+        clickedName: message_data[1],
+        correct: intendedName === message_data[1],
+        condition : message_data[4],
+        family : message_data[5],
+        member : message_data[6],
+        shapenet_id : message_data[7]
       },
       objLocations
     );
@@ -123,6 +129,10 @@ var dataOutput = function() {
       commonOutput(client, message_data), {
         currStrokeNum: message_data[1],
         intendedName,
+        condition : _.filter(objects, o => o.target_status === 'target')[0]['condition'],
+        family : _.filter(objects, o => o.target_status === 'target')[0]['family'],
+        member : _.filter(objects, o => o.target_status === 'target')[0]['member'],
+        shapenet_id : _.filter(objects, o => o.target_status === 'target')[0]['shapenet_id'],
         shiftKeyUsed: message_data[2],
         svg: message_data.slice(3)
       }
