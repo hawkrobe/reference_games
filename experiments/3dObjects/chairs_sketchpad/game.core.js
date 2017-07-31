@@ -30,7 +30,7 @@ var game_core = function(options){
   this.email = 'sketchloop@gmail.com';
   this.projectName = '3dObjects';
   this.experimentName = 'chairs_sketchpad';
-  this.iterationName = 'pilot0';
+  this.iterationName = 'testing';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
