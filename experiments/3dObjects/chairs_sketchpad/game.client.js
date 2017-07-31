@@ -354,7 +354,7 @@ function responseListener(evt) {
         dataURL = dataURL.replace('data:image/png;base64,','');
         var currPose = globalGame.objects[0]['pose'];  
         var currCondition = globalGame.objects[0]['condition']; 
-        var packet = ["clickedObj", obj.filename, dataURL, currPose, currCondition];
+        var packet = ["clickedObj", obj.filename, dataURL, currPose, currCondition, obj.family, obj.member, obj.shapenet_id];
         // console.log(packet);
         globalGame.socket.send(packet.join('.'));
 
