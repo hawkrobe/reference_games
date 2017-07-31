@@ -112,7 +112,8 @@ var dataOutput = function() {
         correct: intendedName === message_data[1],
         condition : message_data[4],
         family : message_data[5],
-        member : message_data[6],
+        intendedMember : 'a',
+        clickedMember : message_data[6],
         shapenet_id : message_data[7]
       },
       objLocations
@@ -131,7 +132,7 @@ var dataOutput = function() {
         intendedName,
         condition : _.filter(objects, o => o.target_status === 'target')[0]['condition'],
         family : _.filter(objects, o => o.target_status === 'target')[0]['family'],
-        member : _.filter(objects, o => o.target_status === 'target')[0]['member'],
+        intendedMember : _.filter(objects, o => o.target_status === 'target')[0]['member'],
         shapenet_id : _.filter(objects, o => o.target_status === 'target')[0]['shapenet_id'],
         shiftKeyUsed: message_data[2],
         svg: message_data.slice(3)
