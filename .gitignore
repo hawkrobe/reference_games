@@ -43,7 +43,7 @@ credentials.pyc
 data/3dObjects/sketchpad/mturk/credentials.py
 data/3dObjects/sketchpad/mturk/auth.json
 compensation_driver.py
-auth.json
+auth.txt
 production_results/
 data/3dObjects/sketchpad_basic/clickedObj/*.js
 data/3dObjects/sketchpad_basic/stroke/*.js
