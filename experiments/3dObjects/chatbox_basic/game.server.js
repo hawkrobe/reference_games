@@ -126,7 +126,8 @@ var dataOutput = function() {
 	intendedName,
 	role: client.role,
 	text: message_data[1].replace(/~~~/g, '.'),
-	reactionTime: message_data[2]
+	reactionTime: message_data[2],
+	condition: client.game.objects[0]['condition']
       }
     );
   };
