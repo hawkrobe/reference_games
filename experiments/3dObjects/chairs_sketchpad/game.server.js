@@ -110,6 +110,7 @@ var dataOutput = function() {
         intendedName,
         clickedName: message_data[1],
         correct: intendedName === message_data[1],
+        pngString: message_parts[2],
         condition : message_data[4],
         family : message_data[5],
         intendedMember : 'a',
