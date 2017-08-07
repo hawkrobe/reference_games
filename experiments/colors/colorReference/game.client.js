@@ -85,7 +85,7 @@ var client_onMessage = function(data) {
     switch(subcommand) {    
     case 'end' :
       // Redirect to exit survey
-      ondisconnect();
+      ondisconnect(commanddata);
       console.log("received end message...");
       break;
 
@@ -134,8 +134,6 @@ var client_onMessage = function(data) {
 
     case 'add_player' : // New player joined... Need to add them to our list.
       console.log("adding player" + commanddata);
-      console.log("cancelling timeout");
-      clearTimeout(globalGame.timeoutID);
       if(hidden === 'hidden') {
         flashTitle("GO!");
       }
@@ -187,18 +185,6 @@ var client_onjoingame = function(num_players, role) {
   }
 
   if(num_players == 1) {
-    // Set timeout only for first player...
-    this.timeoutID = setTimeout(function() {
-      if(_.size(this.urlParams) == 4) {
-	this.submitted = true;
-	window.opener.turk.submit(this.data, true);
-	window.close(); 
-      } else {
-	console.log("would have submitted the following :");
-	console.log(this.data);
-      }
-    }, 1000 * 60 * 15);
-
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player to connect... '
 				      + 'Please do not refresh the page!'); 
   }

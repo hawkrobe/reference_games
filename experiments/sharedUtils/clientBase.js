@@ -14,24 +14,28 @@ var getURLParams = function() {
   return urlParams;
 };
 
-var ondisconnect = function(data) {
+var ondisconnect = function() {
   // Redirect to exit survey
   console.log("server booted");
   this.viewport.style.display="none";
   var email = globalGame.email ? globalGame.email : '';
+  var gen = "<p>Before you submit your HIT, we'd like to ask you a few questions.</p>";
   var failMsg = [
     '<h3>Oops! It looks like your partner lost their connection!</h3>',
+    gen,
     '<p> Completing this survey will submit your HIT so you will still receive full ',
     'compensation.</p> <p>If you experience any problems, please email us (',
     email, ')</p>'
   ].join('');
   var successMsg = [
     "<h3>Thanks for participating in our experiment!</h3>",
-    "<p>Before you submit your HIT, we'd like to ask you a few questions.</p>"
+    gen
   ].join('');
 
-  if(globalGame.roundNum + 2 > globalGame.numRounds) { 
+  if (globalGame.roundNum + 1 > globalGame.numRounds) { 
     $('#exit_survey').prepend(successMsg);    
+  } else if (globalGame.players.length < 2) {
+    $('#exit_survey').prepend('<h3>Thanks for waiting; no partner connected in time!</h3>' + gen);
   } else {
     $('#exit_survey').prepend(failMsg); 
   }

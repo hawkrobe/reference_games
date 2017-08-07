@@ -63,9 +63,10 @@ class ReferenceGameServer {
 	player.game = game;
 	player.role = game.playerRoleNames.role2;
 	player.send('s.join.' + game.players.length + '.' + player.role);
-
+	
 	// notify existing players that someone new is joining
 	_.map(game.get_others(player.userid), function(p){
+	  clearTimeout(p.player.instance.timeoutID);
 	  p.player.instance.send( 's.add_player.' + player.userid);
 	});
 	
@@ -98,6 +99,13 @@ class ReferenceGameServer {
     player.role = game.playerRoleNames.role1;
     player.send('s.join.' + game.players.length + '.' + player.role);
     this.log('player ' + player.userid + ' created a game with id ' + player.game.id);
+
+    // set timeout to auto-advance first player after 15 minutes of no partner
+    if(game.autoEnd) {
+      player.timeoutID = setTimeout(() => {
+	player.disconnect();//send('s.end.<h3>Thanks for waiting; no partner connected in time!</h3>');
+      }, game.autoEnd);
+    }
 
     // add to game collection
     this.games[game.id] = game;

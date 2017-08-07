@@ -29,9 +29,12 @@ var game_core = function(options){
   this.server = options.server ;
   this.email = 'rxdh@stanford.edu';
   this.expid = 'pilot0';
-
+  
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = [];
+
+  // how many minutes to end after
+  this.autoEnd = 60 * 1000 * 1;
   
   // How many players in the game?
   this.players_threshold = 2;
@@ -54,7 +57,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 50;
+  this.numRounds = 1;
 
   // How many mistakes have the pair made on the current trial?
   this.attemptNum = 0;
