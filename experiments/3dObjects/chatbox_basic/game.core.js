@@ -27,10 +27,13 @@ if( typeof _ === 'undefined' ) {
 var game_core = function(options){
   this.server = options.server ;
   this.email = 'sketchloop@gmail.com';
-  this.expid = 'pilot0';
+  this.projectName = '3dObjects';
+  this.experimentName = 'chatbox_basic';
+  this.expid = 'pilot1';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = ['csv', 'mongo'];
+  this.anonymizeCSV = true;
   
   // How many players in the game?
   this.players_threshold = 2;
