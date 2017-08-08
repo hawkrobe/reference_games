@@ -136,7 +136,7 @@ var dataOutput = function() {
         intendedMember : _.filter(objects, o => o.target_status === 'target')[0]['member'],
         shapenet_id : _.filter(objects, o => o.target_status === 'target')[0]['shapenet_id'],
         shiftKeyUsed: message_data[2],
-        svg: message_data.slice(3)
+        svg: message_data.slice(3).join(".")
       }
     );
     console.log(JSON.stringify(output, null, 3));
