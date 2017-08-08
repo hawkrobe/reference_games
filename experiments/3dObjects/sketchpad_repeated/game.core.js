@@ -27,11 +27,13 @@ if( typeof _ === 'undefined' ) {
 var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
+  this.projectName = '3dObject';
+  this.experimentName = 'sketchpad_repeated';
   this.email = 'sketchloop@gmail.com';
   this.expid = 'pilot0';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = ['csv', 'mongo'];
   
   // How many players in the game?
   this.players_threshold = 2;
