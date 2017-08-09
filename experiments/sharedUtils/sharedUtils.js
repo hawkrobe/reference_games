@@ -17,18 +17,18 @@ var serveFile = function(req, res) {
 
 var handleDuplicate = function(req, res) {
   console.log("duplicate id: blocking request");
-  return res.redirect('https://rxdhawkins.me:8888/sharedUtils/duplicate.html');
+  return res.redirect('/sharedUtils/duplicate.html');
 };
 
 var handleInvalidID = function(req, res) {
   console.log("invalid id: blocking request");
-  return res.redirect('https://rxdhawkins.me:8888/sharedUtils/invalid.html');
+  return res.redirect('/sharedUtils/invalid.html');
 };
 
 var checkPreviousParticipant = function(workerId, callback) {
   var p = {'workerId': workerId};
   var postData = {
-    dbname: '3dObjects',
+    dbname: 'basicLevel',
     query: p,
     projection: {'_id': 1}
   };
