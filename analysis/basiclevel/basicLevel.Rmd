@@ -1,0 +1,139 @@
+---
+title: "Basic-level emergence"
+output: html_notebook
+---
+
+# Import libraries
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+```
+
+# Import data  
+
+```{r}
+raw_d = read_delim('../data/categorical/artificial/clickedObj/clickedObjData.csv', '\t')
+
+incompletes <- (raw_d %>% 
+  group_by(gameid, condition) %>%
+  tally() %>%
+  filter(n < 60))$gameid
+```
+
+filter out incompletes & compute cumulative accuracy 
+
+```{r}
+d <- raw_d %>%
+  filter(!(gameid %in% incompletes)) %>%
+  mutate(acc = ifelse(correct == 'true', 1, 0)) %>%
+  mutate(quarter = floor((trialNum - 1) / 15)) %>%
+  group_by(gameid) %>%
+  mutate(cumAcc = cumsum(acc)) %>%
+  ungroup() 
+```
+
+## Number games per condition
+
+```{r}
+d %>% 
+  group_by(gameid, condition) %>%
+  tally() %>%
+  group_by(condition) %>%
+  summarize(n = length(n))
+```
+
+# Results 
+
+## Individual accuracy curves
+
+```{r}
+ggplot(d, aes(x = trialNum, y = cumAcc, group = gameid)) +
+  geom_line() +
+  theme_few() + 
+  guides(color = FALSE) +
+  ylab("cumulative accuracy")
+```
+
+## Accuracy by condition
+
+```{r}
+d %>% 
+  group_by(condition, trialNum) %>%
+  summarize(meanAcc = mean(cumAcc), se = sd(cumAcc)/sqrt(length(cumAcc))) %>%
+  ggplot(aes(x = trialNum, y = meanAcc, color = condition)) +
+    geom_line() +
+#    geom_errorbar(aes(ymin = meanAcc - se, ymax = meanAcc + se)) +
+    theme_few() +
+    scale_color_colorblind()
+```
+
+## Accuracy by contextType
+
+```{r}
+d %>% 
+  group_by(contextType, quarter) %>%
+  summarize(meanAcc = mean(acc), se = sd(acc)/sqrt(length(acc))) %>%
+  ggplot(aes(x = quarter, y = meanAcc)) +
+    geom_line() +
+    theme_few() + 
+  facet_wrap(~ contextType)
+```
+
+```{r}
+d %>% 
+  group_by(condition, contextType, quarter) %>%
+  summarize(meanAcc = mean(acc), se = sd(acc)/sqrt(length(acc))) %>%
+  ggplot(aes(x = quarter, y = meanAcc, color=condition)) +
+    geom_line() +
+    theme_few() + 
+  facet_wrap(~ contextType)
+```
+
+# Post-test results
+
+```{r}
+postTest <- read_delim('../data/categorical/artificial/postTestData/postTestData.csv', '\t') %>%
+  mutate_each(funs(ifelse(. == "true", 1, 0)), -iterationName, -gameid, -time, -label, -finalRole, -eventType) %>%
+  gather(object, meaning, blueSquare1:stripedCircle2) 
+```
+
+## Distribution of meanings 
+
+```{r}
+postTest %>%
+  group_by(gameid, finalRole, label) %>%
+  summarize(numObjects = sum(meaning)) %>%
+  left_join(d) %>%
+  ggplot(aes(x = numObjects, y = ..density..)) +
+    geom_histogram() +
+    facet_wrap(~ condition) +
+    theme_few()
+```
+
+## Do players align on meanings?
+
+```{r}
+postTest %>%
+  
+```
+
+## Validate meanings against trajectory data
+
+i.e. do players ever use the label to mean the thing they explicitly say it means?
+
+## Vocab size by condition... 
+
+```{r}
+postTest %>%
+  group_by(gameid, finalRole, label) %>%
+  summarize(numObjects = sum(meaning)) %>%
+  filter(numObjects > 0) %>%
+  group_by(gameid, finalRole) %>%
+  tally() %>%
+  right_join(d) %>%
+  group_by(condition) %>%
+  summarize(vocabSize = mean(n, na.rm = T))
+```
+
+## Do basic-level & sub-level coexist?
