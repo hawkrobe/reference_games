@@ -1,7 +1,9 @@
 ---
 title: "chairs_chatbox"
+output:
+  pdf_document: default
+  html_document: default
 date: "7/18/2017"
-output: html_document
 ---
 
 #Import data
@@ -36,13 +38,13 @@ rawAggregated <- clks %>%
   left_join(msgs, by =c("gameid","trialNum"))
 
 #add a word count column
-rawAggregated$numWords = sapply(strsplit(as.character(rawAggregated$text), " "), length)
+rawAggregated$numWords <- sapply(strsplit(as.character(rawAggregated$text), " "), length)
 
-goodGames <- unique((rawAggregated %>%
+goodGamesList <- unique((rawAggregated %>%
   group_by(gameid) %>%
   filter(length(unique(trialNum)) >= 40))$gameid)
 
-
+goodGames <- filter(rawAggregated, gameid %in% goodGamesList)
 
 ```
 
@@ -69,12 +71,12 @@ ggplot(data=rawAggregated %>%
   ggtitle("Number of trials per game")
 
 #word distribution
-ggplot(data=rawAggregated, aes(numWords)) + 
+ggplot(data=goodGames, aes(numWords)) + 
   geom_histogram(binwidth=1) +
   ggtitle("Word distribution")
 
 #distribution of words in different conditions
-ggplot(data=rawAggregated, aes(numWords)) + 
+ggplot(data=goodGames, aes(numWords)) + 
   geom_histogram(binwidth=1) +
   facet_wrap(~condition) +
   ggtitle("Word distribution by condition")
@@ -89,25 +91,21 @@ length(which(clks$correct=="false" & clks$condition=="split"))
 length(which(clks$correct=="false" & clks$condition=="far"))
 
 
-ggplot(data=clks %>%
-         group_by(gameid, condition),
-       aes(x = condition, y = length(which(clks$correct=="false")))) + 
-  geom_bar(stat = "identity") +
-  ggtitle("Number of incorrect clicks")
+# ggplot(data=clks %>%
+#          group_by(gameid, condition),
+#        aes(x = condition, y = length(which(clks$correct=="false")))) + 
+#   geom_bar(stat = "identity") +
+#   ggtitle("Number of incorrect clicks")
 ```
-
-
-#Anaylsis (preliminary)
 
 Do people use more words on harder trials?
 
 ```{r}
-
 #total words sent by speaker during round
 #total words 
 
 #***average num of words in first message***
-ggplot(data=rawAggregated %>%
+ggplot(data=goodGames %>%
          filter(role=="speaker") %>% 
          group_by(gameid, condition, trialNum) %>%
          slice(which.min(time.x)) %>%
@@ -119,7 +117,7 @@ ggplot(data=rawAggregated %>%
   ggtitle("Average words in first message only")
 
 #Do people use more words on harder trials?
-ggplot(rawAggregated %>%
+ggplot(goodGames %>%
          filter(role=="speaker") %>%
          group_by(gameid, condition, trialNum) %>%
          summarise(n = sum(numWords)/length(numWords)) %>%
@@ -132,5 +130,235 @@ ggplot(rawAggregated %>%
   ylab("Average # words per message per round")+
   theme_bw() +
   ggtitle("Average words by context")
+
+
+#How about characters?
+# ggplot(goodGames %>%
+#          filter(role=="speaker") %>%
+#          group_by(gameid, condition, trialNum) %>%
+#          summarise(n = sum(numChars)/length(numChars)) %>%
+#          group_by(condition) %>%
+#          summarize(numChars = mean(n), se = sd(n)/sqrt(length(n))),
+#        aes(x = condition, y = numChars)) +
+#   geom_bar(stat = "identity", position = "dodge") +
+#   geom_errorbar(aes(ymax = numChars + se, ymin = numChars - se),
+#                   position="dodge", width=0.25) +
+#   ylab("Average # characters per message per round")+
+#   theme_bw() +
+#   ggtitle("Average characters by context")
+
+
+```
+
+#Linguistic Analyses
+
+First, import POS tags and merge
+```{r}
+tagged <- read.csv("posTagged.csv", sep = "\t")
+
+POSAggregated <- clks %>%
+  left_join(tagged, by =c("gameid","trialNum"))
+
+#filter 
+goodGamesList <- unique((POSAggregated %>%
+  group_by(gameid) %>%
+  filter(length(unique(trialNum)) >= 40))$gameid)
+
+goodGames <- filter(POSAggregated, gameid %in% goodGamesList)
+
+```
+
+Look at distribution of parts of speech
+
+```{r}
+#make a POS count dataframe
+posNames <- c("nouns","prepositions","verbs","determiners","pronouns","adjectives","adverbs","numbers","others")
+posCounts <- colSums(goodGames[,posNames])
+
+posSums <- data.frame(pos=posNames, counts=unname(unname(posCounts)))
+
+ggplot(data=posSums,
+       aes(x = posNames, y = posCounts)) + 
+  geom_bar(stat ="identity") +
+  scale_x_discrete(labels = abbreviate) + 
+  ggtitle("Overall Part of Speech Counts")
+
+#want: the next two graphs as grouped bar graph. any ideas?? might have to refactor data
+#Avg number of superlatives by condition
+ggplot(goodGames %>%
+         group_by(gameid, condition, trialNum) %>%
+         summarise(n = sum(numSuper)/length(numSuper)) %>%
+         group_by(condition) %>%
+         summarize(numSuper = mean(n), se = sd(n)/sqrt(length(n))),
+       aes(x = condition, y = numSuper)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymax = numSuper + se, ymin = numSuper - se),
+                  position="dodge", width=0.25) +
+  ylab("Average # superlatives per message per round")+
+  theme_bw() +
+  ggtitle("Average number of superlatives by context")
+
+#Avg number of comparitives by condition
+ggplot(goodGames %>%
+         group_by(gameid, condition, trialNum) %>%
+         summarise(n = sum(numComp)/length(numComp)) %>%
+         group_by(condition) %>%
+         summarize(numComp = mean(n), se = sd(n)/sqrt(length(n))),
+       aes(x = condition, y = numComp)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymax = numComp + se, ymin = numComp - se),
+                  position="dodge", width=0.25) +
+  ylab("Average # comparitives per message per round")+
+  theme_bw() +
+  ggtitle("Average number of comparitives by context")
+
+#Avg number of negations by condition
+ggplot(goodGames %>%
+         group_by(gameid, condition, trialNum) %>%
+         summarise(n = sum(negations)/length(negations)) %>%
+         group_by(condition) %>%
+         summarize(negations = mean(n), se = sd(n)/sqrt(length(n))),
+       aes(x = condition, y = negations)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymax = negations + se, ymin = negations - se),
+                  position="dodge", width=0.25) +
+  ylab("Average # negations per message per round")+
+  theme_bw() +
+  ggtitle("Average number of negations by context")
+
+```
+
+Let's look at how language conventions change over the course of each game:
+
+```{r}
+#reduction analyses:
+num_bins = 3
+goodGames$trialBins <- cut(goodGames$trialNum, num_bins)
+
+#number of words over time
+ggplot(data=goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(numWords)/length(numWords)) %>%
+         group_by(trialBins) %>%
+         summarize(numWords = mean(n), se = sd(n)/sqrt(length(n))),
+       aes(x = trialBins, y = numWords)) +
+  geom_bar(stat="identity") + 
+  theme_bw() +
+  ggtitle("Reduction: number of words over course of game")
+
+#number of characters over time
+ggplot(data=goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(numChars)/length(numChars)) %>%
+         group_by(trialBins) %>%
+         summarize(numChars = mean(n), se = sd(n)/sqrt(length(n))),
+       aes(x = trialBins, y = numChars)) +
+  geom_bar(stat="identity") + 
+  theme_bw() +
+  ggtitle("Reduction: number of characters over course of game")
+
+#the word "chair" over time
+ggplot(data=goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(w_chair)/length(w_chair)) %>%
+         group_by(trialBins) %>%
+         summarize(w_chair = mean(n), se = sd(n)/sqrt(length(n))),
+       aes(x = trialBins, y = w_chair)) +
+  geom_bar(stat="identity") + 
+  theme_bw() +
+  ggtitle("Reduction: the word 'chair' over course of game")
+
+# #comparitives vs superlatives by condition
+# ggplot(data=goodGames %>% 
+#          group_by(trialBins),
+#        aes(x = trialBins, y = numSuper)) + 
+#   geom_bar(stat="identity") +
+#   facet_wrap(~condition) + 
+#   theme_bw() + 
+#   ggtitle("Reduction: superlatives by condition")
+# 
+# ggplot(data=goodGames %>% 
+#          group_by(trialBins),
+#        aes(x = trialBins, y = numComp)) + 
+#   geom_bar(stat="identity") +
+#   facet_wrap(~condition) + 
+#   theme_bw() + 
+#   ggtitle("Reduction: Superlatives by condition")
+  
+#negations by condition
+# ggplot(data=goodGames %>% 
+#          group_by(trialBins),
+#        aes(x = trialBins, y = numComp)) + 
+#   geom_bar(stat="identity") +
+#   facet_wrap(~condition) + 
+#   theme_bw() + 
+#   ggtitle("Negations by condition")
+
+
+#adjectives vs prepositional phrases vs bare nouns by condition
+#TODO
+
+#line plot: all parts of speech 
+posOfInterest <- c("nouns","prepositions","verbs","determiners","pronouns","adjectives","adverbs")
+
+binNouns <- goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(nouns)/length(nouns)) %>%
+         group_by(trialBins) %>%
+         summarize(counts = mean(n), se = sd(n)/sqrt(length(n)))
+binPrepositions <- goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(prepositions)/length(prepositions)) %>%
+         group_by(trialBins) %>%
+         summarize(counts = mean(n), se = sd(n)/sqrt(length(n)))
+binVerbs <- goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(verbs)/length(verbs)) %>%
+         group_by(trialBins) %>%
+         summarize(counts = mean(n), se = sd(n)/sqrt(length(n)))
+binDeterminers <- goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(determiners)/length(determiners)) %>%
+         group_by(trialBins) %>%
+         summarize(counts = mean(n), se = sd(n)/sqrt(length(n)))
+binPronouns <- goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(pronouns)/length(pronouns)) %>%
+         group_by(trialBins) %>%
+         summarize(counts = mean(n), se = sd(n)/sqrt(length(n)))
+binAdjectives <- goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(adjectives)/length(adjectives)) %>%
+         group_by(trialBins) %>%
+         summarize(counts = mean(n), se = sd(n)/sqrt(length(n)))
+binAdverbs <- goodGames %>%
+         group_by(gameid, trialBins) %>%
+         summarise(n = sum(adverbs)/length(adverbs)) %>%
+         group_by(trialBins) %>%
+         summarize(counts = mean(n), se = sd(n)/sqrt(length(n)))
+
+ggplot() +
+  geom_point(data=binNouns, aes(x = trialBins, y = counts, group = 1)) + 
+  geom_line(data=binNouns, aes(x = trialBins, y = counts, group = 1, color = "noun")) + 
+  geom_point(data=binPrepositions, aes(x = trialBins, y = counts, group = 1)) + 
+  geom_line(data=binPrepositions, aes(x = trialBins, y = counts, group = 1, color = "preposition")) + 
+  geom_point(data=binVerbs, aes(x = trialBins, y = counts, group = 1)) + 
+  geom_line(data=binVerbs, aes(x = trialBins, y = counts, group = 1, color = "verbs")) + 
+  geom_point(data=binDeterminers, aes(x = trialBins, y = counts, group = 1)) + 
+  geom_line(data=binDeterminers, aes(x = trialBins, y = counts, group = 1, color = "determiners")) + 
+  geom_point(data=binAdjectives, aes(x = trialBins, y = counts, group = 1)) + 
+  geom_line(data=binAdjectives, aes(x = trialBins, y = counts, group = 1, color = "adjectives")) + 
+  geom_point(data=binAdverbs, aes(x = trialBins, y = counts, group = 1)) + 
+  geom_line(data=binAdverbs, aes(x = trialBins, y = counts, group = 1, color = "adverbs")) + 
+  scale_color_discrete(name = "part of speech") + 
+  ggtitle("Reduction: all parts of speech")
+
+  #normalize?
+  
+  
+```
+
+```{r}
+
 
 ```
