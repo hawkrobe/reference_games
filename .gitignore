@@ -51,5 +51,4 @@ data/3dObjects/sketchpad_repeated/
 analysis/3dObjects/sketchpad_repeated/sketches/*
 analysis/3dObjects/sketchpad_basic/sketches/*
 *.png
-drop/
 placeholder.csv
