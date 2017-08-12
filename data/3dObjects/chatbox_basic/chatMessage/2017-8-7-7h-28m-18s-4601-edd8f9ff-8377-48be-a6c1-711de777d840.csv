@@ -1,0 +1,4 @@
+expid	gameid	time	trialNum	workerId	assignmentId	intendedName	role	text	reactionTime	eventType
+pilot0	4601-edd8f9ff-8377-48be-a6c1-711de777d840	1502116098196	1			tomtit	speaker	bird	596	chatMessage
+pilot0	4601-edd8f9ff-8377-48be-a6c1-711de777d840	1502116113206	2			crow	speaker	asdf	479	chatMessage
+pilot0	4601-edd8f9ff-8377-48be-a6c1-711de777d840	1502116125616	3			brown	speaker	car with stuff	1455	chatMessage

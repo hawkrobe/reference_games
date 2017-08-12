@@ -1,33 +1,34 @@
 gameid	time	trialNum	intendedTarget	clickedObject	outcome	pose	condition	object1Name	object1SketcherLoc	object1ViewerLoc	object2Name	object2SketcherLoc	object2ViewerLoc	object3Name	object3SketcherLoc	object3ViewerLoc	object4Name	object4SketcherLoc	object4ViewerLoc	png
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460876074	1	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	pigeon	pigeon	clickedObj	1	0	further	pigeon	1	3	brown	4	1	leather	2	2	doberman	3	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460896816	2	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	cuckoo	cuckoo	clickedObj	1	6	closer	cuckoo	4	2	sparrow	3	3	tomtit	2	1	robin	1	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460922089	3	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	beetle	beetle	clickedObj	1	2	closer	beetle	3	4	hatchback	1	1	redantique	4	3	bluesedan	2	2
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460935866	4	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	nightingale	nightingale	clickedObj	1	13	further	nightingale	2	2	white	3	1	sling	4	4	goldenretriever	1	3
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460988164	5	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	squat	squat	clickedObj	1	32	closer	squat	2	2	inlay	3	3	woven	4	1	waiting	1	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460999825	6	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	bluejay	bluejay	clickedObj	1	5	further	bluejay	1	4	redsport	2	2	straight	4	3	weimaraner	3	1
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461029865	7	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	bloodhound	bloodhound	clickedObj	1	15	closer	bloodhound	3	4	basset	4	2	chihuahua	1	3	pug	2	1
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461042194	8	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	crow	crow	clickedObj	1	30	further	crow	1	2	bluesport	2	1	knob	4	3	bullmastiff	3	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461061930	9	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	sparrow	sparrow	clickedObj	1	24	closer	sparrow	3	4	cuckoo	2	2	tomtit	4	1	robin	1	3
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461072913	10	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	brown	brown	clickedObj	1	23	further	brown	2	4	pigeon	3	2	leather	1	3	doberman	4	1
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461084409	11	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	bluesport	bluesport	clickedObj	1	19	further	bluesport	4	4	crow	2	3	knob	1	2	bullmastiff	3	1
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461095817	12	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	white	white	clickedObj	1	39	further	white	1	3	nightingale	4	2	sling	2	1	goldenretriever	3	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461128330	13	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	basset	basset	clickedObj	1	31	closer	basset	3	1	bloodhound	1	3	chihuahua	2	4	pug	4	2
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461150690	14	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	hatchback	hatchback	clickedObj	1	12	closer	hatchback	1	2	beetle	4	1	redantique	3	3	bluesedan	2	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461162314	15	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	redsport	redsport	clickedObj	1	21	further	redsport	3	2	bluejay	4	3	straight	2	1	weimaraner	1	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461179266	16	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	inlay	inlay	clickedObj	1	28	closer	inlay	2	1	squat	1	2	woven	3	4	waiting	4	3
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461195655	17	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	sling	sling	clickedObj	1	17	further	sling	1	1	nightingale	2	4	white	4	2	goldenretriever	3	3
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461222355	18	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	chihuahua	chihuahua	clickedObj	1	27	closer	chihuahua	3	1	bloodhound	4	2	basset	1	4	pug	2	3
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461233388	19	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	leather	leather	clickedObj	1	38	further	leather	1	3	pigeon	4	2	brown	3	1	doberman	2	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461262098	20	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	tomtit	tomtit	clickedObj	1	1	closer	tomtit	3	2	cuckoo	1	3	sparrow	2	1	robin	4	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461274154	21	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	straight	straight	clickedObj	1	37	further	straight	4	3	bluejay	1	4	redsport	3	1	weimaraner	2	2
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461303627	22	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	redantique	redantique	clickedObj	1	14	closer	redantique	3	2	beetle	2	3	hatchback	1	1	bluesedan	4	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461313947	23	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	knob	knob	clickedObj	1	26	further	knob	3	3	crow	1	4	bluesport	4	1	bullmastiff	2	2
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461338659	24	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	woven	woven	clickedObj	1	8	closer	woven	1	1	squat	2	2	inlay	3	4	waiting	4	3
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461367363	25	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	pug	pug	clickedObj	1	18	closer	pug	4	2	bloodhound	1	4	basset	2	3	chihuahua	3	1
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461378643	26	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	doberman	doberman	clickedObj	1	25	further	doberman	2	3	pigeon	4	1	brown	1	2	leather	3	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461395873	27	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	bluesedan	bluesedan	clickedObj	1	7	closer	bluesedan	2	4	beetle	3	3	hatchback	4	2	redantique	1	1
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461407555	28	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	weimaraner	weimaraner	clickedObj	1	34	further	weimaraner	3	1	bluejay	2	2	redsport	1	4	straight	4	3
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461436675	29	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	robin	robin	clickedObj	1	16	closer	robin	1	1	cuckoo	2	2	sparrow	4	3	tomtit	3	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461447083	30	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	bullmastiff	bullmastiff	clickedObj	1	33	further	bullmastiff	2	4	crow	4	2	bluesport	3	3	knob	1	1
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461477692	31	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	waiting	waiting	clickedObj	1	4	closer	waiting	3	3	squat	4	2	inlay	1	1	woven	2	4
-pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461489965	32	AVI7K876BV3QL	3KOPY89HM9G9MG9QFTU88Z6RHCA3J9	goldenretriever	goldenretriever	clickedObj	1	10	further	goldenretriever	2	4	nightingale	1	1	white	4	3	sling	3	2
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460876074	1	pigeon	pigeon	clickedObj	1	0	further	pigeon	1	3	brown	4	1	leather	2	2	doberman	3	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460896816	2	cuckoo	cuckoo	clickedObj	1	6	closer	cuckoo	4	2	sparrow	3	3	tomtit	2	1	robin	1	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460922089	3	beetle	beetle	clickedObj	1	2	closer	beetle	3	4	hatchback	1	1	redantique	4	3	bluesedan	2	2
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460935866	4	nightingale	nightingale	clickedObj	1	13	further	nightingale	2	2	white	3	1	sling	4	4	goldenretriever	1	3
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460988164	5	squat	squat	clickedObj	1	32	closer	squat	2	2	inlay	3	3	woven	4	1	waiting	1	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499460999825	6	bluejay	bluejay	clickedObj	1	5	further	bluejay	1	4	redsport	2	2	straight	4	3	weimaraner	3	1
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461029865	7	bloodhound	bloodhound	clickedObj	1	15	closer	bloodhound	3	4	basset	4	2	chihuahua	1	3	pug	2	1
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461042194	8	crow	crow	clickedObj	1	30	further	crow	1	2	bluesport	2	1	knob	4	3	bullmastiff	3	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461061930	9	sparrow	sparrow	clickedObj	1	24	closer	sparrow	3	4	cuckoo	2	2	tomtit	4	1	robin	1	3
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461072913	10	brown	brown	clickedObj	1	23	further	brown	2	4	pigeon	3	2	leather	1	3	doberman	4	1
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461084409	11	bluesport	bluesport	clickedObj	1	19	further	bluesport	4	4	crow	2	3	knob	1	2	bullmastiff	3	1
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461095817	12	white	white	clickedObj	1	39	further	white	1	3	nightingale	4	2	sling	2	1	goldenretriever	3	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461128330	13	basset	basset	clickedObj	1	31	closer	basset	3	1	bloodhound	1	3	chihuahua	2	4	pug	4	2
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461150690	14	hatchback	hatchback	clickedObj	1	12	closer	hatchback	1	2	beetle	4	1	redantique	3	3	bluesedan	2	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461162314	15	redsport	redsport	clickedObj	1	21	further	redsport	3	2	bluejay	4	3	straight	2	1	weimaraner	1	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461179266	16	inlay	inlay	clickedObj	1	28	closer	inlay	2	1	squat	1	2	woven	3	4	waiting	4	3
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461195655	17	sling	sling	clickedObj	1	17	further	sling	1	1	nightingale	2	4	white	4	2	goldenretriever	3	3
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461222355	18	chihuahua	chihuahua	clickedObj	1	27	closer	chihuahua	3	1	bloodhound	4	2	basset	1	4	pug	2	3
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461233388	19	leather	leather	clickedObj	1	38	further	leather	1	3	pigeon	4	2	brown	3	1	doberman	2	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461262098	20	tomtit	tomtit	clickedObj	1	1	closer	tomtit	3	2	cuckoo	1	3	sparrow	2	1	robin	4	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461274154	21	straight	straight	clickedObj	1	37	further	straight	4	3	bluejay	1	4	redsport	3	1	weimaraner	2	2
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461303627	22	redantique	redantique	clickedObj	1	14	closer	redantique	3	2	beetle	2	3	hatchback	1	1	bluesedan	4	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461313947	23	knob	knob	clickedObj	1	26	further	knob	3	3	crow	1	4	bluesport	4	1	bullmastiff	2	2
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461338659	24	woven	woven	clickedObj	1	8	closer	woven	1	1	squat	2	2	inlay	3	4	waiting	4	3
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461367363	25	pug	pug	clickedObj	1	18	closer	pug	4	2	bloodhound	1	4	basset	2	3	chihuahua	3	1
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461378643	26	doberman	doberman	clickedObj	1	25	further	doberman	2	3	pigeon	4	1	brown	1	2	leather	3	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461395873	27	bluesedan	bluesedan	clickedObj	1	7	closer	bluesedan	2	4	beetle	3	3	hatchback	4	2	redantique	1	1
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461407555	28	weimaraner	weimaraner	clickedObj	1	34	further	weimaraner	3	1	bluejay	2	2	redsport	1	4	straight	4	3
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461436675	29	robin	robin	clickedObj	1	16	closer	robin	1	1	cuckoo	2	2	sparrow	4	3	tomtit	3	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461447083	30	bullmastiff	bullmastiff	clickedObj	1	33	further	bullmastiff	2	4	crow	4	2	bluesport	3	3	knob	1	1
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461477692	31	waiting	waiting	clickedObj	1	4	closer	waiting	3	3	squat	4	2	inlay	1	1	woven	2	4
+pilot0	8044-53427367-f780-4c19-8e84-7306b9f7ffc9	1499461489965	32	goldenretriever	goldenretriever	clickedObj	1	10	further	goldenretriever	2	4	nightingale	1	1	white	4	3	sling	3	2
+

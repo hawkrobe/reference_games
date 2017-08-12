@@ -1,53 +1,54 @@
 gameid	time	trialNum	sender	contents
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456266028	1	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	redantique	message	speaker	Hi
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456271787	1	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	redantique	message	speaker	the classic car
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456283519	1	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	redantique	message	speaker	click the classic car
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456304344	2	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	cuckoo	message	speaker	bird
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456314400	3	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	goldenretriever	message	speaker	light dog
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456335740	4	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	crow	message	speaker	dark bird with beak
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456339621	4	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	crow	message	speaker	visible beak
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456361974	4	A38DXFI1TZA295	3WJEQKOXA9G2BKS7YJ3CR7OBT5PA1V	crow	message	listener	stripe down the front?
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456367120	4	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	crow	message	speaker	no stripe
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456382354	4	A38DXFI1TZA295	3WJEQKOXA9G2BKS7YJ3CR7OBT5PA1V	crow	message	listener	dark bird dark beak?
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456387445	4	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	crow	message	speaker	yes
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456389157	4	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	crow	message	speaker	no stripe
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456397668	5	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	nightingale	message	speaker	bird
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456410496	6	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	straight	message	speaker	chair with white seat
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456426909	7	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	robin	message	speaker	bird
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456437400	8	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	bluejay	message	speaker	bord
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456439137	8	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	bluejay	message	speaker	bird
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456448421	9	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	bluesport	message	speaker	car
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456460539	10	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	redsport	message	speaker	sports car
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456477098	11	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	waiting	message	speaker	chair with unique back
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456479479	11	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	waiting	message	speaker	than the rest
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456483613	11	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	waiting	message	speaker	modern looking one
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456490140	11	A38DXFI1TZA295	3WJEQKOXA9G2BKS7YJ3CR7OBT5PA1V	waiting	message	listener	rounded yeh
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456495611	11	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	waiting	message	speaker	yea
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456505687	12	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	brown	message	speaker	car
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456514873	13	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	white	message	speaker	car
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456530278	14	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	tomtit	message	speaker	dark bird with sripe on face
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456543508	15	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	beetle	message	speaker	car
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456554182	16	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	doberman	message	speaker	darkest
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456566944	17	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	sling	message	speaker	chair
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456579437	18	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	leather	message	speaker	chair
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456594002	19	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	weimaraner	message	speaker	2nd lightest
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456615298	19	A38DXFI1TZA295	3WJEQKOXA9G2BKS7YJ3CR7OBT5PA1V	weimaraner	message	listener	sorta tan big ears?
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456622447	19	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	weimaraner	message	speaker	yes
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456637132	20	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	knob	message	speaker	chair with curly arms
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456647662	21	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	woven	message	speaker	chair
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456661130	22	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	pigeon	message	speaker	pigeon
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456673030	23	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	bluesedan	message	speaker	sedan
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456682041	23	A38DXFI1TZA295	3WJEQKOXA9G2BKS7YJ3CR7OBT5PA1V	bluesedan	message	listener	2door?
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456695802	23	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	bluesedan	message	speaker	yes not the sports car or classic car
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456716679	24	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	squat	message	speaker	chair
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456729366	25	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	hatchback	message	speaker	white
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456749149	26	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	sparrow	message	speaker	white stripe on neck
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456767293	26	A38DXFI1TZA295	3WJEQKOXA9G2BKS7YJ3CR7OBT5PA1V	sparrow	message	listener	dark one again or lighter colored one
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456780821	26	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	sparrow	message	speaker	light feet
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456800993	27	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	inlay	message	speaker	tan seat
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456820749	28	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	pug	message	speaker	dog
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456833356	29	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	chihuahua	message	speaker	dog
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456862250	30	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	bloodhound	message	speaker	2nd darkest
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456875294	31	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	basset	message	speaker	dog
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456895317	32	A2RBF3IIJP15IH	3TXD01ZLD5V3IS3OR635P678CRMU4X	bullmastiff	message	speaker	dog
-pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456903152	32	A38DXFI1TZA295	3WJEQKOXA9G2BKS7YJ3CR7OBT5PA1V	bullmastiff	message	listener	word..nice job
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456266028	1	redantique	message	speaker	Hi
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456271787	1	redantique	message	speaker	the classic car
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456283519	1	redantique	message	speaker	click the classic car
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456304344	2	cuckoo	message	speaker	bird
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456314400	3	goldenretriever	message	speaker	light dog
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456335740	4	crow	message	speaker	dark bird with beak
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456339621	4	crow	message	speaker	visible beak
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456361974	4	crow	message	listener	stripe down the front?
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456367120	4	crow	message	speaker	no stripe
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456382354	4	crow	message	listener	dark bird dark beak?
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456387445	4	crow	message	speaker	yes
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456389157	4	crow	message	speaker	no stripe
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456397668	5	nightingale	message	speaker	bird
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456410496	6	straight	message	speaker	chair with white seat
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456426909	7	robin	message	speaker	bird
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456437400	8	bluejay	message	speaker	bord
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456439137	8	bluejay	message	speaker	bird
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456448421	9	bluesport	message	speaker	car
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456460539	10	redsport	message	speaker	sports car
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456477098	11	waiting	message	speaker	chair with unique back
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456479479	11	waiting	message	speaker	than the rest
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456483613	11	waiting	message	speaker	modern looking one
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456490140	11	waiting	message	listener	rounded yeh
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456495611	11	waiting	message	speaker	yea
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456505687	12	brown	message	speaker	car
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456514873	13	white	message	speaker	car
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456530278	14	tomtit	message	speaker	dark bird with sripe on face
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456543508	15	beetle	message	speaker	car
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456554182	16	doberman	message	speaker	darkest
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456566944	17	sling	message	speaker	chair
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456579437	18	leather	message	speaker	chair
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456594002	19	weimaraner	message	speaker	2nd lightest
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456615298	19	weimaraner	message	listener	sorta tan big ears?
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456622447	19	weimaraner	message	speaker	yes
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456637132	20	knob	message	speaker	chair with curly arms
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456647662	21	woven	message	speaker	chair
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456661130	22	pigeon	message	speaker	pigeon
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456673030	23	bluesedan	message	speaker	sedan
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456682041	23	bluesedan	message	listener	2door?
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456695802	23	bluesedan	message	speaker	yes not the sports car or classic car
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456716679	24	squat	message	speaker	chair
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456729366	25	hatchback	message	speaker	white
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456749149	26	sparrow	message	speaker	white stripe on neck
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456767293	26	sparrow	message	listener	dark one again or lighter colored one
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456780821	26	sparrow	message	speaker	light feet
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456800993	27	inlay	message	speaker	tan seat
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456820749	28	pug	message	speaker	dog
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456833356	29	chihuahua	message	speaker	dog
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456862250	30	bloodhound	message	speaker	2nd darkest
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456875294	31	basset	message	speaker	dog
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456895317	32	bullmastiff	message	speaker	dog
+pilot0	0199-f365dce3-ec98-44ff-9c9c-09cd8b256e57	1499456903152	32	bullmastiff	message	listener	word..nice job
+

@@ -1,0 +1,3 @@
+expid	gameid	time	trialNum	intendedName	role	text	reactionTime	condition	eventType
+pilot1	5572-1aca1177-c181-4466-9c92-444fde08d274	1502117904308	1	sparrow	speaker	asf	646	further	chatMessage
+pilot1	5572-1aca1177-c181-4466-9c92-444fde08d274	1502117914638	2	bloodhound	speaker	adfdf	1008	closer	chatMessage

@@ -1,0 +1,35 @@
+expid	gameid	time	trialNum	intendedName	role	text	reactionTime	condition	eventType
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502123890119	1	tomtit	listener	Hello?	1630	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502123900718	1	tomtit	speaker	tweet	2546	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502123916783	2	cuckoo	speaker	tweet	2432	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502123935511	3	robin	speaker	dark tweet	4712	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502123948747	4	crow	speaker	tweet	1744	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502123959260	5	nightingale	speaker	tweet	1721	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502123983804	6	beetle	speaker	bug	3905	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502123997819	7	pug	speaker	pug	1941	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124014716	8	squat	speaker	dark seat	4714	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124034285	9	woven	speaker	white pipe seat	6048	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124051940	10	redantique	speaker	vroom	2288	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124070344	11	pigeon	speaker	pidgeon	6865	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124091979	12	bluesport	speaker	57	3992	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124125796	13	goldenretriever	speaker	light dog	7726	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124137738	14	hatchback	speaker	vroom	1544	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124153579	15	redsport	speaker	vroom	2137	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124164540	16	white	speaker	vroom	2601	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124174986	17	knob	speaker	seat	1752	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124200827	18	straight	speaker	small seat light cushion	12633	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124217711	19	sparrow	speaker	sparrow	5047	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124240811	20	sling	speaker	seat	1025	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124259178	21	waiting	speaker	seat	1025	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124281722	22	bloodhound	speaker	dark dog	4337	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124308786	23	leather	speaker	seat	1545	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124342970	24	brown	speaker	dark top converable	12238	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124354019	25	bluejay	speaker	jay	1543	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124381354	26	weimaraner	speaker	dog	1337	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124400179	27	chihuahua	speaker	dog	1599	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124424442	28	inlay	speaker	fancy short chair	13168	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124444586	29	bluesedan	speaker	newer model car	5222	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124455690	30	doberman	speaker	dog	913	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124469050	31	basset	speaker	hound	2560	closer	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124481586	32	bullmastiff	speaker	dog	1870	further	chatMessage
+pilot1	1725-279e49a8-065e-4a1d-9823-2a518bf555a1	1502124496066	32	bullmastiff	listener	Thankyou for being such an awesome partner!	13155	further	chatMessage

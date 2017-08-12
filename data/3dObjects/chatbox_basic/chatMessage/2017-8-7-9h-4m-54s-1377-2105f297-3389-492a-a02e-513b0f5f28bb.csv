@@ -1,0 +1,48 @@
+expid	gameid	time	trialNum	intendedName	role	text	reactionTime	condition	eventType
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502121894341	1	basset	speaker	has long ears	5360	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502121913326	2	nightingale	speaker	is mainly white	4136	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502121927613	3	tomtit	speaker	has wings	3205	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502121975130	4	brown	speaker	has a gray middle on the tire	8381	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502121991944	5	cuckoo	speaker	has a beak	3338	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122004754	6	bluejay	speaker	has a beak	3445	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122020811	7	straight	speaker	has a white seat	4141	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122045361	8	pigeon	speaker	has feathers	3861	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122063710	9	hatchback	speaker	object can drive	4799	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122082944	10	bluesedan	speaker	has a steering wheel	5719	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122097393	11	redantique	speaker	is darker in color	4128	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122128491	12	waiting	listener	youre doing great! =D	7103	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122137819	12	waiting	speaker	lol...thanks, you too!	6641	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122149882	12	waiting	speaker	Seat is shiny	4659	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122162512	13	beetle	listener	<3	656	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122167794	13	beetle	speaker	<3	1979	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122173910	13	beetle	speaker	White in color	3066	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122193229	14	bullmastiff	speaker	is lighter in color	2686	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122215997	15	robin	speaker	darker	5013	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122232471	16	redsport	speaker	can drive	2911	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122260783	17	crow	speaker	the back is tan but, has a black head	9529	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122285890	18	sling	speaker	can sit on but, can't drive	3995	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122310419	19	leather	speaker	can sit on but, not drive	4733	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122333050	20	bluesport	speaker	has a white top	7523	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122362031	21	bloodhound	speaker	is brown	1788	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122377670	22	knob	speaker	sit on but, not drive	3426	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122390671	23	squat	listener	ur my hero !	3184	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122406752	23	squat	speaker	Wow, you just made my day lol...thank you 	8598	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122416507	23	squat	speaker	darker in color	3853	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122438261	24	woven	speaker	can sit on but, not drive	5639	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122443551	24	woven	listener	my pleasure, you will have the best day ever!	13905	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122470320	25	sparrow	speaker	I am going to trust you on that ;) you will too as well :)	15475	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122483629	25	sparrow	speaker	has blackish specks on back	6774	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122508646	26	chihuahua	listener	=(	1280	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122521025	26	chihuahua	speaker	sorry :(	14284	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122532298	26	chihuahua	listener	NP, we still rock!	4223	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122532374	26	chihuahua	speaker	Object barks	6791	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122543803	27	goldenretriever	speaker	We do!	1580	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122548197	27	goldenretriever	speaker	object barks	1966	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122587895	28	white	speaker	sports car	1718	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122603073	29	weimaraner	speaker	woof woof	1947	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122617330	30	doberman	listener	haha ;)	3649	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122619887	30	doberman	speaker	pointy ears	3749	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122622262	30	doberman	speaker	:)	769	closer	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122640978	31	pug	speaker	You were awesome! woof woof again!	10502	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122662999	31	pug	listener	I couldnt have done it w/o u silly!	10656	further	chatMessage
+pilot1	1377-2105f297-3389-492a-a02e-513b0f5f28bb	1502122676957	32	inlay	speaker	awwww...tan seat	4261	closer	chatMessage
