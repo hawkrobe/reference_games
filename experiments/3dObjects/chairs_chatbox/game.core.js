@@ -278,8 +278,8 @@ game_core.prototype.makeTrialList = function () {
   var conditionList = _.shuffle(f.concat(c).concat(s));    
   // iff you only want to run close trials, this next block restricts it to them
   if (this.closeOnly == 1) {
-    f = _.times(this.numRounds,function() {return "far"});    
-    var conditionList = _.shuffle(f);
+    c = _.times(this.numRounds,function() {return "close"});    
+    var conditionList = _.shuffle(c);
   }
 
   //get family IDs and randomize
