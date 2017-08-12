@@ -1,0 +1,3 @@
+expid	gameid	time	trialNum	object1Name	object1SketcherLoc	object1ViewerLoc	object2Name	object2SketcherLoc	object2ViewerLoc	object3Name	object3SketcherLoc	object3ViewerLoc	object4Name	object4SketcherLoc	object4ViewerLoc	intendedName	clickedName	correct	pose	condition	eventType
+pilot1	5572-1aca1177-c181-4466-9c92-444fde08d274	1502117906674	1	sparrow	2	4	redantique	4	1	woven	1	3	goldenretriever	3	2	sparrow	sparrow	true	14	further	clickedObj
+pilot1	5572-1aca1177-c181-4466-9c92-444fde08d274	1502117916552	2	bloodhound	1	4	pug	4	3	weimaraner	2	2	chihuahua	3	1	bloodhound	weimaraner	false	39	closer	clickedObj

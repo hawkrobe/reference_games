@@ -1,0 +1,4 @@
+expid	gameid	time	trialNum	workerId	assignmentId	object1Name	object1SketcherLoc	object1ViewerLoc	object2Name	object2SketcherLoc	object2ViewerLoc	object3Name	object3SketcherLoc	object3ViewerLoc	object4Name	object4SketcherLoc	object4ViewerLoc	intendedName	clickedName	correct	pose	condition	eventType
+pilot0	4601-edd8f9ff-8377-48be-a6c1-711de777d840	1502116100646	1			tomtit	3	3	hatchback	1	2	inlay	4	4	basset	2	1	tomtit	tomtit	true	23	further	clickedObj
+pilot0	4601-edd8f9ff-8377-48be-a6c1-711de777d840	1502116115213	2			crow	3	2	bluesport	1	1	squat	2	4	pug	4	3	crow	crow	true	9	further	clickedObj
+pilot0	4601-edd8f9ff-8377-48be-a6c1-711de777d840	1502116128279	3			brown	3	3	beetle	4	1	redantique	2	4	bluesedan	1	2	brown	brown	true	38	closer	clickedObj
