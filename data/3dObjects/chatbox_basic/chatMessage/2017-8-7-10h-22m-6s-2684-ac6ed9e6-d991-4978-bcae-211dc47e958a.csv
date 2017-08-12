@@ -1,0 +1,47 @@
+expid	gameid	time	trialNum	intendedName	role	text	reactionTime	condition	eventType
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126526360	1	cuckoo	speaker	chirp	4017	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126548421	2	robin	speaker	chirp	3626	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126561393	3	nightingale	speaker	chirp	3770	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126597271	4	sparrow	speaker	white feet dark beak	13586	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126615036	5	pigeon	speaker	chirp	2465	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126653641	6	straight	speaker	light wooden chair white seat	19963	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126675009	7	pug	speaker	pug	2578	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126703139	8	beetle	speaker	beetle	8769	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126721485	9	bluesport	speaker	car	2032	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126734788	10	bluesedan	speaker	car	2083	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126748493	10	bluesedan	listener	i dont think your suposed to just say what it is 	11888	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126777463	11	brown	speaker	white with round things	14274	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126813339	12	redantique	speaker	old timey	17218	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126846413	13	sling	speaker	white seat dark legs	14914	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126870405	14	weimaraner	speaker	light grey	7839	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126897153	15	crow	speaker	dark	4796	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126905021	15	crow	listener	which one 	2478	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126922048	15	crow	speaker	all dark no highlights	10913	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126922137	15	crow	listener	dark head or dark head with white stripe	9735	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126946511	16	redsport	speaker	grey	4688	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126980012	17	white	speaker	white with odd slanty top	9816	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502126992802	17	white	listener	square back or not 	3434	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127014670	17	white	speaker	slight curve	8337	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127055226	18	bluejay	speaker	white on bottom	8945	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127077444	19	squat	speaker	sit down	4705	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127096775	20	inlay	speaker	stay seated	3457	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127124819	21	knob	speaker	remain seated	4128	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127143250	22	doberman	speaker	don't get pinched	7368	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127160313	23	waiting	speaker	have a seat	4698	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127193732	24	leather	speaker	probably metal legs straight 	18187	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127212841	24	leather	listener	white or grey	6007	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127219031	24	leather	speaker	grey	2136	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127236046	25	hatchback	speaker	newer compact	7168	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127254787	25	hatchback	listener	i know nothing about cars whats a compact 	9074	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127256974	25	hatchback	speaker	fuel efficient	4119	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127269854	25	hatchback	speaker	small	2089	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127273684	25	hatchback	speaker	hatchback	2369	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127287652	26	goldenretriever	speaker	ruff	2186	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127300323	27	bullmastiff	speaker	ruff	1417	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127313180	28	basset	speaker	ruff	1969	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127331211	29	woven	speaker	pipe legs white	7706	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127355030	30	bloodhound	speaker	the second darkest	8129	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127369584	31	chihuahua	speaker	ruff	2039	further	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127408624	32	tomtit	speaker	white face white wing dark feet	14784	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127422786	32	tomtit	speaker	white stripe	5045	closer	chatMessage
+pilot1	2684-ac6ed9e6-d991-4978-bcae-211dc47e958a	1502127433108	32	tomtit	listener	this is last round was fun, thanks 	39085	closer	chatMessage

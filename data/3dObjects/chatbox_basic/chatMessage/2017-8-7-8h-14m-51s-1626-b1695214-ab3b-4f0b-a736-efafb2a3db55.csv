@@ -1,0 +1,44 @@
+expid	gameid	time	trialNum	intendedName	role	text	reactionTime	condition	eventType
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502118891507	1	nightingale	speaker	This animal can fly	3170	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502118910217	2	cuckoo	speaker	It has black wings that are below the tail	6412	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502118919253	2	cuckoo	speaker	The tips of the wings that is	3561	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502118930151	2	cuckoo	listener	what color is the head?	3095	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502118938335	2	cuckoo	speaker	lighter with a dark patch on top	4904	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502118952998	3	bluejay	speaker	a blue jay	11651	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502118970424	4	sling	speaker	looks like a Stickley chair	7017	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502118979495	4	sling	speaker	dark wood arms	8471	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119001649	5	goldenretriever	speaker	lighter colors with skinny legs and a slightly darker back	9508	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119014794	6	robin	speaker	bird	738	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119029234	7	redantique	speaker	very old style vehicle	4830	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119040677	8	crow	speaker	bird	10717	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119063509	9	sparrow	speaker	darker throat with lighter breast	5232	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119065786	9	sparrow	speaker	not the pigeon	1993	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119089054	10	inlay	speaker	older looking wood chair no arms detailing on back rest	17856	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119100456	11	brown	speaker	car	530	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119109586	12	bluesport	speaker	car	682	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119131574	13	redsport	speaker	mustang I think 	10881	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119158191	14	weimaraner	speaker	gray with skinny legs and skinny, pointed tail	25910	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119172210	14	weimaraner	speaker	medium gray color	2504	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119182504	15	white	speaker	car	612	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119195077	16	beetle	speaker	car again	1424	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119205468	17	knob	speaker	chair	965	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119227093	18	bluesedan	speaker	low to the ground, not mustang, but newer looking	9789	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119232570	18	bluesedan	speaker	maybe a volvo?	2912	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119242395	19	waiting	speaker	chair	566	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119253681	20	basset	speaker	bassett hound	2341	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119258632	20	basset	speaker	short with long ears	3176	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119270359	21	straight	speaker	chair	689	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119285062	22	leather	speaker	metal and cloth	4739	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119288463	22	leather	speaker	cloth looks dark gray	3076	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119298774	23	squat	speaker	chair	781	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119309937	24	pigeon	speaker	pigeon	1785	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119318541	25	chihuahua	speaker	dog	521	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119333060	26	bloodhound	speaker	taller, dark dog	2184	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119351624	27	tomtit	speaker	i think chickadee	2704	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119354707	27	tomtit	speaker	black head	1533	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119357311	27	tomtit	speaker	black throat	1380	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119371314	28	hatchback	speaker	suv looking thing	2491	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119382240	29	doberman	speaker	dog	551	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119394966	30	woven	speaker	white metal legs	2160	closer	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119404837	31	bullmastiff	speaker	dog	455	further	chatMessage
+pilot1	1626-b1695214-ab3b-4f0b-a736-efafb2a3db55	1502119414409	32	pug	speaker	dog again	1364	further	chatMessage

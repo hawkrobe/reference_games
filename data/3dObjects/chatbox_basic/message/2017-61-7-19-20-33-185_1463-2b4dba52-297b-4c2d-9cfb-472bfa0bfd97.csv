@@ -1,5 +1,6 @@
 gameid	time	trialNum	sender	contents
-pilot0	1463-2b4dba52-297b-4c2d-9cfb-472bfa0bfd97	1499455240796	1	A17MUS17DFQZ4P	3WETL7AQWUM1FHU5QRQE7PNMZAX535	weimaraner	message	listener	hello
-pilot0	1463-2b4dba52-297b-4c2d-9cfb-472bfa0bfd97	1499455247040	1	A1HWB810RJBV2K	3YT88D1N09C4X0F8XEUK9E64W0OK31	weimaraner	message	speaker	hello
-pilot0	1463-2b4dba52-297b-4c2d-9cfb-472bfa0bfd97	1499455262427	1	A17MUS17DFQZ4P	3WETL7AQWUM1FHU5QRQE7PNMZAX535	weimaraner	message	listener	lets start by the breed maybe?
-pilot0	1463-2b4dba52-297b-4c2d-9cfb-472bfa0bfd97	1499455291452	1	A1HWB810RJBV2K	3YT88D1N09C4X0F8XEUK9E64W0OK31	weimaraner	message	speaker	it looks like a lab. It is the darkest one (grey) 
+pilot0	1463-2b4dba52-297b-4c2d-9cfb-472bfa0bfd97	1499455240796	1	weimaraner	message	listener	hello
+pilot0	1463-2b4dba52-297b-4c2d-9cfb-472bfa0bfd97	1499455247040	1	weimaraner	message	speaker	hello
+pilot0	1463-2b4dba52-297b-4c2d-9cfb-472bfa0bfd97	1499455262427	1	weimaraner	message	listener	lets start by the breed maybe?
+pilot0	1463-2b4dba52-297b-4c2d-9cfb-472bfa0bfd97	1499455291452	1	weimaraner	message	speaker	it looks like a lab. It is the darkest one (grey) 
+
