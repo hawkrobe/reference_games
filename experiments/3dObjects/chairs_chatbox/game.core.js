@@ -29,7 +29,7 @@ var game_core = function(options){
   this.email = 'sketchloop@gmail.com';
   this.projectName = '3dObjects';
   this.experimentName = 'chairs_chatbox';
-  this.iterationName = 'pilot1';
+  this.iterationName = 'close_only';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
@@ -53,6 +53,8 @@ var game_core = function(options){
               width : (this.cellDimensions.width * this.numHorizontalCells
               + this.cellPadding)}; 
   
+  // toggle on if you want to ONLY run close trials
+  this.closeOnly = 1;
 
   // track shift key drawing tool use 
   this.shiftKeyUsed = 0; // "1" on trials where used, "0" otherwise
@@ -270,10 +272,15 @@ game_core.prototype.sampleStimulusLocs = function() {
 game_core.prototype.makeTrialList = function () { 
 
   //sample 23 of each condition and randomize
-  f = _.times(23,function() {return "far"});
-  c = _.times(23,function() {return "close"});
-  s = _.times(23,function() {return "split"});
-  var conditionList = _.shuffle(f.concat(c).concat(s));
+  f = _.times(this.numRounds/3,function() {return "far"});
+  c = _.times(this.numRounds/3,function() {return "close"});
+  s = _.times(this.numRounds/3,function() {return "split"});
+  var conditionList = _.shuffle(f.concat(c).concat(s));    
+  // iff you only want to run close trials, this next block restricts it to them
+  if (this.closeOnly == 1) {
+    f = _.times(this.numRounds,function() {return "far"});    
+    var conditionList = _.shuffle(f);
+  }
 
   //get family IDs and randomize
   var familyList = _.filter(stimList, function(s){ return (s['condition']=="close")});
@@ -284,14 +291,13 @@ game_core.prototype.makeTrialList = function () {
   //console.log(criteria);
 
   //now add whole families based on random order established by criteria
-
   var local_this = this;
   var trialList = [];
 
   //family of three stimList_chair objects {<target>, <distractor1>, <distractor2>}
   var fam = []; 
 
-  for (var i = 0; i < 69; i++){
+  for (var i = 0; i < this.numRounds; i++){
 
     //now add whole families based on random order established by criteria
     fam = _.filter(stimList, function(s){ return (s['condition']==criteria[i][0] && s['family']==criteria[i][1])});
@@ -389,9 +395,6 @@ var getRemainingTargets = function(earlierTargets) {
     return !_.contains(earlierTargets, x.name );
   });
 };
-
-
-
 
 var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList,conditionList) {    
   theseCats = categoryList[roundNum];
