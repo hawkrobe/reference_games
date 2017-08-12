@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	intendedName	role	text	reactionTime	eventType
+pilot1	5650-4802d101-7f86-4c0f-8251-b6a8945f841f	1502323431932	1	close_38_a_a66d78cbf3603e8bba9df3ea0397b1a6	speaker	asdf	302	chatMessage
+pilot1	5650-4802d101-7f86-4c0f-8251-b6a8945f841f	1502323552397	2	far_48_a_8d4efa9893f7e49b3a85b56ecd01e269	speaker	asdf	424	chatMessage
