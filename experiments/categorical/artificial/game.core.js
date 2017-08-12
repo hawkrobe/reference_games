@@ -34,7 +34,7 @@ var game_core = function(options){
   this.email = 'rxdh@stanford.edu';
   this.projectName = 'basicLevel';
   this.experimentName = 'artificialLanguage';
-  this.iterationName = 'pilot1';
+  this.iterationName = 'pilot2';
   this.anonymizeCSV = true;
   this.bonusAmt = 3; // in cents
   
@@ -62,7 +62,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 60;
+  this.numRounds = 90;
   this.feedbackDelay = 300;
 
   // This will be populated with the tangram set
@@ -73,7 +73,7 @@ var game_core = function(options){
     this.expName = options.expName;
     this.player_count = options.player_count;
     this.objects = require('./objects.json');
-    this.condition = _.sample(['over', 'under', 'basic', 'uniform']);
+    this.condition = 'uniform';// _.sample(['over', 'under', 'basic', 'uniform']);
     this.trialList = this.makeTrialList();
     this.language = new ArtificialLanguage();
     this.data = {
