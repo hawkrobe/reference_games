@@ -83,7 +83,9 @@ var game_core = function(options){
     this.id = options.id;
     this.expName = options.expName;
     this.player_count = options.player_count;
+    this.stimList = _.cloneDeep(require('./stimList_chairs'));
     this.trialList = this.makeTrialList();
+
     this.data = {
       id : this.id,
       trials : [],
@@ -121,8 +123,6 @@ var game_player = function( game_instance, player_instance) {
 // server side we set some classes to global types, so that
 // we can use them in other files (specifically, game.server.js)
 if('undefined' != typeof global) {  
-  var stimList = _.map(require('./stimList_chairs', _.clone)); 
-  // console.log(stimList);
   module.exports = {game_core, game_player};
 }
 
@@ -283,7 +283,7 @@ game_core.prototype.makeTrialList = function () {
   }
 
   //get family IDs and randomize
-  var familyList = _.filter(stimList, function(s){ return (s['condition']=="close")});
+  var familyList = _.filter(this.stimList, function(s){ return (s['condition']=="close")});
   familyList = _.uniq(_.map(familyList, _.property('family')));
   familyList = _.shuffle(familyList);
 
@@ -300,7 +300,7 @@ game_core.prototype.makeTrialList = function () {
   for (var i = 0; i < this.numRounds; i++){
 
     //now add whole families based on random order established by criteria
-    fam = _.filter(stimList, function(s){ return (s['condition']==criteria[i][0] && s['family']==criteria[i][1])});
+    fam = _.filter(this.stimList, function(s){ return (s['condition']==criteria[i][0] && s['family']==criteria[i][1])});
 
     //target is always member 'a', and fam is always in order 'a' 'b' 'c'
     fam[0]['target_status'] = "target";
@@ -309,7 +309,7 @@ game_core.prototype.makeTrialList = function () {
 
     //remove ".png" file extension from filename property to prevent join/split errors by "."
     for(var j = 0; j < fam.length; j++){
-      fam[j]['filename'] = fam[j]['filename'].slice(0, -4);
+	fam[j]['filename'] = fam[j]['filename'].split(".")[0];
     }
 
     // sample locations for those objects
@@ -403,10 +403,10 @@ var sampleTrial = function(roundNum,categoryList,_objectList,poseList,targetList
   thisTarget = targetList[roundNum];
   thisCondition = conditionList[roundNum];
 
-  var im0 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
-  var im1 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
-  var im2 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==thisPose) ) })[0];
-  var im3 = _.filter(stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==thisPose) ) })[0]; 
+  var im0 = _.filter(this.stimList, function(s){ return ( (s['cluster']==theseCats[0]) && (s['object']==theseObjs[0]) && (s['pose']==thisPose) ) })[0];
+  var im1 = _.filter(this.stimList, function(s){ return ( (s['cluster']==theseCats[1]) && (s['object']==theseObjs[1]) && (s['pose']==thisPose) ) })[0];
+  var im2 = _.filter(this.stimList, function(s){ return ( (s['cluster']==theseCats[2]) && (s['object']==theseObjs[2]) && (s['pose']==thisPose) ) })[0];
+  var im3 = _.filter(this.stimList, function(s){ return ( (s['cluster']==theseCats[3]) && (s['object']==theseObjs[3]) && (s['pose']==thisPose) ) })[0]; 
 
   var im_all = [im0,im1,im2,im3]; 
   var target = im_all[thisTarget]; // actual target on this trial
