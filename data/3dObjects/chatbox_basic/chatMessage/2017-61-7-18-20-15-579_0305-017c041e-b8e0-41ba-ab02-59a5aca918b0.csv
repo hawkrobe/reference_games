@@ -1,0 +1,4 @@
+gameid	time	trialNum	sender	contents
+pilot3	0305-017c041e-b8e0-41ba-ab02-59a5aca918b0	1499451619074	1	A1BOIDKD33QSDK	3HPZF4IVNN7NU508UM1T5T04VO9YCQ	waiting	message	speaker	asdf
+pilot3	0305-017c041e-b8e0-41ba-ab02-59a5aca918b0	1499451620999	1			waiting	message	listener	hi
+pilot3	0305-017c041e-b8e0-41ba-ab02-59a5aca918b0	1499451623234	1	A1BOIDKD33QSDK	3HPZF4IVNN7NU508UM1T5T04VO9YCQ	waiting	message	speaker	hi
