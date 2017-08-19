@@ -13,11 +13,13 @@
   client. Server creates one for each game that is hosted, and each
   client creates one for itself to play the game. When you set a
   variable, remember that it's only set in that instance.
-*/
+ */
+
 var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
+    sendPostRequest = require('request').post;
     _ = require('lodash');
     utils  = require(__base + 'sharedUtils/sharedUtils.js');
   }
@@ -83,8 +85,6 @@ var game_core = function(options){
     this.id = options.id;
     this.expName = options.expName;
     this.player_count = options.player_count;
-    this.stimList = _.cloneDeep(require('./stimList_chairs'));
-    this.trialList = this.makeTrialList();
 
     this.data = {
       id : this.id,
@@ -101,7 +101,23 @@ var game_core = function(options){
       player: new game_player(this,options.player_instances[0].player)
     }];
     this.streams = {};
-    this.server_send_update();
+
+    // Before starting game, get stim list from db
+    var that = this;
+    console.log('ran this');
+    sendPostRequest('http://localhost:4000/db/getstims', {
+      json: {dbname: 'stimuli', colname: 'chairs140', limit: 2, numTrials: 70}
+    }, (error, res, body) => {
+      if(!error && res.statusCode === 200) {
+	console.log('got stims from db');
+	console.log(body);
+	that.stimList = body;
+	that.trialList = that.makeTrialList();
+	that.server_send_update();
+      } else {
+	console.log(`error getting stims: ${error} ${body}`);
+      }
+    });
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.players = [{
