@@ -105,13 +105,11 @@ var game_core = function(options){
 
     // Before starting game, get stim list from db
     var that = this;
-    console.log('ran this');
     sendPostRequest('http://localhost:4000/db/getstims', {
-      json: {dbname: 'stimuli', colname: 'chairs140', limit: 2, numTrials: 70}
+      json: {dbname: 'stimuli', colname: 'chairs140',
+	     limit: 4, numTrials: 70, gameid: this.id}
     }, (error, res, body) => {
       if(!error && res.statusCode === 200) {
-      	console.log('got stims from db');
-      	console.log(body);
       	that.stimList = body;
       	that.trialList = that.makeTrialList();
       	that.server_send_update();
