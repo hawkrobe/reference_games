@@ -237,13 +237,14 @@ function serve() {
 
       // get a random sample of stims that haven't appeared more than k times
       collection.aggregate([
-	{ $addFields: { numGames: { $size: '$games'}}}, 
-	{ $match: { numGames : {$lt : request.body.limit}}},
-	{'$sample': {'size': request.body.numTrials }}
+	{ $addFields: { numGames: { $size: '$games'} } }, 
+	{ $match: { numGames : {$lt : request.body.limit} } },
+	{ $group : { _id : "$family", family: { $push: "$$ROOT" } } },
+	{'$sample': {'size': request.body.numTrials } }
       ], (err, results) => {
 	if(err) console.log(err);
 	console.log(results);
-	response.send(results);
+	response.send(_.flatten(_.map(results, 'family')));
       });
       
       // collection.find(query, projection).limit(1).toArray((err, items) => {          
