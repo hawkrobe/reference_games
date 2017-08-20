@@ -13,11 +13,13 @@
   client. Server creates one for each game that is hosted, and each
   client creates one for itself to play the game. When you set a
   variable, remember that it's only set in that instance.
-*/
+ */
+
 var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
+    sendPostRequest = require('request').post;
     _ = require('lodash');
     utils  = require(__base + 'sharedUtils/sharedUtils.js');
   }
@@ -52,21 +54,22 @@ var game_core = function(options){
               + this.cellPadding),
               width : (this.cellDimensions.width * this.numHorizontalCells
               + this.cellPadding)}; 
-  
-  // toggle on if you want to ONLY run close trials
-  this.closeOnly = 1;
+
 
   // track shift key drawing tool use 
   this.shiftKeyUsed = 0; // "1" on trials where used, "0" otherwise
 
   // Number of total poses per object
-  this.numPoses = 40;          
+  this.numPoses = 1;          
 
   // Which round (a.k.a. "trial") are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 69;
+  this.numRounds = 70;
+
+  // toggle on if you want to ONLY run close trials
+  this.closeOnly = 1;  
 
   // How many objects per round (how many items in the menu)?
   this.numItemsPerRound = this.numHorizontalCells*this.numVerticalCells;
@@ -83,16 +86,14 @@ var game_core = function(options){
     this.id = options.id;
     this.expName = options.expName;
     this.player_count = options.player_count;
-    this.stimList = _.cloneDeep(require('./stimList_chairs'));
-    this.trialList = this.makeTrialList();
 
     this.data = {
       id : this.id,
       trials : [],
       catch_trials : [], system : {},
       subject_information : {
-	gameID: this.id,
-	score: 0
+      	gameID: this.id,
+      	score: 0
       }
     };
     this.players = [{
@@ -101,7 +102,21 @@ var game_core = function(options){
       player: new game_player(this,options.player_instances[0].player)
     }];
     this.streams = {};
-    this.server_send_update();
+
+    // Before starting game, get stim list from db
+    var that = this;
+    sendPostRequest('http://localhost:4000/db/getstims', {
+      json: {dbname: 'stimuli', colname: 'chairs140',
+	     limit: 4, numTrials: 70, gameid: this.id}
+    }, (error, res, body) => {
+      if(!error && res.statusCode === 200) {
+      	that.stimList = body;
+      	that.trialList = that.makeTrialList();
+      	that.server_send_update();
+      } else {
+	console.log(`error getting stims: ${error} ${body}`);
+      }
+    });
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.players = [{
@@ -163,100 +178,6 @@ game_core.prototype.newRound = function() {
   }
 };
 
-game_core.prototype.getRandomizedConditions = function() {  
-  ///// April 8: implementing re-design
-
-  var condition = new Array; 
-  var category = new Array;
-  var object = new Array;
-  var pose = new Array;
-  var target = new Array; // target assignment
-
-  var numCats = 4;
-  var numObjs = 8; 
-  // make randomization matrix: take 4x8 matrix with range(0,8) on the rows, and indpt shuffle within row  
-  var tmp = new Array;
-  for (i=0;i<numCats;i++) {
-    tmp.push(_.shuffle(_.range(0,8)));
-  }
-  
-  // So now we generate the 8 unique menus:
-  // First, take left 4x4 matrix and define each column to be 4 different "menus" 
-  var menuList = new Array;
-  for (i=0;i<numCats;i++) { 
-    _menu = new Array;
-    for (j=0;j<numCats;j++) { 
-      _menu.push(tmp[j][i])
-    } 
-    menuList.push(_menu);      
-  }
-  // Then, take right 4x4 matrix and define each row to be 4 different "menus"
-  // this way, each object is drawn exactly once, and objects always appear with the same distractors
-  for (i=0;i<numObjs-numCats;i++) {
-    menuList.push(tmp[i].slice(4,8));
-  }
-
-  // copy four times to get the object matrix 
-  _object = menuList.concat(menuList).concat(menuList).concat(menuList);
-
-  // now let's make the category matrix
-  arr = new Array;
-  _(4).times(function(n){arr.push(_.range(0,4))});
-  tmp = _.range(0,4);
-  for (i=0;i<tmp.length;i++) {
-    arr.push(_.times(4, function() { return tmp[i]; }));
-  }
-
-  // copy 4 times to get full category matrix
-  _category = arr.concat(arr).concat(arr).concat(arr);
-
-  // now make pose matrix (on each trial, all objects share same pose, )
-  _pose = _.shuffle(_.range(this.numPoses)).slice(0,32);  
-  // for (i=0;i<_poses.length;i++) {
-  //   pose.push(_.times(4, function() { return _poses[i]; }));
-  // }
-
-  // now make condition matrix
-  f = _.times(4,function() {return "further"});
-  c = _.times(4,function() {return "closer"});
-  tmp = f.concat(c);
-  _condition = tmp.concat(tmp).concat(tmp).concat(tmp);
-
-  // now create target vector
-  _target = new Array;
-  for (i=0;i<4;i++) {
-    _target = _target.concat(_.times(8,function() {return i}));
-  }
-
-  // now shuffle the rows of condition & object matrices using same set of indices
-  var _zipped = _
-	.chain(_.zip(_object,_category,_pose,_condition,_target))
-	.chunk(8)
-	.map(epoch => _.shuffle(epoch))
-	.flatten()
-	.value();
-  
-  for (j=0;j<_zipped.length;j++) {
-    object.push(_zipped[j][0]);
-    category.push(_zipped[j][1]);
-    pose.push(_zipped[j][2]);
-    condition.push(_zipped[j][3]);
-    target.push(_zipped[j][4]);
-  }
-  // final output: design_dict contains category, object, pose matrices (each 32x4 [rounds by item])
-  // condition: 32x1 
-
-  design_dict = {condition:condition,
-                 category:category,
-                 object:object,                 
-                 pose:pose,
-                 target:target};
-
-
-  //console.log(design_dict);
-  return design_dict;  
-
-};
 
 game_core.prototype.sampleStimulusLocs = function() {
   var listenerLocs = _.shuffle([[1,1], [2,1], [3,1]]);
@@ -270,81 +191,61 @@ game_core.prototype.sampleStimulusLocs = function() {
 
 
 game_core.prototype.makeTrialList = function () { 
+    //console.log(this.stimList);
+  if ((this.numRounds % 3 ==0) && (this.closeOnly==false)) {
+    //sample 23 of each condition and randomize
+    f = _.times(this.numRounds/3,function() {return "far"});
+    c = _.times(this.numRounds/3,function() {return "close"});
+    s = _.times(this.numRounds/3,function() {return "split"});
+    var conditionList = _.shuffle(f.concat(c).concat(s));   
 
-  //sample 23 of each condition and randomize
-  f = _.times(this.numRounds/3,function() {return "far"});
-  c = _.times(this.numRounds/3,function() {return "close"});
-  s = _.times(this.numRounds/3,function() {return "split"});
-  var conditionList = _.shuffle(f.concat(c).concat(s));    
-  // iff you only want to run close trials, this next block restricts it to them
-  if (this.closeOnly == 1) {
+  } else {
+    // iff you only want to run close trials, this next block restricts it to them
     c = _.times(this.numRounds,function() {return "close"});    
     var conditionList = _.shuffle(c);
   }
 
   //get family IDs and randomize
-  var familyList = _.filter(this.stimList, function(s){ return (s['condition']=="close")});
-  familyList = _.uniq(_.map(familyList, _.property('family')));
-  familyList = _.shuffle(familyList);
+  var familyList = _.shuffle(_.uniq(_.map(this.stimList, _.property('family'))));
 
-  var criteria = _.zip(conditionList, familyList);
-  //console.log(criteria);
+  return _.zipWith(conditionList, familyList, (condition, family) => {
 
-  //now add whole families based on random order established by criteria
-  var local_this = this;
-  var trialList = [];
-
-  //family of three stimList_chair objects {<target>, <distractor1>, <distractor2>}
-  var fam = []; 
-
-  for (var i = 0; i < this.numRounds; i++){
-
-    //now add whole families based on random order established by criteria
-    fam = _.filter(this.stimList, function(s){ return (s['condition']==criteria[i][0] && s['family']==criteria[i][1])});
-
-    //target is always member 'a', and fam is always in order 'a' 'b' 'c'
-    fam[0]['target_status'] = "target";
-    fam[1]['target_status'] = "distractor1";
-    fam[2]['target_status'] = "distractor2";
-
-    //remove ".png" file extension from filename property to prevent join/split errors by "."
-    for(var j = 0; j < fam.length; j++){
-	fam[j]['filename'] = fam[j]['filename'].split(".")[0];
-    }
+    // Find objects in family, remove .png extension
+    var objs = _.filter(this.stimList, s => {
+      return s.condition === condition && s.family == family;
+    }).map(obj => _.extend(obj, {filename : obj.filename.split(".")[0]}));
 
     // sample locations for those objects
-    var locs = this.sampleStimulusLocs();  
-
+    var locs = this.sampleStimulusLocs();
+    
     // construct trial list (in sets of complete rounds)
-    trialList.push(_.map(_.zip(fam, locs.speaker, locs.listener), function(tuple) {
-        var object = _.clone(tuple[0]);
-        object.width = local_this.cellDimensions.width;
-        object.height = local_this.cellDimensions.height;      
-        var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
-        var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);      
-        object.speakerCoords = {
-          gridX : tuple[1][0],
-          gridY : tuple[1][1],
-          trueX : speakerGridCell.centerX - object.width/2,
-          trueY : speakerGridCell.centerY - object.height/2,
+    return _.zipWith(objs, locs.speaker, locs.listener, (obj, sloc, lloc) => {
+      var width = this.cellDimensions.width;
+      var height = this.cellDimensions.height;      
+      var speakerGridCell = this.getPixelFromCell(sloc[0], sloc[1]); 
+      var listenerGridCell = this.getPixelFromCell(lloc[0], lloc[1]);
+      return _.extend(obj, {
+	width, height,
+	speakerCoords : {
+          gridX : sloc[0],
+          gridY : sloc[1],
+          trueX : speakerGridCell.centerX - width/2,
+          trueY : speakerGridCell.centerY - height/2,
           gridPixelX: speakerGridCell.centerX - 100,
           gridPixelY: speakerGridCell.centerY - 100
-              };
-        object.listenerCoords = {
-          gridX : tuple[2][0],
-          gridY : tuple[2][1],
-          trueX : listenerGridCell.centerX - object.width/2,
-          trueY : listenerGridCell.centerY - object.height/2,
+	},
+	listenerCoords : {
+          gridX : lloc[0],
+	  gridY : lloc[1],
+          trueX : listenerGridCell.centerX - width/2,
+          trueY : listenerGridCell.centerY - height/2,
           gridPixelX: listenerGridCell.centerX - 100,
           gridPixelY: listenerGridCell.centerY - 100
-        };
-        return object;
-
-        }));
-    }
-
-    return(trialList);
-}
+	}
+      });
+    });
+  });
+};
 
 
 game_core.prototype.server_send_update = function(){
