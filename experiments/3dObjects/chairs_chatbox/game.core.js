@@ -193,7 +193,7 @@ game_core.prototype.sampleStimulusLocs = function() {
 
 
 game_core.prototype.makeTrialList = function () { 
-
+    //console.log(this.stimList);
   if ((this.numRounds % 3 ==0) && (this.closeOnly==false)) {
     //sample 23 of each condition and randomize
     f = _.times(this.numRounds/3,function() {return "far"});
@@ -208,68 +208,46 @@ game_core.prototype.makeTrialList = function () {
   }
 
   //get family IDs and randomize
-  var familyList = _.filter(this.stimList, function(s){ return (s['condition']=="close")});
-  familyList = _.uniq(_.map(familyList, _.property('family')));
-  familyList = _.shuffle(familyList);
+  var familyList = _.shuffle(_.uniq(_.map(this.stimList, _.property('family'))));
 
-  var criteria = _.zip(conditionList, familyList);
-  //console.log(criteria);
+  return _.zipWith(conditionList, familyList, (condition, family) => {
 
-  //now add whole families based on random order established by criteria
-  var local_this = this;
-  var trialList = [];
-
-  //family of three stimList_chair objects {<target>, <distractor1>, <distractor2>}
-  var fam = []; 
-
-  for (var i = 0; i < this.numRounds; i++){
-
-    //now add whole families based on random order established by criteria
-    fam = _.filter(this.stimList, function(s){ return (s['condition']==criteria[i][0] && s['family']==criteria[i][1])});
-
-    //target is always member 'a', and fam is always in order 'a' 'b' 'c'
-    fam[0]['target_status'] = "target";
-    fam[1]['target_status'] = "distractor1";
-    fam[2]['target_status'] = "distractor2";
-
-    //remove ".png" file extension from filename property to prevent join/split errors by "."
-    for(var j = 0; j < fam.length; j++){
-	   fam[j]['filename'] = fam[j]['filename'].split(".")[0];
-    }
+    // Find objects in family, remove .png extension
+    var objs = _.filter(this.stimList, s => {
+      return s.condition === condition && s.family == family;
+    }).map(obj => _.extend(obj, {filename : obj.filename.split(".")[0]}));
 
     // sample locations for those objects
-    var locs = this.sampleStimulusLocs();  
-
+    var locs = this.sampleStimulusLocs();
+    
     // construct trial list (in sets of complete rounds)
-    trialList.push(_.map(_.zip(fam, locs.speaker, locs.listener), function(tuple) {
-        var object = _.clone(tuple[0]);
-        object.width = local_this.cellDimensions.width;
-        object.height = local_this.cellDimensions.height;      
-        var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
-        var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);      
-        object.speakerCoords = {
-          gridX : tuple[1][0],
-          gridY : tuple[1][1],
-          trueX : speakerGridCell.centerX - object.width/2,
-          trueY : speakerGridCell.centerY - object.height/2,
+    return _.zipWith(objs, locs.speaker, locs.listener, (obj, sloc, lloc) => {
+      var width = this.cellDimensions.width;
+      var height = this.cellDimensions.height;      
+      var speakerGridCell = this.getPixelFromCell(sloc[0], sloc[1]); 
+      var listenerGridCell = this.getPixelFromCell(lloc[0], lloc[1]);
+      return _.extend(obj, {
+	width, height,
+	speakerCoords : {
+          gridX : sloc[0],
+          gridY : sloc[1],
+          trueX : speakerGridCell.centerX - width/2,
+          trueY : speakerGridCell.centerY - height/2,
           gridPixelX: speakerGridCell.centerX - 100,
           gridPixelY: speakerGridCell.centerY - 100
-              };
-        object.listenerCoords = {
-          gridX : tuple[2][0],
-          gridY : tuple[2][1],
-          trueX : listenerGridCell.centerX - object.width/2,
-          trueY : listenerGridCell.centerY - object.height/2,
+	},
+	listenerCoords : {
+          gridX : lloc[0],
+	  gridY : lloc[1],
+          trueX : listenerGridCell.centerX - width/2,
+          trueY : listenerGridCell.centerY - height/2,
           gridPixelX: listenerGridCell.centerX - 100,
           gridPixelY: listenerGridCell.centerY - 100
-        };
-        return object;
-
-        }));
-    }
-
-    return(trialList);
-}
+	}
+      });
+    });
+  });
+};
 
 
 game_core.prototype.server_send_update = function(){
