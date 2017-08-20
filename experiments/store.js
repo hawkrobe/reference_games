@@ -53,6 +53,20 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
   });
 }
 
+// Keep track of which games have used each stim
+function recordStimUse(stimdb, gameid, familyList) {
+  console.log(familyList);
+  _.forEach(familyList, familyid => {
+    stimdb.update({family: familyid}, {
+      $push : {games : gameid},
+      $inc  : {numGames : 1}
+    }, {multi: true}, function(err, items) {
+      //stimdb.find({family: familyid}).toArray((err, item) => {console.log(item);});
+    });
+  });
+//  console.log('recorded stim use');
+}
+
 // // this function isn't currently being used, but might be once there are >1 databases
 // function getDatabaseList(connection, callback) {
 //    connection.admin().listDatabases(function(err, result) {
@@ -78,9 +92,6 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
 //         }
 //     });
 // }
-
-
-
 
 function serve() {
 
@@ -136,54 +147,6 @@ function serve() {
 
     });
 
-
-    ////// original implementation to check within specific database
-    // app.post('/db/exists', (request, response) => {      
-    //   if (!request.body) {
-    //     return failure(response, '/db/exists needs post request body');
-    //   }
-    //   const databaseName = request.body.dbname;
-    //   const collectionName = request.body.colname;
-    //   if (!collectionName) {
-    //     return failure(response, '/db/exists needs collection');
-    //   }
-    //   if (!databaseName) {
-    //     return failure(response, '/db/exist needs database');
-    //   }
-
-    //   const database = connection.db(databaseName);
-    //   console.log(request.body);
-    //   const query = request.body.query;
-    //   const projection = request.body.projection;
-    //   const collection = database.collection(collectionName);
-
-    //   log(`got request to findOne in ${collectionName} with` +
-    //       ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
-    //   collection.find(query, projection).limit(1).toArray((err, items) => {
-    //     console.log('got items ' + JSON.stringify(items));
-    //     response.json(!_.isEmpty(items));
-    //   });
-    // });
-
-    // app.post('/db/find', (request, response) => {
-    //   if (!request.body) {
-    //         return failure(response, '/db/find needs post request body');
-    //   }
-    //   const databaseName = request.body.dbname
-    //   const collectionName = request.body.colname;
-    //   if (!collectionName) {
-    //         return failure(response, '/db/find needs collection');
-    //   }
-    //   const query = request.body.query || {};
-    //   const projection = request.body.projection;
-    //   const collection = database.collection(collectionName);
-    //   log(`got request to find in ${collectionName} with` +
-    //           ` query ${JSON.stringify(query)} and projection ${JSON.stringify(projection)}`);
-    //   collection.find(query, projection).toArray().then((data) => {
-    //         response.json(data);
-    //   });
-    // });
-
     app.post('/db/insert', (request, response) => {
       if (!request.body) {
         return failure(response, '/db/insert needs post request body');
@@ -217,6 +180,47 @@ function serve() {
         } else {
           return success(response, `successfully inserted data. result: ${JSON.stringify(result)}`);
         }
+      });
+    });
+
+    app.post('/db/getstims', (request, response) => {
+      if (!request.body) {
+        return failure(response, '/db/getstims needs post request body');
+      }
+      log(`got request to get stims from ${request.body.dbname}/${request.body.colname}`);
+      
+      const databaseName = request.body.dbname;
+      const collectionName = request.body.colname;
+      if (!collectionName) {
+        return failure(response, '/db/getstims needs collection');
+      }
+      if (!databaseName) {
+        return failure(response, '/db/getstims needs database');
+      }
+
+      const database = connection.db(databaseName);
+      const collection = database.collection(collectionName);
+
+      collection.aggregate([
+	{ $group : {_id : "$numGames", count: { $sum: 1 }}}
+      ], (err, results) => {console.log('counts...'); console.log(results)});
+      
+      // get a random sample of stims that haven't appeared more than k times
+      collection.aggregate([
+	{ $addFields : { numGames: { $size: '$games'} } }, 
+	{ $match : { numGames : {$lt : request.body.limit} } },
+	{ $group : { _id : "$family", numGames: {$avg : "$numGames"},
+		     family: { $push: "$$ROOT" } } },
+	{ $sort : { numGames : 1} },	
+	{ $limit : request.body.numTrials }
+	//{'$sample': {'size': request.body.numTrials } }
+      ], (err, results) => {
+	if(err) {
+	  console.log(err);
+	} else {
+	  recordStimUse(collection, request.body.gameid, _.map(results, '_id'));
+	  response.send(_.flatten(_.map(results, 'family')));
+	}
       });
     });
 
