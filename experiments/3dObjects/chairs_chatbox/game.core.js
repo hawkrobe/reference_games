@@ -107,7 +107,7 @@ var game_core = function(options){
     var that = this;
     sendPostRequest('http://localhost:4000/db/getstims', {
       json: {dbname: 'stimuli', colname: 'chairs140',
-	     limit: 4, numTrials: 70, gameid: this.id}
+	     numRounds: this.numRounds, gameid: this.id}
     }, (error, res, body) => {
       if(!error && res.statusCode === 200) {
       	that.stimList = body;

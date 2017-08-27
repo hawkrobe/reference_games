@@ -55,16 +55,14 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
 
 // Keep track of which games have used each stim
 function recordStimUse(stimdb, gameid, familyList) {
-  console.log(familyList);
   _.forEach(familyList, familyid => {
     stimdb.update({family: familyid}, {
       $push : {games : gameid},
       $inc  : {numGames : 1}
     }, {multi: true}, function(err, items) {
-      //stimdb.find({family: familyid}).toArray((err, item) => {console.log(item);});
+      // do something when done?
     });
   });
-//  console.log('recorded stim use');
 }
 
 // // this function isn't currently being used, but might be once there are >1 databases
@@ -208,12 +206,10 @@ function serve() {
       // get a random sample of stims that haven't appeared more than k times
       collection.aggregate([
 	{ $addFields : { numGames: { $size: '$games'} } }, 
-	{ $match : { numGames : {$lt : request.body.limit} } },
 	{ $group : { _id : "$family", numGames: {$avg : "$numGames"},
 		     family: { $push: "$$ROOT" } } },
 	{ $sort : { numGames : 1} },	
-	{ $limit : request.body.numTrials }
-	//{'$sample': {'size': request.body.numTrials } }
+	{ $limit : request.body.numRounds }
       ], (err, results) => {
 	if(err) {
 	  console.log(err);
