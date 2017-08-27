@@ -9,9 +9,6 @@ var sendPostRequest = require('request').post;
 var serveFile = function(req, res) {
   var fileName = req.params[0];
   console.log('\t :: Express :: file requested: ' + fileName);
-  if(req.query.workerId) {
-    console.log(" by workerID " + req.query.workerId);
-  }
   return res.sendFile(fileName, {root: __base}); 
 };
 
