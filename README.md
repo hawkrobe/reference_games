@@ -1,6 +1,6 @@
 Note: This is a substantially refactored fork of [MWERT](https://github.com/hawkrobe/MWERT). The overall framework is the same, but we extract a lot of shared code into the sharedUtils directory, which is imported as a base by all of the individual experiments.
 
-Local demo (from scratch)
+Local demo 
 =========================
 
 1. Git is a popular version control and source code management system. If you're new to git, you'll need to install the latest version by following the link for [Mac](http://sourceforge.net/projects/git-osx-installer/) or [Windows](http://msysgit.github.io/) and downloading the first option in the list. On Mac, this will give you a set of command-line tools (restart the terminal if the git command is still not found after installation). On Windows it will give you a shell to type commands into. For Linux users, more information can be found [here](http://git-scm.com/book/en/Getting-Started-Installing-Git).
