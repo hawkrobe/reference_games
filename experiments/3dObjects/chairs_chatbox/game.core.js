@@ -78,7 +78,7 @@ var game_core = function(options){
   this.numItemsxRounds = this.numItemsPerRound*this.numRounds;
 
   // This will be populated with the set of objects
-  this.trialInfo = {};
+  this.trialInfo = {roles: _.values(this.playerRoleNames)};
   
   if(this.server) {
     // If we're initializing the server game copy, pre-create the list of trials
@@ -172,7 +172,11 @@ game_core.prototype.newRound = function() {
     // console.log('got to newRound in game.core.js and not the final round');
     // Otherwise, get the preset list of objects for the new round
     this.roundNum += 1;
-    this.trialInfo = {currStim: this.trialList[this.roundNum]};
+    this.trialInfo = {
+      currStim: this.trialList[this.roundNum],
+      roles: _.zipObject(_.map(this.players, p =>p.id),
+			 _.reverse(_.values(this.trialInfo.roles)))
+    };
     this.objects = this.trialList[this.roundNum];
     this.server_send_update();
   }

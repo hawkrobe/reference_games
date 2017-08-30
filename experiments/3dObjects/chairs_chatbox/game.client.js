@@ -43,6 +43,8 @@ var selecting;
  */
 
 var client_onserverupdate_received = function(data){
+  globalGame.my_role = data.trialInfo.roles[globalGame.my_id];
+  
   // console.log('received data from server' + JSON.stringify(data))
   // Update client versions of variables with data received from
   // server_send_update function in game.core.js
@@ -61,8 +63,8 @@ var client_onserverupdate_received = function(data){
     //console.log(data.objects);
     globalGame.objects = _.map(data.objects, function(obj) {
       // Extract the coordinates matching your role
-      var customCoords = globalGame.my_role == "speaker" ? obj.speakerCoords : obj.listenerCoords;
-      // remove the speakerCoords and listenerCoords properties
+      var customCoords = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
+			  obj.speakerCoords : obj.listenerCoords);
       var customObj = _.chain(obj)
 	    .omit('speakerCoords', 'listenerCoords')
 	    .extend(obj, {trueX : customCoords.trueX, trueY : customCoords.trueY,
@@ -101,6 +103,25 @@ var client_onserverupdate_received = function(data){
     $('#messages').empty();
     globalGame.get_player(globalGame.my_id).message = "";
     $('#chatbox').removeAttr("disabled");
+    // reset labels
+    // Update w/ role (can only move stuff if agent)
+    $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
+    if(globalGame.my_role === globalGame.playerRoleNames.role1) {
+      globalGame.viewport.removeEventListener("click", responseListener, false);
+      $('#instructs')
+	.empty()
+	.append("Send messages to tell the listener which object " + 
+			     "is the target.");
+    } else if(globalGame.my_role === globalGame.playerRoleNames.role2){
+      // set mouse-tracking event handler
+      globalGame.viewport.addEventListener("click", responseListener, false);
+      $('#instructs')
+	.empty()
+	.append("The speaker will tell you about one of these objects. " + 
+			     "Click on the target object the speaker " +
+			     "is telling you about.");
+
+    }
   } else{
     $('#chatbox').attr("disabled", "disabled");
   }
@@ -253,16 +274,6 @@ var client_onjoingame = function(num_players, role) {
 
   // Update w/ role
   // Update w/ role (can only move stuff if agent)
-  $('#roleLabel').append(role + '.');
-  if(role === globalGame.playerRoleNames.role1) {
-    $('#instructs').append("Send messages to tell the listener which object " + 
-         "is the target.");
-  } else if(role === globalGame.playerRoleNames.role2) {
-    $('#instructs').append("The speaker will tell you about one of these objects. " + 
-          "Click on the target object the speaker " +
-          "is telling you about.");
-  }
-
   if(num_players == 1) {
     // Set timeout only for first player...
     this.timeoutID = setTimeout(function() {
@@ -277,13 +288,6 @@ var client_onjoingame = function(num_players, role) {
     }, 1000 * 60 * 15);
     console.log(globalGame.my_id);
     globalGame.get_player(globalGame.my_id).message = ('Waiting for another player...\nPlease do not refresh the page!\n If wait exceeds 15 minutes, we recommend returning the HIT and trying again later.'); 
-  }
-
-
-
-  // set mouse-tracking event handler
-  if(role === globalGame.playerRoleNames.role2) {
-    globalGame.viewport.addEventListener("click", responseListener, false);
   }
 };
 
