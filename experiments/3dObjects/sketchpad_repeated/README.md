@@ -1,3 +1,22 @@
+
+Aug 30 2017
+
+Implemented re-design of sketchpad_repeated.
+
+Each pair now only sees objects from one of the categories (birds, chairs, cars, dogs), each containing 8 objects. 
+
+There are three phases to this experiment:
+pre: All 8 objects sketched
+repeating: A subset of 4 objects sketched 6 times each, mini-blocked.
+post: All 8 objects sketched again
+
+For a total of 8 + 24 + 8 = 40 trials total. 
+
+We want to counterbalance the category assignment across pairs.
+
+Target pilot sample size: 4 * 5 = 20 pairs (matching sketchpad_basic size).
+
+
 May 31 2017
 
 "sketchpad_repeated" is a close variant of the "sketchpad" experiment.
