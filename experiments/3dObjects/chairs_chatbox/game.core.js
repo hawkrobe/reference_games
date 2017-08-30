@@ -115,6 +115,11 @@ var game_core = function(options){
       	that.server_send_update();
       } else {
 	console.log(`error getting stims: ${error} ${body}`);
+	console.log(`falling back to local stimList`);
+	var closeFamilies = require('./stimList_chairs').closeByFamily;
+	that.stimList = _.flatten(_.sampleSize(closeFamilies, that.numRounds));
+	that.trialList = that.makeTrialList();
+	that.server_send_update();
       }
     });
   } else {
