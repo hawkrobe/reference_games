@@ -1,8 +1,0 @@
-gameid,time,roundNum,condition,clickStatus,clickColH,clickColS,clickColL,clickLocS,clickLocLalt1Status,alt1ColH,alt1ColS,alt1ColL,alt1LocS,alt1LocLalt2Status,alt2ColH,alt2ColS,alt2ColL,alt2LocS,alt2LocLtargetD1Diff,targetD2Diff,D1D2Diff,outcome
-3945-8,1476996401337,1,equal,target,338,82,50,1,2,distr1,92,41,50,3,1,distr2,177,74,50,2,3,74,76,29,true
-3945-8,1476996412568,2,equal,target,145,91,50,3,2,distr1,188,4,50,2,1,distr2,57,26,50,1,3,39,29,23,true
-3945-8,1476996423230,3,equal,target,81,66,50,2,1,distr2,344,65,50,3,2,distr1,214,68,50,1,3,69,76,41,true
-3945-8,1476996438652,4,closer,target,264,10,50,3,1,distr1,317,35,50,1,3,distr2,354,29,50,2,2,17,19,15,true
-3945-8,1476996474526,5,further,target,70,38,50,1,3,distr2,220,34,50,2,1,distr1,135,71,50,3,2,18,55,56,true
-3945-8,1476996486597,6,equal,target,232,85,50,3,2,distr2,149,97,50,1,1,distr1,173,57,50,2,3,56,75,23,true
-3945-8,1476996511862,7,closer,distr1,279,53,50,2,2,target,323,30,50,1,3,distr2,311,49,50,3,1,17,9,12,false

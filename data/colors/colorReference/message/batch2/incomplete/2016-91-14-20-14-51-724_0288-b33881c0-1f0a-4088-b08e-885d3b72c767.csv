@@ -1,9 +1,0 @@
-gameid,time,roundNum,sender,contents
-0288-b,1476476125354,1,listener,"hello?"
-0288-b,1476476792447,1,speaker,"black object is our target"
-0288-b,1476476822009,1,listener,"only you can see the black object"
-0288-b,1476476831838,1,speaker,"yes"
-0288-b,1476476838727,1,listener,"guide me"
-0288-b,1476476860956,1,speaker,"click 2 object"
-0288-b,1476476870067,1,listener,"did you read instructons?"
-0288-b,1476476884948,1,listener,"ours are are not the same"

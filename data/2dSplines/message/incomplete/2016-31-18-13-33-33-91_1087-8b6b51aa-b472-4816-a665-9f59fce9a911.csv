@@ -1,9 +1,0 @@
-gameid,time,roundNum,sender,contents
-1087-8,1461000827102,1,listener,"Hello?"
-1087-8,1461000838282,1,speaker,"a boomerang"
-1087-8,1461000855312,2,speaker,"infinity symbol"
-1087-8,1461000861316,2,listener,"large?"
-1087-8,1461000864268,2,speaker,"yes"
-1087-8,1461000878786,3,speaker,"8"
-1087-8,1461000889610,4,speaker,"skinny 8"
-1087-8,1461000902946,5,speaker,"quote bubble"

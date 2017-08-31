@@ -1,2 +1,0 @@
-gameid,time,roundNum,condition,clickStatus,clickColH,clickColS,clickColL,clickLocS,clickLocLalt1Status,alt1ColH,alt1ColS,alt1ColL,alt1LocS,alt1LocLalt2Status,alt2ColH,alt2ColS,alt2ColL,alt2LocS,alt2LocLtargetD1Diff,targetD2Diff,D1D2Diff,outcome
-1168-a,1459882086091,1,equal,distr2,78,88,50,1,1,target,136,10,50,3,3,distr1,293,12,50,2,2,29,35,64,false

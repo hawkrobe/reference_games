@@ -1,8 +1,0 @@
-gameid,time,roundNum,sender,contents
-4622-d,1476991530397,1,listener,"Hey"
-4622-d,1476991539912,1,speaker,"hello! orange"
-4622-d,1476991556477,2,speaker,"blue"
-4622-d,1476991566066,3,speaker,"purple"
-4622-d,1476991580696,4,speaker,"blue"
-4622-d,1476991595577,5,speaker,"muted, minty green"
-4622-d,1476991613222,6,speaker,"olive green, no gray tint"
