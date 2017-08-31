@@ -1,7 +1,7 @@
 {
-  "name": "couzin_replication",
-  "description": "Unofficial fork of MWERT, adapted to replicate sensing experiment",
-  "version": "0.0.0",
+  "name": "reference_games",
+  "description": "Library to facilitate interactive reference game experiments",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
     "body-parser": "^1.17.2",
@@ -21,5 +21,23 @@
     "socket.io": "~1.3.0",
     "underscore": "~1.7.0",
     "xmldom": "^0.1.27"
-  }
+  },
+  "main": "./lib/app.js",
+  "directories": {
+    "example": "examples",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hawkrobe/reference_games.git"
+  },
+  "author": "Robert Hawkins",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hawkrobe/reference_games/issues"
+  },
+  "homepage": "https://github.com/hawkrobe/reference_games#readme"
 }
