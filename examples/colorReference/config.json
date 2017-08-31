@@ -1,0 +1,20 @@
+{
+  email: 'rxdh@stanford.edu',
+  experimentName: 'colorReference',
+  iterationName: 'pilot1',
+  anonymizeCSV: true,
+  dataStore: ['csv', 'mongo'],
+  bonusAmt: 2,
+  playerRoleNames: {
+    'role1' : 'speaker',
+    'role2' : 'listener'
+  },
+  swapRoles: true,
+  feedbackDelay: 300,
+  numStimuli: 3,
+  gridDimensions: {
+    width: 3,
+    height: 1
+  },
+  cellSize: 300
+}
