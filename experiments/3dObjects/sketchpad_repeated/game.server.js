@@ -110,8 +110,8 @@ var writeData = function(client, type, message_parts) {
       pngString: message_parts[2],
       pose : parseInt(message_parts[3]),
       condition : message_parts[4],
-      epoch : message_parts[5],
-      repeated : message_parts[6],
+      phase : message_parts[5],
+      repetition : message_parts[6],
       workerId : message_parts[7],
       assignmentId : message_parts[8]
     }, _.object(getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
