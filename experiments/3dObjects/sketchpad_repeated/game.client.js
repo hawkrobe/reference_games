@@ -364,11 +364,11 @@ function responseListener(evt) {
         dataURL = dataURL.replace('data:image/png;base64,','');
         var currPose = globalGame.objects[0]['pose'];  
         var currCondition = globalGame.objects[0]['condition']; 
-        var currEpoch = globalGame.objects[0]['epoch']; 
-        var currRepeated = globalGame.objects[0]['repeated']; 
+        var currPhase = globalGame.objects[0]['phase']; 
+        var currRepetition = globalGame.objects[0]['repetition']; 
         var workerId = globalGame.workerId;
         var assignmentId = globalGame.assignmentId;
-        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currEpoch, currRepeated, workerId, assignmentId];
+        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currPhase, currRepetition, workerId, assignmentId];
         // console.log(packet);
         globalGame.socket.send(packet.join('.'));
 
