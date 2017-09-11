@@ -18,7 +18,7 @@ var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
-    _ = require('underscore');
+    _ = require('lodash');
     utils  = require(__base + 'sharedUtils/sharedUtils.js');
   }
   else throw 'mymodule requires underscore, see http://underscorejs.org';
