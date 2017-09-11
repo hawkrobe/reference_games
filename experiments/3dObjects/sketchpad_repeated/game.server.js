@@ -127,7 +127,7 @@ var dataOutput = function() {
 	repetition : message_data[6]
       }
     );
-    console.log(JSON.stringify(output, null, 3));
+    console.log(JSON.stringify(_.pick(output, ['repetition', 'correct']), null, 3));
     return output;
   };
 
@@ -154,12 +154,7 @@ var dataOutput = function() {
   };
 }();
 
-var setCustomEvents = function(socket) {
-  // socket.on('stroke', function(data) {
-  //   console.log('received data:')
-  //   console.log(data.jsonString);
-  // });
-};
+var setCustomEvents = function(socket) {};
 
 module.exports = {
   setCustomEvents : setCustomEvents,

@@ -157,8 +157,6 @@ Sketchpad.prototype.setupTool = function() {
 };
 
 function startStroke(event) {
-  // console.log('starting stroke with path: ' + JSON.stringify(globalGame.path));
-
   if (globalGame.drawingAllowed) {
 
     // If a path is ongoing, send it along before starting this new one 
@@ -177,7 +175,6 @@ function startStroke(event) {
 };
 
 function endStroke(event) {
-  // console.log('ending stroke with path: ' + JSON.stringify(globalGame.path));
   // Only send stroke if actual line (single points don't get rendered)
   if (globalGame.drawingAllowed && globalGame.path.length > 1) {    
     // Increment stroke num
