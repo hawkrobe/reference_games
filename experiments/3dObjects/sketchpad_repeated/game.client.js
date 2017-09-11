@@ -263,10 +263,10 @@ var customSetup = function(game) {
   game.socket.on('stroke', function(jsonData) {
     // first, allow listener to respond
     game.messageSent = true;
+
     // draw it
     var path = new Path();
     path.importJSON(jsonData);
-
   });
 
   game.socket.on('mutualDoneDrawing', function(role) {
@@ -368,7 +368,7 @@ function responseListener(evt) {
         var currRepetition = globalGame.objects[0]['repetition']; 
         var workerId = globalGame.workerId;
         var assignmentId = globalGame.assignmentId;
-        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currPhase, currRepetition, workerId, assignmentId];
+        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currPhase, currRepetition];
         // console.log(packet);
         globalGame.socket.send(packet.join('.'));
 
