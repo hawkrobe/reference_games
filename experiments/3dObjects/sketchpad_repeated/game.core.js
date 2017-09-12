@@ -228,8 +228,8 @@ game_core.prototype.getRandomizedConditions = function() {
   _category = _category.concat(_category);
 
   // now make pose matrix (on each trial, all objects share same pose)
-  _pose = _.shuffle(_.range(this.numPoses)).slice(0,32);  
-
+  // 9/11/17: we are fixing the pose to be 3/4 view for ALL objects ALL THE TIME.
+  _pose = _.times(numCats*numObjs,_.constant(35)); 
 
   // now make condition matrix
   _r = _.times(numCats,function() {return "repeated"});  
