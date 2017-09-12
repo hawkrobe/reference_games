@@ -18,7 +18,7 @@ var has_require = typeof require !== 'undefined';
 
 if( typeof _ === 'undefined' ) {
   if( has_require ) {
-    _ = require('underscore');
+    _ = require('lodash');
     utils  = require(__base + 'sharedUtils/sharedUtils.js');
   }
   else throw 'mymodule requires underscore, see http://underscorejs.org';
@@ -33,7 +33,7 @@ var game_core = function(options){
   this.expid = 'pilot1';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = ['csv', 'mongo'];
   this.anonymizeCSV = true;
 
   // How many players in the game?

@@ -149,9 +149,9 @@ var client_onMessage = function(data) {
       globalGame.data.subject_information.score += scoreDiff;
       // draw feedback
       if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-	       drawSketcherFeedback(globalGame, scoreDiff, clickedObjName);
+	drawSketcherFeedback(globalGame, scoreDiff, clickedObjName);
       } else {
-	       drawViewerFeedback(globalGame, scoreDiff, clickedObjName);
+	drawViewerFeedback(globalGame, scoreDiff, clickedObjName);
       }
       break;
 
@@ -263,14 +263,13 @@ var customSetup = function(game) {
   game.socket.on('stroke', function(jsonData) {
     // first, allow listener to respond
     game.messageSent = true;
+
     // draw it
     var path = new Path();
     path.importJSON(jsonData);
-
   });
 
   game.socket.on('mutualDoneDrawing', function(role) {
-    // console.log('the doneness of drawing is mutual knowledge');
     globalGame.doneDrawing = true;
     globalGame.drawingAllowed = false;
     if (globalGame.my_role === globalGame.playerRoleNames.role1) {
@@ -344,7 +343,6 @@ var client_onjoingame = function(num_players, role) {
  */
 
 function responseListener(evt) {
-  // console.log('got to responseListener inside game.client.js');
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
@@ -352,37 +350,20 @@ function responseListener(evt) {
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
-      // console.log('responseListener: globalGame.doneDrawing',globalGame.doneDrawing);
       if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
         globalGame.messageSent = false;
-
-        // highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
-        //               function(x){return x.subordinate == obj.subordinate;});
 
         // Send packet about trial to server
         var dataURL = document.getElementById('sketchpad').toDataURL();
         dataURL = dataURL.replace('data:image/png;base64,','');
-        var currPose = globalGame.objects[0]['pose'];  
-        var currCondition = globalGame.objects[0]['condition']; 
-        var currPhase = globalGame.objects[0]['phase']; 
-        var currRepetition = globalGame.objects[0]['repetition']; 
-        var workerId = globalGame.workerId;
-        var assignmentId = globalGame.assignmentId;
-        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition, currPhase, currRepetition, workerId, assignmentId];
-        // console.log(packet);
+
+        var packet = ["clickedObj", obj.subordinate,
+		      dataURL,
+		      globalGame.objects[0]['pose'],
+		      globalGame.objects[0]['condition'],
+		      globalGame.objects[0]['phase'],
+		      globalGame.objects[0]['repetition']];
         globalGame.socket.send(packet.join('.'));
-
-        if (globalGame.my_role == "viewer") {
-          var clickedName = packet[1];
-          var intendedName = getIntendedTargetName(globalGame.objects);
-          var correct = intendedName == clickedName ? 1 : 0;
-          var pngString = packet[2];
-          var objectLocs = getObjectLocs(globalGame.objects);
-          var trialNum = globalGame.roundNum + 1;
-          var gameID = globalGame['data']['id'];
-          var timestamp = Date.now();          
-        }; //
-
       }
     });
   }

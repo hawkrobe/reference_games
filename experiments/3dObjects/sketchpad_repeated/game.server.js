@@ -31,9 +31,16 @@ var onMessage = function(client,message) {
   var id = gc.id;
   var all = gc.get_active_players();
   var target = gc.get_player(client.userid);
-  var others = gc.get_others(client.userid);  
+  var others = gc.get_others(client.userid);
   switch(message_type) {
-    
+
+  case 'stroke' :
+    // Send json format to partner (FIXME: they'll send it back to be written...)
+    _.map(others, function(p) {
+      p.player.instance.emit( 'stroke', message_parts[3].replace(/~~~/g, '.'));  
+    });                                                     
+
+    break;
   case 'clickedObj' :
 //    writeData(client, "clickedObj", message_parts);
     others[0].player.instance.send("s.feedback." + message_parts[1]); 
@@ -53,7 +60,6 @@ var onMessage = function(client,message) {
 
   case 'doneDrawing' : // sketcher has declared that drawing is finished
     drawing_status = message_parts[1];
-    // console.log('drawing_status in doneDrawing case in server');
     console.log('drawing submitted: ', drawing_status);
       _.map(all, function(p){
         p.player.instance.emit('mutualDoneDrawing', {user: client.userid} );
@@ -62,20 +68,6 @@ var onMessage = function(client,message) {
   }
 };
 
-function getIntendedTargetName(objects) {
-  return _.filter(objects, function(x){
-    return x.target_status == 'target';
-  })[0]['subordinate']; 
-}
-
-function getObjectLocs(objects) {
-  return _.flatten(_.map(objects, function(object) {
-    return [object.subordinate,
-	    object.speakerCoords.gridX,
-	    object.listenerCoords.gridX];
-  }));
-}
-
 const flatten = arr => arr.reduce(
   (acc, val) => acc.concat(
     Array.isArray(val) ? flatten(val) : val
@@ -83,120 +75,89 @@ const flatten = arr => arr.reduce(
   []
 );
 
-var getObjectLocHeaderArray = function() {
-  arr =  _.map(_.range(1,5), function(i) {
-    return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], function(v) {
-      return 'object' + i + v;
-    });
-  });
-  return flatten(arr);
-};
-
-
-var writeData = function(client, type, message_parts) {
-  var gc = client.game;
-  var trialNum = gc.state.roundNum + 1; 
-  var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-  var line = {expid: 'pilot3', gameid: gc.id, time: Date.now(), trialNum: trialNum};
-
-  switch(type) {
-  case "clickedObj" :
-    var clickedName = message_parts[1];
-    _.extend(line, {
-      intendedName,
-      clickedName,
-      dataType: 'clickedObj',
-      correct: intendedName == clickedName ? 1 : 0,
-      pngString: message_parts[2],
-      pose : parseInt(message_parts[3]),
-      condition : message_parts[4],
-      phase : message_parts[5],
-      repetition : message_parts[6],
-      workerId : message_parts[7],
-      assignmentId : message_parts[8]
-    }, _.object(getObjectLocHeaderArray(), getObjectLocs(gc.trialInfo.currStim)));
-    break;
- 
-  case "stroke" :
-    _.extend(line, {
-      intendedName,
-      dataType: 'stroke',
-      currStrokeNum: message_parts[0],
-      svgStr: message_parts[1],
-      shiftKeyUsed: message_parts[2],
-      workerId: message_parts[3],
-      assignmentId: message_parts[4]
-    });
-    break;
+/*
+  Associates events in onMessage with callback returning json to be saved
+  {
+    <eventName>: (client, message_parts) => {<datajson>}
   }
-  writeDataToCSV(gc, type, _.values(line));
-  writeDataToMongo(line); 
-};
+  Note: If no function provided for an event, no data will be written
+*/
+var dataOutput = function() {
+  function getIntendedTargetName(objects) {
+    return _.filter(objects, x => x.target_status == 'target')[0]['subordinate'];
+  }
 
-var writeDataToCSV = function(gc, type, line) {
-  gc.streams[type].write(line.join('\t') + "\n",
-			 function (err) {if(err) throw err;});
-};
+  function getObjectLocs(objects) {
+    return _.flatten(_.map(objects, o => {
+      return [o.subordinate, o.speakerCoords.gridX, o.listenerCoords.gridX];
+    }));
+  }
 
-var writeDataToMongo = function(line) {
-  var postData = _.extend({
-    dbname: '3dObjects',
-    colname: 'sketchpad_repeated'
-  }, line);
-  sendPostRequest(
-    'http://localhost:4000/db/insert',
-    { json: postData },
-    (error, res, body) => {
-      if (!error && res.statusCode === 200) {
-	      // console.log(`sent data to store: ${JSON.stringify(postData)}`);
-        console.log(`sent data to store`);
-      } else {
-	      console.log(`error sending data to store: ${error} ${body}`);
+  var getObjectLocHeaderArray = function() {
+    return _.flatten(_.map(_.range(1,5), i => {
+      return _.map(['Name', 'SketcherLoc', 'ViewerLoc'], v => 'object' + i + v);
+    }));
+  };
+  
+  function commonOutput (client, message_data) {
+    return {
+      iterationName: client.game.iterationName,
+      gameid: client.game.id,
+      time: Date.now(),
+      trialNum : client.game.state.roundNum + 1,
+      workerId: client.workerid,
+      assignmentId: client.assignmentid
+    };
+  };
+
+  var clickedObjOutput = function(client, message_data) {
+    var objects = client.game.trialInfo.currStim;
+    var intendedName = getIntendedTargetName(objects);
+    var objLocations = _.zipObject(getObjectLocHeaderArray(), getObjectLocs(objects));
+    var output =  _.extend(
+      commonOutput(client, message_data),
+      objLocations, {
+    	intendedName,
+    	clickedName: message_data[1],
+    	correct: intendedName === message_data[1],
+	pngString: message_data[2],
+	pose: parseInt(message_data[3]),
+    	condition : message_data[4],
+	phase : message_data[5],
+	repetition : message_data[6]
       }
-    }
-  );
-};
+    );
+    console.log(JSON.stringify(_.pick(output, ['repetition', 'correct']), null, 3));
+    return output;
+  };
 
-var startGame = function(game, player) {
-  // Establish write streams
-  var startTime = utils.getLongFormTime();
-  var dataFileName = startTime + "_" + game.id + ".csv";
-  var baseCols = ["expid","gameid","time","trialNum"].join('\t');
-  var objectLocHeader = utils.getObjectLocHeader();
-  var strokeHeader = [baseCols, "targetName", "dataType", "strokeNum", "svg", "shiftKeyUsed", "workerId", "assignmentId\n"].join('\t');
-  var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", "dataType",
-			  "outcome", "png", "pose", "condition", "epoch", "repeated", "workerId", "assignmentId", objectLocHeader+"\n"].join('\t');
-
-  utils.establishStream(game, "stroke", dataFileName, strokeHeader);
-  utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
-
-  game.newRound();
-};
-
-var setCustomEvents = function(socket) {
-  socket.on('stroke', function(data) {
-    // save svg to file...
-    var others = socket.game.get_others(socket.userid);
-    var xmlDoc = new parser().parseFromString(data.svgString);
+  var strokeOutput = function(client, message_data) {
+    var xmlDoc = new parser().parseFromString(message_data[2].replace(/~~~/g, '.'));
     var svgData = xmlDoc.documentElement.getAttribute('d');
-    var shiftKeyUsed = data.shiftKeyUsed;
-    var workerId = data.workerId;
-    var assignmentId = data.assignmentId;
-//    writeData(socket, 'stroke', [data.currStrokeNum, svgData, shiftKeyUsed, workerId, assignmentId]);
+    var objects = client.game.trialInfo.currStim;
+    var intendedName = getIntendedTargetName(objects);
+    var output = _.extend(
+      commonOutput(client, message_data), {
+	intendedName,
+	svgData,
+	currStrokeNum: message_data[1],
+	shiftKeyUsed: message_data[4]
+      }
+    );
+    console.log(JSON.stringify(output, null, 3));
+    return output;
+  };
+  
+  return {
+    'stroke' : strokeOutput,
+    'clickedObj' : clickedObjOutput
+  };
+}();
 
-    // send json format to partner
-    _.map(others, function(p) {
-      p.player.instance.emit( 'stroke', data.jsonString);  
-    });                                                     
-  });
-
-
-
-};
+var setCustomEvents = function(socket) {};
 
 module.exports = {
   setCustomEvents : setCustomEvents,
-  writeData : writeData,
-  startGame : startGame,
-  onMessage : onMessage
+  onMessage : onMessage,
+  dataOutput : dataOutput
 };
