@@ -29,8 +29,8 @@ var game_core = function(options){
   this.server = options.server ;
   this.projectName = '3dObjects';
   this.experimentName = 'sketchpad_repeated';
+  this.iterationName = 'pilot1';  
   this.email = 'sketchloop@gmail.com';
-  this.expid = 'pilot1';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
@@ -56,10 +56,6 @@ var game_core = function(options){
 
   // track shift key drawing tool use 
   this.shiftKeyUsed = 0; // "1" on trials where used, "0" otherwise
-
-  // define dbname and colname
-  this.dbname = '3dObjects';
-  this.colname = 'sketchpad__repeated';
 
   // Number of total poses per object
   this.numPoses = 40;          
