@@ -1,5 +1,7 @@
 
-Aug 30 2017
+Aug 30 2017 [aka "pilot1"] 
+
+launch: Sep 20 2017
 
 Implemented re-design of sketchpad_repeated.
 
@@ -17,7 +19,7 @@ We want to counterbalance the category assignment across pairs.
 Target pilot sample size: 4 * 5 = 20 pairs (matching sketchpad_basic size).
 
 
-May 31 2017
+May 31 2017 [aka "pilot0"; not saved to mongo due to ransomware attack]
 
 "sketchpad_repeated" is a close variant of the "sketchpad" experiment.
 
