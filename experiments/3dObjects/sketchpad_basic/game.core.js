@@ -28,7 +28,7 @@ var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
   this.projectName = '3dObjects';
-  this.experimentName = 'sketchpad_repeated';
+  this.experimentName = 'sketchpad_basic';
   this.iterationName = 'testing';  
   this.email = 'sketchloop@gmail.com';
 
