@@ -120,11 +120,12 @@ var dataOutput = function() {
     	intendedName,
     	clickedName: message_data[1],
     	correct: intendedName === message_data[1],
-	pngString: message_data[2],
-	pose: parseInt(message_data[3]),
+	    pngString: message_data[2],
+	    pose: parseInt(message_data[3]),
     	condition : message_data[4],
-	phase : message_data[5],
-	repetition : message_data[6]
+	    phase : message_data[5],
+	    repetition : message_data[6],
+      score : message_data[7]
       }
     );
     console.log(JSON.stringify(_.pick(output, ['repetition', 'correct']), null, 3));
@@ -138,10 +139,11 @@ var dataOutput = function() {
     var intendedName = getIntendedTargetName(objects);
     var output = _.extend(
       commonOutput(client, message_data), {
-	intendedName,
-	svgData,
-	currStrokeNum: message_data[1],
-	shiftKeyUsed: message_data[4]
+    	intendedName,
+    	svgData,
+    	currStrokeNum: message_data[1],
+    	shiftKeyUsed: message_data[4],
+      score: message_data[5]
       }
     );
     console.log(JSON.stringify(output, null, 3));

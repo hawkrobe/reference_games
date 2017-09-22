@@ -362,7 +362,8 @@ function responseListener(evt) {
 		      globalGame.objects[0]['pose'],
 		      globalGame.objects[0]['condition'],
 		      globalGame.objects[0]['phase'],
-		      globalGame.objects[0]['repetition']];
+		      globalGame.objects[0]['repetition'],
+          globalGame.data.subject_information.score];
         globalGame.socket.send(packet.join('.'));
       }
     });

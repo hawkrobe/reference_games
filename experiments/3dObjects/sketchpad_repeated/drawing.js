@@ -188,7 +188,8 @@ function endStroke(event) {
 		  globalGame.currStrokeNum,
 		  globalGame.path.exportSVG({asString: true}).replace(/\./g,'~~~'),
 		  globalGame.path.exportJSON({asString: true}).replace(/\./g,'~~~'),
-		  globalGame.shiftKeyUsed].join('.');
+		  globalGame.shiftKeyUsed,
+      globalGame.data.subject_information.score].join('.');
     globalGame.socket.send(packet);
   };
 
