@@ -193,6 +193,22 @@ var customSetup = function(game) {
         $('#feedback').html("Please make your sketch.");
       }
     });
+
+    // get workerId, etc. from URL
+    var urlParams;
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+
+    urlParams = {};
+    while (match = search.exec(query))
+    urlParams[decode(match[1])] = decode(match[2]);  
+    globalGame.workerId = urlParams.workerId;
+    globalGame.assignmentId = urlParams.assignmentId;
+    globalGame.hitId = urlParams.hitId;
+
   });
 
   // Set up new round on client's browsers after submit round button is pressed.
@@ -251,7 +267,6 @@ var customSetup = function(game) {
   });
 
   game.socket.on('mutualDoneDrawing', function(role) {
-    // console.log('the doneness of drawing is mutual knowledge');
     globalGame.doneDrawing = true;
     globalGame.drawingAllowed = false;
     if (globalGame.my_role === globalGame.playerRoleNames.role1) {
@@ -327,7 +342,6 @@ var client_onjoingame = function(num_players, role) {
  */
 
 function responseListener(evt) {
-  // console.log('got to responseListener inside game.client.js');
   var bRect = globalGame.viewport.getBoundingClientRect();
   var mouseX = (evt.clientX - bRect.left)*(globalGame.viewport.width/bRect.width);
   var mouseY = (evt.clientY - bRect.top)*(globalGame.viewport.height/bRect.height);
@@ -335,90 +349,25 @@ function responseListener(evt) {
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
-      // console.log('responseListener: globalGame.doneDrawing',globalGame.doneDrawing);
       if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
         globalGame.messageSent = false;
-
-
-        // highlightCell(globalGame, globalGame.get_player(globalGame.my_id), 'black',
-        //               function(x){return x.subordinate == obj.subordinate;});
-
 
         // Send packet about trial to server
         var dataURL = document.getElementById('sketchpad').toDataURL();
         dataURL = dataURL.replace('data:image/png;base64,','');
-        var currPose = globalGame.objects[0]['pose'];  
-        var currCondition = globalGame.objects[0]['condition']; 
-        var packet = ["clickedObj", obj.subordinate, dataURL, currPose, currCondition];
-        // console.log(packet);
+
+        var packet = ["clickedObj", obj.subordinate,
+          dataURL,
+          globalGame.objects[0]['pose'],
+          globalGame.objects[0]['condition'],
+          globalGame.data.subject_information.score];
         globalGame.socket.send(packet.join('.'));
-
-        if (globalGame.my_role == "viewer") {
-          var clickedName = packet[1];
-          var intendedName = getIntendedTargetName(globalGame.objects);
-          var correct = intendedName == clickedName ? 1 : 0;
-          var pngString = packet[2];
-          var objectLocs = getObjectLocs(globalGame.objects);
-          var trialNum = globalGame.roundNum + 1;
-          var gameID = globalGame['data']['id'];
-          var timestamp = Date.now();          
-
-          // send data to mongodb (also see writeData:clickedObj in game.server)
-          dbline = {role: globalGame.my_role,
-                    playerID: globalGame.my_id,
-                    gameID: gameID,
-                    timestamp: timestamp,
-                    trialNum: trialNum,
-                    responseType: 'clickedObj',
-                    intendedName: intendedName,
-                    clickedName: clickedName,
-                    correct: correct,
-                    objectLocs: objectLocs,
-                    pngString: pngString,
-                    currPose: currPose,
-                    currCondition: currCondition,
-                    dbname:globalGame.dbname,
-                    colname:globalGame.colname};
-
-          // console.log(dbline);
-          // jef 4/22/17: do NOT send data to mongo db until SSL certificate
-          // in place 
-          // $.ajax({
-          //  type: 'GET',
-          //  url: 'http://138.197.213.237:9919/savedecision',
-          //  dataType: 'jsonp',
-          //  traditional: true,
-          //  contentType: 'application/json; charset=utf-8',
-          //  data: dbline,
-          //  timeout: 2000,
-          //  retryLimit: 3,
-          //  data: dbline,
-          //  error: function(x, t, m) {
-          //   if(t==="timeout") {
-          //     console.log("got timeout, press on anyway...");
-          //     this.retryLimit--;
-          //     $.ajax(this);
-          //     return;
-
-          //   } else {
-          //       console.log(t);
-          //       this.retryLimit--;
-          //       $.ajax(this);    
-          //       return;                      
-          //   }
-          // },
-          //  success: function(msg) {
-          //             console.log('clickObj response: upload success!');
-          //           }
-          // });
-
-        }; //
-
       }
     });
   }
   return false;
 };
+
 
 function getObjectLocs(objects) {
   return _.flatten(_.map(objects, function(object) {

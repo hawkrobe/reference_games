@@ -27,11 +27,14 @@ if( typeof _ === 'undefined' ) {
 var game_core = function(options){
   // Store a flag if we are the server instance
   this.server = options.server ;
+  this.projectName = '3dObjects';
+  this.experimentName = 'sketchpad_repeated';
+  this.iterationName = 'testing';  
   this.email = 'sketchloop@gmail.com';
-  this.expid = 'pilot0';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
-  this.dataStore = ['csv'];
+  this.dataStore = ['csv', 'mongo'];
+  this.anonymizeCSV = true;
 
   // How many players in the game?
   this.players_threshold = 2;
@@ -54,10 +57,6 @@ var game_core = function(options){
 
   // track shift key drawing tool use 
   this.shiftKeyUsed = 0; // "1" on trials where used, "0" otherwise
-
-  // define dbname and colname
-  this.dbname = 'visual_pragmatics';
-  this.colname = 'test';
 
   // Number of total poses per object
   this.numPoses = 40;          
