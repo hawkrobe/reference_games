@@ -40,7 +40,6 @@ var drawObjects = function(game, player) {
       var trueY = obj[customCoords]['trueY'];
       var gridX = obj[customCoords]['gridX'];
       var gridY = obj[customCoords]['gridY'];
-      // console.log(obj['subordinate'],customCoords,gridX,gridY,trueX,trueY);
       globalGame.ctx.drawImage(obj.img, trueX, trueY,obj.width, obj.height);
     });
 
@@ -71,7 +70,6 @@ var highlightCell = function(game, color, condition) {
 
 
 var drawScreen = function(game, player) {
-  // console.log('got to drawScreen!')
   // draw background
   game.ctx.strokeStyle = "#FFFFFF";
   game.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
@@ -99,7 +97,7 @@ var drawScreen = function(game, player) {
 
 function Sketchpad() {
   paper.setup('sketchpad');
-		   
+       
   // var actual_height = $('#sketchpad').innerHeight();
   // var actual_width = $('#sketchpad').innerWidth()    
   // view.viewSize = new Size(actual_height, actual_width); 
@@ -129,10 +127,11 @@ Sketchpad.prototype.setupTool = function() {
   
   tool.onMouseMove = function(event) {
     if(globalGame.drawingAllowed) {
-      globalGame.currMouseX = event.point.x;
-      globalGame.currMouseY = event.point.y;
+      var point = event.point.round();
+      globalGame.currMouseX = point.x;
+      globalGame.currMouseY = point.y;
       if(event.modifiers.shift & !_.isEmpty(globalGame.path)) {
-	globalGame.path.add(event.point);
+  globalGame.path.add(point);
       }
     }
   };
@@ -143,9 +142,10 @@ Sketchpad.prototype.setupTool = function() {
 
   tool.onMouseDrag = function(event) {
     if (globalGame.drawingAllowed && !_.isEmpty(globalGame.path)) {
-      globalGame.currMouseX = event.point.x;
-      globalGame.currMouseY = event.point.y;
-      globalGame.path.add(event.point);
+      var point = event.point.round();
+      globalGame.currMouseX = point.x;
+      globalGame.currMouseY = point.y;
+      globalGame.path.add(point);
     }
   };
 
@@ -157,8 +157,6 @@ Sketchpad.prototype.setupTool = function() {
 };
 
 function startStroke(event) {
-  // console.log('starting stroke with path: ' + JSON.stringify(globalGame.path));
-
   if (globalGame.drawingAllowed) {
 
     // If a path is ongoing, send it along before starting this new one 
@@ -166,8 +164,8 @@ function startStroke(event) {
       endStroke(event);
     }
 
-    var point = (event ? event.point :
-		 {x: globalGame.currMouseX, y: globalGame.currMouseY});
+    var point = (event ? event.point.round() :
+     {x: globalGame.currMouseX, y: globalGame.currMouseY});
     globalGame.path = new Path({
       segments: [point],
       strokeColor: 'black',
@@ -177,7 +175,6 @@ function startStroke(event) {
 };
 
 function endStroke(event) {
-  // console.log('ending stroke with path: ' + JSON.stringify(globalGame.path));
   // Only send stroke if actual line (single points don't get rendered)
   if (globalGame.drawingAllowed && globalGame.path.length > 1) {    
     // Increment stroke num
@@ -187,14 +184,13 @@ function endStroke(event) {
     globalGame.path.simplify(10);
 
     // Send stroke (in both svg & json forms) to server
-    globalGame.socket.emit('stroke', {
-      currStrokeNum: globalGame.currStrokeNum,
-      svgString: globalGame.path.exportSVG({asString: true}),
-      jsonString: globalGame.path.exportJSON({asString: true}),
-      shiftKeyUsed: globalGame.shiftKeyUsed,
-      workerId: globalGame.workerId,
-      assignmentId: globalGame.assignmentId
-    });
+    var packet = ['stroke',
+      globalGame.currStrokeNum,
+      globalGame.path.exportSVG({asString: true}).replace(/\./g,'~~~'),
+      globalGame.path.exportJSON({asString: true}).replace(/\./g,'~~~'),
+      globalGame.shiftKeyUsed,
+      globalGame.data.subject_information.score].join('.');
+    globalGame.socket.send(packet);
   };
 
   // reset variables
