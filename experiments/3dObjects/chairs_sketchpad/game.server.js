@@ -31,7 +31,8 @@ var onMessage = function(client,message) {
   var id = gc.id;
   var all = gc.get_active_players();
   var target = gc.get_player(client.userid);
-  var others = gc.get_others(client.userid);  
+  var others = gc.get_others(client.userid);
+  console.log('received message' + message);
   switch(message_type) {
     
   case 'clickedObj' :
@@ -148,56 +149,6 @@ var dataOutput = function() {
     'clickedObj' : clickedObjOutput
   };
 }();
-
-// var writeData = function(client, type, message_parts) {
-//   var gc = client.game;
-//   var trialNum = gc.state.roundNum + 1; 
-//   var intendedName = getIntendedTargetName(gc.trialInfo.currStim);
-//   var line = [gc.id, Date.now(), trialNum];
-
-//   switch(type) {
-//   case "clickedObj" :
-//     // parse the message
-//     var clickedName = message_parts[1];
-//     var correct = intendedName == clickedName ? 1 : 0;
-//     var pngString = message_parts[2];
-//     var pose = parseInt(message_parts[3]);
-//     var condition = message_parts[4];
-//     var objectLocs = getObjectLocs(gc.trialInfo.currStim);
-//     line = (line.concat([intendedName, clickedName, correct, pose, condition])
-// 	    .concat(objectLocs)
-// 	    .concat(pngString));
-        
-//     break;
- 
-//   case "stroke" : 
-//     var currStrokeNum = message_parts[0];
-//     var svgStr = message_parts[1];
-//     var shiftKeyUsed = message_parts[2];
-//     line = line.concat([currStrokeNum, intendedName, shiftKeyUsed, svgStr]);
-//     break;
-//   }
-//   console.log(type + ":" + line.slice(0,-1).join('\t'));
-//   gc.streams[type].write(line.join('\t') + "\n",
-// 			 function (err) {if(err) throw err;});
-
-// };
-
-// var startGame = function(game, player) {
-//   // Establish write streams
-//   var startTime = utils.getLongFormTime();
-//   var dataFileName = startTime + "_" + game.id + ".csv";
-//   var baseCols = ["gameid","time","trialNum"].join('\t');
-//   var objectLocHeader = utils.getObjectLocHeader();
-//   var strokeHeader = [baseCols,"strokeNum","targetName", "shiftKeyUsed","svg\n"].join('\t');
-//   var clickedObjHeader = [baseCols, "intendedTarget","clickedObject", 
-// 			  "outcome", "pose", "condition", objectLocHeader, "png\n"].join('\t');
-
-//   utils.establishStream(game, "stroke", dataFileName,strokeHeader);
-//   utils.establishStream(game, "clickedObj", dataFileName, clickedObjHeader);
-
-//   game.newRound();
-// };
 
 var setCustomEvents = function(socket) {
   socket.on('stroke', function(data) {
