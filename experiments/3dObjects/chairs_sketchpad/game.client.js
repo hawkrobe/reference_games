@@ -251,6 +251,7 @@ var customSetup = function(game) {
     var path = new Path();
     path.importJSON(jsonData);
 
+    // relay back to server to be written (FIXME: this makes no sense)
     globalGame.socket.send(message.join('.'));
 
   }); 

@@ -1,0 +1,160 @@
+---
+title: "sketchpad_repeated"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggthemes)
+library(lme4)
+library(langcog)
+```
+
+## Import group data
+
+
+
+```{r}
+d <- read_csv('data/3dObjects/sketchpad_repeated/group_data.csv') %>%
+  
+```
+
+## Stroke histogram
+
+```{r}
+d %>% group_by(numStrokes) %>% tally() %>% ggplot(aes(x = n)) + geom_bar()
+```
+
+## Find people who used crazy numbers of strokes
+
+```{r}
+crazies <- unique((d %>% filter(condition == 'repeated' & numStrokes > 25) %>% select(gameID))$gameID)
+crazies = c(crazies, 
+            '0766-fcb90e7e-bf4a-4a46-b6d6-3165b6c12b88', 
+            '7024-8ac78089-539a-428b-9d0e-b52c71a0a1b4')
+
+# also exclude if they clearly cheated (wrote word) 
+
+```
+
+# Reduction by target 
+
+```{r}
+d %>%
+  filter(condition == 'repeated') %>%
+  filter(!(gameID %in% crazies)) %>%
+  group_by(repetition, target) %>%
+  summarize(numStrokes = mean(numStrokes)) %>%
+  ggplot(aes(x = repetition, y = numStrokes, group=target)) +
+    geom_line() +
+    theme_few() +
+    geom_smooth(aes(group = 1), method ='loess')
+```
+
+# Reduction by gameid
+
+```{r}
+d %>%
+  filter(condition == 'repeated') %>%
+  filter(!(gameID %in% crazies)) %>%
+  group_by(repetition, gameID) %>%
+  summarize(svgStringLength = mean(svgStringLength)) %>%
+  ggplot(aes(x = repetition, y = svgStringLength, group=interaction(gameID))) +
+    geom_line(alpha=.3) +
+    geom_smooth(aes(group = 1), method ='loess') +
+    theme_few() +
+    xlab('# repetitions') +
+    ylab('# svg string length')
+```
+
+# Reduction (completely disaggregated)
+
+```{r}
+d %>%
+  filter(condition == 'repeated') %>%
+  filter(!(gameID %in% crazies)) %>%
+  group_by(repetition, target, gameID) %>%
+  summarize(svgStringLength = mean(svgStringLength)) %>%
+  ggplot(aes(x = repetition, y = svgStringLength, group=interaction(gameID, target))) +
+    geom_line(alpha=.3) +
+    geom_smooth(aes(group = 1), method ='loess') +
+    theme_few() +
+    xlab('# repetitions') +
+    ylab('# strokes') +
+    ggtitle('Reduction per target per game') +
+  ylim(0, 2500) +
+  theme(aspect.ratio = 1)
+```
+
+## Mixed-effects model?
+
+```{r}
+summary(lmer(svgStringLength ~ repetition + (1 + repetition| gameID) + (1 + repetition| target), data = d %>%   
+  filter(condition == 'repeated') %>%
+  filter(!(gameID %in% crazies))))
+```
+
+## Compare repetition against control
+
+```{r}
+d.toplot <- d %>%
+  mutate(phase = case_when(
+    trialType %in% c('0_control', '0_repeated') ~ 'pre',
+    trialType %in% c('1_control', '7_repeated') ~ 'post'
+  )) %>%
+  mutate(phase = ordered(phase, levels = c('pre', 'post'))) %>%
+  filter(!is.na(phase)) %>%
+  filter(!(gameID %in% crazies)) %>%
+  # We don't know why but that 
+  filter(gameID != "2904-d5fa6f4a-24e1-4568-b0ed-fb01ad503ed3") %>%
+  group_by(phase, condition) %>%
+  summarize(len = mean(svgStringLength))
+
+# d.toplot %>%
+#   spread(condition, m) %>%
+ggplot(d.toplot, aes(x = phase, y = len, color = condition)) + #, linetype = condition, color=condition)) +
+  geom_line(aes(group = condition)) +
+  #geom_text(aes(gameID))
+  theme_few() +
+  theme(aspect.ratio = 1) 
+
+```
+
+## 
+
+```{r}
+d.toplot <- d %>%
+  mutate(phase = case_when(
+    trialType %in% c('0_control', '0_repeated') ~ 'pre',
+    trialType %in% c('1_control', '7_repeated') ~ 'post'
+  )) %>%
+  mutate(phase = ordered(phase, levels = c('pre', 'post'))) %>%
+  filter(!is.na(phase)) %>%
+  filter(!(gameID %in% crazies)) %>%
+  group_by(gameID, target, phase, condition) %>%
+  summarize(len = mean(svgStringLength)) %>% #multi_boot_standard('svgStringLength')
+  spread(phase, len) %>%
+  mutate(reduction = post - pre) %>%
+  group_by(gameID, condition) %>%
+  summarize(m = mean(reduction))
+  #multi_boot_standard('reduction')
+
+d.toplot %>%
+  spread(condition, m) %>%
+ggplot(aes(x = control, y = repeated)) + #, linetype = condition, color=condition)) +
+  #geom_bar(aes(group = condition)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0) +
+  theme_few() +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+library(magick)
+for(p in d['png']) {
+  img <- image_read(p)
+  grid::grid.raster(img)  
+}
+
+```
