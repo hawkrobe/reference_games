@@ -54,9 +54,9 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
 }
 
 // Keep track of which games have used each stim
-function recordStimUse(stimdb, gameid, familyList) {
-  _.forEach(familyList, familyid => {
-    stimdb.update({family: familyid}, {
+function recordStimUse(stimdb, gameid, idList) {
+  _.forEach(idList, id => {
+    stimdb.update({_id: id}, {
       $push : {games : gameid},
       $inc  : {numGames : 1}
     }, {multi: true}, function(err, items) {
@@ -206,16 +206,17 @@ function serve() {
       // get a random sample of stims that haven't appeared more than k times
       collection.aggregate([
 	{ $addFields : { numGames: { $size: '$games'} } }, 
-	{ $group : { _id : "$family", numGames: {$avg : "$numGames"},
-		     family: { $push: "$$ROOT" } } },
+	// { $group : { _id : "$family", numGames: {$avg : "$numGames"},
+	// 	     family: { $push: "$$ROOT" } } },
 	{ $sort : { numGames : 1} },	
 	{ $limit : request.body.numRounds }
       ], (err, results) => {
 	if(err) {
 	  console.log(err);
 	} else {
+	  
 	  recordStimUse(collection, request.body.gameid, _.map(results, '_id'));
-	  response.send(_.flatten(_.map(results, 'family')));
+	  response.send(results);
 	}
       });
     });
