@@ -15,7 +15,7 @@ var getSimilarities = function(name) {
 };
 
 var getPossibleSketches = function(similarities) {
-  return _.keys(similarities);
+  return _.keys(_.values(similarities)[0]);
 };
 
 
@@ -69,7 +69,7 @@ var supportWriter = function(s, p, handle) {
 // Note this is highly specific to a single type of erp
 var bayesianErpWriter = function(erp, filePrefix) {
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');
-  fs.writeSync(predictiveFile, ["condition", "TargetColor","TargetType","Dist1Color","Dist1Type","Dist2Color","Dist2Type",
+  fs.writeSync(predictiveFile, ["condition", "object1Name", "object2Name", "object3Name", "object4Name", 
 				"value", "prob", "MCMCprob"] + '\n');
 
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
