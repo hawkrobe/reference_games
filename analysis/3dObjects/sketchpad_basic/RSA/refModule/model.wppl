@@ -10,13 +10,13 @@ var initializeModel = function(params) {
   };
   
   // Sees sketch and selects among objects in context using similarity
-  var literalListener = cache(function(sketch, context){
+  var literalListener = function(sketch, context){
     return Infer({method:'enumerate', model: function(){
       var object = uniformDraw(context);
       factor(params.typWeight * similarity(sketch, object)); 
       return object;
     }});
-  });
+  };
 
   // Selects among sketches given informativity in context and cost of production,
   var sketcher = function(targetObj, context) {
