@@ -10,7 +10,7 @@ console.log("Loading expt data complete..."
 
 // Cache some properties of model
 // Note: when moving to model comparison, can precache for all models...
-var modelVersion = 'formatted_out';
+var modelVersion = 'out_formatted';
 var similarities = refModule.getSimilarities(modelVersion);
 var possibleSketches = refModule.getPossibleSketches(similarities);
 console.log("Loading model data complete...");
@@ -29,8 +29,7 @@ var modelAnalysis = function() {
     costWeight : 0 // Not using cost yet
   };
   var sketcherModel = initializeModel(extend(params, globalConfig));
-
-  var score = reduce(function(c, memo) {
+  var score = sum(map(function(c) {
     // Extract condition information
     var conditionType = c.condition;
     var context = [c.object1Name, c.object2Name, c.object3Name, c.object4Name];
@@ -50,11 +49,10 @@ var modelAnalysis = function() {
     
     // condition on data
     var itemData = refModule.getSubset(data, c);
-    console.log(itemData);
-    return memo + reduce(function(datum, memo) {
-      return modelOutput.score(datum.utterance) + memo;
-    }, 0, itemData);
-  }, 0, conditions);
+    return sum(map(function(datum) {
+      return modelOutput.score(datum.sketchLabel);
+    }, itemData));
+  }, conditions));    
 
   console.log(params);
   console.log(score);
@@ -63,9 +61,6 @@ var modelAnalysis = function() {
   return {predictive: globalStore.predictives, params : params};
 };
 
-modelAnalysis();
+var outputERP = Infer({method:'enumerate', model: modelAnalysis});
 
-// var outputERP = Infer({method:'MCMC', samples: 500, lag: 2, burn: 100, verbose: true},
-// 		      modelAnalysis);
-
-// refModule.bayesianErpWriter(outputERP, "./bdaOutput/" + globalConfig.outputFileName);
+refModule.bayesianErpWriter(outputERP, "./bdaOutput/" + globalConfig.outputFileName);
