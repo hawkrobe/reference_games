@@ -6,7 +6,7 @@ var initializeModel = function(params) {
   };
 
   var similarity = function(sketch, object) {
-    return params.similarities[sketch][object];
+    return params.similarities[object][sketch];
   };
   
   // Sees sketch and selects among objects in context using similarity
@@ -29,5 +29,5 @@ var initializeModel = function(params) {
     }});
   };
 
-  return speaker;
+  return sketcher;
 };
