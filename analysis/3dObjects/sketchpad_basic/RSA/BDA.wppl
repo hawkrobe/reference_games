@@ -13,8 +13,10 @@ console.log("Loading expt data complete..."
 var modelVersion = 'out_formatted';
 var similarities = refModule.getSimilarities(modelVersion);
 var possibleSketches = refModule.getPossibleSketches(similarities);
-console.log("Loading model data complete...");
-
+console.log("Loading model data complete..."
+	    + possibleSketches.length + " sketches of " +
+	    + _.keys(similarities).length + " objects." );
+// console.log(JSON.stringify(_.sortBy(_.keys(similarities))));
 // Package into config
 var globalConfig = {
   modelVersion, similarities, possibleSketches,
@@ -29,7 +31,7 @@ var modelAnalysis = function() {
     costWeight : 0 // Not using cost yet
   };
   var sketcherModel = initializeModel(extend(params, globalConfig));
-  var score = sum(map(function(c) {
+  var score = reduce(function(c, memo) {
     // Extract condition information
     var conditionType = c.condition;
     var context = [c.object1Name, c.object2Name, c.object3Name, c.object4Name];
@@ -49,10 +51,10 @@ var modelAnalysis = function() {
     
     // condition on data
     var itemData = refModule.getSubset(data, c);
-    return sum(map(function(datum) {
-      return modelOutput.score(datum.sketchLabel);
-    }, itemData));
-  }, conditions));    
+    return memo + reduce(function(datum, memo) {
+      return memo + modelOutput.score(datum.sketchLabel);
+    }, 0, itemData);
+  }, 0, conditions);    
 
   console.log(params);
   console.log(score);
