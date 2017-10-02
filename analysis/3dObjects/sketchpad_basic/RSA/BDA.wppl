@@ -11,12 +11,12 @@ console.log("Loading expt data complete..."
 // Cache some properties of model
 // Note: when moving to model comparison, can precache for all models...
 var modelVersion = 'out_formatted';
-var similarities = refModule.getSimilarities(modelVersion);
+var similarities = refModule.getSimilarities();
 var costs = refModule.getCosts(modelVersion);
 var possibleSketches = refModule.getPossibleSketches(costs);
 console.log("Loading model data complete..."
 	    + possibleSketches.length + " sketches of " +
-	    + _.keys(similarities).length + " objects." );
+	    + _.keys(similarities['strict']).length + " objects." );
 
 // Package into config
 var globalConfig = {
@@ -27,11 +27,14 @@ var globalConfig = {
 
 var modelAnalysis = function() {
   var params = {
-    alpha : 1,// uniformDraw([0.5, 1, 2, 5]),
-    typWeight : 1, //uniformDraw([0, 1, 2]),
-    costWeight : uniformDraw([0, .5]) // Not using cost yet
+    similarityMetric: uniformDraw(['strict', 'nonstrict']),
+    speakerModel: uniformDraw(['S1', 'S0']),    
+    alpha : uniformDraw([0.5, 1, 2, 5, 10]),
+    typWeight : 1, //uniformDraw([0.5, 1, 2]),
+    costWeight : uniformDraw([0, .1, .2, .3, .5]) // Not using cost yet
   };
-  var sketcherModel = initializeModel(extend(params, globalConfig));
+  
+  var model = initializeModel(extend(params, globalConfig))[params.speakerModel];
   var score = reduce(function(c, memo) {
     // Extract condition information
     var conditionType = c.condition;
@@ -40,7 +43,7 @@ var modelAnalysis = function() {
 
     // Run model
     
-    var modelOutput = sketcherModel(target, context);
+    var modelOutput = model(target, context);
     // Store predives
     // if(globalConfig.storePredictives) {
     //   foreach(modelOutput.support(), function(s){
@@ -61,7 +64,9 @@ var modelAnalysis = function() {
   console.log(score);
 
   factor(score);
-  return {predictive: globalStore.predictives, params : params};
+
+  var paramsKey = _.values(params).join(',');
+  return {predictive: globalStore.predictives, params : _.zipObject([paramsKey], [score])};
 };
 
 var outputERP = Infer({method:'enumerate', model: modelAnalysis});

@@ -5,7 +5,8 @@ var babyparse = require('babyparse');
 // var es = require('event-stream');
 
 var getSimilarities = function(name) {
-  return require('./json/' + name + '.json');
+  return {'strict' : require('./json/strict-similarity.json'),
+	  'nonstrict' : require('./json/nonstrict-similarity.json')};
 };
 
 var getCosts = function(name) {
@@ -18,7 +19,7 @@ var getPossibleSketches = function(costs) {
 };
 
 var getL0score = function(target, sketch, context, params) {
-  var similarities = params.similarities;
+  var similarities = params.similarities[params.similarityMetric];
   var sum = 0;
   for(var i=0; i<context.length; i++){
     sum += Math.exp(similarities[context[i]][sketch]);
@@ -65,7 +66,7 @@ var writeERP = function(erp, labels, filename, fixed) {
 };
 
 var supportWriter = function(s, p, handle) {
-  var sLst = _.pairs(s);
+  var sLst = _.toPairs(s);
   var l = sLst.length;
 
   for (var i = 0; i < l; i++) {
@@ -76,11 +77,11 @@ var supportWriter = function(s, p, handle) {
 // Note this is highly specific to a single type of erp
 var bayesianErpWriter = function(erp, filePrefix) {
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');
-  fs.writeSync(predictiveFile, ["condition", "object1Name", "object2Name", "object3Name", "object4Name", 
-				"value", "prob", "MCMCprob"] + '\n');
+  fs.writeSync(predictiveFile, ["condition", "Target", "Distractor1", "Distractor2", "Distractor3", 
+				"value", "prob", "posteriorProb"] + '\n');
 
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
-  fs.writeSync(paramFile, ["parameter", "value", "MCMCprob"] + '\n');
+  fs.writeSync(paramFile, ["alpha", "typWeight", "costWeight", "logLikelihood", "posteriorProb"] + '\n');
 
   var supp = erp.support();
   supp.forEach(function(s) {
