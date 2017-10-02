@@ -106,11 +106,11 @@ var game_core = function(options){
     // Before starting game, get stim list from db
     var that = this;
     sendPostRequest('http://localhost:4000/db/getstims', {
-      json: {dbname: 'stimuli', colname: 'chairs140',
+      json: {dbname: 'stimuli', colname: 'chairs1k',
 	     numRounds: this.numRounds, gameid: this.id}
     }, (error, res, body) => {
       if(!error && res.statusCode === 200) {
-      	that.stimList = body;
+      	that.stimList = _.shuffle(body);
       	that.trialList = that.makeTrialList();
       	that.server_send_update();
       } else {
@@ -174,7 +174,6 @@ game_core.prototype.newRound = function() {
     _.map(this.get_active_players(), function(p){
       p.player.instance.disconnect();});
   } else {
-    // console.log('got to newRound in game.core.js and not the final round');
     // Otherwise, get the preset list of objects for the new round
     this.roundNum += 1;
     this.trialInfo = {
@@ -200,40 +199,41 @@ game_core.prototype.sampleStimulusLocs = function() {
 
 
 game_core.prototype.makeTrialList = function () { 
-    //console.log(this.stimList);
-  if ((this.numRounds % 3 ==0) && (this.closeOnly==false)) {
-    //sample 23 of each condition and randomize
-    f = _.times(this.numRounds/3,function() {return "far"});
-    c = _.times(this.numRounds/3,function() {return "close"});
-    s = _.times(this.numRounds/3,function() {return "split"});
-    var conditionList = _.shuffle(f.concat(c).concat(s));   
+  // if ((this.numRounds % 3 ==0) && (this.closeOnly==false)) {
+  //   //sample 23 of each condition and randomize
+  //   f = _.times(this.numRounds/3,function() {return "far"});
+  //   c = _.times(this.numRounds/3,function() {return "close"});
+  //   s = _.times(this.numRounds/3,function() {return "split"});
+  //   var conditionList = _.shuffle(f.concat(c).concat(s));   
 
-  } else {
-    // iff you only want to run close trials, this next block restricts it to them
-    c = _.times(this.numRounds,function() {return "close"});    
-    var conditionList = _.shuffle(c);
-  }
+  // } else {
+  //   // iff you only want to run close trials, this next block restricts it to them
+  //   c = _.times(this.numRounds,function() {return "close"});    
+  //   var conditionList = _.shuffle(c);
+  // }
 
-  //get family IDs and randomize
-  var familyList = _.shuffle(_.uniq(_.map(this.stimList, _.property('family'))));
-
-  return _.zipWith(conditionList, familyList, (condition, family) => {
-
-    // Find objects in family, remove .png extension
-    var objs = _.filter(this.stimList, s => {
-      return s.condition === condition && s.family == family;
-    }).map(obj => _.extend(obj, {filename : obj.filename.split(".")[0]}));
+  return _.map(this.stimList, stim => {
+    var condition = stim.condition;
+    var family = stim.family;
+    var numObjs = this.numHorizontalCells * this.numVerticalCells;
 
     // sample locations for those objects
     var locs = this.sampleStimulusLocs();
-    
+	  
     // construct trial list (in sets of complete rounds)
-    return _.zipWith(objs, locs.speaker, locs.listener, (obj, sloc, lloc) => {
+    return _.zipWith(_.range(numObjs), locs.speaker, locs.listener, (i, sloc, lloc) => {
+      var filename = stim.filename[i].split(".")[0],
+	  url = stim.url[i],
+	  member = stim.member[i],
+	  shapenet_id = stim.shapenet_id[i],
+	  target_status = stim.target_status[i];
       var width = this.cellDimensions.width;
       var height = this.cellDimensions.height;      
       var speakerGridCell = this.getPixelFromCell(sloc[0], sloc[1]); 
       var listenerGridCell = this.getPixelFromCell(lloc[0], lloc[1]);
-      return _.extend(obj, {
+      return {
+	condition, family,
+	filename, url, member, shapenet_id, target_status,
 	width, height,
 	speakerCoords : {
           gridX : sloc[0],
@@ -251,7 +251,7 @@ game_core.prototype.makeTrialList = function () {
           gridPixelX: listenerGridCell.centerX - 100,
           gridPixelY: listenerGridCell.centerY - 100
 	}
-      });
+      };
     });
   });
 };
@@ -283,8 +283,6 @@ game_core.prototype.server_send_update = function(){
   if(player_packet.length == 2) {
     _.extend(state, {objects: this.objects});
   }
-  // console.log('printing state variable from server_send_update');
-  // console.log(state);
   //Send the snapshot to the players
 
   this.state = state;
