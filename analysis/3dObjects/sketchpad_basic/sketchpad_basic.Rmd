@@ -1,0 +1,57 @@
+---
+title: "sketchpad_repeated"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(stringr)
+library(ggthemes)
+library(lme4)
+library(langcog)
+```
+
+## Import group data
+
+Make input for BDA
+TODO: incorporate pilot0 as well
+
+```{r}
+raw <-  read_delim('../../../data/3dObjects/sketchpad_basic/clickedObj/allClicks.csv', 
+                   delim = '\t') 
+
+valid_ids = read_csv('./valid_gameids_pilot1.csv')$valid_gameids
+
+d <- raw %>% 
+  filter(gameid %in% valid_ids) %>%
+  mutate(gameid = str_sub(gsub("-", "", gameid), start = -12)) %>%
+  mutate(sketchLabel = sprintf('%s_%s', gameid, trialNum)) %>%
+  select(condition, object1Name, object2Name, object3Name, object4Name, sketchLabel, pose) 
+
+# dplyr can't do this yet for some reason so have to jump out of the pipe... 
+d$context = apply(d[,3:5], 1, function(x) paste(sort(x), collapse="_"))
+
+d.ordered = d %>% 
+  select(-object2Name, -object3Name, -object4Name) %>%
+  separate(context, into = c('object2Name', 'object3Name', 'object4Name')) %>%
+  mutate(object1Name = sprintf("%s_%04d", object1Name, pose)) %>%
+  mutate(object2Name = sprintf("%s_%04d", object2Name, pose)) %>%
+  mutate(object3Name = sprintf("%s_%04d", object3Name, pose)) %>%
+  mutate(object4Name = sprintf("%s_%04d", object4Name, pose)) 
+
+
+write_csv(d.ordered, path = './RSA/bdaInput/sketch_data.csv')
+```
+
+Make set of unique conditions
+
+```{r}
+d.ordered %>% 
+  select(condition, object1Name, object2Name, object3Name, object4Name) %>%
+  distinct() %>%
+  write_csv(path = './RSA/bdaInput/unique_conditions.csv')
+  # rowwise() %>%
+  # mutate(context = strsplit(as.character(context), '_')) %>%
+    #mutate(context = cat(paste0(object2Name, object3Name, object4Name)), sep = '_'))
+```
