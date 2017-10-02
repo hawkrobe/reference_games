@@ -7,9 +7,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(stringr)
+library(ggplot2)
 library(ggthemes)
 library(lme4)
 library(langcog)
+library(jsonlite)
 ```
 
 ## Import group data
@@ -18,40 +20,95 @@ Make input for BDA
 TODO: incorporate pilot0 as well
 
 ```{r}
-raw <-  read_delim('../../../data/3dObjects/sketchpad_basic/clickedObj/allClicks.csv', 
-                   delim = '\t') 
-
-valid_ids = read_csv('./valid_gameids_pilot1.csv')$valid_gameids
+raw <-  read_delim('sketchpad_basic_merged_group_data.csv', delim = ',') 
 
 d <- raw %>% 
-  filter(gameid %in% valid_ids) %>%
-  mutate(gameid = str_sub(gsub("-", "", gameid), start = -12)) %>%
+  mutate(gameid = str_sub(gsub("-", "", gameID), start = -12)) %>%
   mutate(sketchLabel = sprintf('%s_%s', gameid, trialNum)) %>%
-  select(condition, object1Name, object2Name, object3Name, object4Name, sketchLabel, pose) 
-
-# dplyr can't do this yet for some reason so have to jump out of the pipe... 
-d$context = apply(d[,3:5], 1, function(x) paste(sort(x), collapse="_"))
-
-d.ordered = d %>% 
-  select(-object2Name, -object3Name, -object4Name) %>%
-  separate(context, into = c('object2Name', 'object3Name', 'object4Name')) %>%
-  mutate(object1Name = sprintf("%s_%04d", object1Name, pose)) %>%
-  mutate(object2Name = sprintf("%s_%04d", object2Name, pose)) %>%
-  mutate(object3Name = sprintf("%s_%04d", object3Name, pose)) %>%
-  mutate(object4Name = sprintf("%s_%04d", object4Name, pose)) 
-
-
-write_csv(d.ordered, path = './RSA/bdaInput/sketch_data.csv')
+  filter(iteration == 'pilot1') %>% # Just use pilot 1 for now
+  select(sketchLabel, condition, target, Distractor1, Distractor2, Distractor3, mean_intensity, pose) 
 ```
 
-Make set of unique conditions
+Write out cost look-up table:
 
 ```{r}
-d.ordered %>% 
-  select(condition, object1Name, object2Name, object3Name, object4Name) %>%
-  distinct() %>%
-  write_csv(path = './RSA/bdaInput/unique_conditions.csv')
-  # rowwise() %>%
-  # mutate(context = strsplit(as.character(context), '_')) %>%
-    #mutate(context = cat(paste0(object2Name, object3Name, object4Name)), sep = '_'))
+as.list(setNames(d$mean_intensity,d$sketchLabel)) %>%
+  write_json('RSA/bdaInput/costs.csv')
 ```
+
+Reorder contexts alphabetically because we just care about content of set and reformat object names to include pose
+
+```{r}
+d$context = apply(d %>% select(Distractor1, Distractor2, Distractor3), 1, 
+                  function(x) paste(sort(x), collapse="_"))
+
+d.ordered = d %>% 
+  select(-Distractor1, -Distractor2, -Distractor3) %>%
+  separate(context, into = c('Distractor1', 'Distractor2', 'Distractor3')) %>%
+  mutate(Target = sprintf("%s_%04d", target, pose)) %>%
+  mutate(Distractor1 = sprintf("%s_%04d", Distractor1, pose)) %>%
+  mutate(Distractor2 = sprintf("%s_%04d", Distractor2, pose)) %>%
+  mutate(Distractor3 = sprintf("%s_%04d", Distractor3, pose))
+```
+
+It'd be nicer if we had a smaller space of unique conditions for quicker BDA in webppl, but pretty much every trial was unique due to the pose randomization... 
+
+Write out actual data to condition on
+
+```{r}
+d.ordered %>% distinct(condition, Target, Distractor1, Distractor2, Distractor3) %>% 
+  write_csv('./RSA/bdaInput/unique_conditions.csv')
+d.ordered %>% select(condition, sketchLabel, Target, Distractor1, Distractor2, Distractor3) %>%
+  write_csv('./RSA/bdaInput/sketch_data.csv')
+```
+
+```{r}
+similarities <- fromJSON('./RSA/refModule/json/out_formatted.json', flatten = T)
+
+lookupSimilarity <- function(object, sketch) {
+  return(similarities[[object]][[sketch]])
+}
+
+d.similarity <- d.ordered %>%
+  gather(contextElement, name, object1Name, object2Name, object3Name, object4Name) %>%
+  rowwise() %>%
+  mutate(sketchSimilarity = lookupSimilarity(name, sketchLabel))
+```
+
+Sanity check: is similarity higher for target than distractors?
+
+```{r}
+d.similarity %>% 
+  mutate(contextElement = case_when(contextElement == 'object1Name' ~ 'target',
+                                    T ~ 'distractor')) %>%
+  ggplot(aes(x = sketchSimilarity)) +
+    geom_density() +
+    theme_few() +
+    xlim(-1, 1) +
+    facet_grid(contextElement ~ condition)
+```
+
+Yes,on 'far' conditions the sketch tends to be similar to the target and dissimilar to the distractors; on 'close' conditions the sketch tends to be similar to both...
+
+But is anything different across conditions? We'd expect that your bird is pushed to look more like the target bird when the distractors are also birds... 
+
+```{r}
+wilcox.test(sketchSimilarity ~ condition, 
+            data = d.similarity %>% filter(contextElement == 'object1Name'))
+
+d.similarity %>% 
+  filter(contextElement == 'object1Name') %>%
+  separate(name, into = c('pureName', 'poseStr')) %>% #  = strsplit(name, split = '_')[0]) 
+  group_by(condition, pureName) %>%
+  summarize(m = mean(sketchSimilarity)) %>%
+  spread(condition, m) %>%
+  ggplot(aes(x = closer, y = further)) +
+    geom_point() +
+    geom_abline(slope = 1, intercept = 0) +
+    theme_few() +
+  theme(aspect.ratio = 1) +
+    #xlim(1) +
+  ggtitle('sketch similarity to target across conditions')
+#    facet_grid(contextElement ~ condition)
+```
+
