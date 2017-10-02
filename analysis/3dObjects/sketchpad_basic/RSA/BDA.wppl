@@ -12,42 +12,43 @@ console.log("Loading expt data complete..."
 // Note: when moving to model comparison, can precache for all models...
 var modelVersion = 'out_formatted';
 var similarities = refModule.getSimilarities(modelVersion);
-var possibleSketches = refModule.getPossibleSketches(similarities);
+var costs = refModule.getCosts(modelVersion);
+var possibleSketches = refModule.getPossibleSketches(costs);
 console.log("Loading model data complete..."
 	    + possibleSketches.length + " sketches of " +
 	    + _.keys(similarities).length + " objects." );
-// console.log(JSON.stringify(_.sortBy(_.keys(similarities))));
+
 // Package into config
 var globalConfig = {
-  modelVersion, similarities, possibleSketches,
+  modelVersion, similarities, possibleSketches, costs,
   storePredictives : false,  
   outputFileName : 'testing'
 };
 
 var modelAnalysis = function() {
   var params = {
-    alpha : uniformDraw([0, 1, 2, 5, 10]),
-    typWeight : uniformDraw([0, 1, 2]),
-    costWeight : 0 // Not using cost yet
+    alpha : 1,// uniformDraw([0.5, 1, 2, 5]),
+    typWeight : 1, //uniformDraw([0, 1, 2]),
+    costWeight : uniformDraw([0, .5]) // Not using cost yet
   };
   var sketcherModel = initializeModel(extend(params, globalConfig));
   var score = reduce(function(c, memo) {
     // Extract condition information
     var conditionType = c.condition;
-    var context = [c.object1Name, c.object2Name, c.object3Name, c.object4Name];
+    var context = [c.Target, c.Distractor1, c.Distractor2, c.Distractor3];
     var target = context[0];
 
     // Run model
-    var modelOutput = sketcherModel(target, context);
     
+    var modelOutput = sketcherModel(target, context);
     // Store predives
-    if(globalConfig.storePredictives) {
-      foreach(modelOutput.support(), function(s){
-  	var key = _.values(c).concat(s);
-  	var newPair = _.zipObject([key], [Math.exp(modelOutput.score(s))]);
-  	globalStore.predictives = extend(globalStore.predictives, newPair);
-      });
-    }
+    // if(globalConfig.storePredictives) {
+    //   foreach(modelOutput.support(), function(s){
+    // 	var key = _.values(c).concat(s);
+    // 	var newPair = _.zipObject([key], [Math.exp(modelOutput.score(s))]);
+    // 	globalStore.predictives = extend(globalStore.predictives, newPair);
+    //   });
+    // }
     
     // condition on data
     var itemData = refModule.getSubset(data, c);
