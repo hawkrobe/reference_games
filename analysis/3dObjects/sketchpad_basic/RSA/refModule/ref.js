@@ -6,18 +6,25 @@ var babyparse = require('babyparse');
 
 var getSimilarities = function(name) {
   return require('./json/' + name + '.json');
-  // fs.createReadStream('./json/' + name + '.json')
-  //   .pipe(JSONStream.parse([render, sketch]))
-  //   .pipe(es.mapSync(function (data) {
-  //     console.log(data);
-  //     return data;
-  //   }));
 };
 
-var getPossibleSketches = function(similarities) {
-  return _.keys(_.values(similarities)[0]);
+var getCosts = function(name) {
+  return require('./json/costs.json');
 };
 
+// TODO: this is currently a hack to exclude pilot0 sketches
+var getPossibleSketches = function(costs) {
+  return _.keys(costs);
+};
+
+var getL0score = function(target, sketch, context, params) {
+  var similarities = params.similarities;
+  var sum = 0;
+  for(var i=0; i<context.length; i++){
+    sum += Math.exp(similarities[context[i]][sketch]);
+  }
+  return Math.log(Math.exp(similarities[target][sketch]) / sum);
+};
 
 // console.log(getDistance('cars_07_hatchback_0038.npy',
 // 			'gameID_2848-1779ba4d-c84b-4050-8a1f-e4b733ceb6a7_trial_9.npy',
@@ -97,6 +104,7 @@ var locParse = function(filename) {
 };
 
 module.exports = {
-  getSimilarities, getPossibleSketches, getSubset, 
+  getSimilarities, getPossibleSketches, getCosts, getSubset,
+  getL0score,
   bayesianErpWriter, writeERP, writeCSV, readCSV, locParse
 };
