@@ -2,27 +2,27 @@ var initializeModel = function(params) {
 
   // For now ignore cost
   var sketchCost = function(sketch) {
-    return 0;
+    return params.costs[sketch][0];
   };
 
-  var similarity = function(sketch, object) {
-    return params.similarities[object][sketch];
-  };
+  // var similarity = function(sketch, object) {
+  //   return params.similarities[object][sketch];
+  // };
   
   // Sees sketch and selects among objects in context using similarity
-  var literalListener = function(sketch, context){
-    return Infer({method:'enumerate', model: function(){
-      var object = uniformDraw(context);
-      factor(params.typWeight * similarity(sketch, object)); 
-      return object;
-    }});
-  };
+  // var literalListener = function(sketch, context){
+  //   return Infer({method:'enumerate', model: function(){
+  //     var object = uniformDraw(context);
+  //     factor(params.typWeight * similarity(sketch, object)); 
+  //     return object;
+  //   }});
+  // };
 
   // Selects among sketches given informativity in context and cost of production,
   var sketcher = function(targetObj, context) {
     return Infer({method:'enumerate', model: function(){
       var sketch = uniformDraw(params.possibleSketches);
-      var utility = ((1-params.costWeight) * literalListener(sketch, context).score(targetObj)
+      var utility = ((1-params.costWeight) * refModule.getL0score(targetObj, sketch, context, params) //literalListener(sketch, context).score(targetObj) //
 		     - params.costWeight * sketchCost(sketch));
       factor(params.alpha * utility);
       return sketch;
