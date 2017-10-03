@@ -3,55 +3,217 @@ title: "sketchpad_repeated"
 output: html_document
 ---
 
+# Import some libraries 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(stringr)
 library(ggthemes)
 library(lme4)
-library(langcog)
+# # Note: to install langcog, 
+# library(langcog)
+library(jsonlite)
 ```
+
+# Create BDA input
 
 ## Import group data
 
-Make input for BDA
-TODO: incorporate pilot0 as well
+TODO: incorporate pilot0 as well (though missing pose data makes this nontrivial)
 
 ```{r}
-raw <-  read_delim('../../../data/3dObjects/sketchpad_basic/clickedObj/allClicks.csv', 
-                   delim = '\t') 
-
-valid_ids = read_csv('./valid_gameids_pilot1.csv')$valid_gameids
+raw <-  read_delim('sketchpad_basic_merged_group_data.csv', delim = ',') 
 
 d <- raw %>% 
-  filter(gameid %in% valid_ids) %>%
-  mutate(gameid = str_sub(gsub("-", "", gameid), start = -12)) %>%
+  mutate(gameid = str_sub(gsub("-", "", gameID), start = -12)) %>%
   mutate(sketchLabel = sprintf('%s_%s', gameid, trialNum)) %>%
-  select(condition, object1Name, object2Name, object3Name, object4Name, sketchLabel, pose) 
-
-# dplyr can't do this yet for some reason so have to jump out of the pipe... 
-d$context = apply(d[,3:5], 1, function(x) paste(sort(x), collapse="_"))
-
-d.ordered = d %>% 
-  select(-object2Name, -object3Name, -object4Name) %>%
-  separate(context, into = c('object2Name', 'object3Name', 'object4Name')) %>%
-  mutate(object1Name = sprintf("%s_%04d", object1Name, pose)) %>%
-  mutate(object2Name = sprintf("%s_%04d", object2Name, pose)) %>%
-  mutate(object3Name = sprintf("%s_%04d", object3Name, pose)) %>%
-  mutate(object4Name = sprintf("%s_%04d", object4Name, pose)) 
-
-
-write_csv(d.ordered, path = './RSA/bdaInput/sketch_data.csv')
+  filter(iteration == 'pilot1') %>% # Just use pilot 1 for now
+  select(sketchLabel, condition, target, Distractor1, Distractor2, Distractor3, mean_intensity, pose) 
 ```
 
-Make set of unique conditions
+Write out cost look-up table (use mean_intensity for now):
+
+```{r}
+as.list(setNames(d$mean_intensity,d$sketchLabel)) %>%
+  write_json('RSA/bdaInput/costs.csv')
+```
+
+We reorder contexts alphabetically because we just care about content of set. Also reformat object names to include pose.... 
+
+```{r}
+d$context = apply(d %>% select(Distractor1, Distractor2, Distractor3), 1, 
+                  function(x) paste(sort(x), collapse="_"))
+
+d.ordered = d %>% 
+  select(-Distractor1, -Distractor2, -Distractor3) %>%
+  separate(context, into = c('Distractor1', 'Distractor2', 'Distractor3')) %>%
+  mutate(Target = sprintf("%s_%04d", target, pose)) %>%
+  mutate(Distractor1 = sprintf("%s_%04d", Distractor1, pose)) %>%
+  mutate(Distractor2 = sprintf("%s_%04d", Distractor2, pose)) %>%
+  mutate(Distractor3 = sprintf("%s_%04d", Distractor3, pose))
+```
+
+Note: it'd be nicer if we had a smaller space of unique conditions for quicker BDA in webppl, but pretty much every trial was unique due to the pose randomization... 
+
+Write out actual data to condition on
 
 ```{r}
 d.ordered %>% 
-  select(condition, object1Name, object2Name, object3Name, object4Name) %>%
-  distinct() %>%
-  write_csv(path = './RSA/bdaInput/unique_conditions.csv')
-  # rowwise() %>%
-  # mutate(context = strsplit(as.character(context), '_')) %>%
-    #mutate(context = cat(paste0(object2Name, object3Name, object4Name)), sep = '_'))
+  select(condition, sketchLabel, Target, Distractor1, Distractor2, Distractor3) %>%
+  write_csv('./RSA/bdaInput/sketch_data.csv')
+```
+
+Make alternate dataset with only far condition
+
+```{r}
+d.ordered %>%  filter(condition == 'further') %>%
+  select(condition, sketchLabel, Target, Distractor1, Distractor2, Distractor3) %>%
+  write_csv('./RSA/bdaInput/sketch_data_far_only.csv')
+```
+
+# Analyze raw similarities
+
+Load in different embeddings and make boilerplate iterables for them
+
+```{r}
+strictSimilarities <- fromJSON('./RSA/refModule/json/strict-similarity.json', flatten = T)
+nonstrictSimilarities <- fromJSON('./RSA/refModule/json/nonstrict-similarity.json', flatten = T)
+earlySimilarities <- fromJSON('./RSA/refModule/json/early-similarity.json', flatten = T)
+
+lookupStrictSimilarity <- function(object, sketch) {
+  return(strictSimilarities[[object]][[sketch]])
+}
+
+lookupNonstrictSimilarity <- function(object, sketch) {
+  return(nonstrictSimilarities[[object]][[sketch]])
+}
+
+lookupEarlySimilarity <- function(object, sketch) {
+  return(earlySimilarities[[object]][[sketch]])
+}
+```
+
+Add columns for the different kinds of similarity
+
+```{r}
+d.similarity <- d.ordered %>%
+  gather(contextElement, name, Target, Distractor1, Distractor2, Distractor3) %>%
+  rowwise() %>%
+  mutate(strictSimilarity = lookupStrictSimilarity(name, sketchLabel)) %>%
+  mutate(nonstrictSimilarity = lookupNonstrictSimilarity(name, sketchLabel)) %>%
+  mutate(earlySimilarity = lookupEarlySimilarity(name, sketchLabel))
+```
+
+Sanity check: is similarity higher for target than distractors?
+
+```{r}
+tmp = d.similarity %>% 
+  mutate(contextElement = case_when(contextElement == 'Target' ~ 'target',
+                                    T ~ 'distractor')) %>%
+  filter(condition == 'further') 
+
+tmp %>%
+  ggplot(aes(x = nonstrictSimilarity, fill = contextElement)) +
+    geom_density(alpha = .5) +
+    theme_few() +
+    theme(aspect.ratio = 1) +
+    xlim(-1, 1) +
+    ggtitle('sketch similarity in further condition') +
+    scale_fill_colorblind()
+```
+
+Yes,on 'far' conditions the sketch tends to be similar to the target and dissimilar to the distractors
+
+What about closer condition? 
+
+```{r}
+tmp = d.similarity %>% 
+  mutate(contextElement = case_when(contextElement == 'Target' ~ 'target',
+                                    T ~ 'distractor')) %>%
+  filter(condition == 'closer') 
+
+tmp %>%
+  ggplot(aes(x = nonstrictSimilarity, fill = contextElement)) +
+    geom_density(alpha = .5) +
+    theme_few() +
+    theme(aspect.ratio = 1) +
+    xlim(-1, 1) +
+    ggtitle('sketch similarity in further condition') +
+    scale_fill_colorblind()
+```
+
+On 'close' conditions the sketch tends to be similar to both...
+
+But is anything different across conditions? We'd expect that your bird is pushed to look more like the target bird when the distractors are also birds... 
+
+```{r}
+wilcox.test(sketchSimilarity ~ condition, 
+            data = d.similarity %>% filter(contextElement == 'Target'))
+
+d.similarity %>% 
+  filter(contextElement == 'Target') %>%
+  separate(name, into = c('pureName', 'poseStr')) %>% #  = strsplit(name, split = '_')[0]) 
+  group_by(condition, pureName) %>%
+  summarize(m = mean(sketchSimilarity)) %>%
+  spread(condition, m) %>%
+  ggplot(aes(x = closer, y = further, label = pureName)) +
+    # geom_point() +
+    # geom_abline(slope = 1, intercept = 0) +
+    geom_text(check_overlap = T) +
+    theme_few() +
+    theme(aspect.ratio = 1) +
+    ggtitle('sketch similarity to target across conditions')
+```
+
+Not with this embedding... 
+
+Correlation b/w embeddings at trial-by-trial level
+
+```{r}
+d.similarity %>% 
+  filter(contextElement == 'Target') %>%
+  separate(name, into = c('pureName', 'poseStr')) %>% #  = strsplit(name, split = '_')[0]) 
+  #gather(embedding, similarity, strictSimilarity,nonstrictSimilarity) %>%
+  # group_by(embedding, pureName) %>%
+  # summarize(m = mean(sketchSimilarity)) %>%
+  # spread(condition, m) %>%
+  ggplot(aes(x = strictSimilarity, y = nonstrictSimilarity)) +#, label = pureName)) +
+    geom_bin2d() +
+    # geom_abline(slope = 1, intercept = 0) +
+    #geom_text(check_overlap = T) +
+    theme_few() +
+    theme(aspect.ratio = 1) +
+    ggtitle('sketch similarity to target across conditions')
+```
+
+Correlation b/w embeddings at item level
+
+```{r}
+d.similarity %>% 
+  filter(contextElement == 'Target') %>%
+  separate(name, into = c('pureName', 'poseStr')) %>% #  = strsplit(name, split = '_')[0]) 
+  gather(embedding, similarity, strictSimilarity,nonstrictSimilarity) %>%
+  group_by(embedding, pureName) %>%
+  summarize(m = mean(similarity)) %>%
+  spread(embedding, m) %>%
+  ggplot(aes(x = strictSimilarity, y = nonstrictSimilarity, label = pureName)) +
+    #geom_smooth(method = 'loess') +
+    geom_text(check_overlap = T) +
+    geom_abline(slope = 1, intercept = 0) +
+    #geom_text(check_overlap = T) +
+    theme_few() +
+    theme(aspect.ratio = 1) +
+    xlim(-.2, 1) +
+  ylim(-.2, 1) +
+    ggtitle('sketch similarity to target across embeddings')
+```
+
+Look at model output
+
+```{r}
+modelOutput = read_csv('./RSA/bdaOutput/testingParams.csv') %>%
+  filter(posteriorProb != -Inf) %>%
+  group_by(similarityMetric, speakerModel) %>%
+  summarize(m = sum(posteriorProb))
+View(read_csv('./RSA/bdaOutput/testingParams.csv'))
 ```

@@ -5,19 +5,61 @@ var babyparse = require('babyparse');
 // var es = require('event-stream');
 
 var getSimilarities = function(name) {
-  return require('./json/' + name + '.json');
-  // fs.createReadStream('./json/' + name + '.json')
-  //   .pipe(JSONStream.parse([render, sketch]))
-  //   .pipe(es.mapSync(function (data) {
-  //     console.log(data);
-  //     return data;
-  //   }));
+  return {//'strict-high' : require('./json/strict-similarity.json'),
+	  'nonstrict-high' : require('./json/nonstrict-similarity.json'),
+	  'early' : require('./json/early-similarity.json')};  
 };
 
-var getPossibleSketches = function(similarities) {
-  return _.keys(_.values(similarities)[0]);
+var getCosts = function(name) {
+  return require('./json/costs.json');
 };
 
+// TODO: this is currently a hack to exclude pilot0 sketches
+var getPossibleSketches = function(costs) {
+  return _.keys(costs);
+};
+
+var getL0score = function(target, sketch, context, params) {
+  var similarities = params.similarities[params.similarityMetric];
+  var sum = 0;
+  for(var i=0; i<context.length; i++){
+    sum += Math.exp(params.simScale * similarities[context[i]][sketch]);
+  }
+  return Math.log(Math.exp(params.simScale * similarities[target][sketch])) - Math.log(sum);
+};
+
+var getS1score = function(trueSketch, targetObj, context, params) {
+  var possibleSketches = params.possibleSketches;
+  var sum = 0;
+  for(var i=0; i<possibleSketches.length; i++){
+    var sketch = possibleSketches[i];
+    var inf = getL0score(targetObj, sketch, context, params);
+    var cost = params.costs[sketch][0];
+    var utility = (1-params.costWeight) * inf - params.costWeight * cost;
+    sum += Math.exp(params.alpha * utility);
+  }
+  var trueUtility = ((1-params.costWeight) * getL0score(targetObj, trueSketch, context, params)
+		     - params.costWeight * params.costs[trueSketch][0]);
+  
+  return Math.log(Math.exp(params.alpha * trueUtility)) - Math.log(sum);
+}
+
+var getS0score = function(trueSketch, targetObj, params) {
+  var possibleSketches = params.possibleSketches;
+  var similarities = params.similarities[params.similarityMetric];  
+  var sum = 0;
+  for(var i=0; i<possibleSketches.length; i++){
+    var sketch = possibleSketches[i];
+    var inf = similarities[targetObj][sketch];
+    var cost = params.costs[sketch][0];
+    var utility = (1-params.costWeight) * inf - params.costWeight * cost;
+    sum += Math.exp(params.alpha * utility);
+  }
+  var trueUtility = ((1-params.costWeight) * similarities[targetObj][trueSketch]
+		     - params.costWeight * params.costs[trueSketch][0]);
+  
+  return Math.log(Math.exp(params.alpha * trueUtility)) - Math.log(sum);
+}
 
 // console.log(getDistance('cars_07_hatchback_0038.npy',
 // 			'gameID_2848-1779ba4d-c84b-4050-8a1f-e4b733ceb6a7_trial_9.npy',
@@ -25,7 +67,7 @@ var getPossibleSketches = function(similarities) {
 
 function readCSV(filename){
   return babyparse.parse(fs.readFileSync(filename, 'utf8'),
-			 {header:true}).data;
+			 {header:true, skipEmptyLines:true}).data;
 };
 
 function writeCSV(jsonCSV, filename){
@@ -58,7 +100,7 @@ var writeERP = function(erp, labels, filename, fixed) {
 };
 
 var supportWriter = function(s, p, handle) {
-  var sLst = _.pairs(s);
+  var sLst = _.toPairs(s);
   var l = sLst.length;
 
   for (var i = 0; i < l; i++) {
@@ -69,11 +111,11 @@ var supportWriter = function(s, p, handle) {
 // Note this is highly specific to a single type of erp
 var bayesianErpWriter = function(erp, filePrefix) {
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');
-  fs.writeSync(predictiveFile, ["condition", "object1Name", "object2Name", "object3Name", "object4Name", 
-				"value", "prob", "MCMCprob"] + '\n');
+  fs.writeSync(predictiveFile, ["condition", "Target", "Distractor1", "Distractor2", "Distractor3", 
+				"value", "prob", "posteriorProb"] + '\n');
 
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
-  fs.writeSync(paramFile, ["parameter", "value", "MCMCprob"] + '\n');
+  fs.writeSync(paramFile, ["alpha", "typWeight", "costWeight", "logLikelihood", "posteriorProb"] + '\n');
 
   var supp = erp.support();
   supp.forEach(function(s) {
@@ -97,6 +139,7 @@ var locParse = function(filename) {
 };
 
 module.exports = {
-  getSimilarities, getPossibleSketches, getSubset, 
+  getSimilarities, getPossibleSketches, getCosts, getSubset,
+  getL0score, getS1score, getS0score,
   bayesianErpWriter, writeERP, writeCSV, readCSV, locParse
 };
