@@ -5,8 +5,9 @@ var babyparse = require('babyparse');
 // var es = require('event-stream');
 
 var getSimilarities = function(name) {
-  return {'strict' : require('./json/strict-similarity.json'),
-	  'nonstrict' : require('./json/nonstrict-similarity.json')};
+  return {'strict-high' : require('./json/strict-similarity.json'),
+//	  'nonstrict-high' : require('./json/nonstrict-similarity.json'),
+	  'early' : require('./json/early-similarity.json')};  
 };
 
 var getCosts = function(name) {
@@ -22,10 +23,43 @@ var getL0score = function(target, sketch, context, params) {
   var similarities = params.similarities[params.similarityMetric];
   var sum = 0;
   for(var i=0; i<context.length; i++){
-    sum += Math.exp(similarities[context[i]][sketch]);
+    sum += Math.exp(params.simScale * similarities[context[i]][sketch]);
   }
-  return Math.log(Math.exp(similarities[target][sketch]) / sum);
+  return Math.log(Math.exp(params.simScale * similarities[target][sketch])) - Math.log(sum);
 };
+
+var getS1score = function(trueSketch, targetObj, context, params) {
+  var possibleSketches = params.possibleSketches;
+  var sum = 0;
+  for(var i=0; i<possibleSketches.length; i++){
+    var sketch = possibleSketches[i];
+    var inf = getL0score(targetObj, sketch, context, params);
+    var cost = params.costs[sketch][0];
+    var utility = (1-params.costWeight) * inf - params.costWeight * cost;
+    sum += Math.exp(params.alpha * utility);
+  }
+  var trueUtility = ((1-params.costWeight) * getL0score(targetObj, trueSketch, context, params)
+		     - params.costWeight * params.costs[trueSketch][0]);
+  
+  return Math.log(Math.exp(params.alpha * trueUtility)) - Math.log(sum);
+}
+
+var getS0score = function(trueSketch, targetObj, params) {
+  var possibleSketches = params.possibleSketches;
+  var similarities = params.similarities[params.similarityMetric];  
+  var sum = 0;
+  for(var i=0; i<possibleSketches.length; i++){
+    var sketch = possibleSketches[i];
+    var inf = similarities[targetObj][sketch];
+    var cost = params.costs[sketch][0];
+    var utility = (1-params.costWeight) * inf - params.costWeight * cost;
+    sum += Math.exp(params.alpha * utility);
+  }
+  var trueUtility = ((1-params.costWeight) * similarities[targetObj][trueSketch]
+		     - params.costWeight * params.costs[trueSketch][0]);
+  
+  return Math.log(Math.exp(params.alpha * trueUtility)) - Math.log(sum);
+}
 
 // console.log(getDistance('cars_07_hatchback_0038.npy',
 // 			'gameID_2848-1779ba4d-c84b-4050-8a1f-e4b733ceb6a7_trial_9.npy',
@@ -33,7 +67,7 @@ var getL0score = function(target, sketch, context, params) {
 
 function readCSV(filename){
   return babyparse.parse(fs.readFileSync(filename, 'utf8'),
-			 {header:true}).data;
+			 {header:true, skipEmptyLines:true}).data;
 };
 
 function writeCSV(jsonCSV, filename){
@@ -106,6 +140,6 @@ var locParse = function(filename) {
 
 module.exports = {
   getSimilarities, getPossibleSketches, getCosts, getSubset,
-  getL0score,
+  getL0score, getS1score, getS0score,
   bayesianErpWriter, writeERP, writeCSV, readCSV, locParse
 };
