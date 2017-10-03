@@ -2,17 +2,16 @@
 // webppl BDA.wppl --require ./refModule/
 
 // Load in experimental data to condition on
-var data = refModule.readCSV("./bdaInput/sketch_data.csv");
-var conditions = refModule.readCSV("./bdaInput/unique_conditions.csv");
+var data = refModule.readCSV("./bdaInput/sketch_data_far_only.csv");
+var conditions = refModule.readCSV("./bdaInput/unique_conditions_far_only.csv");
 console.log("Loading expt data complete..."
 	    + data.length + " data points in "
 	    + conditions.length + ' contexts');
 
 // Cache some properties of model
 // Note: when moving to model comparison, can precache for all models...
-var modelVersion = 'out_formatted';
 var similarities = refModule.getSimilarities();
-var costs = refModule.getCosts(modelVersion);
+var costs = refModule.getCosts();
 var possibleSketches = refModule.getPossibleSketches(costs);
 console.log("Loading model data complete..."
 	    + possibleSketches.length + " sketches of " +
@@ -20,21 +19,23 @@ console.log("Loading model data complete..."
 
 // Package into config
 var globalConfig = {
-  modelVersion, similarities, possibleSketches, costs,
+  similarities, possibleSketches, costs,
   storePredictives : false,  
   outputFileName : 'testing'
 };
 
 var modelAnalysis = function() {
+  var similarityMetric = uniformDraw(['nonstrict-high', 'early']);
+  var speakerModel = uniformDraw(['S1', 'S0']);
+  
   var params = {
-    similarityMetric: uniformDraw(['strict', 'nonstrict']),
-    speakerModel: uniformDraw(['S1', 'S0']),    
-    alpha : uniformDraw([0.5, 1, 2, 5, 10]),
-    typWeight : 1, //uniformDraw([0.5, 1, 2]),
-    costWeight : uniformDraw([0, .1, .2, .3, .5]) // Not using cost yet
+    similarityMetric, speakerModel,
+    alpha : uniformDraw(_.range(0.5, 10, 0.5)),//.toFixed(1), //[0.5, 1, 2, 5]),
+    simScale : speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)),//.toFixed(1),//1, 2, 5])),
+    costWeight : uniformDraw(_.range(0, 1, 0.1))//.toFixed(1)//[0, .1, .2, .3, .4]) 
   };
   
-  var model = initializeModel(extend(params, globalConfig))[params.speakerModel];
+  //var model = initializeModel(extend(params, globalConfig))[params.speakerModel];
   var score = reduce(function(c, memo) {
     // Extract condition information
     var conditionType = c.condition;
@@ -43,7 +44,7 @@ var modelAnalysis = function() {
 
     // Run model
     
-    var modelOutput = model(target, context);
+    // var modelOutput = model(target, context);
     // Store predives
     // if(globalConfig.storePredictives) {
     //   foreach(modelOutput.support(), function(s){
@@ -54,11 +55,15 @@ var modelAnalysis = function() {
     // }
     
     // condition on data
-    var itemData = refModule.getSubset(data, c);
-    return memo + reduce(function(datum, memo) {
-      return memo + modelOutput.score(datum.sketchLabel);
-    }, 0, itemData);
-  }, 0, conditions);    
+    // var itemData = refModule.getSubset(data, c);
+//    return memo + reduce(function(datum, memo) {
+    var p = extend(params, globalConfig);
+    var score = (params.speakerModel == 'S1' ?
+		 refModule.getS1score(c.sketchLabel, target, context, p) :
+		 refModule.getS0score(c.sketchLabel, target, p));
+    return memo + score;
+//    }, 0, itemData);
+  }, 0, data);    
 
   console.log(params);
   console.log(score);
