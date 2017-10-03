@@ -5,8 +5,8 @@ var babyparse = require('babyparse');
 // var es = require('event-stream');
 
 var getSimilarities = function(name) {
-  return {'strict-high' : require('./json/strict-similarity.json'),
-//	  'nonstrict-high' : require('./json/nonstrict-similarity.json'),
+  return {//'strict-high' : require('./json/strict-similarity.json'),
+	  'nonstrict-high' : require('./json/nonstrict-similarity.json'),
 	  'early' : require('./json/early-similarity.json')};  
 };
 
