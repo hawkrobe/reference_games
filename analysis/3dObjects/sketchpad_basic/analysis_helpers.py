@@ -1,11 +1,15 @@
 import os
 import json
+import numpy as np
 
 exp_path = '3dObjects/sketchpad_basic'
 exp_dir = os.path.abspath(os.path.join(os.getcwd(),'../../..','experiments',exp_path))
 
-def get_summary_stats(D, all_games):
-    all_games = np.unique(D['gameID'])
+def get_summary_stats(_D, all_games, correct_only=True):
+    '''
+    Get summary stats for sketchpad_basic experiment. 
+    If correct_only is True, then filter to only include correct trials... except when calculating accuracy, which considers all trials.
+    '''
     further_strokes = []
     closer_strokes = []
     further_svgLength = []
@@ -18,9 +22,18 @@ def get_summary_stats(D, all_games):
     closer_drawDuration = []
     further_accuracy = []
     closer_accuracy = []
+    further_pixelintensity = []
+    closer_pixelintensity = []
     for game in all_games:    
-        further_strokes.append(D[(D['gameID']== game) & (D['condition'] == 'further')]['numStrokes'].mean())
-        closer_strokes.append(D[(D['gameID']== game) & (D['condition'] == 'closer')]['numStrokes'].mean())
+        if correct_only:
+            D = _D[_D['outcome']==1]
+        else:
+            D = _D
+        thresh = np.mean(D['numStrokes'].values) + 3*np.std(D['numStrokes'].values)
+        tmp = D[(D['gameID']== game) & (D['condition'] == 'further') & (D['numStrokes'] < thresh)]['numStrokes']            
+        further_strokes.append(tmp.mean())        
+        tmp = D[(D['gameID']== game) & (D['condition'] == 'closer') & (D['numStrokes'] < thresh)]['numStrokes']
+        closer_strokes.append(tmp.mean())
         further_svgLength.append(D[(D['gameID']== game) & (D['condition'] == 'further')]['svgStringLength'].mean())
         closer_svgLength.append(D[(D['gameID']== game) & (D['condition'] == 'closer')]['svgStringLength'].mean())
         further_svgStd.append(D[(D['gameID']== game) & (D['condition'] == 'further')]['svgStringStd'].mean())
@@ -29,19 +42,24 @@ def get_summary_stats(D, all_games):
         closer_svgLengthPS.append(D[(D['gameID']== game) & (D['condition'] == 'closer')]['svgStringLengthPerStroke'].mean())
         further_drawDuration.append(D[(D['gameID']== game) & (D['condition'] == 'further')]['drawDuration'].mean())
         closer_drawDuration.append(D[(D['gameID']== game) & (D['condition'] == 'closer')]['drawDuration'].mean())
-        further_accuracy.append(D[(D['gameID']== game) & (D['condition'] == 'further')]['outcome'].mean())
-        closer_accuracy.append(D[(D['gameID']== game) & (D['condition'] == 'closer')]['outcome'].mean())
+        further_accuracy.append(_D[(_D['gameID']== game) & (_D['condition'] == 'further')]['outcome'].mean())
+        closer_accuracy.append(_D[(_D['gameID']== game) & (_D['condition'] == 'closer')]['outcome'].mean())
+        further_pixelintensity.append(D[(D['gameID']== game) & (D['condition'] == 'further')]['mean_intensity'].mean())
+        closer_pixelintensity.append(D[(D['gameID']== game) & (D['condition'] == 'closer')]['mean_intensity'].mean())
 
     further_strokes, closer_strokes, further_svgLength, closer_svgLength, \
     further_svgStd, closer_svgStd, further_svgLengthPS, closer_svgLengthPS, \
-    further_drawDuration, closer_drawDuration, further_accuracy, closer_accuracy = map(np.array, \
+    further_drawDuration, closer_drawDuration, further_accuracy, closer_accuracy, \
+    further_pixelintensity, closer_pixelintensity = map(np.array, \
     [further_strokes, closer_strokes, further_svgLength, closer_svgLength,\
      further_svgStd, closer_svgStd, further_svgLengthPS, closer_svgLengthPS, \
-    further_drawDuration, closer_drawDuration, further_accuracy, closer_accuracy])
+    further_drawDuration, closer_drawDuration, further_accuracy, closer_accuracy, \
+    further_pixelintensity, closer_pixelintensity])
     
     return further_strokes, closer_strokes, further_svgLength, closer_svgLength,\
      further_svgStd, closer_svgStd, further_svgLengthPS, closer_svgLengthPS, \
-    further_drawDuration, closer_drawDuration, further_accuracy, closer_accuracy
+    further_drawDuration, closer_drawDuration, further_accuracy, closer_accuracy, \
+    further_pixelintensity, closer_pixelintensity
     
 def get_canonical(category):    
     stimFile = os.path.join(exp_dir,'stimList_subord.js')

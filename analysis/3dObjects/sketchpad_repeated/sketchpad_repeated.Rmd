@@ -8,7 +8,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggthemes)
 library(lme4)
-library(langcog)
 ```
 
 ## Import group data
@@ -16,7 +15,7 @@ library(langcog)
 
 
 ```{r}
-d <- read_csv('data/3dObjects/sketchpad_repeated/group_data.csv') %>%
+d <- read_csv('/Users/judithfan/reference_games/data/3dObjects/sketchpad_repeated/group_data.csv') 
   
 ```
 
@@ -75,15 +74,15 @@ d %>%
   filter(condition == 'repeated') %>%
   filter(!(gameID %in% crazies)) %>%
   group_by(repetition, target, gameID) %>%
-  summarize(svgStringLength = mean(svgStringLength)) %>%
-  ggplot(aes(x = repetition, y = svgStringLength, group=interaction(gameID, target))) +
+  summarize(numStrokes = mean(numStrokes)) %>%
+  ggplot(aes(x = repetition, y = numStrokes, group=interaction(gameID, target))) +
     geom_line(alpha=.3) +
     geom_smooth(aes(group = 1), method ='loess') +
     theme_few() +
     xlab('# repetitions') +
     ylab('# strokes') +
     ggtitle('Reduction per target per game') +
-  ylim(0, 2500) +
+  ylim(0, 30) +
   theme(aspect.ratio = 1)
 ```
 
@@ -109,12 +108,13 @@ d.toplot <- d %>%
   # We don't know why but that 
   filter(gameID != "2904-d5fa6f4a-24e1-4568-b0ed-fb01ad503ed3") %>%
   group_by(phase, condition) %>%
-  summarize(len = mean(svgStringLength))
+  summarize(len = mean(numStrokes), se=sd(numStrokes)/sqrt(length(numStrokes)))
 
 # d.toplot %>%
 #   spread(condition, m) %>%
 ggplot(d.toplot, aes(x = phase, y = len, color = condition)) + #, linetype = condition, color=condition)) +
-  geom_line(aes(group = condition)) +
+  geom_line(aes(group = condition)) + 
+  geom_errorbar(aes(ymin=len-se,ymax=len+se), width=0) +
   #geom_text(aes(gameID))
   theme_few() +
   theme(aspect.ratio = 1) 
