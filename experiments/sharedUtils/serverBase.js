@@ -15,9 +15,29 @@ class ReferenceGameServer {
     this.game_count = 0;
   }
 
-  startGame (game) {
-    game.newRound();
-  }
+  // if game relies on asynchronous stim logic, need to wait until everything
+  // is fetched before starting game (otherwise race conditions)
+  startGame(game) {
+    if(game.experimentName == 'chairs_chatbox') {
+      sendPostRequest('http://localhost:4000/db/getstims', {
+	json: {dbname: 'stimuli', colname: 'chairs1k',
+	       numRounds: game.numRounds, gameid: game.id}
+      }, (error, res, body) => {
+	if(!error && res.statusCode === 200) {
+      	  game.stimList = _.shuffle(body);
+      	  game.trialList = game.makeTrialList();
+	} else {
+	  console.log(`error getting stims: ${error} ${body}`);
+	  console.log(`falling back to local stimList`);
+	  var closeFamilies = require('./stimList_chairs').closeByFamily;
+	  game.stimList = _.flatten(_.sampleSize(closeFamilies, game.numRounds));
+	  game.trialList = game.makeTrialList();
+	}
+	game.newRound();
+      });
+    } else {
+      game.newRound();
+    }
 
   /*
     Writes data specified by experiment instance to csv and/or mongodb
