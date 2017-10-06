@@ -110,7 +110,7 @@ function serve() {
 
       // hardcoded for now (TODO: get list of collections in db)
       var collectionList = ['sketchpad_basic','sketchpad_repeated',
-			    'chatbox_basic', 'chairs_chatbox',
+			    'chatbox_basic', //'chairs_chatbox',
 			    'artificialLanguage']; 
 
       function checkCollectionForHits(collectionName, query, projection, callback) {
