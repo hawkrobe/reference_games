@@ -38,7 +38,7 @@ class ReferenceGameServer {
     } else {
       game.newRound();
     }
-
+  }
   /*
     Writes data specified by experiment instance to csv and/or mongodb
   */
