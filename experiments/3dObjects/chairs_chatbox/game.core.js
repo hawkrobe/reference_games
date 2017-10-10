@@ -31,7 +31,7 @@ var game_core = function(options){
   this.email = 'sketchloop@gmail.com';
   this.projectName = '3dObjects';
   this.experimentName = 'chairs_chatbox';
-  this.iterationName = 'close_only';
+  this.iterationName = 'chairs1k';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
