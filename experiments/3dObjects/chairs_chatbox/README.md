@@ -1,3 +1,16 @@
+
+October 10 2017
+
+Notes on Chairs1K production run 
+
+1. approx 6K unique trials, aiming to hit each twice
+
+2. First batch of chairs1k was run under iterationName=‘close_only’
+Dates: Monday, October 9, 2017 - Tuesday, October 10, 2017
+Can identify trials to include in chairs1k dataset by filtering db for submissions with timestamps exceeding 1507674252874
+new iterationName = ‘chairs1k’
+
+
 July 7 2017
 "Chairs chatbox" experiment:
 
