@@ -63,17 +63,49 @@ Communication is central to the success of our species: it allows us to learn fr
 
 \section*{Introduction}
 
-Communication is central to the success of our species: it allows us to learn from each other, coordinate our actions, and express otherwise hidden thoughts. Critically, human communication goes beyond vocal production --- humans also express their ideas in visible, durable forms. From ancient etchings on cave walls to modern digital displays, visual communication lies at the heart of key human innovations (e.g., writing, mathematics, navigation), and forms the foundation for the cultural transmission of knowledge and higher-level reasoning. 
+% high level
+Communication is central to the success of our species: it allows us to learn from each other, coordinate our actions, and express otherwise hidden thoughts. Critically, human communication goes beyond language production --- humans also express their ideas in visual form. Visual communication lies at the heart of key innovations, and forms the foundation for the cultural transmission of knowledge and higher-level reasoning. Drawing is perhaps the most direct and basic form of visual communication. We perceive drawings of objects as resembling physical objects in spite of the fact that drawings and objects are profoundly different in composition.
 
-Drawing --- an activity in which a person produces visual marks that yield an image  --- is perhaps the most direct and basic form of \textit{visual production}. While drawings of objects and scenes are not identical to their physical referents, they are often just as effective for evoking their real-world counterparts in human viewers \cite[]{biederman1988surface,walther2011simple}. In the appropriate context, even a few strokes can express the identity of a face \cite[]{bergmann2013impact}, a suggested route \cite[]{agrawala2001rendering}, or an intention to act \cite[]{Galantucci:2005uh}. Conventionalized representations such as maps, graphs, and diagrams can transmit high-dimensional data and convey complex ideas by recombining relatively few geometric primitives, such as boxes, lines, arrows, ellipses \cite[]{tversky2000lines}. Despite the ubiquity and importance of such visualizations, we lack a unified computational theory of how human perception, action, and social inference are integrated to support visual communication across different contexts.
+In the appropriate context, even a few strokes can express the identity of a face \cite[]{bergmann2013impact}, a suggested route \cite[]{agrawala2001rendering}, or an intention to act \cite[]{Galantucci:2005uh}. Conventionalized representations such as maps, graphs, and diagrams can transmit high-dimensional data and convey complex ideas by recombining relatively few geometric primitives, such as boxes, lines, arrows, ellipses \cite[]{tversky2000lines}. Despite the ubiquity and importance of such visualizations, we lack a unified computational theory of how human perception, action, and social inference are integrated to support flexible visual communication.
 
-Features learned by deep convolutional neural network models (DCNNs) have recently been shown to successfully capture the abstract semantic properties of drawings of objects \cite[]{fan2015common,yamins2014performance}. However, many drawings that people use to communicate are quite selective, emphasizing information that is most relevant in the current context, and omitting irrelevant details. 
+Communicative uses of drawing pose a core challenge for theories of vision and communication alike: they require a detailed understanding of how sensory information is encoded, how social context guides what information is relevant to communicate, and estimating the costs of visual production. In this paper, we meet this challenge by combining high-performing models of sensory representation from deep learning with insights from Bayesian cognitive models of social reasoning in language. 
 
-Communicative uses of drawing pose a core challenge for theories of vision and communication alike: they require a detailed understanding of how sensory information is encoded, how social context guides what information is relevant to communicate, and how extended interaction between agents shapes the visual conventions that form. We propose that the key to solving this challenge is to combine high-performing models of sensory representation from deep learning with insights from Bayesian cognitive models of social reasoning in language. This novel synthesis will provide fundamental and novel insights into the core computations that connect perception, action, and social cognition to support visual communication.
+There is now abundant and converging evidence that deep convolutional neural networks (DCNNs) optimized to recognize objects in natural photographs can learn general-purpose feature representations that support a wide variety of visual tasks, including but not limited to object categorization, segmentation, and pose/size estimation \cite[]{hong2016explicit,he2017mask}.
 
-Rational speech act (RSA) models provide a probabilistic framework for deriving linguistic behavior from general principles of social cognition \cite[for a recent review]{GoodmanFrank16_RSATiCS}. These models draw on ideas and insights from decision theory, probabilistic models of cognition, bounded rationality, and linguistics, taking particular inspiration from the insights of Paul Grice (\citeyear{Grice75_LogicConversation}), who provided a philosophical framework for understanding how natural language use reflects exquisite social reasoning in context. Gricean listeners assume speakers are cooperative, choosing appropriately informative utterances to convey particular meanings. Under this assumption, listeners attempt to infer the speaker's intended communicative goal, working backwards from the form of the utterance. RSA models formalizing this core idea in terms of Bayesian inference have provided unified explanations for a variety of complex linguistic patterns, achieved good quantitative fits with experimental data, and been incorporated into artificial agents that communicate with each other to solve real-world tasks.
+% recent successes learning general visual features, but these inherently acontextual
+In particular, despite the fact that drawings are highly abstracted away from natural visual inputs, a relatively modest amount of `fine-tuning' of models previously trained only on photos has been shown to lead to human-level performance on sketch categorization \cite[]{yu2015sketch}, as well as vast improvements in discerning image-level correspondences between sketches and photos \cite[]{sangkloy2016sketchy}. Even without fine-tuning, prior work has shown a striking isomorphism in the representations of object categories in drawings and photos at higher layers in these models \cite[]{fan2015common}. As such, models from this architecture class are a strong candidate for an encoder that can support the level visual abstraction required for representing abstract information in drawings.
 
-At the core of the RSA framework is the Gricean proposal that speakers produce utterances, $u$, that are parsimonious yet informative about the state of the world. More generally, RSA formalizes a speaker, $\mathcal{S}$, as a decision-theoretic agent who selects utterances, $u$, by (soft) maximizing their utility function, $U$, given a particular state of the world, $w$: 
+However, these visual feature representations are inherently acontextual, and cannot explain why people might use one drawing to communicate an idea in one context (e.g., XX), and a different drawing in another context (e.g., XX). Rational Speech Act (RSA) models provide a probabilistic framework for deriving communicative flexibility from general principles of social cognition \cite{GoodmanFrank16_RSATiCS}. These models draw on ideas and insights from decision theory, probabilistic models of cognition, bounded rationality, and linguistics, taking particular inspiration from the insights of Paul Grice (\citeyear{Grice75_LogicConversation}), who provided a philosophical framework for understanding how natural language use reflects exquisite social reasoning in context. Gricean listeners assume speakers are cooperative, choosing appropriately informative utterances to convey particular meanings. Under this assumption, listeners attempt to infer the speaker's intended communicative goal, working backwards from the form of the utterance. RSA models formalizing this core idea in terms of Bayesian inference have provided unified explanations for a variety of complex linguistic patterns, achieved good quantitative fits with experimental data, and been incorporated into artificial agents that communicate with each other to solve real-world tasks.
+
+Previous work has shown that RSA models account for context sensitivity in human speakers \cite[]{GrafEtAl16_BasicLevel}. For instance, if a speaker needs to refer to a Dalmatian that appears alongside a poodle and a bear, the model predicts that this speaker will prefer the more specific utterance (``Dalmatian'') to the shorter and lower-cost basic-level utterance (``dog''). This is because the literal meaning of the word ``dog'' fits both the Dalmatian and poodle, whereas the word ``Dalmatian'' only fits the Dalmatian. Consequently, the speaker model reasons that ``Dalmatian'' is more informative. By using the word ``Dalmatian'', the speaker encourages the listener to infer the single correct world state (i.e., the target is the Dalmatian) instead of allowing two world states to seem probable, one of which is incorrect (i.e., the target is the poodle). In a context where there is only one dog, however, the speaker will prefer to say ``dog'', which is as informative as ``Dalmatian'' but is less costly to produce. 
+
+\section*{Methods}
+
+\subsection*{Participants}
+
+A total of 206 unique participants, who were recruited via Amazon Mechanical Turk (AMT) and grouped into pairs, completed the experiment. 3 pairs were excluded because the sketcher in these pairs did not follow instructions, having annotated their sketches with text. 
+
+\subsection*{Stimuli}
+
+Stimuli were 3D mesh models of objects belonging to four categories (i.e., birds, chairs, cars, dogs), containing eight objects each. Forty color images of each object were produced by rendering it from a 10$^{\circ}$ viewing angle (i.e., slightly above) at a fixed distance on a gray background, each rotated by an additional 9$^{\circ}$ about the vertical axis. 
+
+\subsection*{Task}
+
+Drawings were collected in the context of an online, sketching-based reference game (``Guess My Sketch!''). The game involved two players: a \textit{sketcher} who aims to help a \textit{viewer} pick out a target object from an array of alternative, distractor objects by representing it in a sketch. 
+
+On each trial, both participants were shown an array of the same four objects; however, the positions of these objects were randomized for each participant. On each trial, one of the four objects was highlighted on the sketcher's screen to designate it as the target. 
+
+Objects were grouped into eight quartets: Four of these quartets contained objects from the same category (``close''); the other four of these quartets contained objects from different categories (``far''). Each quartet was presented four times, such that each object in the quartet served as the target exactly once.
+
+Sketchers drew using black ink on digital canvas (pen width = 5 pixels; 300 x 300 pixels) embedded in a web browser window using Paper.js (http://paperjs.org/). Participants drew using the mouse cursor, and were not able to delete previous strokes. Each stroke of which was rendered on the viewer's screen immediately upon the completion of each stroke. There were no restrictions on how long participants could take to make their drawings. After clicking a submit button, the viewer guessed the identity of the drawn object by clicking one of the four objects in the array. Otherwise, the viewer had no other means of communicating with the sketcher. Both participants received immediate task-related feedback: the sketcher learned which object the viewer had clicked, and the viewer learned the identity of the target. Both participants earned bonus points for each correct response. 
+
+\subsection*{Modeling}
+
+\subsubsection*{Visual encoding module}
+
+\subsubsection*{Social inference module}
+
+To instantiate communicative flexibility in context, we employ the Rational Speech Act (RSA) modeling framework. At the core of the RSA framework is the Gricean proposal that speakers produce utterances, $u$, that are parsimonious yet informative about the state of the world. More generally, RSA formalizes a speaker, $\mathcal{S}$, as a decision-theoretic agent who selects utterances, $u$, by (soft) maximizing their utility function, $U$, given a particular state of the world, $w$: 
 
 \begin{equation}
 \mathcal{S}(u|w) \propto e^{\alpha U(u,w)}
@@ -94,27 +126,6 @@ This speaker $\mathcal{S}$ is \emph{pragmatic} because they consider informativi
 \mathcal{L}(w|u) \propto L(u,w)
 \end{equation}
 
-Previous work has shown that RSA models account for context sensitivity in human speakers \cite[]{GrafEtAl16_BasicLevel}. For instance, if a speaker needs to refer to a Dalmatian that appears alongside a poodle and a bear, the model predicts that this speaker will prefer the more specific utterance (``Dalmatian'') to the shorter and lower-cost basic-level utterance (``dog''). This is because the literal meaning of the word ``dog'' fits both the Dalmatian and poodle, whereas the word ``Dalmatian'' only fits the Dalmatian. Consequently, the speaker model reasons that ``Dalmatian'' is more informative. By using the word ``Dalmatian'', the speaker encourages the listener to infer the single correct world state (i.e., the target is the Dalmatian) instead of allowing two world states to seem probable, one of which is incorrect (i.e., the target is the poodle). In a context where there is only one dog, however, the speaker will prefer to say ``dog'', which is as informative as ``Dalmatian'' but is less costly to produce. 
-
-\section*{Methods}
-
-\subsection*{Participants}
-
-A total of 208 unique participants, who were recruited via Amazon Mechanical Turk (AMT) and grouped into pairs, completed the experiment. 4 pairs were excluded because the sketcher in these pairs did not follow instructions, annotating their sketches with text. 
-
-\subsection*{Stimuli}
-
-Stimuli were 3D mesh models of objects belonging to four categories (i.e., birds, chairs, cars, dogs), containing eight objects each. Forty images of each object were produced by rendering it from a 10$^{\circ}$ viewing angle (i.e., slightly above) at a fixed distance on a gray background, each rotated by an additional 9$^{\circ}$ about the vertical axis. 
-
-\subsection*{Task}
-
-Drawings were collected in the context of an online, sketching-based reference game (``Guess My Sketch!''). The game involved two players: a \textit{sketcher} who aims to help a \textit{viewer} pick out a target object from an array of alternative, distractor objects by representing it in a sketch. 
-
-On each trial, both participants were shown an array of the same four objects; however, the positions of these objects were randomized for each participant. On each trial, one of the four objects was highlighted on the sketcher's screen to designate it as the target. 
-
-Objects were grouped into eight quartets: Four of these quartets contained objects from the same category (``close''); the other four of these quartets contained objects from different categories (``far''). Each quartet was presented four times, such that each object in the quartet served as the target exactly once.
-
-Sketchers drew using black ink on digital canvas (pen width = 5 pixels; 500 x 500 pixels) embedded in a web browser window using Paper.js (http://paperjs.org/). Participants drew  using the mouse cursor, and were not able to delete previous strokes. Each stroke of which was rendered on the viewer's screen immediately upon the completion of each stroke. There were no restrictions on how long participants could take to make their drawings. After clicking a submit button, the viewer guessed the identity of the drawn object by clicking one of the four objects in the array. Otherwise, the viewer had no other means of communicating with the sketcher. Both participants received immediate feedback: the sketcher learned which object the viewer had clicked, and the viewer learned the identity of the target. Both participants earned bonus points for each correct response. 
 
 \section*{Results}
 
@@ -122,7 +133,9 @@ Sketchers drew using black ink on digital canvas (pen width = 5 pixels; 500 x 50
 
 \subsection*{Task performance}
 
-\subsection*{Sketches}
+\subsection*{Properties of sketches}
+
+\subsection*{Bayesian data analysis}
 
 
 
