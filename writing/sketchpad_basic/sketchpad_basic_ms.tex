@@ -87,17 +87,15 @@ A total of 206 unique participants, who were recruited via Amazon Mechanical Tur
 
 \subsection*{Stimuli}
 
-Stimuli were 3D mesh models of objects belonging to four categories (i.e., birds, chairs, cars, dogs), containing eight objects each. Forty color images of each object were produced by rendering it from a 10$^{\circ}$ viewing angle (i.e., slightly above) at a fixed distance on a gray background, each rotated by an additional 9$^{\circ}$ about the vertical axis. 
+Stimuli were 32 3D mesh models of objects belonging to 4 categories (i.e., birds, chairs, cars, dogs), containing eight objects each. 40 color images of each object were produced by rendering it from a 10$^{\circ}$ viewing angle (i.e., slightly above) at a fixed distance on a gray background, each rotated by an additional 9$^{\circ}$ about the vertical axis. 
 
 \subsection*{Task}
 
-Drawings were collected in the context of an online, sketching-based reference game (``Guess My Sketch!''). The game involved two players: a \textit{sketcher} who aims to help a \textit{viewer} pick out a target object from an array of alternative, distractor objects by representing it in a sketch. 
-
-On each trial, both participants were shown an array of the same four objects; however, the positions of these objects were randomized for each participant. On each trial, one of the four objects was highlighted on the sketcher's screen to designate it as the target. 
-
-Objects were grouped into eight quartets: Four of these quartets contained objects from the same category (``close''); the other four of these quartets contained objects from different categories (``far''). Each quartet was presented four times, such that each object in the quartet served as the target exactly once.
+Drawings were collected in the context of an online, sketching-based reference game (``Guess My Sketch!''). The game involved two players: a \textit{sketcher} who aims to help a \textit{viewer} pick out a target object from an array of alternative, distractor objects by representing it in a sketch. On each trial, both participants were shown an array of the same four objects; however, the positions of these objects were randomized for each participant. On each trial, one of the four objects was highlighted on the sketcher's screen to designate it as the target. 
 
 Sketchers drew using black ink on digital canvas (pen width = 5 pixels; 300 x 300 pixels) embedded in a web browser window using Paper.js (http://paperjs.org/). Participants drew using the mouse cursor, and were not able to delete previous strokes. Each stroke of which was rendered on the viewer's screen immediately upon the completion of each stroke. There were no restrictions on how long participants could take to make their drawings. After clicking a submit button, the viewer guessed the identity of the drawn object by clicking one of the four objects in the array. Otherwise, the viewer had no other means of communicating with the sketcher. Both participants received immediate task-related feedback: the sketcher learned which object the viewer had clicked, and the viewer learned the identity of the target. Both participants earned bonus points for each correct response. 
+
+For each pair, objects were grouped into eight quartets: Four of these quartets contained objects from the same category (``close'' condition); the other four of these quartets contained objects from different categories (``far'' condition). Each quartet was presented four times, such that each object in the quartet served as the target exactly once. The assignment of objects to quartet and condition was randomized across pairs. 
 
 \subsection*{Modeling}
 
@@ -105,31 +103,36 @@ Sketchers drew using black ink on digital canvas (pen width = 5 pixels; 300 x 30
 
 \subsubsection*{Social inference module}
 
-To instantiate communicative flexibility in context, we employ the Rational Speech Act (RSA) modeling framework. At the core of the RSA framework is the Gricean proposal that speakers produce utterances, $u$, that are parsimonious yet informative about the state of the world. More generally, RSA formalizes a speaker, $\mathcal{S}$, as a decision-theoretic agent who selects utterances, $u$, by (soft) maximizing their utility function, $U$, given a particular state of the world, $w$: 
+To instantiate communicative flexibility in context, we generalize the Rational Speech Act (RSA) modeling framework, originally developed for linguistic communication. At the core of the RSA framework, as applied to linguistic communication, is the Gricean proposal that speakers aim to produce utterances that are concise yet informative. We adapt this proposal to visual communication by assuming that sketchers also aim to produce drawings that are both simple and informative. 
+
+Formally, the sketcher, $\mathcal{S}$, is a decision-theoretic agent who produces drawings, $d$, by (soft) maximizing their utility function, $U$, given a particular object referent, $o$: 
 
 \begin{equation}
-\mathcal{S}(u|w) \propto e^{\alpha U(u,w)}
+\mathcal{S}(d|o) \propto e^{\alpha U(d,o)}
 \end{equation}
 
-Here, $\alpha$ is a softmax parameter. As $\alpha \rightarrow \infty$, the speaker approaches the optimal maximizing policy. 
+Here, $\alpha$ is a softmax parameter. As $\alpha \rightarrow \infty$, the sketcher approaches the optimal maximizing policy. 
 
-In the simplest RSA models, the speaker's utility function, $U$, trades off the extent to which the utterance is informative to the listener and the cost of producing the utterance, $C(u)$. This notion of informativity is defined as the reduction in the listener's uncertainty, and measured using the negative surprisal of the true state of the world given an utterance:
+The sketcher's utility function, $U$, trades off the extent to which the drawing is informative to the viewer, $\mathcal{V}$, and the cost of producing the drawing, $C(d)$. This notion of informativity is defined by the (natural log) probability that a viewer would select the true object referent given the drawing and current context:
 
-\begin{equation}
-U(u;w) = \ln L(w|u) - C(u)
+\begin{equation} \label{sketcher_utility}
+U(d, o) = \ln \mathcal{V}(o|d) - C(d)
 \end{equation}
-% \ndg{fix notation: script L? JEF: trying to use script L and S for Listener and Speaker, by analogy with script V and S for Viewer and Sketcher below.}
 
-This speaker $\mathcal{S}$ is \emph{pragmatic} because they consider informativity in terms of a rational listener agent ($\mathcal{L}$) who updates their beliefs about the world according to the literal semantics of the language ($L$). This \emph{literal listener} is able to assess the truth value of a sentence for each possible world, thus connecting tokens of their language to features of the external world:
+This sketcher $\mathcal{S}$ is \emph{pragmatic} because they evaluate informativity by considering rational viewer agent ($\mathcal{V}$) who assigns a score to the correspondence between the drawing and each object that is proportional to the perceptual similarity, $P$, between the drawing and each potential object referent in context:
 
-\begin{equation}
-\mathcal{L}(w|u) \propto L(u,w)
+\begin{equation} \label{literal_viewer_score}
+\mathcal{V}(o|d) \propto P_{o,d}
 \end{equation}
+
+To compute these perceptual similarity scores, the sketcher agent (who can also view the sketch and objects) extracts a feature vector representation from each of the target and distractor objects using the fixed visual encoder, and computes the distances between each of these vectors and the potential sketches it could produce. 
+
+This has the effect of biasing the model to depict properties of the target object that distinguish it from the distractors, while also preferring sketches that are less costly to produce, $C(d)$, i.e., requiring fewer strokes or less ink.
 
 
 \section*{Results}
 
-% We collected stroke-by-stroke svg strings produced by the sketcher on every trial, as well as the viewer's selection among the objects. We operationalize the notion of `simplicity' through a small set of derived stroke-level measures. First, we expect the raw number of strokes per trial to be higher in the close condition than the far condition. Second, we expect the the length of the svg string to be higher in the close condition than the far condition, which should be correlated with raw number of strokes but accounts for the complexity of each stroke. Finally, we will conduct a range of model-based analyses using features extracted from modern convolutional neural networks to rigorously evaluate pragmatic and non-pragmatic accounts of communication under different assumptions about how the visual system computes similarity. 
+% We operationalize the notion of `simplicity' through a small set of derived stroke-level measures. First, we expect the raw number of strokes per trial to be higher in the close condition than the far condition. Second, we expect the the length of the svg string to be higher in the close condition than the far condition, which should be correlated with raw number of strokes but accounts for the complexity of each stroke. Finally, we will conduct a range of model-based analyses using features extracted from modern convolutional neural networks to rigorously evaluate pragmatic and non-pragmatic accounts of communication under different assumptions about how the visual system computes similarity. 
 
 \subsection*{Task performance}
 
