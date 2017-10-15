@@ -31,7 +31,7 @@ var game_core = function(options){
   this.email = 'sketchloop@gmail.com';
   this.projectName = '3dObjects';
   this.experimentName = 'chairs_chatbox';
-  this.iterationName = 'close_only';
+  this.iterationName = 'chairs1k';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
@@ -102,26 +102,6 @@ var game_core = function(options){
       player: new game_player(this,options.player_instances[0].player)
     }];
     this.streams = {};
-
-    // Before starting game, get stim list from db
-    var that = this;
-    sendPostRequest('http://localhost:4000/db/getstims', {
-      json: {dbname: 'stimuli', colname: 'chairs1k',
-	     numRounds: this.numRounds, gameid: this.id}
-    }, (error, res, body) => {
-      if(!error && res.statusCode === 200) {
-      	that.stimList = _.shuffle(body);
-      	that.trialList = that.makeTrialList();
-      	that.server_send_update();
-      } else {
-	console.log(`error getting stims: ${error} ${body}`);
-	console.log(`falling back to local stimList`);
-	var closeFamilies = require('./stimList_chairs').closeByFamily;
-	that.stimList = _.flatten(_.sampleSize(closeFamilies, that.numRounds));
-	that.trialList = that.makeTrialList();
-	that.server_send_update();
-      }
-    });
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.players = [{
