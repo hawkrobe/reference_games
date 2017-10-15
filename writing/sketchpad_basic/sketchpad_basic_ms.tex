@@ -101,6 +101,13 @@ For each pair, objects were grouped into eight quartets: Four of these quartets 
 
 \subsubsection*{Visual encoding module}
 
+Features were extracted using VGG-19 \cite{simonyan2014very}, a high-performing deep convolutional neural network model class that had been pre-trained to categorize objects on the Imagenet database, which contains millions of photographs from hundreds of object categories \cite{deng2009imagenet}.
+
+
+
+
+
+
 \subsubsection*{Social inference module}
 
 To instantiate communicative flexibility in context, we generalize the Rational Speech Act (RSA) modeling framework, originally developed for linguistic communication. At the core of the RSA framework, as applied to linguistic communication, is the Gricean proposal that speakers aim to produce utterances that are concise yet informative. We adapt this proposal to visual communication by assuming that sketchers also aim to produce drawings that are both simple and informative. 
@@ -129,18 +136,21 @@ To compute these perceptual similarity scores, the sketcher agent (who can also 
 
 This has the effect of biasing the model to depict properties of the target object that distinguish it from the distractors, while also preferring sketches that are less costly to produce, $C(d)$, i.e., requiring fewer strokes or less ink.
 
-
 \section*{Results}
 
 % We operationalize the notion of `simplicity' through a small set of derived stroke-level measures. First, we expect the raw number of strokes per trial to be higher in the close condition than the far condition. Second, we expect the the length of the svg string to be higher in the close condition than the far condition, which should be correlated with raw number of strokes but accounts for the complexity of each stroke. Finally, we will conduct a range of model-based analyses using features extracted from modern convolutional neural networks to rigorously evaluate pragmatic and non-pragmatic accounts of communication under different assumptions about how the visual system computes similarity. 
 
 \subsection*{Task performance}
 
-\subsection*{Properties of sketches}
+\subsection*{Cost of sketching}
 
-\subsection*{Bayesian data analysis}
+\subsection*{Informativity of sketches}
 
+\subsection*{Sketcher model comparison}
 
+% S1 vs. S0
+
+% high vs. mid vs. low
 
 \subsubsection*{Code availability} The code for the analyses presented in this article is publicly available in a Github repository at: XX.
 

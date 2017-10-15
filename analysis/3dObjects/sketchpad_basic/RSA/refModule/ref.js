@@ -111,14 +111,16 @@ var supportWriter = function(s, p, handle) {
 
 // Note this is highly specific to a single type of erp
 var bayesianErpWriter = function(erp, filePrefix) {
+  
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');
   fs.writeSync(predictiveFile, ["condition", "Target", "Distractor1", "Distractor2", "Distractor3", 
 				"value", "prob", "posteriorProb"] + '\n');
 
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
-  fs.writeSync(paramFile, ["alpha", "typWeight", "costWeight", "logLikelihood", "posteriorProb"] + '\n');
+  fs.writeSync(paramFile, ["similarityMetric,", "speakerModel", "alpha", "typWeight", "costWeight", "logLikelihood", "posteriorProb"] + '\n');
 
   var supp = erp.support();
+ 
   supp.forEach(function(s) {
     supportWriter(s.predictive, erp.score(s), predictiveFile);
     supportWriter(s.params, erp.score(s), paramFile);
