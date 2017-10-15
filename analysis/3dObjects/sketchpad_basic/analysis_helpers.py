@@ -5,6 +5,40 @@ import numpy as np
 exp_path = '3dObjects/sketchpad_basic'
 exp_dir = os.path.abspath(os.path.join(os.getcwd(),'../../..','experiments',exp_path))
 
+objcat = dict({'basset':'dog',
+               'beetle':'car',
+               'bloodhound':'dog',
+               'bluejay':'bird',
+               'bluesedan':'car',
+               'bluesport':'car',
+               'brown':'car',
+               'bullmastiff':'dog',
+               'chihuahua':'dog',
+               'crow':'bird',
+               'cuckoo':'bird',
+               'doberman':'dog',
+               'goldenretriever':'dog',
+               'hatchback':'car',
+               'inlay':'chair',
+               'knob':'chair',
+               'leather':'chair',
+               'nightingale':'bird',
+               'pigeon':'bird',
+               'pug':'dog',
+               'redantique':'car',
+               'redsport':'car',
+               'robin':'bird',
+               'sling':'chair',
+               'sparrow':'bird',
+               'squat':'chair',
+               'straight':'chair',
+               'tomtit':'bird',
+               'waiting':'chair',
+               'weimaraner':'dog',
+               'white':'car',
+               'woven':'chair'
+              })
+
 def get_summary_stats(_D, all_games, correct_only=True):
     '''
     Get summary stats for sketchpad_basic experiment. 
@@ -60,6 +94,18 @@ def get_summary_stats(_D, all_games, correct_only=True):
      further_svgStd, closer_svgStd, further_svgLengthPS, closer_svgLengthPS, \
     further_drawDuration, closer_drawDuration, further_accuracy, closer_accuracy, \
     further_pixelintensity, closer_pixelintensity
+
+def get_close_accuracy_by_category(D, all_games):
+    car_accuracy = []
+    dog_accuracy = []    
+    chair_accuracy = []
+    bird_accuracy = []        
+    for game in all_games:    
+        car_accuracy.append(D[(D['category']=='car') & (D['condition']=='closer') & (D['gameID']== game) ]['outcome'].mean())
+        dog_accuracy.append(D[(D['category']=='dog') & (D['condition']=='closer') & (D['gameID']== game) ]['outcome'].mean())     
+        chair_accuracy.append(D[(D['category']=='chair') & (D['condition']=='closer') & (D['gameID']== game) ]['outcome'].mean())  
+        bird_accuracy.append(D[(D['category']=='bird') & (D['condition']=='closer') & (D['gameID']== game) ]['outcome'].mean())   
+    return bird_accuracy, car_accuracy, chair_accuracy, dog_accuracy
     
 def get_canonical(category):    
     stimFile = os.path.join(exp_dir,'stimList_subord.js')
