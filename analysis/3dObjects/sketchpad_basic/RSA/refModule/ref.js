@@ -118,6 +118,8 @@ var bayesianErpWriter = function(erp, filePrefix) {
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
   fs.writeSync(paramFile, ["similarityMetric,", "speakerModel", "alpha", "typWeight", "costWeight", "logLikelihood", "posteriorProb"] + '\n');
 
+  var supp = erp.support();
+ 
   supp.forEach(function(s) {
     supportWriter(s.predictive, erp.score(s), predictiveFile);
     supportWriter(s.params, erp.score(s), paramFile);
