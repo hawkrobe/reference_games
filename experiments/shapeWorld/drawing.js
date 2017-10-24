@@ -13,15 +13,16 @@ var genWorlds = function(ctx){
 }
 
 
-var genWorld = function(ctx) {
+var genWorld = function(canvas) {
+  var ctx = canvas.getContext('2d');
   var objDescr = {
     "rectangle": {
       "color_range": [[21, 131], [0, 255], [212, 255]],
       "size_range": {
-        "x": 0,
-        "y": 0,
-        "w": [10, 100],
-        "h": [20, 300]
+        "x": canvas.width / 2,
+        "y": canvas.height / 2,
+        "w": [10, 40],
+        "h": [20, 40]
       },
     },
   };
@@ -123,7 +124,8 @@ var genObject = function(
 
     if (shapeName.indexOf("rectangle") >= 0) {
       var color = genColor(shape['color_range']);
-      drawRectangle(shape['size_range'], ctx, color);
+      var affineTransform = getAffineTranform();
+      drawRectangle(shape['size_range'], ctx, color, affineTransform);
 
       // var linearTransform = genLinearTransform();
       // var rectanglePoints = genRectanglePoints();
@@ -141,11 +143,30 @@ var getRandomIntInclusive = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
 }
 
-var drawRectangle = function(rectangle, ctx, color) {
+// Affine transformation
+var getAffineTranform = function() {
+  var rotationAngle = (Math.PI / 180) * getRandomIntInclusive(0, 360);
+  var xTranslate = getRandomIntInclusive(-10, 10);
+  var yTranslate = getRandomIntInclusive(-10, 10);
+  var xReflection = getRandomIntInclusive(0, 1) ? -1: 1;
+  var yReflection = getRandomIntInclusive(0, 1) ? -1 : 1;
+  return {
+    "rotationAngle": rotationAngle,
+    "xTranslate": xTranslate,
+    "yTranslate": yTranslate,
+    "xReflection": xReflection,
+    "yReflection": yReflection,
+  }
+}
+
+var drawRectangle = function(rectangle, ctx, color, affineTransform) {
+  // Draw rectangle
   ctx.beginPath();
+  ctx.scale(affineTransform['xReflection'], affineTransform['yReflection']);
+  ctx.rotate(affineTransform['rotationAngle'])
   ctx.rect(
-    rectangle.x,
-    rectangle.y,
+    rectangle.x + affineTransform['xTranslate'],
+    rectangle.y + affineTransform['yTranslate'],
     getRandomIntInclusive(rectangle.w[0], rectangle.w[1]),
     getRandomIntInclusive(rectangle.h[0], rectangle.h[1])
   );
@@ -153,6 +174,10 @@ var drawRectangle = function(rectangle, ctx, color) {
   ctx.strokeStyle = color;
   ctx.fill();
   ctx.stroke();
+
+  // Reset context to defaults
+  ctx.scale(0, 0);
+  ctx.rotate(0);
 }
 
 var drawCircle = function(circle) {
@@ -174,7 +199,6 @@ var drawCircle = function(circle) {
 // ------------------------------------------------------------------------
 var testShapeGenerator = function(){
   var canvas = document.getElementById('myCanvas');
-  var ctx = canvas.getContext('2d');
-  genWorld(ctx);
+  genWorld(canvas);
 }
 testShapeGenerator();
