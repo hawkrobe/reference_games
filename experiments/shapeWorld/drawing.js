@@ -24,7 +24,18 @@ var genWorld = function(canvas) {
         "h": [20, 40]
       },
     },
-  };
+    "triangle": {
+      "color_range": [[21, 131], [0, 255], [212, 255]],
+      "size_range": {
+        "x": canvas.width / 2,
+        "y": canvas.height / 2,
+        "x2": [50, 100],
+        "y2": [30, 80],
+        "x3": [20, 50],
+        "y3": [20, 50] 
+      },
+    },
+  }
 
   var obj = genObject(canvas, objDescr, .23);
   return obj;
@@ -170,8 +181,8 @@ var getRandomIntInclusive = function(min, max) {
 // Affine transformation
 var getAffineTranform = function() {
   var rotationAngle = (Math.PI / 180) * getRandomIntInclusive(0, 360);
-  var xTranslate = getRandomIntInclusive(-50, 50);
-  var yTranslate = getRandomIntInclusive(-50, 50);
+  var xTranslate = getRandomIntInclusive(-100, 100);
+  var yTranslate = getRandomIntInclusive(-100, 100);
   var xReflection = getRandomIntInclusive(0, 1) ? -1: 1;
   var yReflection = getRandomIntInclusive(0, 1) ? -1 : 1;
   return {
@@ -192,8 +203,8 @@ var drawRectangle = function(rectangle, ctx, color, affineTransform) {
     rectangle.x + 3 * affineTransform['xTranslate']/2.0,
     rectangle.y + 3 * affineTransform['yTranslate']/2.0,
   )
-  ctx.rotate(affineTransform['rotationAngle'])
-  // ctx.scale(affineTransform['xReflection'], affineTransform['yReflection']);
+  ctx.rotate(affineTransform['rotationAngle']);
+  ctx.scale(affineTransform['xReflection'], affineTransform['yReflection']);
   ctx.rect(
     affineTransform['xTranslate'],
     affineTransform['yTranslate'],
@@ -211,8 +222,7 @@ var drawRectangle = function(rectangle, ctx, color, affineTransform) {
   ctx.stroke();
 
   // Reset context to defaults
-  ctx.scale(0, 0);
-  ctx.rotate(0);
+  ctx.closePath();
 }
 
 var drawCircle = function(circle, ctx, color, affineTransform) {
@@ -228,7 +238,35 @@ var drawCircle = function(circle, ctx, color, affineTransform) {
 }
 
 var drawTriangle = function(triangle, ctx, color, affineTransform) {
-  return true;
+  ctx.beginPath();
+  ctx.moveTo(
+    triangle['x'] + affineTransform['xTranslate'],
+    triangle['y'] + affineTransform['yTranslate']
+  );
+  ctx.translate(
+    triangle['x'] + affineTransform['xTranslate']/2.0,
+    triangle['y']+ affineTransform['yTranslate']/2.0,
+  )
+  ctx.rotate(affineTransform['rotationAngle']);
+  ctx.scale(affineTransform['xReflection'], affineTransform['yReflection']);
+  ctx.lineTo(
+    triangle['x'] + affineTransform['xTranslate'] + getRandomIntInclusive(triangle['x2'][0], triangle['x2'][1]),
+    triangle['y'] + affineTransform['yTranslate'] + getRandomIntInclusive(triangle['y2'][0], triangle['y2'][1]),    
+  );
+  ctx.lineTo(
+    triangle['x'] + affineTransform['xTranslate'] + getRandomIntInclusive(triangle['x3'][0], triangle['x3'][1]),
+    triangle['y'] + affineTransform['yTranslate'] + getRandomIntInclusive(triangle['y3'][0], triangle['y3'][1]),    
+  );
+  ctx.rotate(-affineTransform['rotationAngle']);
+  ctx.translate(
+    -triangle['x'] + affineTransform['xTranslate']/2.0,
+    -triangle['y']+ affineTransform['yTranslate']/2.0,
+  )
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.fill();
+  ctx.stroke();
+  ctx.closePath();
 }
 
 // ------------------------------------------------------------------------
