@@ -27,11 +27,8 @@ var genWorld = function(canvas) {
     },
   };
 
-  genObject(
-    ctx,
-    objDescr,
-    .23
-  );
+  var obj = genObject(ctx, objDescr, .23);
+  return obj;
 }
 
 // Generate a specific object (amalgamation of objects)
@@ -111,28 +108,55 @@ var genObject = function(
 
   // Generate color according to color range
   var genColor = function(colorRange) {
-    return "rgb(" +
-      getRandomIntInclusive(colorRange[0][0], colorRange[0][1]) + "," + 
-      getRandomIntInclusive(colorRange[1][0], colorRange[1][1]) + "," + 
-      getRandomIntInclusive(colorRange[2][0], colorRange[2][1]) + ")"
+    var r = getRandomIntInclusive(colorRange[0][0], colorRange[0][1]);
+    var g = getRandomIntInclusive(colorRange[1][0], colorRange[1][1]);
+    var b = getRandomIntInclusive(colorRange[2][0], colorRange[2][1]);
+    var rgbString = "rgb(" + r+ "," + g + "," + b + ")"
+    return [rgbString, [r, g, b]];
   }
 
-  // Construct object in world
+  var object = []
   for (shapeName in objDescr) {
+    // Define shape properties
     var shape = objDescr[shapeName];
     isValidShape(shapeName, objDescr[shapeName]);
+    var colorInfo = genColor(shape['color_range']);
+    var affineTransform = getAffineTranform();
 
+    // Draw Shape
     if (shapeName.indexOf("rectangle") >= 0) {
-      var color = genColor(shape['color_range']);
-      var affineTransform = getAffineTranform();
-      drawRectangle(shape['size_range'], ctx, color, affineTransform);
-
-      // var linearTransform = genLinearTransform();
-      // var rectanglePoints = genRectanglePoints();
-      // var shiftedPoints = applyLinearTransform(rectanglePoints);
+      drawRectangle(shape['size_range'], ctx, colorInfo[0], affineTransform);
     } else if (shapeName.indexOf("circle") >= 0) {
+      drawCircle(shape['size_range'], ctx, colorInfo[0], affineTransform);
     } else if (shapeName.indexOf("triangle") >= 0) {
-    }    
+      drawTriangle(shape['size_range'], ctx, colorInfo[0], affineTransform);
+    } 
+
+    // Store shape details
+    shapeDetails = {
+      'type': shapeToIndex(shapeName),
+      'initial_x': shape['size_range']['x'],
+      'initial_y': shape['size_range']['y'],
+      'affine_transform': affineTransform,
+      'color': colorInfo[1],
+    }
+    console.log(shapeDetails);
+    object.push(shapeDetails);
+  }
+
+  return object
+}
+
+// Shape to index
+var shapeToIndex = function(shapeName) {
+  if (shapeName.indexOf("rectangle") >= 0) {
+    return 0;
+  } else if (shapeName.indexOf("circle") >= 0) {
+    return 1;
+  } else if  (shapeName.indexOf("triangle") >= 0) {
+    return 2;
+  } else {
+    return -1;
   }
 }
 
@@ -180,7 +204,7 @@ var drawRectangle = function(rectangle, ctx, color, affineTransform) {
   ctx.rotate(0);
 }
 
-var drawCircle = function(circle) {
+var drawCircle = function(circle, ctx, color, affineTransform) {
   var pointArray = calcPointsCirc(circle.x, circle.y, circle.d / 2.0, 0.5);
   game.ctx.strokeStyle = 'black'
   game.ctx.beginPath();
@@ -193,12 +217,16 @@ var drawCircle = function(circle) {
   game.ctx.closePath();
 }
 
+var drawTriangle = function(triangle, ctx, color, affineTransform) {
+  return true;
+}
 
 // ------------------------------------------------------------------------
 // Testing Shape Generator
 // ------------------------------------------------------------------------
 var testShapeGenerator = function(){
   var canvas = document.getElementById('myCanvas');
-  genWorld(canvas);
+  var object = genWorld(canvas);
+  console.log(object);
 }
 testShapeGenerator();
