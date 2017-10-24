@@ -8,26 +8,25 @@
 */
 
 
-var genWorlds = function(ctx){
+var genWorlds = function(canvas){
 
 }
 
 
 var genWorld = function(canvas) {
-  var ctx = canvas.getContext('2d');
   var objDescr = {
     "rectangle": {
       "color_range": [[21, 131], [0, 255], [212, 255]],
       "size_range": {
         "x": canvas.width / 2,
         "y": canvas.height / 2,
-        "w": [10, 40],
+        "w": [10, 100],
         "h": [20, 40]
       },
     },
   };
 
-  var obj = genObject(ctx, objDescr, .23);
+  var obj = genObject(canvas, objDescr, .23);
   return obj;
 }
 
@@ -62,10 +61,10 @@ var genWorld = function(canvas) {
 // compactness: bound on how tightly conjoined the shapes
 //              are in this world
 var genObject = function(
-  ctx,
+  canvas,
   objDescr,
   compactness
-) {
+) {  
   // Check whether desired shape can be drawn successfully.
   // Throws an error if shape description is invalid.
   var isValidShape = function(shapeName, shapeDescr) {
@@ -115,13 +114,15 @@ var genObject = function(
     return [rgbString, [r, g, b]];
   }
 
+  // Objects 
   var object = []
+  var ctx = canvas.getContext('2d');
   for (shapeName in objDescr) {
     // Define shape properties
     var shape = objDescr[shapeName];
     isValidShape(shapeName, objDescr[shapeName]);
     var colorInfo = genColor(shape['color_range']);
-    var affineTransform = getAffineTranform();
+    var affineTransform = getAffineTranform(canvas);
 
     // Draw Shape
     if (shapeName.indexOf("rectangle") >= 0) {
@@ -140,7 +141,6 @@ var genObject = function(
       'affine_transform': affineTransform,
       'color': colorInfo[1],
     }
-    console.log(shapeDetails);
     object.push(shapeDetails);
   }
 
@@ -170,8 +170,8 @@ var getRandomIntInclusive = function(min, max) {
 // Affine transformation
 var getAffineTranform = function() {
   var rotationAngle = (Math.PI / 180) * getRandomIntInclusive(0, 360);
-  var xTranslate = getRandomIntInclusive(-10, 10);
-  var yTranslate = getRandomIntInclusive(-10, 10);
+  var xTranslate = getRandomIntInclusive(-50, 50);
+  var yTranslate = getRandomIntInclusive(-50, 50);
   var xReflection = getRandomIntInclusive(0, 1) ? -1: 1;
   var yReflection = getRandomIntInclusive(0, 1) ? -1 : 1;
   return {
@@ -185,15 +185,26 @@ var getAffineTranform = function() {
 
 var drawRectangle = function(rectangle, ctx, color, affineTransform) {
   // Draw rectangle
+  // Note: Rotation code (around center of rectangle) is adapated from
+  // https://stackoverflow.com/questions/3793397/html5-canvas-drawimage-with-at-an-angle
   ctx.beginPath();
-  ctx.scale(affineTransform['xReflection'], affineTransform['yReflection']);
+  ctx.translate(
+    rectangle.x + 3 * affineTransform['xTranslate']/2.0,
+    rectangle.y + 3 * affineTransform['yTranslate']/2.0,
+  )
   ctx.rotate(affineTransform['rotationAngle'])
+  // ctx.scale(affineTransform['xReflection'], affineTransform['yReflection']);
   ctx.rect(
-    rectangle.x + affineTransform['xTranslate'],
-    rectangle.y + affineTransform['yTranslate'],
+    affineTransform['xTranslate'],
+    affineTransform['yTranslate'],
     getRandomIntInclusive(rectangle.w[0], rectangle.w[1]),
     getRandomIntInclusive(rectangle.h[0], rectangle.h[1])
   );
+  ctx.rotate(-affineTransform['rotationAngle'])
+  ctx.translate(
+    - rectangle.x + 3 * affineTransform['xTranslate']/2.0,
+    - rectangle.y + 3 * affineTransform['yTranslate']/2.0,
+  )
   ctx.fillStyle = color;
   ctx.strokeStyle = color;
   ctx.fill();
@@ -205,10 +216,9 @@ var drawRectangle = function(rectangle, ctx, color, affineTransform) {
 }
 
 var drawCircle = function(circle, ctx, color, affineTransform) {
-  var pointArray = calcPointsCirc(circle.x, circle.y, circle.d / 2.0, 0.5);
-  game.ctx.strokeStyle = 'black'
+  var pointArray = calcPointsCirc(circle.x, circle.y, circle.r, 0.5);
+  game.ctx.strokeStyle = color;
   game.ctx.beginPath();
-
   for(p = 0; p < pointArray.length; p++){
       game.ctx.moveTo(pointArray[p].x, pointArray[p].y);
       game.ctx.lineTo(pointArray[p].ex, pointArray[p].ey);
