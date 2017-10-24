@@ -2,8 +2,8 @@
 // webppl BDA.wppl --require ./refModule/
 
 // Load in experimental data to condition on
-var data = refModule.readCSV("./bdaInput/sketch_data_far_only.csv");
-var conditions = refModule.readCSV("./bdaInput/unique_conditions_far_only.csv");
+var data = refModule.readCSV("./bdaInput/sketch_data.csv");
+var conditions = refModule.readCSV("./bdaInput/unique_conditions.csv");
 console.log("Loading expt data complete..."
 	    + data.length + " data points in "
 	    + conditions.length + ' contexts');
@@ -25,14 +25,14 @@ var globalConfig = {
 };
 
 var modelAnalysis = function() {
-  var similarityMetric = uniformDraw(['nonstrict-high', 'early']);
+  var similarityMetric = uniformDraw(['nonstrict-high', 'strict-mid', 'early']);
   var speakerModel = uniformDraw(['S1', 'S0']);
   
   var params = {
     similarityMetric, speakerModel,
-    alpha : uniformDraw(_.range(0.5, 10, 0.5)),//.toFixed(1), //[0.5, 1, 2, 5]),
-    simScale : speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)),//.toFixed(1),//1, 2, 5])),
-    costWeight : uniformDraw(_.range(0, 1, 0.1))//.toFixed(1)//[0, .1, .2, .3, .4]) 
+    alpha : 1,//uniformDraw(_.range(0.5, 10, 0.5)),//.toFixed(1), //[0.5, 1, 2, 5]),
+    simScale : 1,//speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)),//.toFixed(1),//1, 2, 5])),
+    costWeight :1// uniformDraw(_.range(0, 1.01, 0.1))//.toFixed(1)//[0, .1, .2, .3, .4]) 
   };
   
   //var model = initializeModel(extend(params, globalConfig))[params.speakerModel];
