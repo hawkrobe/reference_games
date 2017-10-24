@@ -7,23 +7,44 @@
     3) What color(s) are applied to each of the shapes
 */
 
-var genWorlds = function(){
+
+var genWorlds = function(ctx){
 
 }
 
-var genWorld = function() {
-  return null; 
+
+var genWorld = function(ctx) {
+  var objDescr = {
+    "rectangle": {
+      "color_range": [[21, 131], [0, 255], [212, 255]],
+      "size_range": {
+        "x": 12,
+        "y": 12,
+        "w": 20,
+        "h": 100
+      },
+    },
+  };
+
+  genObject(
+    ctx,
+    objDescr,
+    .23
+  );
 }
 
 // Generate a specific object (amalgamation of objects)
 // Params:
-// obj_decr:
+// ctx: HTML5 Canvas
+// objDescr:
 // {
 //   "rectangle": {
 //     "color_range": [(R1, R2), (G1, G2), (B1, B2)],
 //     "size_range": {
-//       "width": [w1, w2],
-//       "height": [h1, h2],
+//       "x": val,
+//       "y": val,
+//       "width": val,
+//       "height": val
 //     },
 //   },
 //   "circle": {
@@ -40,57 +61,78 @@ var genWorld = function() {
 //     },
 //   },
 // }
+// compactness: bound on how tightly conjoined the shapes
+//              are in this world
 var genObject = function(
-  obj_descr
+  ctx,
+  objDescr,
+  compactness
 ) {
-
   // Check whether desired shape can be drawn successfully.
   // Throws an error if shape description is invalid.
-  var isValidShape = function(shapeName, shape_descr) {
-
+  var isValidShape = function(shapeName, shapeDescr) {
     // Check whether shape's color range is valid
     var isValidColorRange = function(colorRange) {
-      for (c in colorRange) {
-        if (c[1] > c[0]) return False;
-        else if (!c[0] >= 0 || !c[1] <= 255) return False;
+      for (var i = 0; i < colorRange.length; i++) {
+        var c = colorRange[i];
+        if (c[0] > c[1]) return false;
+        else if (c[0] < 0 || c[1] > 255) return false;
       }
-      return True;
+      return true;
     }
 
     // Check whether shape's dimensions are valid
     // TODO: Implement these stubs
-    var isValidRectangle = function(shape_descr) {
-      return True;
+    var isValidRectangle = function(shapeDescr) {
+      return true;
     }
-    var isValidCircle = function(shape_descr) {
-      return True;
+    var isValidCircle = function(shapeDescr) {
+      return true;
     }
-    var isValidTriangle = function(shape_descr) {
-      return True;
+    var isValidTriangle = function(shapeDescr) {
+      return true;
     }
 
     // Evaluate shape validity
-    if (!isValidColorRange(shape_descr['color_range'])) throw "Invalid Color Range";
+    if (!isValidColorRange(shapeDescr['color_range'])) throw "Invalid Color Range";
     if (shapeName.indexOf("rectangle") >= 0) {
-      if (!isValidRectangle(shape_descr)) throw "Invalid Rectangle Dimensions";
+      if (!isValidRectangle(shapeDescr)) throw "Invalid Rectangle Dimensions";
     } else if (shapeName.indexOf("circle") >= 0) {
-      if (!isValidCircle(shape_descr)) throw "Invalid Circle Dimensions";
+      if (!isValidCircle(shapeDescr)) throw "Invalid Circle Dimensions";
     } else if (shapeName.indexOf("triangle") >= 0) {
-      if (!isValidTriangle(shape_descr)) throw "Invalid Triangle Dimensions";
+      if (!isValidTriangle(shapeDescr)) throw "Invalid Triangle Dimensions";
     } else {
       throw "Desired shape " + shapeName + " unknown!";
     }
   }
 
+  // Generate color according to color range
+  var genColor = function(colorRange) {
+    var getRandomIntInclusive = function(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+    }
+    return "rgb(" +
+      getRandomIntInclusive(colorRange[0][0], colorRange[0][1]) + "," + 
+      getRandomIntInclusive(colorRange[1][0], colorRange[1][1]) + "," + 
+      getRandomIntInclusive(colorRange[2][0], colorRange[2][1]) + ")"
+  }
+
+  // 
+
   // Construct object in world
-  for (shapeName in Object.keys(obj_descr)) {
-    isValidShape(shapeName, obj_descr[shapeName]);
+  for (shapeName in objDescr) {
+    var shape = objDescr[shapeName];
+    isValidShape(shapeName, objDescr[shapeName]);
+
     if (shapeName.indexOf("rectangle") >= 0) {
-      var linearTransform = genLinearTransform();
-      var rectanglePoints = genRectanglePoints();
-      var shiftedPoints = applyLinearTransform(rectanglePoints);
+      var color = genColor(shape['color_range']);
+      drawRectangle(shape['size_range'], ctx, color);
 
-
+      // var linearTransform = genLinearTransform();
+      // var rectanglePoints = genRectanglePoints();
+      // var shiftedPoints = applyLinearTransform(rectanglePoints);
     } else if (shapeName.indexOf("circle") >= 0) {
     } else if (shapeName.indexOf("triangle") >= 0) {
     }    
@@ -98,12 +140,13 @@ var genObject = function(
 }
 
 
-var drawRectangle = function(rectangle) {
-  game.ctx.beginPath();
-  game.ctx.rect(rectangle.x, rectangle.y, rectangle.w, rectangle.h);
-  game.ctx.fillStyle = rectangle.color;
-  game.ctx.fill();
-  game.ctx.stroke();
+var drawRectangle = function(rectangle, ctx, color) {
+  ctx.beginPath();
+  ctx.rect(rectangle.x, rectangle.y, rectangle.w, rectangle.h);
+  ctx.fillStyle = color;
+  ctx.strokeStyle=color;
+  ctx.fill();
+  ctx.stroke();
 }
 
 var drawCircle = function(circle) {
@@ -120,73 +163,12 @@ var drawCircle = function(circle) {
 }
 
 
-
-var drawScreen = function(game, player) {
-  // draw background
-  game.ctx.fillStyle = "#FFFFFF";
-  game.ctx.fillRect(0,0,game.viewport.width,game.viewport.height);
-
-  // Draw message in center (for countdown, e.g.)
-  if (player.message) {
-    game.ctx.font = "bold 23pt Helvetica";
-    game.ctx.fillStyle = 'blue';
-    game.ctx.textAlign = 'center';
-    wrapText(game, player.message,
-             game.world.width/2, game.world.height/4,
-             game.world.width*4/5,
-             25);
-  }
-  else {
-    console.log(game);
-    if (!_.isEmpty(game.currStim)) {
-      drawBoxes(game);
-      //drawPlaza(game);
-
-      if (game.my_role === game.playerRoleNames.role1) {
-        /*if (game.roundNum <= 2) { //trial only
-          drawTarget(game, game.currStim.lily.x, game.currStim.lily.y);
-        }*/
-        drawLily(game, game.currStim.lily);
-      }
-    }
-  }
-};
-
-// This is a helper function to write a text string onto the HTML5 canvas.
-// It automatically figures out how to break the text into lines that will fit
-// Input:
-//    * game: the game object (containing the ctx canvas object)
-//    * text: the string of text you want to writ
-//    * x: the x coordinate of the point you want to start writing at (in pixels)
-//    * y: the y coordinate of the point you want to start writing at (in pixels)
-//    * maxWidth: the maximum width you want to allow the text to span (in pixels)
-//    * lineHeight: the vertical space you want between lines (in pixels)
-function wrapText(game, text, x, y, maxWidth, lineHeight) {
-  var cars = text.split("\n");
-  game.ctx.fillStyle = 'white';
-  game.ctx.fillRect(0, 0, game.viewport.width, game.viewport.height);
-  game.ctx.fillStyle = 'red';
-
-  for (var ii = 0; ii < cars.length; ii++) {
-
-    var line = "";
-    var words = cars[ii].split(" ");
-
-    for (var n = 0; n < words.length; n++) {
-      var testLine = line + words[n] + " ";
-      var metrics = game.ctx.measureText(testLine);
-      var testWidth = metrics.width;
-
-      if (testWidth > maxWidth) {
-        game.ctx.fillText(line, x, y);
-        line = words[n] + " ";
-        y += lineHeight;
-      }
-      else {
-        line = testLine;
-      }
-    }
-    game.ctx.fillText(line, x, y);
-    y += lineHeight;
-  }
+// ------------------------------------------------------------------------
+// Testing Shape Generator
+// ------------------------------------------------------------------------
+var testShapeGenerator = function(){
+  var canvas = document.getElementById('myCanvas');
+  var ctx = canvas.getContext('2d');
+  genWorld(ctx);
 }
+testShapeGenerator();
