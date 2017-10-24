@@ -18,10 +18,10 @@ var genWorld = function(ctx) {
     "rectangle": {
       "color_range": [[21, 131], [0, 255], [212, 255]],
       "size_range": {
-        "x": 12,
-        "y": 12,
-        "w": 20,
-        "h": 100
+        "x": 0,
+        "y": 0,
+        "w": [10, 100],
+        "h": [20, 300]
       },
     },
   };
@@ -84,7 +84,9 @@ var genObject = function(
     // Check whether shape's dimensions are valid
     // TODO: Implement these stubs
     var isValidRectangle = function(shapeDescr) {
-      return true;
+      if (shapeDescr['size_range']['w'][0] > shapeDescr['size_range']['w'][1]) return false;
+      if (shapeDescr['size_range']['h'][0] > shapeDescr['size_range']['h'][1]) return false;
+      return true;     
     }
     var isValidCircle = function(shapeDescr) {
       return true;
@@ -108,18 +110,11 @@ var genObject = function(
 
   // Generate color according to color range
   var genColor = function(colorRange) {
-    var getRandomIntInclusive = function(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
-    }
     return "rgb(" +
       getRandomIntInclusive(colorRange[0][0], colorRange[0][1]) + "," + 
       getRandomIntInclusive(colorRange[1][0], colorRange[1][1]) + "," + 
       getRandomIntInclusive(colorRange[2][0], colorRange[2][1]) + ")"
   }
-
-  // 
 
   // Construct object in world
   for (shapeName in objDescr) {
@@ -139,12 +134,23 @@ var genObject = function(
   }
 }
 
+// Random Number Generation
+var getRandomIntInclusive = function(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+}
 
 var drawRectangle = function(rectangle, ctx, color) {
   ctx.beginPath();
-  ctx.rect(rectangle.x, rectangle.y, rectangle.w, rectangle.h);
+  ctx.rect(
+    rectangle.x,
+    rectangle.y,
+    getRandomIntInclusive(rectangle.w[0], rectangle.w[1]),
+    getRandomIntInclusive(rectangle.h[0], rectangle.h[1])
+  );
   ctx.fillStyle = color;
-  ctx.strokeStyle=color;
+  ctx.strokeStyle = color;
   ctx.fill();
   ctx.stroke();
 }
