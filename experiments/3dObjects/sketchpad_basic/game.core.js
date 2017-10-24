@@ -29,7 +29,7 @@ var game_core = function(options){
   this.server = options.server ;
   this.projectName = '3dObjects';
   this.experimentName = 'sketchpad_basic';
-  this.iterationName = 'pilot1';  
+  this.iterationName = 'pilot2';  
   this.email = 'sketchloop@gmail.com';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
@@ -78,6 +78,9 @@ var game_core = function(options){
 
   // How many rounds do we want people to complete?
   this.numRounds = 32;
+
+  // should we fix the pose to 3/4 view across trials and games?
+  this.poseFixed = 1;
 
   // How many objects per round (how many items in the menu)?
   this.numItemsPerRound = this.numHorizontalCells*this.numVerticalCells;
@@ -222,12 +225,22 @@ game_core.prototype.getRandomizedConditions = function() {
   // copy 4 times to get full category matrix
   _category = arr.concat(arr).concat(arr).concat(arr);
 
-  // now make pose matrix (on each trial, all objects share same pose, )
-  _pose = _.shuffle(_.range(this.numPoses)).slice(0,32);  
+
   // for (i=0;i<_poses.length;i++) {
   //   pose.push(_.times(4, function() { return _poses[i]; }));
   // }
 
+  if (this.poseFixed==0) { 
+    // now make pose matrix (on each trial, all objects share same pose, )
+    _pose = _.shuffle(_.range(this.numPoses)).slice(0,32);     
+  } else if (this.poseFixed==1) {
+    // 10/23/17: we are fixing the pose to be 3/4 view for ALL objects ALL THE TIME.
+    _pose = _.times(32,_.constant(35)); // set all poses to 35 (3/4 view)
+
+  } else {
+    _pose = _.times(32,_.constant(35)); // default to fixed pose
+  }
+ 
   // now make condition matrix
   f = _.times(4,function() {return "further"});
   c = _.times(4,function() {return "closer"});
