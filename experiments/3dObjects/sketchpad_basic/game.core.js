@@ -231,7 +231,7 @@ game_core.prototype.getRandomizedConditions = function() {
   // }
 
   if (this.poseFixed==0) { 
-    // now make pose matrix (on each trial, all objects share same pose, )
+    // now make pose matrix (on each trial, all objects share same pose, but across trials, pose varies)
     _pose = _.shuffle(_.range(this.numPoses)).slice(0,32);     
   } else if (this.poseFixed==1) {
     // 10/23/17: we are fixing the pose to be 3/4 view for ALL objects ALL THE TIME.

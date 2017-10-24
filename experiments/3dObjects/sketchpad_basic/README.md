@@ -14,4 +14,5 @@ Each quartet was presented four times, such that each object in the quartet serv
 On each trial, one quartet of objects shown. The sketcher's task was to make a sketch of the cued object such that the viewer could identify it from the quartet. 
 
 "pilot0" : initial round of data collection, 20 games (April 2017)
-"pilot1" : production sample of ~80 games (October 2017) 
+"pilot1" : production sample of ~80 games (October 2017)
+"pilot2" : version with fixed pose (October 2017) 
