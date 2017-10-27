@@ -5,9 +5,9 @@ var initializeModel = function(params) {
     return params.costs[sketch][0];
   };
 
-  // var similarity = function(sketch, object) {
-  //   return params.similarities[object][sketch];
-  // };
+  var similarity = function(sketch, object) {
+    return params.similarities[object][sketch];
+  };
   
   // Sees sketch and selects among objects in context using similarity
   // var literalListener = function(sketch, context){
@@ -41,5 +41,7 @@ var initializeModel = function(params) {
     }});
   };
 
-  return {S1, S0};
+  console.log(params.speakerModel);
+  console.log(S0);
+  return params.speakerModel === 'S1' ? S1 : S0;
 };
