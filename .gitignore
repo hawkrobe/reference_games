@@ -54,3 +54,10 @@ analysis/3dObjects/sketchpad_basic/sketches/*
 placeholder.csv
 analysis/3dObjects/sketchpad_basic/sketchpad_basic_pilot0_group_data.csv
 analysis/3dObjects/sketchpad_basic/sketchpad_basic_pilot1_group_data.csv
+
+*.fdb_latexmk
+*.fls
+*.svg
+*.json
+*.pdf
+.ipynb_checkpoints

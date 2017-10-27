@@ -25,7 +25,7 @@ var globalConfig = {
 };
 
 var modelAnalysis = function() {
-  var similarityMetric = 'nonstrict-high';//uniformDraw(['nonstrict-high', 'early']);
+  var similarityMetric = uniformDraw(['nonstrict-high', 'strict-mid-prag']);
   var speakerModel = uniformDraw(['S1', 'S0']);
   
   var params = {

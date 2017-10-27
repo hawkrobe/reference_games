@@ -323,8 +323,7 @@ var client_onjoingame = function(num_players, role) {
       }
     }, 1000 * 60 * 15);
 
-    globalGame.get_player(globalGame.my_id).message = ('Drawing will begin \n after another player connects... \n '
-						       + 'Please do not refresh the page!');
+    globalGame.get_player(globalGame.my_id).message = ('Waiting for another player...\nPlease do not refresh the page!\n If wait exceeds 15 minutes, we recommend returning the HIT and trying again later.');
   }
 
 
