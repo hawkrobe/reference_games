@@ -5,16 +5,16 @@ var babyparse = require('babyparse');
 // var es = require('event-stream');
 
 var getSimilarities = function(name) {
-
-  return {'strict-mid-prag' : require('./json/strict-similarity-pragmatics-conv4_2.json'),
-	        'nonstrict-high' : require('./json/nonstrict-similarity_fc7.json')}
+  return {
+    'strict-mid-prag' : require('./json/strict-similarity-pragmatics-conv4_2.json'),
+    'nonstrict-high' : require('./json/nonstrict-similarity_fc7.json')
+  };
 };
 
 var getCosts = function(name) {
   return require('./json/costs.json');
 };
 
-// TODO: this is currently a hack to exclude pilot0 sketches
 var getPossibleSketches = function(costs) {
   return _.keys(costs);
 };

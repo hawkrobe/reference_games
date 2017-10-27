@@ -3,10 +3,8 @@
 
 // Load in experimental data to condition on
 var data = refModule.readCSV("./bdaInput/sketch_data.csv");
-var conditions = refModule.readCSV("./bdaInput/unique_conditions.csv");
 console.log("Loading expt data complete..."
-	    + data.length + " data points in "
-	    + conditions.length + ' contexts');
+	    + data.length + " data points");
 
 // Cache some properties of model
 // Note: when moving to model comparison, can precache for all models...
@@ -20,32 +18,28 @@ console.log("Loading model data complete..."
 // Package into config
 var globalConfig = {
   similarities, possibleSketches, costs,
-  storePredictives : false,  
+  storePredictives : true,  
   outputFileName : 'testing'
 };
 
 var modelAnalysis = function() {
-
   var similarityMetric = uniformDraw(['nonstrict-high', 'strict-mid-prag']);
   var speakerModel = uniformDraw(['S1', 'S0']);
   
   var params = {
-    similarityMetric, speakerModel,
-    alpha : uniformDraw(_.range(0.5, 10, 0.5)), //.toFixed(1), //[0.5, 1, 2, 5]),
-    simScale : speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)), //.toFixed(1),//1, 2, 5])),
-    costWeight : uniformDraw(_.range(0, 1.01, 0.1)) //.toFixed(1)//[0, .1, .2, .3, .4]) 
+    similarityMetric,
+    speakerModel,
+    alpha : uniformDraw(_.range(0.5, 10, 0.5)),//.toFixed(1),
+    simScale : speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)),//.toFixed(1)
+    costWeight : uniformDraw(_.range(0, 1, 0.1))//.toFixed(1)
   };
   
-  //var model = initializeModel(extend(params, globalConfig))[params.speakerModel];
   var score = reduce(function(c, memo) {
     // Extract condition information
     var conditionType = c.condition;
     var context = [c.Target, c.Distractor1, c.Distractor2, c.Distractor3];
     var target = context[0];
 
-    // Run model
-    
-    // var modelOutput = model(target, context);
     // Store predives
     // if(globalConfig.storePredictives) {
     //   foreach(modelOutput.support(), function(s){
@@ -56,14 +50,12 @@ var modelAnalysis = function() {
     // }
     
     // condition on data
-    // var itemData = refModule.getSubset(data, c);
-//    return memo + reduce(function(datum, memo) {
     var p = extend(params, globalConfig);
-    var score = (params.speakerModel == 'S1' ?
+    var score = (params.speakerModel === 'S1' ?
 		 refModule.getS1score(c.sketchLabel, target, context, p) :
 		 refModule.getS0score(c.sketchLabel, target, p));
+    
     return memo + score;
-//    }, 0, itemData);
   }, 0, data);    
 
   console.log(params);
