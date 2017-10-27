@@ -26,14 +26,14 @@ var globalConfig = {
 
 var modelAnalysis = function() {
 
-  var similarityMetric = uniformDraw(['nonstrict-high', 'strict-mid', 'early']);
+  var similarityMetric = uniformDraw(['nonstrict-high', 'strict-mid-prag']);
   var speakerModel = uniformDraw(['S1', 'S0']);
   
   var params = {
     similarityMetric, speakerModel,
-    alpha : 1,//uniformDraw(_.range(0.5, 10, 0.5)),//.toFixed(1), //[0.5, 1, 2, 5]),
-    simScale : 1,//speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)),//.toFixed(1),//1, 2, 5])),
-    costWeight :1// uniformDraw(_.range(0, 1.01, 0.1))//.toFixed(1)//[0, .1, .2, .3, .4]) 
+    alpha : uniformDraw(_.range(0.5, 10, 0.5)), //.toFixed(1), //[0.5, 1, 2, 5]),
+    simScale : speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)), //.toFixed(1),//1, 2, 5])),
+    costWeight : uniformDraw(_.range(0, 1.01, 0.1)) //.toFixed(1)//[0, .1, .2, .3, .4]) 
   };
   
   //var model = initializeModel(extend(params, globalConfig))[params.speakerModel];
