@@ -6,10 +6,11 @@ var babyparse = require('babyparse');
 
 var getSimilarities = function(name) {
   return {//'strict-high' : require('./json/strict-similarity.json'),
-	  'nonstrict-high' : require('./json/nonstrict-similarity_fc7.json'),
-	  'early' : require('./json/early-similarity_pool1.json'),
-    'strict-mid' : require('./json/strict-similarity_conv4_2.json')};     
-};
+    'nonstrict-high' : require('./json/nonstrict-similarity_fc7.json'),
+    'early' : require('./json/early-similarity_pool1.json')
+    //    'strict-mid' : require('./json/strict-similarity_conv4_2.json')};     
+  };
+}
 
 var getCosts = function(name) {
   return require('./json/costs.json');

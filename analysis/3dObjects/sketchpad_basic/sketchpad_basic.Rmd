@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggthemes)
 library(lme4)
+library(stringr)
 # # Note: to install langcog, 
 # library(langcog)
 library(jsonlite)
@@ -23,12 +24,30 @@ TODO: incorporate pilot0 as well (though missing pose data makes this nontrivial
 
 ```{r}
 raw <-  read_delim('sketchpad_basic_merged_group_data.csv', delim = ',') 
-
+dogs <- c('weimaraner', 'chihuahua', 'basset', 'doberman', 'bloodhound', 'bullmastiff', 'goldenretriever', 'pug')
+chairs = c('leather', 'straight', 'squat', 'sling', 'woven', 'waiting', 'inlay','knob')
+birds = c('crow', 'pigeon', 'robin', 'sparrow', 'tomtit', 'nightingale', 'bluejay', 'cuckoo')
+cars = c('beetle', 'bluesport', 'brown', 'white', 'redsport', 'redantique', 'hatchback', 'bluesedan')
 d <- raw %>% 
   mutate(gameid = str_sub(gsub("-", "", gameID), start = -12)) %>%
   mutate(sketchLabel = sprintf('%s_%s', gameid, trialNum)) %>%
   filter(iteration == 'pilot1') %>% # Just use pilot 1 for now
-  select(sketchLabel, condition, target, Distractor1, Distractor2, Distractor3, mean_intensity, pose) 
+  select(sketchLabel, condition, target, Distractor1, Distractor2, Distractor3, mean_intensity, pose) %>%
+  mutate(domain = case_when(target %in% chairs ~ 'chair',
+                            target %in% dogs ~ 'dog',
+                            target %in% birds ~ 'bird',
+                            target %in% cars ~ 'car',
+                            T ~ 'other'))
+```
+
+```{r}
+with_domain <- raw %>%
+  mutate(domain = case_when(target %in% chairs ~ 'chair',
+                            target %in% dogs ~ 'dog',
+                            target %in% birds ~ 'bird',
+                            target %in% cars ~ 'car',
+                            T ~ 'other')) 
+write_csv(with_domain %>% select(-X1, -`Unnamed: 0`), 'merged_data_plus_domain.csv')
 ```
 
 Write out cost look-up table (use mean_intensity for now):
@@ -76,9 +95,9 @@ d.ordered %>%  filter(condition == 'further') %>%
 Load in different embeddings and make boilerplate iterables for them
 
 ```{r}
-strictSimilarities <- fromJSON('./RSA/refModule/json/strict-similarity.json', flatten = T)
-nonstrictSimilarities <- fromJSON('./RSA/refModule/json/nonstrict-similarity.json', flatten = T)
-earlySimilarities <- fromJSON('./RSA/refModule/json/early-similarity.json', flatten = T)
+# strictSimilarities <- fromJSON('./RSA/refModule/json/strict-similarity.json', flatten = T)
+# nonstrictSimilarities <- fromJSON('./RSA/refModule/json/nonstrict-similarity.json', flatten = T)
+# earlySimilarities <- fromJSON('./RSA/refModule/json/early-similarity.json', flatten = T)
 
 lookupStrictSimilarity <- function(object, sketch) {
   return(strictSimilarities[[object]][[sketch]])
@@ -120,6 +139,8 @@ tmp %>%
     xlim(-1, 1) +
     ggtitle('sketch similarity in further condition') +
     scale_fill_colorblind()
+
+ggsave('diffconditions.pdf')
 ```
 
 Yes,on 'far' conditions the sketch tends to be similar to the target and dissimilar to the distractors
@@ -140,9 +161,51 @@ tmp %>%
     xlim(-1, 1) +
     ggtitle('sketch similarity in further condition') +
     scale_fill_colorblind()
+
+ggsave('sameconditions.pdf')
 ```
 
 On 'close' conditions the sketch tends to be similar to both...
+
+What does the early layer look like?
+
+```{r}
+tmp = d.similarity %>% 
+  mutate(contextElement = case_when(contextElement == 'Target' ~ 'target',
+                                    T ~ 'distractor')) %>%
+  filter(condition == 'further') 
+
+tmp %>%
+  ggplot(aes(x = earlySimilarity, fill = contextElement)) +
+    geom_density(alpha = .5) +
+    theme_few() +
+    theme(aspect.ratio = 1) +
+    xlim(-1, 1) +
+    ggtitle('sketch similarity in further condition') +
+    scale_fill_colorblind()
+
+ggsave('early_far.pdf')
+```
+
+What does the early layer look like?
+
+```{r}
+tmp = d.similarity %>% 
+  mutate(contextElement = case_when(contextElement == 'Target' ~ 'target',
+                                    T ~ 'distractor')) %>%
+  filter(condition == 'closer') 
+
+tmp %>%
+  ggplot(aes(x = earlySimilarity, fill = contextElement)) +
+    geom_density(alpha = .5) +
+    theme_few() +
+    theme(aspect.ratio = 1) +
+    xlim(-1, 1) +
+    ggtitle('sketch similarity in closer condition') +
+    scale_fill_colorblind()
+
+ggsave('early_close.pdf')
+```
 
 But is anything different across conditions? We'd expect that your bird is pushed to look more like the target bird when the distractors are also birds... 
 
@@ -208,12 +271,59 @@ d.similarity %>%
     ggtitle('sketch similarity to target across embeddings')
 ```
 
-Look at model output
+# Model comparison
+
+Compute likelihood for each model... 
 
 ```{r}
+sumlogprob <- function(a, b) {
+  if(a>b) {
+    return(a+log1p(exp(b-a)))
+  } else{
+    return(b+log1p(exp(a-b)))
+  }
+}
+
 modelOutput = read_csv('./RSA/bdaOutput/testingParams.csv') %>%
-  filter(posteriorProb != -Inf) %>%
-  group_by(similarityMetric, speakerModel) %>%
-  summarize(m = sum(posteriorProb))
-View(read_csv('./RSA/bdaOutput/testingParams.csv'))
+  #filter(posteriorProb != -Inf) %>%
+  group_by(embedding,speakerModel) %>%
+  summarize(prob = reduce(logLikelihood, sumlogprob) - log(length(logLikelihood)))
+
+print(modelOutput)
 ```
+
+Visualize as bars
+
+```{r}
+ggplot(modelOutput, aes(x = embedding, y = prob, fill = speakerModel)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
+    guides(fill=guide_legend(title="Speaker model")) +
+    ylab('log-likelihood') +
+    scale_fill_colorblind() +
+    theme_few(12) +
+    theme(aspect.ratio = )
+    coord_cartesian(ylim=c(-10100, -9500)) +
+    theme(legend.position = 'top') 
+
+ggsave('modelComparison.pdf')
+```
+
+```{r}
+samples = read_csv('./RSA/bdaOutput/testingParams.csv') %>%
+  filter(speakerModel == 'S1' & embedding == 'nonstrict-high') %>%
+  filter(posteriorProb != "-Infinity") %>%
+  mutate(posteriorProb = as.numeric(posteriorProb)) %>%
+  mutate(intermed = exp(posteriorProb - max(posteriorProb))) %>%
+  mutate(posteriorProb = log(intermed/sum(intermed))) %>%
+  select(-intermed, -speakerModel, -embedding) 
+
+  mutate(MCMCprob = exp(MCMCprob)) %>%
+  filter(MCMCprob > 0.001) %>%
+  mutate(n = floor(MCMCprob*1000)) %>%
+  do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
+  select(-t, -n, -MCMCprob) %>%
+  gather(parameter, value) %>%
+  mutate(value = as.numeric(as.character( value)))
+```
+ 
+ 

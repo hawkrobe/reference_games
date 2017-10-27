@@ -20,39 +20,37 @@ console.log("Loading model data complete..."
 // Package into config
 var globalConfig = {
   similarities, possibleSketches, costs,
-  storePredictives : false,  
+  storePredictives : true,  
   outputFileName : 'testing'
 };
 
 var modelAnalysis = function() {
-  var similarityMetric = uniformDraw(['strict-mid', 'nonstrict-high', 'early']);
+  var similarityMetric = 'nonstrict-high';//uniformDraw(['nonstrict-high', 'early']);
   var speakerModel = uniformDraw(['S1', 'S0']);
   
   var params = {
     similarityMetric, speakerModel,
-    alpha : uniformDraw(_.range(0.5, 10, 0.5)),//.toFixed(1), //[0.5, 1, 2, 5]),
-    simScale : speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)),//.toFixed(1),//1, 2, 5])),
-    costWeight : uniformDraw(_.range(0, 1, 0.1))//.toFixed(1)//[0, .1, .2, .3, .4]) 
+    alpha : 1,//uniformDraw(_.range(0.5, 10, 0.5)),//.toFixed(1), //[0.5, 1, 2, 5]),
+    simScale : 1,//speakerModel === 'S0' ? 1 : uniformDraw(_.range(0.5, 5, 0.5)),//.toFixed(1),//1, 2, 5])),
+    costWeight : 1//uniformDraw(_.range(0, 1, 0.1))//.toFixed(1)//[0, .1, .2, .3, .4]) 
   };
   
-  //var model = initializeModel(extend(params, globalConfig))[params.speakerModel];
+  var model = initializeModel(extend(params, globalConfig));
   var score = reduce(function(c, memo) {
     // Extract condition information
     var conditionType = c.condition;
     var context = [c.Target, c.Distractor1, c.Distractor2, c.Distractor3];
     var target = context[0];
 
-    // Run model
-    
-    // var modelOutput = model(target, context);
+    var modelOutput = model(target, context);
     // Store predives
-    // if(globalConfig.storePredictives) {
-    //   foreach(modelOutput.support(), function(s){
-    // 	var key = _.values(c).concat(s);
-    // 	var newPair = _.zipObject([key], [Math.exp(modelOutput.score(s))]);
-    // 	globalStore.predictives = extend(globalStore.predictives, newPair);
-    //   });
-    // }
+    if(globalConfig.storePredictives) {
+      foreach(modelOutput.support(), function(s){
+    	var key = _.values(c).concat(s);
+    	var newPair = _.zipObject([key], [Math.exp(modelOutput.score(s))]);
+    	globalStore.predictives = extend(globalStore.predictives, newPair);
+      });
+    }
     
     // condition on data
     // var itemData = refModule.getSubset(data, c);
