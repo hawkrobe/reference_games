@@ -15,7 +15,6 @@ var getCosts = function(name) {
   return require('./json/costs.json');
 };
 
-// TODO: this is currently a hack to exclude pilot0 sketches
 var getPossibleSketches = function(costs) {
   return _.keys(costs);
 };
