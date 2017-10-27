@@ -24,6 +24,13 @@ TODO: incorporate pilot0 as well (though missing pose data makes this nontrivial
 
 ```{r}
 raw <-  read_delim('sketchpad_basic_merged_group_data.csv', delim = ',') 
+invalid_trials <- (read_csv('./invalid_trial_paths.txt', col_names = F) %>%
+  mutate(X1 = gsub('gameID_', '', X1)) %>%
+  mutate(X1 = gsub('trial_', '', X1)) %>%
+  mutate(X1 = gsub('.png', '', X1)) %>%
+  mutate(X1 = str_sub(gsub("-", "", X1), start = 25)))$X1
+
+
 dogs <- c('weimaraner', 'chihuahua', 'basset', 'doberman', 'bloodhound', 'bullmastiff', 'goldenretriever', 'pug')
 chairs = c('leather', 'straight', 'squat', 'sling', 'woven', 'waiting', 'inlay','knob')
 birds = c('crow', 'pigeon', 'robin', 'sparrow', 'tomtit', 'nightingale', 'bluejay', 'cuckoo')
@@ -32,6 +39,8 @@ d <- raw %>%
   mutate(gameid = str_sub(gsub("-", "", gameID), start = -12)) %>%
   mutate(sketchLabel = sprintf('%s_%s', gameid, trialNum)) %>%
   filter(iteration == 'pilot1') %>% # Just use pilot 1 for now
+  filter(!(sketchLabel %in% invalid_trials)) %>% # Remove invalid sketch (e.g. w/ text)
+  filter(outcome == 1) %>% # Remove incorrect trials
   select(sketchLabel, condition, target, Distractor1, Distractor2, Distractor3, mean_intensity, pose) %>%
   mutate(domain = case_when(target %in% chairs ~ 'chair',
                             target %in% dogs ~ 'dog',
@@ -54,7 +63,7 @@ Write out cost look-up table (use mean_intensity for now):
 
 ```{r}
 as.list(setNames(d$mean_intensity,d$sketchLabel)) %>%
-  write_json('RSA/bdaInput/costs.csv')
+  write_json('RSA/bdaInput/costs.json')
 ```
 
 We reorder contexts alphabetically because we just care about content of set. Also reformat object names to include pose.... 
