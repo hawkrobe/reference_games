@@ -99,14 +99,13 @@ For each pair, objects were grouped into eight quartets: Four of these quartets 
 
 \subsection*{Modeling}
 
-\subsubsection*{Visual encoding module}
+\subsubsection*{Visual encoder module}
 
-Features were extracted using VGG-19 \cite{simonyan2014very}, a high-performing deep convolutional neural network model class that had been pre-trained to categorize objects on the Imagenet database, which contains millions of photographs from hundreds of object categories \cite{deng2009imagenet}.
+Features were extracted using VGG-19 \cite{simonyan2014very}, a high-performing deep convolutional neural network model architecture that had been pre-trained to categorize objects on the Imagenet database, which contains millions of photographs from hundreds of object categories \cite{deng2009imagenet}.
 
+Despite the fact that drawings are highly abstracted away from natural visual inputs, a relatively modest amount of `fine-tuning' of models previously trained only on photos has been shown to lead to vast improvements in sketch categorization, and discerning image-level correspondences between sketches and photos \cite[]{sangkloy2016sketchy}. Even without fine-tuning, prior work has shown a striking isomorphism in the similarity structure \cite{kriegeskorte2008matching} of object categories in drawings and photos at higher layers in these models \cite[]{fan2015common}.
 
-
-
-
+\cite{peterson2016adapting}
 
 \subsubsection*{Social inference module}
 
@@ -138,6 +137,12 @@ This has the effect of biasing the model to depict properties of the target obje
 
 \section*{Results}
 
+This experiment tests a key prediction of the pragmatic visual communicator hypothesis. If sketchers aim to make their sketches informative without being too costly to produce, they will modulate the level of detail in their drawings according to the set of alternative hypotheses under consideration by the viewer. More specifically, we predict that the degree of visual similarity between alternatives will influence the \emph{accuracy} and the \emph{efficiency} with which participants convey target concepts. 
+
+In the \textit{close} condition, the sketcher should make detailed drawings to highlight within-category distinctions, even though this requires additional strokes; however, in the \textit{far} condition where the alternatives are highly dissimilar from the target, the sketcher can provide simpler drawings by omitting excess detail.
+
+Drawing \emph{accuracy} will be measured as the proportion of trials on which the sketcher's communication partner correctly identified the target in context. Drawing \emph{efficiency} will be quantified in two ways: (1) the number of strokes required to reach the minimum target rank (i.e., maximum classifier evidence) during that trial; and (2) the time (in seconds) taken to complete each drawing. The intuition for the stroke-based measure of efficiency is that it reflects the cost associated with producing more detailed sketches, such that a sketch with fewer strokes that reliably evokes the target in context is preferred to a more detailed sketch, all else equal. Our hypothesis makes three predictions concerning these measures of accuracy and efficiency. If sketchers are sensitive to the range of alternatives under consideration by the viewer we expect to observe: (1) \emph{higher identification accuracy} and (2) \emph{higher efficiency} in the \textit{far} condition than in the \textit{close} condition. 
+
 % We operationalize the notion of `simplicity' through a small set of derived stroke-level measures. First, we expect the raw number of strokes per trial to be higher in the close condition than the far condition. Second, we expect the the length of the svg string to be higher in the close condition than the far condition, which should be correlated with raw number of strokes but accounts for the complexity of each stroke. Finally, we will conduct a range of model-based analyses using features extracted from modern convolutional neural networks to rigorously evaluate pragmatic and non-pragmatic accounts of communication under different assumptions about how the visual system computes similarity. 
 
 \subsection*{Task performance}
@@ -148,9 +153,6 @@ This has the effect of biasing the model to depict properties of the target obje
 
 \subsection*{Sketcher model comparison}
 
-% S1 vs. S0
-
-% high vs. mid vs. low
 
 \subsubsection*{Code availability} The code for the analyses presented in this article is publicly available in a Github repository at: XX.
 
