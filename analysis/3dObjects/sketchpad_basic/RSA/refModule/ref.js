@@ -6,13 +6,13 @@ var babyparse = require('babyparse');
 
 var getSimilarities = function(name) {
   return {
-    'strict-mid-prag' : require('./json/strict-similarity-pragmatics-conv4_2.json'),
-    'nonstrict-high' : require('./json/nonstrict-similarity_fc7.json')
+    'strict-mid-pragmatics' : require('./json/strict-similarity-pragmatics-fixedpose_conv4_2.json'),
+    'nonstrict-high-sketchy' : require('./json/nonstrict-similarity-sketchy-fixedpose_fc7.json')
   };
 };
 
 var getCosts = function(name) {
-  return require('./json/costs.json');
+  return require('./json/costs-' + name + '.json');
 };
 
 var getPossibleSketches = function(costs) {
@@ -61,10 +61,6 @@ var getS0score = function(trueSketch, targetObj, params) {
   return Math.log(Math.exp(params.alpha * trueUtility)) - Math.log(sum);
 }
 
-// console.log(getDistance('cars_07_hatchback_0038.npy',
-// 			'gameID_2848-1779ba4d-c84b-4050-8a1f-e4b733ceb6a7_trial_9.npy',
-// 			{modelVersion: 'out_formatted.json'}));
-
 function readCSV(filename){
   return babyparse.parse(fs.readFileSync(filename, 'utf8'),
 			 {header:true, skipEmptyLines:true}).data;
@@ -77,27 +73,6 @@ function writeCSV(jsonCSV, filename){
 function appendCSV(jsonCSV, filename){
   fs.appendFileSync(filename, babyparse.unparse(jsonCSV) + '\n');
 }
-
-var writeERP = function(erp, labels, filename, fixed) {
-  var data = _.filter(erp.support().map(
-   function(v) {
-     var prob = Math.exp(erp.score(v));
-     if (prob > 0.0){
-      if(v.slice(-1) === ".")
-        out = butLast(v);
-      else if (v.slice(-1) === "?")
-        out = butLast(v).split("Is")[1].toLowerCase();
-      else 
-        out = v
-      return labels.concat([out, String(prob.toFixed(fixed))]);
-
-    } else {
-      return [];
-    }
-  }
-  ), function(v) {return v.length > 0;});
-  appendCSV(data, filename);
-};
 
 var supportWriter = function(s, p, handle) {
   var sLst = _.toPairs(s);
@@ -143,5 +118,5 @@ var locParse = function(filename) {
 module.exports = {
   getSimilarities, getPossibleSketches, getCosts, getSubset,
   getL0score, getS1score, getS0score,
-  bayesianErpWriter, writeERP, writeCSV, readCSV, locParse
+  bayesianErpWriter, writeCSV, readCSV, locParse
 };
