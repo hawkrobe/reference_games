@@ -29,7 +29,7 @@ var game_core = function(options){
   this.server = options.server ;
   this.projectName = '3dObjects';
   this.experimentName = 'sketchpad_repeated';
-  this.iterationName = 'pilot1';  
+  this.iterationName = 'feedback_pilot0';  
   this.email = 'sketchloop@gmail.com';
 
   // save data to the following locations (allowed: 'csv', 'mongo')
@@ -62,9 +62,6 @@ var game_core = function(options){
 
   // Which stroke number are we on?  
   this.currStrokeNum = 0;  
-
-  // Is the sketcher done with their drawing?
-  this.doneDrawing = false;
 
   // Is the sketcher allowed to draw?
   this.drawingAllowed = false;
@@ -171,7 +168,7 @@ game_core.prototype.newRound = function() {
     // console.log('got to newRound in game.core.js and not the final round');
     // Otherwise, get the preset list of objects for the new round
     this.roundNum += 1;
-    this.trialInfo = {currStim: this.trialList[this.roundNum]};
+    this.trialInfo = {startTime: Date.now(), currStim: this.trialList[this.roundNum]};
     this.objects = this.trialList[this.roundNum];
     this.server_send_update();
   }
