@@ -120,10 +120,10 @@ html , body {
 #viewport {
     float: middle;
     border:solid 1px #333;
-    height: 25vh;
-    width: 100vh;
+    height: 37vh;
+    width: 148vh;
     margin: auto;
-	  top: 56vh; bottom: auto; left:0; right: 0;
+    top: 48vh; bottom: auto; left:0; right: 0;
     background: #383838;
     position: absolute;
 
@@ -132,10 +132,10 @@ html , body {
 #occluder {
     float: middle;
     border:solid 1px #333;
-    height: 25vh;
-    width: 100vh;
+    height: 37vh;
+    width: 148vh;
     margin: auto;
-	top: 56vh; bottom: auto; left:0; right: 0;
+	top: 48vh; bottom: auto; left:0; right: 0;
     background: #808080;
     position: absolute;
     z-index: 10;
