@@ -58,12 +58,12 @@ var onMessage = function(client,message) {
     target.visible = message_parts[1];
     break;
 
-  case 'doneDrawing' : // sketcher has declared that drawing is finished
-    drawing_status = message_parts[1];
-    console.log('drawing submitted: ', drawing_status);
-      _.map(all, function(p){
-        p.player.instance.emit('mutualDoneDrawing', {user: client.userid} );
-      });
+  // case 'doneDrawing' : // sketcher has declared that drawing is finished
+  //   drawing_status = message_parts[1];
+  //   console.log('drawing submitted: ', drawing_status);
+  //     _.map(all, function(p){
+  //       p.player.instance.emit('mutualDoneDrawing', {user: client.userid} );
+  //     });
 
   }
 };
@@ -118,17 +118,18 @@ var dataOutput = function() {
       commonOutput(client, message_data),
       objLocations, {
     	intendedName,
+	responseTime: Date.now() - client.game.trialInfo.startTime,
     	clickedName: message_data[1],
     	correct: intendedName === message_data[1],
-	    pngString: message_data[2],
-	    pose: parseInt(message_data[3]),
+	pngString: message_data[2],
+	pose: parseInt(message_data[3]),
     	condition : message_data[4],
-	    phase : message_data[5],
-	    repetition : message_data[6],
-      score : message_data[7]
+	phase : message_data[5],
+	repetition : message_data[6],
+	score : message_data[7]
       }
     );
-    console.log(JSON.stringify(_.pick(output, ['repetition', 'correct']), null, 3));
+    console.log(JSON.stringify(_.pick(output, ['repetition', 'correct', 'responseTime']), null, 3));
     return output;
   };
 
