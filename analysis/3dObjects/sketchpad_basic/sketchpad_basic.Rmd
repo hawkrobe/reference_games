@@ -63,7 +63,7 @@ Write out cost look-up table (use mean_intensity for now):
 
 ```{r}
 as.list(setNames(d$mean_intensity,d$sketchLabel)) %>%
-  write_json('RSA/bdaInput/costs.json')
+  write_json('RSA/refModule/json/costs.json')
 ```
 
 We reorder contexts alphabetically because we just care about content of set. Also reformat object names to include pose.... 
@@ -106,14 +106,15 @@ Load in different embeddings and make boilerplate iterables for them
 ```{r}
 # strictSimilarities <- fromJSON('./RSA/refModule/json/strict-similarity.json', flatten = T)
 # nonstrictSimilarities <- fromJSON('./RSA/refModule/json/nonstrict-similarity.json', flatten = T)
-# earlySimilarities <- fromJSON('./RSA/refModule/json/early-similarity.json', flatten = T)
+pragSimilarities <- fromJSON('./RSA/refModule/json/strict-similarity-pragmatics-conv4_2.json', flatten = T)
 
-lookupStrictSimilarity <- function(object, sketch) {
-  return(strictSimilarities[[object]][[sketch]])
+lookupFixedSimilarity <- function(object, sketch) {
+  fixedSimilarities[[object]]
+  return(fixedSimilarities[[object]][[sketch]])
 }
 
-lookupNonstrictSimilarity <- function(object, sketch) {
-  return(nonstrictSimilarities[[object]][[sketch]])
+lookupPragSimilarity <- function(object, sketch) {
+  return(pragSimilarities[[object]][[sketch]])
 }
 
 lookupEarlySimilarity <- function(object, sketch) {
@@ -127,9 +128,9 @@ Add columns for the different kinds of similarity
 d.similarity <- d.ordered %>%
   gather(contextElement, name, Target, Distractor1, Distractor2, Distractor3) %>%
   rowwise() %>%
-  mutate(strictSimilarity = lookupStrictSimilarity(name, sketchLabel)) %>%
-  mutate(nonstrictSimilarity = lookupNonstrictSimilarity(name, sketchLabel)) %>%
-  mutate(earlySimilarity = lookupEarlySimilarity(name, sketchLabel))
+  mutate(pragSimilarity = lookupPragSimilarity(name, sketchLabel)) %>%
+  rowwise() %>%
+  mutate(fixedSimilarity = lookupFixedSimilarity(name, sketchLabel)) 
 ```
 
 Sanity check: is similarity higher for target than distractors?
@@ -141,12 +142,13 @@ tmp = d.similarity %>%
   filter(condition == 'further') 
 
 tmp %>%
-  ggplot(aes(x = nonstrictSimilarity, fill = contextElement)) +
+  ggplot(aes(x = pragSimilarity, fill = contextElement)) +
     geom_density(alpha = .5) +
     theme_few() +
     theme(aspect.ratio = 1) +
     xlim(-1, 1) +
     ggtitle('sketch similarity in further condition') +
+    facet_wrap(~ domain) +
     scale_fill_colorblind()
 
 ggsave('diffconditions.pdf')
@@ -163,12 +165,13 @@ tmp = d.similarity %>%
   filter(condition == 'closer') 
 
 tmp %>%
-  ggplot(aes(x = nonstrictSimilarity, fill = contextElement)) +
+  ggplot(aes(x = pragSimilarity, fill = contextElement)) +
     geom_density(alpha = .5) +
     theme_few() +
     theme(aspect.ratio = 1) +
     xlim(-1, 1) +
-    ggtitle('sketch similarity in further condition') +
+    ggtitle('sketch similarity in close condition') +
+    facet_wrap(~ domain) +
     scale_fill_colorblind()
 
 ggsave('sameconditions.pdf')
@@ -335,4 +338,43 @@ samples = read_csv('./RSA/bdaOutput/testingParams.csv') %>%
   mutate(value = as.numeric(as.character( value)))
 ```
  
- 
+```{r}
+fixedSimilarities <- fromJSON('./RSA/refModule/json/strict-similarity-pragmatics-fixedpose-conv4_2.json', flatten = T)
+
+raw_fixed <- read_delim('sketchpad_basic_pilot2_group_data.csv', delim = ',') 
+
+d <- raw_fixed %>% 
+  mutate(gameid = str_sub(gsub("-", "", gameID), start = -12)) %>%
+  mutate(sketchLabel = sprintf('%s_%s', gameid, trialNum)) %>%
+  select(sketchLabel, condition, target, Distractor1, Distractor2, Distractor3, mean_intensity, pose) 
+```
+
+```{r}
+d$context = apply(d %>% select(Distractor1, Distractor2, Distractor3), 1, 
+                  function(x) paste(sort(x), collapse="_"))
+
+test_trials <- (read_csv('./pilot2_test_examples.txt', col_names = F) %>%
+  mutate(X1 = gsub('gameID_', '', X1)) %>%
+  mutate(X1 = gsub('trial_', '', X1)) %>%
+  #mutate(X1 = gsub('.png', '', X1)) %>%
+  mutate(X1 = str_sub(gsub("-", "", X1), start = 25)) %>%
+  separate())$X1
+
+
+d.ordered = d %>% 
+  select(-Distractor1, -Distractor2, -Distractor3) %>%
+  separate(context, into = c('Distractor1', 'Distractor2', 'Distractor3')) %>%
+  mutate(Target = sprintf("%s_%04d", target, pose)) %>%
+  mutate(Distractor1 = sprintf("%s_%04d", Distractor1, pose)) %>%
+  mutate(Distractor2 = sprintf("%s_%04d", Distractor2, pose)) %>%
+  mutate(Distractor3 = sprintf("%s_%04d", Distractor3, pose))
+
+as.list(setNames(d$mean_intensity,d$sketchLabel)) %>%
+  write_json('RSA/refModule/json/costs.json')
+
+# Only keep close trials from held-out set
+d.ordered %>% 
+  select(condition, sketchLabel, Target, Distractor1, Distractor2, Distractor3) %>%
+  
+  write_csv('./RSA/bdaInput/sketch_data.csv')
+```
