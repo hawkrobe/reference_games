@@ -58,7 +58,7 @@ var client_onserverupdate_received = function(data){
   if (globalGame.roundNum != data.roundNum) {
     var alreadyLoaded = 0; 
     $('#occluder').show();
-    // globalGame.drawingAllowed = false;
+    globalGame.drawingAllowed = false;
     globalGame.objects = _.map(data.objects, function(obj) {
       // Extract the coordinates matching your role
       var customCoords = globalGame.my_role == "sketcher" ? obj.speakerCoords : obj.listenerCoords;
@@ -188,16 +188,15 @@ var customSetup = function(game) {
   game.sketchpad = new Sketchpad();
 
   $(document).ready(function() {
-    $("#submitbutton").click(function(){
-      if (globalGame.currStrokeNum > 0) { // only allow submit button to be pressed if at least one stroke made
-        var finished = ['doneDrawing',1];
-        globalGame.socket.send(finished.join('.'));
-      } else {
-        $('#feedback').html("Please make your sketch.");
-      }
-    });
-
-    // get workerId, etc. from URL
+    // $("#submitbutton").click(function(){
+    //   if (globalGame.currStrokeNum > 0) { // only allow submit button to be pressed if at least one stroke made
+    //     var finished = ['doneDrawing',1];
+    //     globalGame.socket.send(finished.join('.'));
+    //   } else {
+    // $('#feedback').html("Please make your sketch.");
+    //      }
+    // })
+  // get workerId, etc. from URL
     var urlParams;
     var match,
         pl     = /\+/g,  // Regex for replacing addition symbol with a space
@@ -221,19 +220,11 @@ var customSetup = function(game) {
     project.activeLayer.removeChildren();
 
     // reset drawing stuff
-    globalGame.doneDrawing = false;
+    //globalGame.doneDrawing = false;
     globalGame.path = [];
     
     // Reset stroke counter
     globalGame.currStrokeNum = 0;
-
-    // occluder box animation now controlled within client_onserverupdate_received
-    // // fade in occluder box, wait a beat, then fade it out (then allow drawing)
-    // $("#occluder").show(0)
-    //               .delay(3000)
-    //               .hide(0, function() {
-    //                 globalGame.drawingAllowed = true;
-    //               });
 
     if (globalGame.my_role === globalGame.playerRoleNames.role2) {
       $("#loading").fadeIn('fast');
@@ -242,7 +233,7 @@ var customSetup = function(game) {
     // clear feedback blurb
     $('#feedback').html(" ");
     $('#turnIndicator').html(" ");
-
+    
     // Update display
     var score = game.data.subject_information.score;
     if(game.roundNum + 2 > game.numRounds) {
@@ -269,17 +260,17 @@ var customSetup = function(game) {
     path.importJSON(jsonData);
   });
 
-  game.socket.on('mutualDoneDrawing', function(role) {
-    globalGame.doneDrawing = true;
-    globalGame.drawingAllowed = false;
-    if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-      $('#feedback').html(" ");
-      setTimeout(function(){$('#turnIndicator').html("Your partner's turn to guess the target!");},globalGame.feedbackDelay);
-    } else if (globalGame.my_role === globalGame.playerRoleNames.role2) {
-      $("#loading").fadeOut('fast');
-      setTimeout(function(){$('#turnIndicator').html('Your turn: Select the target!');},globalGame.feedbackDelay);
-    }
-  });
+  // game.socket.on('mutualDoneDrawing', function(role) {
+  //   globalGame.doneDrawing = true;
+  //   globalGame.drawingAllowed = false;
+  //   if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+  //     $('#feedback').html(" ");
+  //     setTimeout(function(){$('#turnIndicator').html("Your partner's turn to guess the target!");},globalGame.feedbackDelay);
+  //   } else if (globalGame.my_role === globalGame.playerRoleNames.role2) {
+  //     $("#loading").fadeOut('fast');
+  //     setTimeout(function(){$('#turnIndicator').html('Your turn: Select the target!');},globalGame.feedbackDelay);
+  //   }
+  // });
 
 };
 
@@ -301,14 +292,13 @@ var client_onjoingame = function(num_players, role) {
   if (role === globalGame.playerRoleNames.role1) {
     txt = "target";
     $('#instructs').html("<p>Make a sketch of the target (orange)" +
-      " so that your partner can tell which it is. " +
-      " When you are done, click SUBMIT. </p>" +
+      " so that your partner can tell which it is. </p>" +
       "<p> To draw: Click & drag on canvas OR hold down Shift key while moving cursor. </p>" +
       "<p> Important: Please do NOT resize browser window or change zoom during the game.</p>".bold());
       $("#submitbutton").show();
   } else if (role === globalGame.playerRoleNames.role2) {
-    $('#instructs').html("<p>Your partner is going to draw one of these four objects." +
-      " When they are done, click on the object they sketched. </p>" +
+    $('#instructs').html("<p>Your partner is going to draw one of these four objects. </p>" +
+      "<p> When you are confident about which object they are drawing, click on that object in the lineup. </p>" +
       " <p> Important: Please do NOT resize browser window or change zoom during the game.</p>".bold());
     $("#loading").show();
   }
@@ -350,7 +340,7 @@ function responseListener(evt) {
   if (globalGame.messageSent) {
     // find which shape was clicked
     _.forEach(globalGame.objects, function(obj) {
-      if (hitTest(obj, mouseX, mouseY) && globalGame.doneDrawing) {
+      if (hitTest(obj, mouseX, mouseY)) {
         globalGame.messageSent = false;
 
         // Send packet about trial to server
