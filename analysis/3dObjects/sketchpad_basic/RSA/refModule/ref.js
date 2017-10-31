@@ -7,6 +7,7 @@ var babyparse = require('babyparse');
 var getSimilarities = function(name) {
   return {
     'strict-mid-pragmatics' : require('./json/strict-similarity-pragmatics-fixedpose_conv4_2.json'),
+    'strict-mid-pragmatics-augmented' : require('./json/strict-similarity-pragmatics-fixedpose-augmented_conv4_2.json'),
     'nonstrict-high-sketchy' : require('./json/nonstrict-similarity-sketchy-fixedpose_fc7.json')
   };
 };

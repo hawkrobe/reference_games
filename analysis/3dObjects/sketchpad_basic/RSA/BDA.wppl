@@ -24,6 +24,7 @@ var globalConfig = {
 
 var modelAnalysis = function() {
   var similarityMetric = uniformDraw(['strict-mid-pragmatics',
+              'strict-mid-pragmatics-augmented',
 				      'nonstrict-high-sketchy']);
   var speakerModel = uniformDraw(['S1', 'S0']);
   
