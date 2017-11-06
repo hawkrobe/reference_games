@@ -9,7 +9,7 @@ var sendPostRequest = require('request').post;
 var serveFile = function(req, res) {
   var fileName = req.params[0];
   console.log('\t :: Express :: file requested: ' + fileName);
-  return res.sendFile(fileName, {root: __base}); 
+  return res.sendFile(fileName, {root: __base});
 };
 
 var handleDuplicate = function(req, res) {
@@ -50,16 +50,16 @@ var checkPreviousParticipant = function(workerId, callback) {
 };
 
 var writeDataToCSV = function(game, _dataPoint) {
-  var dataPoint = _.clone(_dataPoint);  
+  var dataPoint = _.clone(_dataPoint);
   var eventType = dataPoint.eventType;
 
   // Omit sensitive data
-  if(game.anonymizeCSV) 
+  if(game.anonymizeCSV)
     dataPoint = _.omit(dataPoint, ['workerId', 'assignmentId']);
-  
+
   // Establish stream to file if it doesn't already exist
   if(!_.has(game.streams, eventType))
-    establishStream(game, dataPoint);    
+    establishStream(game, dataPoint);
 
   var line = _.values(dataPoint).join('\t') + "\n";
   game.streams[eventType].write(line, err => {if(err) throw err;});
@@ -222,8 +222,8 @@ var colorDiff = function(color1, color2) {
 var vec = function extractEntries(dict,key) {
     vec = []
     for (i=0; i<dict.length; i++) {
-        vec.push(dict[i][key]);    
-    } 
+        vec.push(dict[i][key]);
+    }
     return vec;
 }
 
@@ -231,19 +231,19 @@ var vec = function extractEntries(dict,key) {
 var vec = function matchingValue(dict,key,value) {
   vec = []
   for (i=0; i<dict.length; i++) {
-    if (dict[i][key]==value) {      
-        vec.push(dict[i]);    
+    if (dict[i][key]==value) {
+        vec.push(dict[i]);
     }
-  } 
+  }
   return vec;
 }
 
 // add entry to dictionary object
 var dict = function addEntry(dict,key,value) {
   for (i=0; i<dict.length; i++) {
-      dict[i][key] = value;   
-  } 
-  return dict;  
+      dict[i][key] = value;
+  }
+  return dict;
 }
 
 // make integer series from lb (lower) to ub (upper)

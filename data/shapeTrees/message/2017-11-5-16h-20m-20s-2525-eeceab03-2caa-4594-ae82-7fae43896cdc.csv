@@ -1,0 +1,5 @@
+eventType	gameid	time	roundNum	sender	contents
+message	2525-eeceab03-2caa-4594-ae82-7fae43896cdc	1509927620490	1	speaker	asdf
+message	2525-eeceab03-2caa-4594-ae82-7fae43896cdc	1509927699180	2	listener	asdf
+message	2525-eeceab03-2caa-4594-ae82-7fae43896cdc	1509927702700	2	speaker	asdf
+message	2525-eeceab03-2caa-4594-ae82-7fae43896cdc	1509927724185	3	speaker	asfdf

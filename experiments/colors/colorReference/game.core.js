@@ -1,9 +1,9 @@
-/*  Copyright (c) 2012 Sven "FuzzYspo0N" Bergström, 
+/*  Copyright (c) 2012 Sven "FuzzYspo0N" Bergström,
                   2013 Robert XD Hawkins
-    
+
  written by : http://underscorediscovery.com
     written for : http://buildnewgames.com/real-time-multiplayer/
-    
+
     substantially modified for collective behavior experiments on the web
     MIT Licensed.
 */
@@ -32,14 +32,14 @@ var game_core = function(options){
 
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = [];
-  
+
   // How many players in the game?
   this.players_threshold = 2;
   this.playerRoleNames = {
     role1 : 'speaker',
     role2 : 'listener'
   };
-  
+
   //Dimensions of world in pixels and numberof cells to be divided into;
   this.numHorizontalCells = 3;
   this.numVerticalCells = 1;
@@ -48,8 +48,8 @@ var game_core = function(options){
   this.world = {height : (this.cellDimensions.height * this.numVerticalCells
               + this.cellPadding),
               width : (this.cellDimensions.width * this.numHorizontalCells
-              + this.cellPadding)}; 
-  
+              + this.cellPadding)};
+
   // Which round are we on (initialize at -1 so that first round is 0-indexed)
   this.roundNum = -1;
 
@@ -61,7 +61,7 @@ var game_core = function(options){
 
   // This will be populated with the tangram set
   this.trialInfo = {};
-  
+
   if(this.server) {
     // If we're initializing the server game copy, pre-create the list of trials
     // we'll use, make a player object, and tell the player who they are
@@ -72,7 +72,7 @@ var game_core = function(options){
     this.data = {
       id : this.id,
       trials : [],
-      catch_trials : [], system : {}, 
+      catch_trials : [], system : {},
       subject_information : {
         gameID: this.id,
 	score: 0
@@ -101,17 +101,17 @@ var game_player = function( game_instance, player_instance) {
   this.role = '';
   this.message = '';
   this.id = '';
-}; 
+};
 
 // server side we set some classes to global types, so that
 // we can use them in other files (specifically, game.server.js)
 if('undefined' != typeof global) {
-  module.exports = {game_core, game_player};  
+  module.exports = {game_core, game_player};
 }
 
 // HELPER FUNCTIONS
 
-// Method to easily look up player 
+// Method to easily look up player
 game_core.prototype.get_player = function(id) {
   var result = _.find(this.players, function(e){ return e.id == id; });
   return result.player;
@@ -132,7 +132,7 @@ game_core.prototype.get_active_players = function() {
 
 // Advance to the next round
 game_core.prototype.newRound = function() {
-  // If you've reached the planned number of rounds, end the game  
+  // If you've reached the planned number of rounds, end the game
   if(this.roundNum == this.numRounds - 1) {
     _.map(this.get_active_players(), function(p){
       p.player.instance.disconnect();});
@@ -164,13 +164,13 @@ game_core.prototype.makeTrialList = function () {
   var trialList = [];
   for (var i = 0; i < conditionList.length; i++) {
     var condition = conditionList[i];
-    var objList = sampleTrial(condition); // Sample three objects 
+    var objList = sampleTrial(condition); // Sample three objects
     var locs = this.sampleStimulusLocs(); // Sample locations for those objects
     trialList.push(_.map(_.zip(objList, locs.speaker, locs.listener), function(tuple) {
       var object = _.clone(tuple[0]);
       object.width = local_this.cellDimensions.width;
-      object.height = local_this.cellDimensions.height;      
-      var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]); 
+      object.height = local_this.cellDimensions.height;
+      var speakerGridCell = local_this.getPixelFromCell(tuple[1][0], tuple[1][1]);
       var listenerGridCell = local_this.getPixelFromCell(tuple[2][0], tuple[2][1]);
       object.speakerCoords = {
 	gridX : tuple[1][0],
@@ -197,13 +197,13 @@ game_core.prototype.makeTrialList = function () {
 game_core.prototype.server_send_update = function(){
   //Make a snapshot of the current state, for updating the clients
   var local_game = this;
-  
+
   // Add info about all players
   var player_packet = _.map(local_game.players, function(p){
     return {id: p.id,
             player: null};
   });
-  
+
   var state = {
     gs : this.game_started,   // true when game's started
     pt : this.players_threshold,
@@ -302,4 +302,3 @@ game_core.prototype.getTrueCoords = function (coord, objLocation, objImage) {
     return trueY;
   }
 };
-  
