@@ -3,7 +3,7 @@
 
 // Load in experimental data to condition on
 var experimentVersion = 'fixedPose'; // 'fixedPose', 'varyingPose', etc
-var data = refModule.readCSV("./bdaInput/sketchData_" + experimentVersion + '_augmented2_pilot2.csv');
+var data = refModule.readCSV("./bdaInput/sketchData_" + experimentVersion + '_augmented-splitbygame_pilot2.csv');
 console.log("Loading expt data complete..." + data.length + " data points");
 
 // Cache some properties of model
@@ -23,9 +23,7 @@ var globalConfig = {
 };
 
 var modelAnalysis = function() {
-  var similarityMetric = uniformDraw(['strict-mid-pragmatics-augmented2',
-              'strict-mid-pragmatics-augmented',
-				      'nonstrict-high-sketchy']);
+  var similarityMetric = uniformDraw(['conv_4_2','fc7']);
   var speakerModel = uniformDraw(['S1', 'S0']);
   
   var params = {
