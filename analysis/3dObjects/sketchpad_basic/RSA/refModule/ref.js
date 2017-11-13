@@ -5,10 +5,8 @@ var babyparse = require('babyparse');
 // var es = require('event-stream');
 
 var getSimilarities = function(name) {
-  return {
-    'strict-mid-pragmatics-augmented2' : require('./json/strict-similarity-pragmatics-fixedpose-augmented2_conv4_2.json'),
-    'strict-mid-pragmatics-augmented' : require('./json/strict-similarity-pragmatics-fixedpose-augmented_conv4_2.json'),
-    'nonstrict-high-sketchy' : require('./json/nonstrict-similarity-sketchy-fixedpose_fc7.json')
+    return {
+	'conv_4_2' : require('./json/strict-similarity-pragmatics-fixedpose-augmented-splitbycontext_conv4_2.json')
   };
 };
 
