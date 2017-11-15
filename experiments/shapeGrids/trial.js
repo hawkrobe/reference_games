@@ -76,7 +76,19 @@ var fromDimensionValueString = function(str, separator) {
   trial.objs[sOIndex1] = sObj1;
 
   return trial;
-}
+};
+
+var fromFlatObject = function(flat) {
+  var names = getDimensionNames();
+  var flatStr = "";
+  for (var i = 0; i < names.length; i++) {
+    flatStr += flat[names[i]] + ",";
+  }
+
+  flatStr = flatStr.substring(0, flatStr.length - 1);
+
+  return fromDimensionValueString(flatStr, ",");
+};
 
 var getFlatObject = function(trial) {
   var obj = {};
