@@ -29,7 +29,8 @@ var makeRandom = function(trialNum, numRounds) {
   return { objs: [obj, otherObj],
            target : Math.floor(Math.random() * 2),
            speakerOrder : [speakerFirst, 1-speakerFirst],
-           listenerOrder : [listenerFirst, 1-listenerFirst] }
+           listenerOrder : [listenerFirst, 1-listenerFirst],
+           diffs : numDiffs }
 };
 
 var fromDimensionValueString = function(str, separator) {
@@ -40,6 +41,7 @@ var fromDimensionValueString = function(str, separator) {
   //var lTarget = parseInt(values[3]); // Unnecessary
   var lOIndex0 = parseInt(values[4]);
   var lOIndex1 = parseInt(values[5]);
+  var numDiffs = parseInt(values[6]);
 
   var target = 0;
   if (sTarget == 0)
@@ -50,12 +52,13 @@ var fromDimensionValueString = function(str, separator) {
   var trial = { objs : [{}, {}],
                 target : target,
                 speakerOrder : [sOIndex0, sOIndex1],
-                listenerOrder : [lOIndex0, lOIndex1] };
+                listenerOrder : [lOIndex0, lOIndex1],
+                diffs : numDiffs };
 
-  var sObj0 = { sideLength : parseFloat(values[13]), shapeCount : parseInt(values[6]), shapes : []};
+  var sObj0 = { sideLength : parseFloat(values[14]), shapeCount : parseInt(values[7]), shapes : []};
   var maxShapes = Math.max.apply(null, POSSIBLE_SHAPE_COUNTS);
   var maxSides = Math.max.apply(null, POSSIBLE_SIDE_COUNTS)+1;
-  var startIndex0 = 7;
+  var startIndex0 = 8;
   for (var i = 0; i < maxShapes; i++) {
     var shape = {};
     var startIndexS = startIndex0 + i*(9+maxSides*2);
@@ -174,6 +177,8 @@ var getDimensionValue = function(trial, dimName) {
     return trial.listenerOrder[0];
   } else if (dimName == "lOIndex1") {
     return trial.listenerOrder[1];
+  } else if (dimName == "diffs") {
+    return trial.diffs;
   } else if (dimName.indexOf("Shapes") >= 0) {
     var obj = getObjectByRole(trial, nameParts["Obj"], nameParts["Role"]);
     return obj.shapeCount;
@@ -279,7 +284,7 @@ var getDimensionNamesString = function(separator) {
 };
 
 var getDimensionNames = function() {
-  var names = ["sTarget", "sOIndex0", "sOIndex1", "lTarget", "lOIndex0", "lOIndex1"];
+  var names = ["sTarget", "sOIndex0", "sOIndex1", "lTarget", "lOIndex0", "lOIndex1", "diffs"];
   names = names.concat(getTrialObjectDimensionNames("s", 0));
   names = names.concat(getTrialObjectDimensionNames("s", 1));
   names = names.concat(getTrialObjectDimensionNames("l", 0));

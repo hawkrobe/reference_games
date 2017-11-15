@@ -88,8 +88,8 @@ var writeData = function(client, type, message_parts) {
   switch(type) {
   case "clickedObj" :
     var line = (id + ',' + Date.now() + ',' + roundNum  + ',' + message_parts.slice(1).join(',') + '\n');
-    var dataPoint = {
-      eventType : "clickedObj",
+    var actionDataPoint = {
+      eventType : "action",
       gameid: id,
       time : Date.now(),
       roundNum : roundNum,
@@ -98,12 +98,21 @@ var writeData = function(client, type, message_parts) {
       mouseY : message_parts[3],
     };
 
+    var stateDataPoint = {
+      eventType : "state",
+      gameid: id,
+      time : Date.now(),
+      roundNum : roundNum
+    };
+
     var dimNames = trial.getDimensionNames();
     for (var i = 0; i < dimNames.length; i++) {
-      dataPoint[dimNames[i]] = message_parts[i + 4];
+      stateDataPoint[dimNames[i]] = message_parts[i + 4];
     }
 
-    utils.writeDataToCSV(gc, dataPoint);
+    utils.writeDataToCSV(gc, actionDataPoint);
+    utils.writeDataToCSV(gc, stateDataPoint);
+
     console.log("clickedObj:" + line);
     break;
 
@@ -111,7 +120,7 @@ var writeData = function(client, type, message_parts) {
     var msg = message_parts[1].replace('~~~','.');
     var line = (id + ',' + Date.now() + ',' + roundNum + ',' + client.role + ',"' + msg + '"\n');
     var dataPoint = {
-      eventType : "message",
+      eventType : "utterance",
       gameid: id,
       time : Date.now(),
       roundNum : roundNum,
