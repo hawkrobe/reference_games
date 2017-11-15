@@ -114,10 +114,12 @@ var establishStream = function(game, dataPoint) {
 
   // Write header
   var header = _.keys(dataPoint).join('\t') + '\n';
-  fs.writeFile(filePath, header, err => {if(err) console.error(err);});
+  // Removed due to race-condition
+  //fs.writeFile(filePath, header, err => {if(err) console.error(err);});
 
   // Create stream
   var stream = fs.createWriteStream(filePath, {'flags' : 'a'});
+  stream.write(header, err => {if(err) throw err;}); // Fixes race-condition?
   game.streams[dataPoint.eventType] = stream;
 };
 
