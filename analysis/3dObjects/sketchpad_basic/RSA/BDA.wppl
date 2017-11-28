@@ -2,8 +2,8 @@
 // webppl BDA.wppl --require ./refModule/
 
 // Load in experimental data to condition on
-var experimentVersion = 'fixedPose'; // 'fixedPose', 'varyingPose', etc
-var data = refModule.readCSV("./bdaInput/sketchData_" + experimentVersion + '_augmented-splitbygame_pilot2.csv');
+// var experimentVersion = 'fixedPose'; // 'fixedPose', 'varyingPose', etc
+var data = refModule.readCSV('./bdaInput/sketchData_fixedPose_splitbycontext_augmented_pilot2.csv');
 console.log("Loading expt data complete..." + data.length + " data points");
 
 // Cache some properties of model
