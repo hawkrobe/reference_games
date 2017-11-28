@@ -8,6 +8,7 @@ data/sketchpad/message/*.csv
 experiments/node_modules/
 models/node_modules/
 models/wppl-color/node_modules/
+analysis/3dObjects/sketchpad_basic/RSA/refModule/node_modules/
 models/.ipynb_checkpoints/
 models/stanza/
 models/coop-nets/
