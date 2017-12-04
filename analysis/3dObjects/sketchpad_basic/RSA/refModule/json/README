@@ -1,9 +1,0 @@
-We've tested the following embeddings:
-
-*strict-similarity-pragmatics-fixedpose_conv4_2.json* : mid-layer trained using strict scheme on fixedpose dataset
-
-*strict-similarity-pragmatics-fixedpose-augmented_conv4_2.json* : mid-layer trained using strict scheme and photo cropping augmentation on fixedpose dataset -- no constraints enforced on train/test split -- got 90%
-
-*strict-similarity-pragmatics-fixedpose-augmented-splitbygame_conv4_2.json* : mid-layer trained using strict scheme and photo cropping augmentation on fixedpose dataset but train/test split enforced that no games reappeared -- got 68%
-
-*strict-similarity-pragmatics-fixedpose-augmented-splitbycontext_conv4_2.json* : mid-layer trained using strict scheme and photo cropping augmentation on fixedpose dataset but train/test split enforced that no *contexts* reappeared (no constraint enforced on games) -- got 73%
