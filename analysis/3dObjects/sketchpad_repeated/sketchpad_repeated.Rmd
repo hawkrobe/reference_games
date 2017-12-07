@@ -10,41 +10,51 @@ library(ggthemes)
 library(lme4)
 ```
 
+# Pilot 1: no feedback (had to wait until full drawing)
+
 ## Import group data
 
-
-
 ```{r}
-d <- read_csv('/Users/judithfan/reference_games/data/3dObjects/sketchpad_repeated/group_data.csv') 
-  
+d.pilot1.raw <- read_csv('../../../data/3dObjects/sketchpad_repeated/pilot1_group_data.csv')  %>% select(-png)
 ```
 
 ## Stroke histogram
 
 ```{r}
-d %>% group_by(numStrokes) %>% tally() %>% ggplot(aes(x = n)) + geom_bar()
+d.pilot1.raw %>% group_by(numStrokes) %>% ggplot(aes(x = numStrokes)) + geom_histogram()
 ```
 
 ## Find people who used crazy numbers of strokes
-
+ 
+Also exclude if they clearly cheated (wrote word) 
 ```{r}
-crazies <- unique((d %>% filter(condition == 'repeated' & numStrokes > 25) %>% select(gameID))$gameID)
-crazies = c(crazies, 
+crazies.pilot1 <- unique((d.pilot1.raw %>% filter(condition == 'repeated' & numStrokes > 25) %>% select(gameID))$gameID)
+crazies.pilot1 = c(crazies.pilot1, 
             '0766-fcb90e7e-bf4a-4a46-b6d6-3165b6c12b88', 
             '7024-8ac78089-539a-428b-9d0e-b52c71a0a1b4')
+d.pilot1 <- d.pilot1.raw %>% filter(!(gameID %in% crazies.pilot1))
 
-# also exclude if they clearly cheated (wrote word) 
+length(unique(d.pilot1$gameID))
+```
 
+```{r}
+d.pilot1 %>%
+  filter(condition == 'repeated') %>%
+  filter()
+  #filter(!(gameID %in% crazies)) %>%
+  #filter(drawDuration < 60) %>%
+  ggplot(aes(x=drawDuration)) + geom_histogram() + geom_vline(aes(xintercept = median(drawDuration)))
+  # group_by(repetition, target, gameID) %>%
+  # summarize(drawDuration = mean(drawDuration))
 ```
 
 # Reduction by target 
 
 ```{r}
-d %>%
+d.pilot1 %>%
   filter(condition == 'repeated') %>%
-  filter(!(gameID %in% crazies)) %>%
   group_by(repetition, target) %>%
-  summarize(numStrokes = mean(numStrokes)) %>%
+  summarize(numStrokes = mean(drawDuration)) %>%
   ggplot(aes(x = repetition, y = numStrokes, group=target)) +
     geom_line() +
     theme_few() +
@@ -54,12 +64,11 @@ d %>%
 # Reduction by gameid
 
 ```{r}
-d %>%
+d.pilot1 %>%
   filter(condition == 'repeated') %>%
-  filter(!(gameID %in% crazies)) %>%
   group_by(repetition, gameID) %>%
-  summarize(svgStringLength = mean(svgStringLength)) %>%
-  ggplot(aes(x = repetition, y = svgStringLength, group=interaction(gameID))) +
+  summarize(drawDuration = mean(drawDuration)) %>%
+  ggplot(aes(x = repetition, y = drawDuration, group=interaction(gameID))) +
     geom_line(alpha=.3) +
     geom_smooth(aes(group = 1), method ='loess') +
     theme_few() +
@@ -70,19 +79,20 @@ d %>%
 # Reduction (completely disaggregated)
 
 ```{r}
-d %>%
+d.pilot1 %>%
   filter(condition == 'repeated') %>%
-  filter(!(gameID %in% crazies)) %>%
+  #filter(!(gameID %in% crazies)) %>%
+  #filter(drawDuration < 60) %>%
   group_by(repetition, target, gameID) %>%
-  summarize(numStrokes = mean(numStrokes)) %>%
-  ggplot(aes(x = repetition, y = numStrokes, group=interaction(gameID, target))) +
-    geom_line(alpha=.3) +
+  summarize(drawDuration = mean(drawDuration)) %>%
+  ggplot(aes(x = repetition, y = drawDuration, group=interaction(gameID, target))) +
+    geom_line(alpha=.1) +
     geom_smooth(aes(group = 1), method ='loess') +
     theme_few() +
     xlab('# repetitions') +
-    ylab('# strokes') +
+    ylab('draw duration') +
     ggtitle('Reduction per target per game') +
-  ylim(0, 30) +
+  #ylim(0, 25) +
   theme(aspect.ratio = 1)
 ```
 
@@ -97,41 +107,39 @@ summary(lmer(svgStringLength ~ repetition + (1 + repetition| gameID) + (1 + repe
 ## Compare repetition against control
 
 ```{r}
-d.toplot <- d %>%
+d.pilot1.prepost <- d.pilot1 %>%
   mutate(phase = case_when(
     trialType %in% c('0_control', '0_repeated') ~ 'pre',
     trialType %in% c('1_control', '7_repeated') ~ 'post'
   )) %>%
   mutate(phase = ordered(phase, levels = c('pre', 'post'))) %>%
   filter(!is.na(phase)) %>%
-  filter(!(gameID %in% crazies)) %>%
   # We don't know why but that 
   filter(gameID != "2904-d5fa6f4a-24e1-4568-b0ed-fb01ad503ed3") %>%
   group_by(phase, condition) %>%
-  summarize(len = mean(numStrokes), se=sd(numStrokes)/sqrt(length(numStrokes)))
+  summarize(len = mean(drawDuration), se=sd(drawDuration)/sqrt(length(drawDuration)))
 
 # d.toplot %>%
 #   spread(condition, m) %>%
-ggplot(d.toplot, aes(x = phase, y = len, color = condition)) + #, linetype = condition, color=condition)) +
+ggplot(d.pilot1.prepost, aes(x = phase, y = len, color = condition)) + #, linetype = condition, color=condition)) +
   geom_line(aes(group = condition)) + 
   geom_errorbar(aes(ymin=len-se,ymax=len+se), width=0) +
   #geom_text(aes(gameID))
   theme_few() +
+  ylab('mean draw duration') +
   theme(aspect.ratio = 1) 
-
 ```
 
-## 
+## prepost
 
 ```{r}
-d.toplot <- d %>%
+d.toplot <- d.pilot1 %>%
   mutate(phase = case_when(
     trialType %in% c('0_control', '0_repeated') ~ 'pre',
     trialType %in% c('1_control', '7_repeated') ~ 'post'
   )) %>%
   mutate(phase = ordered(phase, levels = c('pre', 'post'))) %>%
   filter(!is.na(phase)) %>%
-  filter(!(gameID %in% crazies)) %>%
   group_by(gameID, target, phase, condition) %>%
   summarize(len = mean(svgStringLength)) %>% #multi_boot_standard('svgStringLength')
   spread(phase, len) %>%
@@ -150,11 +158,222 @@ ggplot(aes(x = control, y = repeated)) + #, linetype = condition, color=conditio
   theme(aspect.ratio = 1)
 ```
 
-```{r}
-library(magick)
-for(p in d['png']) {
-  img <- image_read(p)
-  grid::grid.raster(img)  
-}
+# Pilot 2: real-time feedback (as soon as they knew)
 
+```{r}
+d.pilot2.raw <- read_csv('~/Repos/reference_games/data/3dObjects/sketchpad_repeated/feedback_pilot1_group_data.csv') %>%
+  select(-png) 
+```
+
+### Stroke histogram
+
+```{r}
+d.pilot2.raw %>% ggplot(aes(x = numStrokes)) + geom_histogram(binwidth = 1) + theme_few()
+```
+
+### Find shift key users...
+
+```{r}
+crazies.pilot2 <- unique((d.pilot2.raw %>% filter(condition == 'repeated' & numStrokes > 25) %>% select(gameID))$gameID)
+d.pilot2 <- d.pilot2.raw %>% filter(!(gameID %in% crazies.pilot2)) 
+length(unique(d.pilot2$gameID))
+```
+
+### Num strokes over time
+
+```{r}
+d.pilot2 %>%
+  filter(condition == 'repeated') %>%
+  group_by(repetition, target) %>%
+  summarize(numStrokes = mean(numStrokes)) %>%
+  ggplot(aes(x = repetition, y = numStrokes, group=target)) +
+    geom_line() +
+    theme_few() +
+    geom_smooth(aes(group = 1), method ='loess')
+```
+
+```{r}
+d.pilot2 %>%
+  filter(condition == 'repeated') %>%
+  group_by(repetition, gameID) %>%
+  summarize(numStrokes = mean(svgStringLength)) %>%
+  ggplot(aes(x = repetition, y = numStrokes, group=gameID)) +
+    geom_line() +
+    theme_few() +
+    geom_smooth(aes(group = 1), method ='loess')
+```
+
+```{r}
+d.pilot2 %>%
+  filter(condition == 'repeated') %>%
+  group_by(repetition, target, gameID) %>%
+  summarize(numStrokes = mean(svgStringLength)) %>%
+  ggplot(aes(x = repetition, y = numStrokes, group=interaction(gameID, target))) +
+    geom_line(alpha=.3) +
+    geom_smooth(aes(group = 1), method ='loess') +
+    theme_few() +
+    xlab('# repetitions') +
+    ylab('# strokes') +
+    ggtitle('Reduction per target per game') +
+  #ylim(0, 30) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+d.pilot2 %>%
+  filter(condition == 'repeated') %>%
+  group_by(repetition, target, gameID) %>%
+  summarize(drawDuration = mean(drawDuration)) %>%
+  ggplot(aes(x = repetition, y = drawDuration, group=interaction(target, gameID))) +
+    geom_line(alpha=.3) +
+    geom_smooth(aes(group = 1), method ='loess') +
+    theme_few() +
+    xlab('# repetitions') +
+    ylab('draw duration') +
+    ggtitle('Reduction per target per game') +
+  #ylim(0, 60) +
+  theme(aspect.ratio = 1)
+```
+
+### Does accuracy go up?
+
+```{r}
+d.pilot2 %>%
+  filter(condition == 'repeated') %>%
+  group_by(trialNum) %>%
+  mutate(outcome = ifelse(outcome == 'True', TRUE, FALSE)) %>%
+  summarize(acc = mean(outcome)) %>%
+  ggplot(aes(x = trialNum, y = acc)) +
+    geom_point(alpha=.3) +
+    geom_smooth(aes(group = 1), method ='loess') +
+    theme_few() +
+    xlab('# repetitions') +
+    ylab('% acc') +
+    ggtitle('Reduction per target per game') +
+  ylim(0, 1) +
+  theme(aspect.ratio = 1)
+```
+
+# Comparison of two pilots?
+
+## Overall effect of feedback on accuracy?
+
+```{r}
+library(langcog)
+rbind(d.pilot1 %>% mutate(src = 'draw-to-completition'),
+      d.pilot2 %>% mutate(src = 'real-time feedback')) %>%
+  filter(condition == 'repeated') %>%
+  group_by(src, repetition) %>%
+  mutate(outcome = ifelse(outcome == 'True', 1, 0)) %>%
+  multi_boot_standard('outcome', nboot = 100) %>%
+  ggplot(aes(x = repetition, y = mean, color = src)) +
+    geom_line() +
+    geom_errorbar(aes(ymax = summary_ci_upper, ymin = summary_ci_lower), width = 0) +
+    theme_few() +
+    ylab('accuracy') +
+    xlab('repetition #') 
+  
+```
+
+## Overall effect of feedback on draw duration?
+
+```{r}
+rbind(d.pilot1 %>% mutate(src = 'draw-to-completition'),
+      d.pilot2 %>% mutate(src = 'real-time feedback')) %>%
+  filter(condition == 'repeated') %>%
+  filter(drawDuration < 60) %>%
+  group_by(src, repetition) %>%
+  summarize(m = mean(drawDuration), se = sd(drawDuration)/sqrt(length(drawDuration)))  %>%
+  ggplot(aes(x = repetition, y = m, color = src)) +
+    geom_line() +
+    geom_errorbar(aes(ymax = m + se, ymin = m - se), width = 0) +
+    theme_few() +
+    ylab('draw duration (in seconds)') +
+    xlab('repetition #')
+```
+
+## Overall effect of IES (summary statistic)
+
+```{r}
+rbind(d.pilot1 %>% mutate(src = 'draw-to-completition'),
+      d.pilot2 %>% mutate(src = 'real-time feedback')) %>%
+  filter(condition == 'repeated') %>%
+  mutate(outcome = ifelse(outcome == 'True', 1, 0)) %>%
+  group_by(src, gameID, repetition) %>%
+  summarize(ies = mean(drawDuration)/mean(outcome))  %>%
+  group_by(src, repetition) %>%
+  multi_boot_standard('ies', nboot=1000)  %>%
+  ggplot(aes(x = repetition, y = mean, color = src)) +
+    geom_line() +
+    geom_errorbar(aes(ymax = summary_ci_upper, ymin = summary_ci_lower), width = .1) +
+    theme_few() +
+    ylab('ies') +
+    xlab('repetition #') +
+    ylim(0, 60)
+```
+
+```{r}
+numStrokes.bootstrapped = rbind(d.pilot1 %>% mutate(src = 'draw-to-completition'),
+      d.pilot2 %>% mutate(src = 'real-time feedback')) %>%
+  filter(condition == 'repeated') %>%
+  mutate(outcome = ifelse(outcome == 'True', 1, 0)) %>%
+  group_by(src, repetition) %>%
+  #summarize(numStrokes = median(numStrokes))  %>%
+  #group_by(src, repetition) %>%
+  multi_boot_standard('numStrokes', nboot=1000) 
+
+numStrokes.bootstrapped %>%
+  ggplot(aes(x = repetition, y = mean, color = src)) +
+    geom_line() +
+    geom_errorbar(aes(ymax = summary_ci_upper, ymin = summary_ci_lower), width = .1) +
+    theme_few() +
+    ylab('mean # strokes') +
+    xlab('repetition #') +
+    ylim(0, 15)
+```
+
+```{r}
+svgLength.bootstrapped <-rbind(d.pilot1 %>% mutate(src = 'draw-to-completition'),
+      d.pilot2 %>% mutate(src = 'real-time feedback')) %>%
+  filter(condition == 'repeated') %>%
+  mutate(outcome = ifelse(outcome == 'True', 1, 0)) %>%
+  group_by(src, repetition) %>%
+  #summarize(numStrokes = median(numStrokes))  %>%
+  #group_by(src, repetition) %>%
+  multi_boot_standard('svgStringLength', nboot=1000) 
+
+svgLength.bootstrapped %>%
+  ggplot(aes(x = repetition, y = mean, color = src)) +
+    geom_line() +
+    geom_errorbar(aes(ymax = summary_ci_upper, ymin = summary_ci_lower), width = .1) +
+    theme_few() +
+    ylab('svgLength') +
+    xlab('repetition #') 
+    #ylim(0, 20)
+```
+
+
+## Pre-post
+
+```{r}
+d.pilot2.prepost <- d.pilot2 %>%
+  mutate(phase = case_when(
+    trialType %in% c('0_control', '0_repeated') ~ 'pre',
+    trialType %in% c('1_control', '7_repeated') ~ 'post'
+  )) %>%
+  mutate(phase = ordered(phase, levels = c('pre', 'post'))) %>%
+  filter(!is.na(phase)) %>%
+  # We don't know why but that 
+  group_by(phase, condition) %>%
+  summarize(len = mean(drawDuration), se=sd(drawDuration)/sqrt(length(drawDuration)))
+
+# d.toplot %>%
+#   spread(condition, m) %>%
+ggplot(d.pilot2.prepost, aes(x = phase, y = len, color = condition)) + #, linetype = condition, color=condition)) +
+  geom_line(aes(group = condition)) + 
+  geom_errorbar(aes(ymin=len-se,ymax=len+se), width=0) +
+  #geom_text(aes(gameID))
+  theme_few() +
+  ylab('mean draw duration') +
+  theme(aspect.ratio = 1) 
 ```
