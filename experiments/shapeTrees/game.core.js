@@ -45,7 +45,8 @@ var game_core = function(options){
   this.server = options.server ;
 
   // Some config settings
-  this.email = 'wmcdowel@stanford.edu';
+  // this.email = 'wmcdowel@stanford.edu';
+  this.email = 'schopra8@stanford.edu'
   this.projectName = 'shapeTrees';
   this.experimentName = 'shapes';
   this.iterationName = 'pilot0';

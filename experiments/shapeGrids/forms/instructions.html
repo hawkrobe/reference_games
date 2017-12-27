@@ -41,50 +41,44 @@
 
       <div class="well" style="width:800px; margin: 0 auto">
 
-<h2><center>The map game!</center>  </h2>
+<h2><center>The colorful grid!</center>  </h2>
 
-	<p>
+  <p>
 
-	  In this experiment you will play a fun communication game with
-	  another turker! In each round both of you are going to be shown a city map like this:
+    In this experiment you will play a fun communication game with
+    another turker! In each round both of you are going to be shown two grids, consisting of various colors:
 </p>
     <p>
       <center><img src="images/screenshot_objs.png" alt="Example objects" style="width:600px; height:374px"></center>
     </p>
 
 <p>
-
-    One of you will be assigned the <b> Speaker </b> role and the other will be
-    the <b> Listener </b>. For each round, a special Lily flower is going to grow somewhere in the city, and only
-    the speaker can see where the Lily is located. The task of the speaker
-    is to tell the listener where the Lily grew and the listener in turn needs to click somewhere on the map where they believe the Lily is
-    based on this information provided by the speaker.
+    One of you will be assigned the <b> Speaker </b> role and the other will be the <b> Listener </b>. On each round, one of the two grids is the target, which can be identified by a green box around it. Only the speaker can see which grid is the target. The task of the speaker is to tell the listener which one of the grids is the target and the listener in turn needs to select the right grid based on this information. You'll both get a bonus of $0.01 for each correct response, so pay attention! Remember that it doesn't make sense to describe the location of the target grid, since the order of the images is different for the listener and the speaker.
 </p>
 
 <p>
-      <center><img src="images/screenshot_speaker.png" alt="Example gameplay" style="width:600px; height:374px"></center>
+      <center><img src="images/speakerView.png" alt="Example gameplay" style="width:600px; height:374px"></center>
     </p>
 <p>
-    <i> <center> <small> Only the speaker can see where the Lily is on the map. </small> </center> </i>
+    <i> <center> <small> Only the speaker can see that grid with the blue square on the bottom most row is the target. </small> </center> </i>
 
 </p>
 <p>
-  The task of the listener to identify the correct location on the map based on
-    what the speaker has said. In order to communicate, you're given a
-    chatbox where you can send messages back and forth to each
-    other. The speaker can say whatever they need to indicate where the Lily is, and the listener is free to ask for
-    clarifications if what the speaker said is not clear. Some rounds
+    Thus, the goal is for the listener to identify the correct grid
+    based on what the speaker has said. In order to communicate,
+    you're given a chatbox where you can send messages back and forth
+    to each other. The speaker can say whatever they need to indicate
+    which object is the target (this isn't a game of "taboo"!), and the
+    listener can respond or ask questions at any point. Some rounds
     will be easier and some will be harder. </p>
 
     <p> Once the speaker sends a message and the listener clicks on
-    the object they believe is the target, both players will be <b>
-    given feedback </b> (the speaker will see what the listener
-    clicked, and the listener will see the true location of the Lily), and you will
-    both be automatically forwarded to the next round. You
-    will <b>both</b> get a bonus based on how closely the listener
-    locates the Lily, for a total of <b>15
-    rounds</b>. To get the maximum bonus of $0.01 per round, the listener does not need to click exactly on the location, just in a certain area around it.  After the final round you will fill out a quick 15
-    second survey and be on your way.
+    the object they believe is the target, both players will be given
+    feedback (the speaker will see what the listener clicked, and the
+    listener will see the true target), and you will both be
+    automatically forwarded to the next round of grids. There are a
+    total of <b>15 rounds</b>. After the final round you will fill out a quick
+    15 second survey and be on your way.
 </p>
 
 <p> A few final notes: First, since you are playing with another
@@ -98,13 +92,12 @@
   accepted, out of gratitude for the time you spent waiting.
 </p>
 
-<p> Second, when playing the role of the speaker, please avoid using precise
-    measurement descriptions (in terms of inches, centimeters, or other units)
-    for communicating the location of the lily. The screen size of your partner may
-    differ from your own, and so measurements may not effectively communicate the lily's
-    location.  Instead, just describe the general location as best you can in relation
-    to other objects on the screen, and you will still receive points as long as
-    your partner clicks somewhere near the right location.
+<p> 
+  Second, because differences between colors can be quite subtle and
+  difficult to describe, it is important that you and your partner are
+  seeing the same thing. Turn your brightness up all the way, and turn
+  off any software (like f.lux or redshift) that changes the colors on
+  your monitor!
 </p>
 
 <p> Third, please be respectful of the turker you're playing with:
@@ -129,10 +122,6 @@
 </h4>
 
 
-
-
-
-
       </div>
       <div class="page-header">
         <h3>Comprehension Quiz</h3>
@@ -141,7 +130,7 @@
      <div class="well" style="width:800px; margin: 0 auto">
 
   </br>
-  The <b>speaker</b> can click on a map location to end the round.
+  The <b>speaker</b> can click on an grid to end the round.
     </br>
     <input type="radio" name="dgoal" value="yes"> False
     </br>
@@ -150,7 +139,7 @@
 
 
   </br>
-  The listener wants to click on the location that the speaker is
+  The listener wants to click on the grid that the speaker is
   telling them about.
       </br>
       <input type="radio" name="mgoal" value="no"> False
@@ -168,30 +157,21 @@
       </br>
 
   </br>
-  There are a total of 200 rounds.
+  There are a total of 15 rounds.
       </br>
-      <input type="radio" name="comp" value="no"> True
+      <input type="radio" name="comp" value="yes"> True
       </br>
-      <input type="radio" name="comp" value="yes"> False
-      </br>
-
-  </br>
-  The locations of the Lily are the same for the speaker and the listener.
-      </br>
-      <input type="radio" name="location" value="yes"> True
-      </br>
-      <input type="radio" name="location" value="no"> False
+      <input type="radio" name="comp" value="no"> False
       </br>
 
   </br>
-  The speaker should use measurements like inches, centimeters, etc to describe
-         the location of the lily.
-         </br>
-         <input type="radio" name="measure" value="no"> True
-         </br>
-         <input type="radio" name="measure" value="yes"> False
-         </br>
-  </br>
+  The order of the grids are guaranteed to be same for the Speaker and the listener.
+      </br>
+      <input type="radio" name="location" value="no"> True
+      </br>
+      <input type="radio" name="location" value="yes"> False
+      </br>
+
   Have you participated in this study before?
         </br>
         <input type="radio" name="completed" value="no"> Yes
@@ -209,11 +189,11 @@
     <script type="text/javascript">
       $('html,body').scrollTop(0);
       var urlParams;
-	var match,
-	      pl     = /\+/g,  // Regex for replacing addition symbol with a space
-	      search = /([^&=]+)=?([^&]*)/g,
-	      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-	      query  = location.search.substring(1);
+  var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = location.search.substring(1);
 
       urlParams = {};
       while (match = search.exec(query))
@@ -228,11 +208,10 @@
         var ans3 = $('input[name="message"]:checked').val();
         var ans4 = $('input[name="comp"]:checked').val();
         var ans5 = $('input[name="location"]:checked').val();
-        var ans6 = $('input[name="measure"]:checked').val();
-        var ans7 = $('input[name="completed"]:checked').val();
+        var ans6 = $('input[name="completed"]:checked').val();
 
         if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" && 
-           ans4 == "yes" && ans5 == "yes" && ans6 == "yes" && ans7 == "yes") {
+           ans4 == "yes" && ans5 == "yes" && ans6 == "yes") {
            var workerId = urlParams.workerId;
            var assignmentId = urlParams.assignmentId;
            var hitId = urlParams.hitId;

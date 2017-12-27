@@ -17,23 +17,12 @@ var genWorld = function(canvas) {
   var objDescr = {
     "rectangle": {
       "color_range": [[21, 131], [0, 255], [212, 255]],
-      "size_range": {
-        "x": canvas.width / 2,
-        "y": canvas.height / 2,
-        "w": [10, 100],
-        "h": [20, 40]
+      "stretch_range": [30, 200],
       },
     },
     "triangle": {
-      "color_range": [[21, 131], [0, 255], [212, 255]],
-      "size_range": {
-        "x": canvas.width / 2,
-        "y": canvas.height / 2,
-        "x2": [50, 100],
-        "y2": [30, 80],
-        "x3": [20, 50],
-        "y3": [20, 50] 
-      },
+      "color_range": [[21, 131], [0, 255], [0, 255]],
+      "stretch_range": [30, 200],
     },
   }
 
@@ -44,37 +33,11 @@ var genWorld = function(canvas) {
 // Generate a specific object (amalgamation of objects)
 // Params:
 // ctx: HTML5 Canvas
-// objDescr:
-// {
-//   "rectangle": {
-//     "color_range": [(R1, R2), (G1, G2), (B1, B2)],
-//     "size_range": {
-//       "x": val,
-//       "y": val,
-//       "width": val,
-//       "height": val
-//     },
-//   },
-//   "circle": {
-//     "color_range": [(R1, R2), (G1, G2), (B1, B2)],
-//     "size_range": {
-//       "radius": r,
-//     },
-//   },
-//   "triangle": {
-//     "color_range": [(R1, R2), (G1, G2), (B1, B2)],
-//     "strokes": {
-//       "1": [(x1, y1), (x2, y2)],
-//       "2": [(x1, y1), (x2, y2)],
-//     },
-//   },
-// }
-// compactness: bound on how tightly conjoined the shapes
-//              are in this world
+
 var genObject = function(
   canvas,
   objDescr,
-  compactness
+  translation_range
 ) {  
   // Check whether desired shape can be drawn successfully.
   // Throws an error if shape description is invalid.
@@ -88,33 +51,6 @@ var genObject = function(
       }
       return true;
     }
-
-    // Check whether shape's dimensions are valid
-    // TODO: Implement these stubs
-    var isValidRectangle = function(shapeDescr) {
-      if (shapeDescr['size_range']['w'][0] > shapeDescr['size_range']['w'][1]) return false;
-      if (shapeDescr['size_range']['h'][0] > shapeDescr['size_range']['h'][1]) return false;
-      return true;     
-    }
-    var isValidCircle = function(shapeDescr) {
-      return true;
-    }
-    var isValidTriangle = function(shapeDescr) {
-      return true;
-    }
-
-    // Evaluate shape validity
-    if (!isValidColorRange(shapeDescr['color_range'])) throw "Invalid Color Range";
-    if (shapeName.indexOf("rectangle") >= 0) {
-      if (!isValidRectangle(shapeDescr)) throw "Invalid Rectangle Dimensions";
-    } else if (shapeName.indexOf("circle") >= 0) {
-      if (!isValidCircle(shapeDescr)) throw "Invalid Circle Dimensions";
-    } else if (shapeName.indexOf("triangle") >= 0) {
-      if (!isValidTriangle(shapeDescr)) throw "Invalid Triangle Dimensions";
-    } else {
-      throw "Desired shape " + shapeName + " unknown!";
-    }
-  }
 
   // Generate color according to color range
   var genColor = function(colorRange) {
@@ -131,13 +67,12 @@ var genObject = function(
   for (shapeName in objDescr) {
     // Define shape properties
     var shape = objDescr[shapeName];
-    isValidShape(shapeName, objDescr[shapeName]);
     var colorInfo = genColor(shape['color_range']);
     var affineTransform = getAffineTranform(canvas);
 
     // Draw Shape
     if (shapeName.indexOf("rectangle") >= 0) {
-      drawRectangle(shape['size_range'], ctx, colorInfo[0], affineTransform);
+      drawRectangle(shape['stretch_range'], ctx, colorInfo[0], affineTransform);
     } else if (shapeName.indexOf("circle") >= 0) {
       drawCircle(shape['size_range'], ctx, colorInfo[0], affineTransform);
     } else if (shapeName.indexOf("triangle") >= 0) {
@@ -179,18 +114,18 @@ var getRandomIntInclusive = function(min, max) {
 }
 
 // Affine transformation
-var getAffineTranform = function() {
+var getAffineTranform = function(canvas, translation_range) {
   var rotationAngle = (Math.PI / 180) * getRandomIntInclusive(0, 360);
-  var xTranslate = getRandomIntInclusive(-100, 100);
-  var yTranslate = getRandomIntInclusive(-100, 100);
-  var xReflection = getRandomIntInclusive(0, 1) ? -1: 1;
-  var yReflection = getRandomIntInclusive(0, 1) ? -1 : 1;
+  var xTranslate = getRandomIntInclusive(translation_range['x'][0], translation_range['x'][1]);
+  var yTranslate = getRandomIntInclusive(translation_range['y'][0], translation_range['y'][1]);
+  // var xReflection = getRandomIntInclusive(0, 1) ? -1: 1;
+  // var yReflection = getRandomIntInclusive(0, 1) ? -1 : 1;
   return {
     "rotationAngle": rotationAngle,
     "xTranslate": xTranslate,
     "yTranslate": yTranslate,
-    "xReflection": xReflection,
-    "yReflection": yReflection,
+    // "xReflection": xReflection,
+    // "yReflection": yReflection,
   }
 }
 
@@ -198,10 +133,12 @@ var drawRectangle = function(rectangle, ctx, color, affineTransform) {
   // Draw rectangle
   // Note: Rotation code (around center of rectangle) is adapated from
   // https://stackoverflow.com/questions/3793397/html5-canvas-drawimage-with-at-an-angle
+  var rectangle_width = 
+
   ctx.beginPath();
   ctx.translate(
-    rectangle.x + 3 * affineTransform['xTranslate']/2.0,
-    rectangle.y + 3 * affineTransform['yTranslate']/2.0,
+    rectangle.x + affineTransform['xTranslate'] + ,
+    rectangle.y +  affineTransform['yTranslate'],
   )
   ctx.rotate(affineTransform['rotationAngle']);
   ctx.scale(affineTransform['xReflection'], affineTransform['yReflection']);
