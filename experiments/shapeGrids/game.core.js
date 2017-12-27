@@ -188,7 +188,7 @@ game_core.prototype.makeTrialList = function () {
   var local_this = this;
   var trialList = [];
   for (var i = 0; i < this.numRounds; i++) {
-    trialList.push(trial.makeRandom(i, this.numRounds));
+    trialList.push(trial.makeRandom(i/2, this.numRounds));
   };
 
   shuffle(trialList);
