@@ -1,0 +1,62 @@
+// run using:
+// webppl BDA.wppl --require ./refModule/
+
+// Load in experimental data to condition on
+var rawData = _.slice(refModule.readCSV('./bdaInput/singleGame.csv'), 45);
+
+// Reformat with context arrays...
+var data = map(function(row) {
+  return _.omit(extend(row, {
+    context: [row.object1name, row.object2name, row.object3name, row.object4name]
+  }), 'object1name', 'object2name', 'object3name', 'object4name');
+}, rawData);
+console.log("Loading expt data complete..." + data.length + " data points");
+console.log(data);
+
+// Package into config
+var globalConfig = {
+  aggregate: false,
+  outputFileName : 'lexicalInference'
+};
+
+// TODO: note that players actually swapped roles every round...
+
+// For now, we are just doing a pure statistical model -- not trying to tie
+// their new lexicon mechanistically to what happened on the previous round,
+// just trying to learn what it is on the basis of what they said.
+// Critically, for now, lexical uncertainty is from POV of analyst, not agent
+var observeRound = function(previousSamples, datum) {
+  // lexicon is binary entries in 16 x 8 matrix
+  // with some probability of meaning flips on each round...
+//  var driftRate = beta(1, 10);
+  var newLexicon = _.last(previousSamples.lexica);//sampleLexicon(previousSamples.lexica.length);//transition(_.last(previousSamples.lexica), newStability);
+  var speakerScore = refModule.getSpeakerScore(datum.text, datum.intendedName,
+					       datum.context, newLexicon,
+					       {utterances: utterances, alpha: 10});
+  factor(speakerScore);
+  return {lexica : previousSamples.lexica.concat(newLexicon),
+	  driftRates: previousSamples.driftRates.concat(1)};
+};
+
+var model = function(data, previousSamples) {
+  var newObservation = observeRound(previousSamples, data[0]);
+  return data.length === 1 ? newObservation : model(_.tail(data), newObservation);
+};
+
+// TODO: add alpha as global param
+var modelAnalysis = function() {
+  var lexicon = sampleLexicon();
+  var modelSample = model(data, {lexica: [lexicon], driftRates: [.5]});
+  return {
+    'params' : T.toScalars(T.split(lexicon, [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8])[1])
+    //{'params' : _.last(modelSample.lexica)['word2']};
+  };
+};
+
+//var outputERP = Infer({method: 'MCMC', samples:50000, onlyMAP:true,verbose:true, model: modelAnalysis});
+
+//var outputERP = Infer({method: 'MCMC', verbose: true, samples: 10000, kernel: {HMC: {steps: 100, stepSize: .001}}, model: modelAnalysis});
+
+var outputERP = Infer({method: 'optimize', verbose: true, steps: 5000, samples: 1000, model: modelAnalysis})//, particles: 10000, rejuvSteps: 100, onlyMAP: true, model: modelAnalysis});
+//console.log(outputERP);
+refModule.bayesianErpWriter(outputERP, "./bdaOutput/" + globalConfig.outputFileName);
