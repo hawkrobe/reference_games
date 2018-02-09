@@ -7,8 +7,11 @@ var OBJECT_WIDTH = 300;
 var CELL_LENGTH = 40;
 var GRID_DIMENSION = 3;
 
-var makeRandom = function(trialNum, numRounds) {
-  var obj = sampleObject(); // Sample a world state
+var makeRandom = function(trialNum, numRounds, gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
+
+  var obj = sampleObject(gridDimension); // Sample a world state
   var numDimensions = getObjectDimensionCount(obj);
   var numDiffs = Math.floor((trialNum / numRounds)*numDimensions) + 1;
   var diffIndices = sampleSet(numDimensions, numDiffs);
@@ -24,7 +27,10 @@ var makeRandom = function(trialNum, numRounds) {
            diffs : numDiffs }
 };
 
-var fromDimensionValueString = function(str, separator) {
+var fromDimensionValueString = function(str, separator, gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
+
   var values = str.split(separator);
   var sTarget = parseInt(values[0]);
   var sOIndex0 = parseInt(values[1]);
@@ -46,9 +52,9 @@ var fromDimensionValueString = function(str, separator) {
                 listenerOrder : [lOIndex0, lOIndex1],
                 diffs : numDiffs };
 
-  var sObj0 = { shapes : [], gridDimension : GRID_DIMENSION, cellLength : CELL_LENGTH };
+  var sObj0 = { shapes : [], gridDimension : gridDimension, cellLength : CELL_LENGTH };
   var startIndex0 = 7;
-  for (var i = 0; i < GRID_DIMENSION*GRID_DIMENSION; i++) {
+  for (var i = 0; i < gridDimension*gridDimension; i++) {
     var shape = {};
     var startIndexS = startIndex0 + i*3;
 
@@ -59,9 +65,9 @@ var fromDimensionValueString = function(str, separator) {
     sObj0.shapes.push(shape);
   }
 
-  var sObj1 = { shapes : [], gridDimension : GRID_DIMENSION, cellLength : CELL_LENGTH };
-  var startIndex1 = startIndex0 + GRID_DIMENSION*GRID_DIMENSION*3;
-  for (var i = 0; i < GRID_DIMENSION*GRID_DIMENSION; i++) {
+  var sObj1 = { shapes : [], gridDimension : gridDimension, cellLength : CELL_LENGTH };
+  var startIndex1 = startIndex0 + gridDimension*gridDimension*3;
+  for (var i = 0; i < gridDimension*gridDimension; i++) {
     var shape = {};
     var startIndexS = startIndex1 + i*3;
 
@@ -78,8 +84,11 @@ var fromDimensionValueString = function(str, separator) {
   return trial;
 };
 
-var fromFlatObject = function(flat) {
-  var names = getDimensionNames();
+var fromFlatObject = function(flat, gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
+
+  var names = getDimensionNames(gridDimension);
   var flatStr = "";
   for (var i = 0; i < names.length; i++) {
     flatStr += flat[names[i]] + ",";
@@ -90,9 +99,12 @@ var fromFlatObject = function(flat) {
   return fromDimensionValueString(flatStr, ",");
 };
 
-var getFlatObject = function(trial) {
+var getFlatObject = function(trial, gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
+
   var obj = {};
-  var names = getDimensionNames();
+  var names = getDimensionNames(gridDimension);
   for (var i = 0; i < names.length; i++) {
     obj[names[i]] = getDimensionValue(trial, names[i]);
   }
@@ -103,9 +115,12 @@ var getDimensionValuesString = function(trial, separator) {
   return getDimensionValues(trial).join(separator);
 };
 
-var getDimensionValues = function(trial) {
+var getDimensionValues = function(trial, gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
+
   var values = [];
-  var names = getDimensionNames();
+  var names = getDimensionNames(gridDimension);
   for (var i = 0; i < names.length; i++) {
     values.push(getDimensionValue(trial, names[i]));
   }
@@ -169,24 +184,33 @@ var getObjectByRole = function(trial, objectIndex, role) {
   }
 };
 
-var getDimensionNamesString = function(separator) {
-  return getDimensionNames().join(separator);
+var getDimensionNamesString = function(separator, gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
+
+  return getDimensionNames(gridDimension).join(separator, gridDimension);
 };
 
-var getDimensionNames = function() {
+var getDimensionNames = function(gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
+
   var names = ["sTarget", "sOIndex0", "sOIndex1", "lTarget", "lOIndex0", "lOIndex1", "diffs"];
-  names = names.concat(getTrialObjectDimensionNames("s", 0));
-  names = names.concat(getTrialObjectDimensionNames("s", 1));
-  names = names.concat(getTrialObjectDimensionNames("l", 0));
-  names = names.concat(getTrialObjectDimensionNames("l", 1));
+  names = names.concat(getTrialObjectDimensionNames("s", 0, gridDimension));
+  names = names.concat(getTrialObjectDimensionNames("s", 1, gridDimension));
+  names = names.concat(getTrialObjectDimensionNames("l", 0, gridDimension));
+  names = names.concat(getTrialObjectDimensionNames("l", 1, gridDimension));
   return names;
 };
 
-var getTrialObjectDimensionNames = function(role, objectIndex) {
+var getTrialObjectDimensionNames = function(role, objectIndex, gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
+
   var names = [];
   var prefix = role + "Obj" + objectIndex;
 
-  for (var i = 0; i < GRID_DIMENSION*GRID_DIMENSION; i++) {
+  for (var i = 0; i < gridDimension*gridDimension; i++) {
     names.push(prefix + "_Shp" + i + "_ClrH");
     names.push(prefix + "_Shp" + i + "_ClrS");
     names.push(prefix + "_Shp" + i + "_ClrL");
@@ -199,10 +223,13 @@ var getObjectDimensionCount = function(obj) {
   return obj.shapes.length;
 };
 
-var sampleObject = function() {
-  var obj = { cellLength : CELL_LENGTH, gridDimension : GRID_DIMENSION, shapes : [] };
+var sampleObject = function(gridDimension) {
+  if (gridDimension === undefined)
+    gridDimension = GRID_DIMENSION;
 
-  for (var i = 0; i < GRID_DIMENSION*GRID_DIMENSION; i++) {
+  var obj = { cellLength : CELL_LENGTH, gridDimension : gridDimension, shapes : [] };
+
+  for (var i = 0; i < gridDimension*gridDimension; i++) {
     obj.shapes.push({ color : utils.randomColor({ fixedL : true })})
   }
 

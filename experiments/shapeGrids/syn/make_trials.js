@@ -1,6 +1,7 @@
 var ROUNDS_PER_GAME = 20;
-var NUM_GAMES = process.argv[2];
+var NUM_GAMES = parseInt(process.argv[2]);
 var OUTPUT_DIRECTORY = process.argv[3];
+var GRID_DIMENSION = parseInt(process.argv[4]);
 
 _ = require('underscore');
 assert = require('assert');
@@ -28,7 +29,7 @@ function shuffle(a) {
 function makeGameTrials(numRounds) {
   var trialList = [];
   for (var i = 0; i < numRounds; i++) {
-    trialList.push(trial.makeRandom(i, numRounds)); // i/2
+    trialList.push(trial.makeRandom(i, numRounds, GRID_DIMENSION)); // i/2
   };
 
   shuffle(trialList);
@@ -44,8 +45,8 @@ function makeDataPoint(gameId, roundNum, roundObj) {
     roundNum : roundNum
   };
 
-  var trialDims = trial.getDimensionValues(roundObj);
-  var dimNames = trial.getDimensionNames();
+  var trialDims = trial.getDimensionValues(roundObj, GRID_DIMENSION);
+  var dimNames = trial.getDimensionNames(GRID_DIMENSION);
   for (var i = 0; i < dimNames.length; i++) {
     stateDataPoint[dimNames[i]] = trialDims[i];
   }
