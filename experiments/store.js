@@ -200,24 +200,24 @@ function serve() {
       const collection = database.collection(collectionName);
 
       collection.aggregate([
-	{ $group : {_id : "$numGames", count: { $sum: 1 }}}
-      ], (err, results) => {console.log('counts...'); console.log(results)});
-      
-      // get a random sample of stims that haven't appeared more than k times
-      collection.aggregate([
-	{ $addFields : { numGames: { $size: '$games'} } }, 
-	// { $group : { _id : "$family", numGames: {$avg : "$numGames"},
-	// 	     family: { $push: "$$ROOT" } } },
-	{ $sort : { numGames : 1} },	
-	{ $limit : request.body.numRounds }
-      ], (err, results) => {
-	if(err) {
-	  console.log(err);
-	} else {
-	  
-	  recordStimUse(collection, request.body.gameid, _.map(results, '_id'));
-	  response.send(results);
-	}
+    	{ $group : {_id : "$numGames", count: { $sum: 1 }}}
+          ], (err, results) => {console.log('counts...'); console.log(results)});
+          
+          // get a random sample of stims that haven't appeared more than k times
+          collection.aggregate([
+    	{ $addFields : { numGames: { $size: '$games'} } }, 
+    	// { $group : { _id : "$family", numGames: {$avg : "$numGames"},
+    	// 	     family: { $push: "$$ROOT" } } },
+    	{ $sort : { numGames : 1} },	
+    	{ $limit : request.body.numRounds }
+          ], (err, results) => {
+    	if(err) {
+    	  console.log(err);
+    	} else {
+    	  
+    	  recordStimUse(collection, request.body.gameid, _.map(results, '_id'));
+    	  response.send(results);
+    	}
       });
     });
 
