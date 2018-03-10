@@ -9,7 +9,7 @@ var CONDITION_SKEWED = "SKEWED";
 var CONDITION_SKEWED_RANGE = [80,140];
 var CONDITION_SKEWED_COLORDIFF = 20;
 var CONDITION_COLORDIFF_MINRANGE = [5,20]
-var CONDITION_COLORDIFF_MAXRANGE = [30,100]
+var CONDITION_COLORDIFF_MAXRANGE = [15,100]
 
 var OBJECT_HEIGHT = 400;
 var OBJECT_WIDTH = 300;
@@ -61,7 +61,7 @@ var getNumDiffs = function(condition, trialNum, numRounds, numDimensions) {
 
 var getSkewProb = function(condition, trialNum, numRounds) {
   if (condition === CONDITION_SKEWED) {
-    return trialNum/numRounds;
+    return 0.5 + 0.5*trialNum/numRounds;
   } else {
     return 0.0;
   }
@@ -96,7 +96,8 @@ var makeRandom = function(trialNum, numRounds, gridDimension, condition) {
            listenerOrder : [listenerFirst, 1-listenerFirst],
            diffs : getNumDiffs(condition, trialNum, numRounds, numDimensions),
            skewProb : getSkewProb(condition, trialNum, numRounds),
-           colorDiff : getColorDiffRange(condition, trialNum, numRounds)
+           colorDiff : getColorDiffRange(condition, trialNum, numRounds),
+           condition : condition
          }
 };
 
@@ -112,6 +113,10 @@ var fromDimensionValueString = function(str, separator, gridDimension) {
   var lOIndex0 = parseInt(values[4]);
   var lOIndex1 = parseInt(values[5]);
   var numDiffs = parseInt(values[6]);
+  var skewProb = parseFloat(values[7]);
+  var colorDiffMin = parseInt(values[8]);
+  var colorDiffMax = parseInt(values[9]);
+  var condition = values[10];
 
   var target = 0;
   if (sTarget == 0)
@@ -123,10 +128,14 @@ var fromDimensionValueString = function(str, separator, gridDimension) {
                 target : target,
                 speakerOrder : [sOIndex0, sOIndex1],
                 listenerOrder : [lOIndex0, lOIndex1],
-                diffs : numDiffs };
+                diffs : numDiffs,
+                skewProb : skewProb,
+                colorDiff : [colorDiffMin, colorDiffMax],
+                condition : condition
+               };
 
   var sObj0 = { shapes : [], gridDimension : gridDimension, cellLength : CELL_LENGTH };
-  var startIndex0 = 7;
+  var startIndex0 = 11;
   for (var i = 0; i < gridDimension*gridDimension; i++) {
     var shape = {};
     var startIndexS = startIndex0 + i*3;
@@ -216,6 +225,14 @@ var getDimensionValue = function(trial, dimName) {
     return trial.listenerOrder[1];
   } else if (dimName == "diffs") {
     return trial.diffs;
+  } else if (dimName == "skewProb") {
+    return trial.skewProb;
+  } else if (dimName == "colorDiffMin") {
+    return trial.colorDiff[0];
+  } else if (dimName == "colorDiffMax") {
+    return trial.colorDiff[1];
+  } else if (dimName == "condition") {
+    return trial.condition;
   } else if (dimName.indexOf("ClrH") >= 0) {
     var obj = getObjectByRole(trial, nameParts["Obj"], nameParts["Role"]);
     var s = nameParts["Shp"];
@@ -268,7 +285,8 @@ var getDimensionNames = function(gridDimension) {
   if (gridDimension === undefined)
     gridDimension = GRID_DIMENSION;
 
-  var names = ["sTarget", "sOIndex0", "sOIndex1", "lTarget", "lOIndex0", "lOIndex1", "diffs"];
+  var names = ["sTarget", "sOIndex0", "sOIndex1", "lTarget", "lOIndex0", "lOIndex1", "diffs", "skewProb", "colorDiffMin", "colorDiffMax", "condition"];
+
   names = names.concat(getTrialObjectDimensionNames("s", 0, gridDimension));
   names = names.concat(getTrialObjectDimensionNames("s", 1, gridDimension));
   names = names.concat(getTrialObjectDimensionNames("l", 0, gridDimension));
