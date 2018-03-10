@@ -2,6 +2,7 @@ var ROUNDS_PER_GAME = 20;
 var NUM_GAMES = parseInt(process.argv[2]);
 var OUTPUT_DIRECTORY = process.argv[3];
 var GRID_DIMENSION = parseInt(process.argv[4]);
+var CONDITION = process.argv[5];
 
 _ = require('underscore');
 assert = require('assert');
@@ -29,7 +30,7 @@ function shuffle(a) {
 function makeGameTrials(numRounds) {
   var trialList = [];
   for (var i = 0; i < numRounds; i++) {
-    trialList.push(trial.makeRandom(i, numRounds, GRID_DIMENSION)); // i/2
+    trialList.push(trial.makeRandom(i, numRounds, GRID_DIMENSION, CONDITION)); // i/2
   };
 
   shuffle(trialList);
