@@ -42,11 +42,11 @@ var randomSkewedColor = function (skewProb) {
 
 var randomDiffSkewedColor = function(otherColor, skewProb) {
   var c = randomSkewedColor(skewProb);
-  var diff = utils.colorDiff(otherColor, c);
+  /*var diff = utils.colorDiff(otherColor, c);
   while (diff <= CONDITION_SKEWED_COLORDIFF) {
     c = randomSkewedColor(skewProb);
     diff = utils.colorDiff(otherColor, c);
-  }
+  }*/
 
   return c;
 };
@@ -61,7 +61,7 @@ var getNumDiffs = function(condition, trialNum, numRounds, numDimensions) {
 
 var getSkewProb = function(condition, trialNum, numRounds) {
   if (condition === CONDITION_SKEWED) {
-    return 0.5 + 0.5*trialNum/numRounds;
+    return trialNum/numRounds;
   } else {
     return 0.0;
   }
