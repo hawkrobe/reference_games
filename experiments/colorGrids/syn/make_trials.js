@@ -50,14 +50,11 @@ function makeDataPoint(gameId, roundNum, roundObj) {
   var stateTime = Date.now();
   var stateDataPoint = {
     eventType : "state",
+    type : "StateColorGrid",
     gameid: gameId,
     time : stateTime,
     roundNum : roundNum,
-    obj : JSON.stringify({
-      type : "StateColorGrid",
-      time : stateTime,
-      state : roundObj
-    })
+    state : JSON.stringify(roundObj)
   };
 
   return stateDataPoint;

@@ -46,15 +46,14 @@ var onMessage = function(client,message) {
     var actionTime = Date.now();
     var actionDataPoint = {
       eventType : "action",
+      type : "ActionColorGrid",
       gameid: id,
       time : actionTime,
       roundNum : roundNum,
-      obj : JSON.stringify({
-        type : "ActionColorGrid",
+      action : JSON.stringify({
         lClicked : lClicked,
         mouseX : mouseX,
         mouseY : mouseY,
-        time : actionTime,
         condition : trialObj.condition
       })
     };
@@ -62,14 +61,11 @@ var onMessage = function(client,message) {
     var stateTime = Date.now();
     var stateDataPoint = {
       eventType : "state",
+      type : "StateColorGrid",
       gameid: id,
       time : stateTime,
       roundNum : roundNum,
-      obj : JSON.stringify({
-        type : "StateColorGrid",
-        time : stateTime,
-        state : trialObj
-      })
+      state : JSON.stringify(trialObj)
     };
 
     utils.writeDataToCSV(gc, actionDataPoint);

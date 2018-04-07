@@ -44,40 +44,47 @@
 <h2><center>The colorful grid!</center>  </h2>
 
   <p>
-
     In this experiment you will play a fun communication game with
-    another turker! In each round both of you are going to be shown two grids, consisting of various colors:
+    another turker! In each round both of you are going to be shown three grid objects,
+    consisting of various colors:
 </p>
     <p>
       <center><img src="images/screenshot_objs.png" alt="Example objects" style="width:600px; height:374px"></center>
     </p>
 
 <p>
-    One of you will be assigned the <b> Speaker </b> role and the other will be the <b> Listener </b>. On each round, one of the two grids is the target, which can be identified by a green box around it. Only the speaker can see which grid is the target. The task of the speaker is to tell the listener which one of the grids is the target and the listener in turn needs to select the right grid based on this information. You'll both get a bonus of $0.01 for each correct response, so pay attention! Remember that it doesn't make sense to describe the location of the target grid, since the order of the images is different for the listener and the speaker.
+    In each round, you will either be assigned the <b> Speaker </b> or <b> Listener </b> role in a game
+    involving these grids, and you will alternate roles between rounds.  For a given round, one of the three grids
+    is the target, which can be identified by the <b> Speaker </b> player by the green box around it.
+    You will <i> only </i> see this green box if you are the <b> Speaker </b>, and your job will be to tell the
+    <b> Listener </b> which one of the grids is the target.  On the other hand, if you're in the <b> Listener </b>
+    role, you will have to select the grid based on what your partner in the <b> Speaker </b> role says.
+    You'll both get a bonus of $0.01 for each correct response, so pay attention! Also, remember that it
+    doesn't make sense to describe the <i> location </i> of the target grid, since the order of the images is different
+    for the <b>Listener</b> and the <b>Speaker</b>.
 </p>
 
 <p>
       <center><img src="images/speakerView.png" alt="Example gameplay" style="width:600px; height:374px"></center>
     </p>
 <p>
-    <i> <center> <small> Only the speaker can see that grid with the blue square on the bottom most row is the target. </small> </center> </i>
-
+    <i> <center> <small> Only the <b> Speaker </b> can see that grid with the dark blue square on the top row is the target. </small> </center> </i>
 </p>
 <p>
-    Thus, the goal is for the listener to identify the correct grid
-    based on what the speaker has said. In order to communicate,
+    The overall goal is for the <b> Listener </b> to identify the correct grid
+    based on what the <b> Speaker </b> has said. In order to communicate,
     you're given a chatbox where you can send messages back and forth
-    to each other. The speaker can say whatever they need to indicate
+    to each other. The <b> Speaker </b> can say whatever they need to indicate
     which object is the target (this isn't a game of "taboo"!), and the
-    listener can respond or ask questions at any point. Some rounds
+    <b> Listener </b> can respond or ask questions at any point. Some rounds
     will be easier and some will be harder. </p>
 
-    <p> Once the speaker sends a message and the listener clicks on
+    <p> Once the <b> Speaker </b> sends a message and the <b> Listener </b> clicks on
     the object they believe is the target, both players will be given
-    feedback (the speaker will see what the listener clicked, and the
-    listener will see the true target), and you will both be
+    feedback (the <b> Speaker </b> will see what the <b> Listener </b> clicked, and the
+    <b> Listener </b> will see the true target), and you will both be
     automatically forwarded to the next round of grids. There are a
-    total of <b>15 rounds</b>. After the final round you will fill out a quick
+    total of <b>60 rounds</b>. After the final round you will fill out a quick
     15 second survey and be on your way.
 </p>
 
@@ -92,7 +99,7 @@
   accepted, out of gratitude for the time you spent waiting.
 </p>
 
-<p> 
+<p>
   Second, because differences between colors can be quite subtle and
   difficult to describe, it is important that you and your partner are
   seeing the same thing. Turn your brightness up all the way, and turn
@@ -130,7 +137,7 @@
      <div class="well" style="width:800px; margin: 0 auto">
 
   </br>
-  The <b>speaker</b> can click on an grid to end the round.
+  The <b>Speaker</b> can click on an grid to end the round.
     </br>
     <input type="radio" name="dgoal" value="yes"> False
     </br>
@@ -139,7 +146,7 @@
 
 
   </br>
-  The listener wants to click on the grid that the speaker is
+  The <b>Listener</b> wants to click on the grid that the <b>Speaker</b> is
   telling them about.
       </br>
       <input type="radio" name="mgoal" value="no"> False
@@ -149,7 +156,7 @@
 
 
   </br>
-  Only the speaker can send messages.
+  Only the <b>Speaker</b> can send messages.
       </br>
       <input type="radio" name="message" value="yes"> False
       </br>
@@ -165,7 +172,7 @@
       </br>
 
   </br>
-  The order of the grids are guaranteed to be same for the Speaker and the listener.
+  The order of the grid images are guaranteed to be same for the <b>Speaker</b> and the <b>Listener</b>.
       </br>
       <input type="radio" name="location" value="no"> True
       </br>
@@ -210,7 +217,7 @@
         var ans5 = $('input[name="location"]:checked').val();
         var ans6 = $('input[name="completed"]:checked').val();
 
-        if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" && 
+        if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" &&
            ans4 == "yes" && ans5 == "yes" && ans6 == "yes") {
            var workerId = urlParams.workerId;
            var assignmentId = urlParams.assignmentId;

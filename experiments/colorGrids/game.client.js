@@ -90,7 +90,7 @@ var client_onMessage = function(data) {
       globalGame.data.totalScore = parseFloat(commands[6]); //+ '.' + commands[7]); //HACKY
 
       $('#score').empty()
-        .append("Bonus: $" + (globalGame.data.totalScore/globalGame.data.numRounds).toFixed(3));
+        .append("Bonus: $" + (globalGame.data.totalScore * 0.01).toFixed(2));
 
       drawTargetBox(globalGame);
       break;
