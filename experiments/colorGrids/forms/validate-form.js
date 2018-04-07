@@ -1,5 +1,5 @@
 function validateForm() {
-    
+
     var completed = document.forms["quiz"]["completed"].value;
     if (completed == "yes") {
         location.replace("./notwice.html");
@@ -7,7 +7,7 @@ function validateForm() {
 	var count = 0
 	var qs = Array('move', 'occ', 'mgoal', 'dgoal', 'comp');
 	var as = Array(qs.length);
-	for (i = 0; i < qs.length; i++) { 
+	for (i = 0; i < qs.length; i++) {
 	    as[i] = document.forms["quiz"][qs[i]].value;
 	    if(as[i] != "yes" && as[i] != "no") {
 		alert("Please enter responses to all questions to continue.");
