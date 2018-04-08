@@ -10,7 +10,7 @@
     var
         fs    = require('fs'),
         utils = require(__base + 'sharedUtils/sharedUtils.js'),
-        trial = require(__base + 'shapeGrids/trial.js');
+        trial = require(__base + 'colorGrids/trial.js');
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the

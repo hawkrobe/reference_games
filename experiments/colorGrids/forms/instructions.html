@@ -179,14 +179,15 @@
       <input type="radio" name="location" value="yes"> False
       </br>
 
-  Have you participated in this study before?
+   </br>
+  <!--Have you participated in this study before?
         </br>
         <input type="radio" name="completed" value="no"> Yes
         </br>
         <input type="radio" name="completed" value="yes"> No
         </br>
 
-  </br>
+  </br> -->
     <input id="quiz_submit" type="submit" value="Submit">
       </br>
       </br>
@@ -215,10 +216,10 @@
         var ans3 = $('input[name="message"]:checked').val();
         var ans4 = $('input[name="comp"]:checked').val();
         var ans5 = $('input[name="location"]:checked').val();
-        var ans6 = $('input[name="completed"]:checked').val();
+        //var ans6 = $('input[name="completed"]:checked').val();
 
         if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" &&
-           ans4 == "yes" && ans5 == "yes" && ans6 == "yes") {
+           ans4 == "yes" && ans5 == "yes"/* && ans6 == "yes"*/) {
            var workerId = urlParams.workerId;
            var assignmentId = urlParams.assignmentId;
            var hitId = urlParams.hitId;
