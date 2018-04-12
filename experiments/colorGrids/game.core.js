@@ -13,7 +13,7 @@ var WORLD_WIDTH = 900;
 var WORLD_HEIGHT = 300;
 var GRID_DIMENSION = 3;
 var NUM_OBJS = 3;
-var NUM_ROUNDS = 4; //60;
+var NUM_ROUNDS = 60;
 
 /*
   The main game class. This gets created on both server and
