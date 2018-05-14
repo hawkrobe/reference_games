@@ -9,13 +9,28 @@ var CELL_LENGTH = 40;
 var COLOR_DIFF_FLOOR = 5;
 var COLOR_DIFF_FAR = 20;
 
-var makeRandom = function(numObjs, condition, gridDimension) {
+var makeRandom = function(numObjs, condition, gridDimension, variableDiffs) {
   var target = sampleTarget(condition, gridDimension);
   var objs = [];
   var speakerOrder = [0];
   var listenerOrder = [0];
+
+  var numDiffs = gridDimension*gridDimension;
+  var diffs = [];
+  for (var i = 0; i < gridDimension*gridDimension; i++) {
+    diffs.push(i);
+  }
+
+  if (variableDiffs) {
+    numDiffs = 1 + Math.floor(Math.random()*(gridDimension*gridDimension-1));
+    var numSame = gridDimension*gridDimension - numDiffs;
+    for (var i = 0; i < numSame; i++) {
+      diffs.splice(Math.floor(Math.random()*diffs.length), 1);
+    }
+  }
+
   for (var i = 1; i < numObjs; i++) {
-    objs.push(sampleDistractor(condition, gridDimension, target, objs));
+    objs.push(sampleDistractor(condition, gridDimension, target, objs, diffs));
     speakerOrder.push(i);
     listenerOrder.push(i);
   }
@@ -31,7 +46,7 @@ var makeRandom = function(numObjs, condition, gridDimension) {
            target : targetIndex,
            speakerOrder : speakerOrder,
            listenerOrder : listenerOrder,
-           condition : { name : condition }
+           condition : { name : condition, numDiffs : numDiffs }
          }
 };
 
@@ -64,37 +79,42 @@ var sampleTarget = function(condition, gridDimension) {
   return obj;
 };
 
-var sampleDistractor = function(condition, gridDimension, target, distractors) {
+var sampleDistractor = function(condition, gridDimension, target, distractors, diffs) {
   var obj = { cellLength : CELL_LENGTH, gridDimension : gridDimension, shapes : [] };
 
   for (var i = 0; i < gridDimension*gridDimension; i++) {
       var color = undefined;
-      var colorMeetsCondition = false;
-      do {
-        color = utils.randomColor({ fixedL : true });
-        colorMeetsCondition = true;
 
-        var targetClose = false;
-        if (condition === CONDITION_CLOSE || (condition === CONDITION_SPLIT && distractors.length % 2 == 0)) {
-          targetClose = true;
-        }
+      if (diffs.indexOf(i) >= 0) {
+        var colorMeetsCondition = false;
+        do {
+          color = utils.randomColor({ fixedL : true });
+          colorMeetsCondition = true;
 
-        var targetDiff = utils.colorDiff(target.shapes[i].color, color);
-        if (targetDiff < COLOR_DIFF_FLOOR || (targetClose !== (targetDiff < COLOR_DIFF_FAR))) {
-          colorMeetsCondition = false;
-        }
+          var targetClose = false;
+          if (condition === CONDITION_CLOSE || (condition === CONDITION_SPLIT && distractors.length % 2 == 0)) {
+            targetClose = true;
+          }
 
-        if (colorMeetsCondition) {
-          var distractorClose = (condition === CONDITION_CLOSE);
-          for (var j = 0; j < distractors.length; j++) {
-            var distractorDiff = utils.colorDiff(distractors[j].shapes[i].color, color);
-            if (distractorDiff < COLOR_DIFF_FLOOR || (distractorClose !== (distractorDiff < COLOR_DIFF_FAR))) {
-              colorMeetsCondition = false;
-              break;
+          var targetDiff = utils.colorDiff(target.shapes[i].color, color);
+          if (targetDiff < COLOR_DIFF_FLOOR || (targetClose !== (targetDiff < COLOR_DIFF_FAR))) {
+            colorMeetsCondition = false;
+          }
+
+          if (colorMeetsCondition) {
+            var distractorClose = (condition === CONDITION_CLOSE);
+            for (var j = 0; j < distractors.length; j++) {
+              var distractorDiff = utils.colorDiff(distractors[j].shapes[i].color, color);
+              if (distractorDiff < COLOR_DIFF_FLOOR || (distractorClose !== (distractorDiff < COLOR_DIFF_FAR))) {
+                colorMeetsCondition = false;
+                break;
+              }
             }
           }
-        }
-      } while (!colorMeetsCondition);
+        } while (!colorMeetsCondition);
+      } else {
+        color = target.shapes[i].color;
+      }
 
       obj.shapes.push({ color : color })
   }

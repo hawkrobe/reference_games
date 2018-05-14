@@ -14,6 +14,7 @@ var WORLD_HEIGHT = 300;
 var GRID_DIMENSION = 3;
 var NUM_OBJS = 3;
 var NUM_ROUNDS = 60;
+var VARIABLE_OBJECT_DIFFS = true;
 
 /*
   The main game class. This gets created on both server and
@@ -201,7 +202,7 @@ game_core.prototype.makeTrialList = function () {
     else
       condition = trial.CONDITION_CLOSE;
 
-    trialList.push(trial.makeRandom(this.world.numObjs, condition, this.world.gridDimension));
+    trialList.push(trial.makeRandom(this.world.numObjs, condition, this.world.gridDimension, VARIABLE_OBJECT_DIFFS));
   }
 
   shuffle(trialList);
